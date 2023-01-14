@@ -295,7 +295,7 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
                       double               L_JoyStick1Axis2X,  // rotate the robot joystick
                       double               L_JoyStick1Axis3,   // extra speed trigger
                       bool                 L_JoyStick1Button3, // auto rotate to 0 degrees
-                      bool                 L_JoyStick1Button4, // auto rotate to 90 degrees
+                      bool                 L_JoyStick1_ResetDesiredAngle, // auto rotate to 90 degrees
                       bool                 L_Driver_RobotFieldOrientedReq,
                       T_ADAS_ActiveFeature L_ADAS_ActiveFeature,
                       double               L_ADAS_Pct_SD_FwdRev,
@@ -367,7 +367,11 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
 
   /* Here, we are attempting to determine if the drive/ADAS is attempting to turn the robot.  If we are 
      attempting to rotate the robot, allow the "desired" angle to update to the current measured angle.  */
-  if (fabs(L_RCW) >= K_SD_RotateDeadBand)
+  if (L_JoyStick1_ResetDesiredAngle == true)
+    {
+      V_Deg_SD_StoredAngleDesired = L_Deg_GyroAngle;
+    }
+  else if (fabs(L_RCW) >= K_SD_RotateDeadBand)
     {
     V_Deg_SD_StoredAngleDesired = L_Deg_GyroAngle;
     }

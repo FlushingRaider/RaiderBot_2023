@@ -1,5 +1,5 @@
 /*
- * Team 5561 2023 Code
+ * Team 5561 2022 Code
  *
  * This code runs the 2020 robot which is capable of the following:
  * - Swerve Drive (beta 02/10/2020)
@@ -328,7 +328,7 @@ void Robot::RobotPeriodic()
                     VsDriverInput.deg_SwerveRotate,  // rotate the robot joystick
                     VsDriverInput.v_SwerveSpeed,   // extra speed trigger
                     VsDriverInput.b_SwerveRotateTo0, // auto rotate to 0 degrees
-                    VsDriverInput.b_SwerveRotateTo90, // auto rotate to 90 degrees
+                    VsDriverInput.b_ZeroGyro, // auto rotate to 90 degrees
                     VsDriverInput.b_RobotFieldOrientedReq,
                     V_ADAS_ActiveFeature,
                     V_ADAS_Pct_SD_FwdRev,
