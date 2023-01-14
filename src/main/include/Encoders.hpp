@@ -9,25 +9,23 @@
   2022-02-15: Cleaned up file
 */
 
- extern double V_Deg_WheelAngleFwd[E_RobotCornerSz];
- extern double V_Rad_WheelAngleFwd[E_RobotCornerSz]; 
- extern double V_Deg_WheelAngleRev[E_RobotCornerSz];
- extern double V_WheelVelocity[E_RobotCornerSz];
- extern double V_M_WheelDeltaDistance[E_RobotCornerSz];
- extern double V_WheelAngleConverted[E_RobotCornerSz];
- extern double V_ShooterSpeedCurr;
- extern double V_LiftPostitionYD; // Position of the YD lift, in revolutions of the motor
- extern double V_LiftPostitionXD; // Position of the XD lift, in revolutions of the motor
- extern double V_TurretPosition;
+ extern double VaENC_Deg_WheelAngleFwd[E_RobotCornerSz];
+ extern double VaENC_Rad_WheelAngleFwd[E_RobotCornerSz]; 
+ extern double VaENC_Deg_WheelAngleRev[E_RobotCornerSz];
+ extern double VaENC_In_WheelDeltaDistance[E_RobotCornerSz];
+ extern double VeENC_RPM_ShooterSpeedCurr;
+ extern double VeENC_In_LiftPostitionYD; // Position of the YD lift, in revolutions of the motor
+ extern double VeENC_In_LiftPostitionXD; // Position of the XD lift, in revolutions of the motor
+ extern double VeENC_Deg_TurretPosition;
  
- void Read_Encoders(double                       L_encoderWheelAngleFrontLeftRaw,
-                    double                       L_encoderWheelAngleFrontRightRaw,
-                    double                       L_encoderWheelAngleRearLeftRaw,
-                    double                       L_encoderWheelAngleRearRightRaw,
-                    double                       L_encoderWheelAngleFrontLeftRawPracticeBot,
-                    double                       L_encoderWheelAngleFrontRightRawPracticeBot,
-                    double                       L_encoderWheelAngleRearLeftRawPracticeBot,
-                    double                       L_encoderWheelAngleRearRightRawPracticeBot,
+ void Read_Encoders(double                       LeENC_Cnt_EncoderWheelAngleFrontLeftRaw,
+                    double                       LeENC_Cnt_EncoderWheelAngleFrontRightRaw,
+                    double                       LeENC_Cnt_EncoderWheelAngleRearLeftRaw,
+                    double                       LeENC_Cnt_EncoderWheelAngleRearRightRaw,
+                    double                       LeENC_Cnt_EncoderWheelAngleFrontLeftRawPracticeBot,
+                    double                       LeENC_Cnt_EncoderWheelAngleFrontRightRawPracticeBot,
+                    double                       LeENC_Cnt_EncoderWheelAngleRearLeftRawPracticeBot,
+                    double                       LeENC_Cnt_EncoderWheelAngleRearRightRawPracticeBot,
                     rev::SparkMaxRelativeEncoder m_encoderFrontLeftDrive,
                     rev::SparkMaxRelativeEncoder m_encoderFrontRightDrive,
                     rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
@@ -36,17 +34,17 @@
                     rev::SparkMaxRelativeEncoder m_encoderleftShooter,
                     rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                     rev::SparkMaxRelativeEncoder m_encoderLiftXD,
-                    double                       L_encoderTurretAngle);
+                    double                       LeENC_Cnt_EncoderTurretAngle);
 
-void Read_Encoders2(double                       L_encoderWheelAngleFrontLeftRawPracticeBot,
-                    double                       L_encoderWheelAngleFrontRightRawPracticeBot,
-                    double                       L_encoderWheelAngleRearLeftRawPracticeBot,
-                    double                       L_encoderWheelAngleRearRightRawPracticeBot,
+void Read_Encoders2(double                       LeENC_Cnt_EncoderWheelAngleFrontLeftRawPracticeBot,
+                    double                       LeENC_Cnt_EncoderWheelAngleFrontRightRawPracticeBot,
+                    double                       LeENC_Cnt_EncoderWheelAngleRearLeftRawPracticeBot,
+                    double                       LeENC_Cnt_EncoderWheelAngleRearRightRawPracticeBot,
                     rev::SparkMaxRelativeEncoder m_encoderFrontLeftDrive,
                     rev::SparkMaxRelativeEncoder m_encoderFrontRightDrive,
                     rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
                     rev::SparkMaxRelativeEncoder m_encoderRearRightDrive,
-                    double                       L_encoderTurretAngle);
+                    double                       LeENC_Cnt_EncoderTurretAngle);
 
 void EncodersLiftInit(rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                       rev::SparkMaxRelativeEncoder m_encoderLiftXD);

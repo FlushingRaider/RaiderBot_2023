@@ -286,8 +286,8 @@ void Robot::RobotPeriodic()
   ReadGyro2(VsDriverInput.b_ZeroGyro);
 
   DtrmnSwerveBotLocation( V_GyroYawAngleRad,
-                         &V_Rad_WheelAngleFwd[0],
-                         &V_M_WheelDeltaDistance[0]);
+                         &VaENC_Rad_WheelAngleFwd[0],
+                         &VaENC_In_WheelDeltaDistance[0]);
 
   ADAS_DetermineMode();
 
@@ -315,7 +315,7 @@ void Robot::RobotPeriodic()
                                            V_VisionYaw[E_CamBottom],
                                            V_VisionTargetDistanceMeters[E_CamBottom],
                                            V_RobotState,
-                                           V_ShooterSpeedCurr,
+                                           VeENC_RPM_ShooterSpeedCurr,
                                            VsRobotSensors.b_BallDetectedUpper,
                                            VsRobotSensors.b_BallDetectedLower,
                                            VsDriverInput.b_ElevatorUp,
@@ -337,8 +337,8 @@ void Robot::RobotPeriodic()
                     V_ADAS_SD_RobotOriented,
                     V_GyroYawAngleDegrees,
                     V_GyroYawAngleRad,
-                   &V_Deg_WheelAngleFwd[0],
-                   &V_Deg_WheelAngleRev[0],
+                   &VaENC_Deg_WheelAngleFwd[0],
+                   &VaENC_Deg_WheelAngleRev[0],
                    &V_SD_WheelSpeedCmnd[0],
                    &V_k_SD_WheelAngleCmnd[0]);
 
@@ -350,7 +350,7 @@ void Robot::RobotPeriodic()
                           VsDriverInput.b_ElevatorDown,
                           VsDriverInput.b_StopShooterAutoClimbResetGyro,
                           VsDriverInput.b_AutoSetSpeedShooter,
-                          V_ShooterSpeedCurr,
+                          VeENC_RPM_ShooterSpeedCurr,
                           VsDriverInput.pct_ManualShooterDesiredSpeed,
                           V_ADAS_ActiveFeature,
                           V_ADAS_RPM_BH_Launcher,
@@ -390,8 +390,8 @@ void Robot::RobotPeriodic()
                                        VsDriverInput.e_LiftCmndDirection,
                                        V_MatchTimeRemaining,
                                        V_Lift_state,
-                                       V_LiftPostitionYD,
-                                       V_LiftPostitionXD,
+                                       VeENC_In_LiftPostitionYD,
+                                       VeENC_In_LiftPostitionXD,
                                        &V_lift_command_YD,
                                        &V_lift_command_XD,
                                        &V_LiftYD_TestPowerCmnd,
@@ -423,7 +423,7 @@ void Robot::RobotPeriodic()
 
 /* Output all of the content to the dashboard here: */
   frc::SmartDashboard::PutBoolean("Turret",         VsRobotSensors.b_TurretZero);
-  frc::SmartDashboard::PutNumber("TurretPosition",  V_TurretPosition);
+  frc::SmartDashboard::PutNumber("TurretPosition",  VeENC_Deg_TurretPosition);
 
   /* Set light control outputs here */
   do_CameraLightControl.Set(V_CameraLightCmndOn);

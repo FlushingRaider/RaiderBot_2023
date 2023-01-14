@@ -21,8 +21,8 @@ const double C_Deg2Rad = 0.017453292519943295;
 const double C_PI = 3.14159265358979;
 const double C_Tau = 6.28318530717958647;
 
-static const double C_EncoderToAngle = 360; // Raw output of PWM encoder to degrees
-static const double C_VoltageToAngle = 72.0; // Gain that converts the measured voltage of the absolute encoder to an equivalent angle in degrees. (practice bot only)
+static const double KeENC_k_EncoderToAngle = 360; // Raw output of PWM encoder to degrees
+static const double KeENC_k_VoltageToAngle = 72.0; // Gain that converts the measured voltage of the absolute encoder to an equivalent angle in degrees. (practice bot only)
 
 
 // CAN Device IDs:
@@ -105,8 +105,8 @@ const double C_BlinkinLED_RainbowWithGlitter = -0.89;
 const int K_t_GyroTimeoutMs = 30;
 
 // Encoder / speed calculation related cals
-const double K_ReductionRatio = 8.31;
-const double K_WheelCircufrence = 0.3191764; // Circumferance of wheel, in inches
+const double KeENC_k_ReductionRatio = 8.31; //Reduction ratio for swerve drive module
+const double KeENC_In_WheelCircumfrence = 0.3191764; // Circumferance of wheel, in inches
 
 
 // Turret cals
@@ -116,8 +116,8 @@ const double K_t_TurretTimeoutMs = 30;
 /* K_Pct_TurretOpenLoopCmnd: Percent motor command sent to turrent when in open loop control. */
 const double K_Pct_TurretOpenLoopCmnd = 0.1;
 
-/* K_k_TurretEncoderScaler: Scalar multiplied against the encoder read to translate to degrees relative to turret. */
-const double K_k_TurretEncoderScaler = 0.025947816048;
+/* KeENC_k_TurretEncoderScaler: Scalar multiplied against the encoder read to translate to degrees relative to turret. */
+const double KeENC_k_TurretEncoderScaler = 0.025947816048; //Scalar multiplied against the encoder read to translate to degrees relative to turret.
 
 /* K_deg_TurretMinDeltaOL: Minimum delta position change value expected when in OL control.  If this isn't met for a specific amount of time, it will advance to the next state. */
 const double K_deg_TurretMinDeltaOL = 0.05;
@@ -283,19 +283,19 @@ const double C_SD_R = 0.8441;
 /* K_SD_SteerMotorCurrentLimit: Max allowed current going to each swerve drive steer motor. */
 const double K_SD_SteerMotorCurrentLimit = 25;
 
-/* K_SD_WheelOffsetAngle: Offset angle for each respective corder of the swerve drive wheel.  This is the angle 
+/* KeENC_Deg_SD_WheelOffsetAngle: Offset angle for each respective corder of the swerve drive wheel.  This is the angle 
    reading from the absolute encoder that is indicated in order for the wheel to point straight. */
-const double K_SD_WheelOffsetAngle[E_RobotCornerSz] = {174.527239,   // E_FrontLeft
-                                                       128.487963,   // E_FrontRight 
-                                                        33.112801,   // E_RearLeft
-                                                       250.813891};  // E_RearRight
+const double KeENC_Deg_SD_WheelOffsetAngle[E_RobotCornerSz] = {174.527239,   // E_FrontLeft
+                                                               128.487963,   // E_FrontRight 
+                                                               33.112801,   // E_RearLeft
+                                                               250.813891};  // E_RearRight
 
-/* K_SD_WheelOffsetAnglePractieBot: Offset angle for each respective corder of the swerve drive wheel.  This is the angle 
+/* KeENC_k_WheelOffsetAnglePractieBot: Offset angle for each respective corder of the swerve drive wheel.  This is the angle 
    reading from the absolute encoder that is indicated in order for the wheel to point straight.  For practice bot only. */
-const double K_SD_WheelOffsetAnglePractieBot[E_RobotCornerSz] = {-177.9,  // E_FrontLeft 1.3  -176
-                                                                 -16.1,  // E_FrontRight 163.5
-                                                                 -127.1,   // E_RearLeft 230.8
-                                                                 96.9};  // E_RearRight 282.0
+const double KeENC_k_WheelOffsetAnglePractieBot[E_RobotCornerSz] = {-177.9,  // E_FrontLeft 1.3  -176
+                                                                    -16.1,  // E_FrontRight 163.5
+                                                                    -127.1,   // E_RearLeft 230.8
+                                                                     96.9};  // E_RearRight 282.0
 
 /* K_SD_WheelGx: Gain multiplied by each calculated desired speed.  Intended to account for variation in wheel size. */
 const double K_SD_WheelGx[E_RobotCornerSz] = {-1.0,  // E_FrontLeft
