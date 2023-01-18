@@ -17,7 +17,7 @@ extern bool V_VisionDriverModeCmndFinal;
 
 void VisionRobotInit();
 
-void VisionInit(frc::DriverStation::Alliance L_AllianceColor);
+void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor);
 
 void VisionRun(photonlib::PhotonPipelineResult pc_L_TopResult,
                photonlib::PhotonPipelineResult pc_L_BottomResult,

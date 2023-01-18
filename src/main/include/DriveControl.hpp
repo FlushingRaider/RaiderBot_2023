@@ -32,7 +32,7 @@ void DriveControlMain(double              L_JoyStick1Axis1Y,  // swerve control 
                       bool                L_JoyStick1Button3, // auto rotate to 0 degrees
                       bool                L_JoyStick1Button4, // auto rotate to 90 degrees
                       bool                L_Driver_RobotFieldOrientedReq,
-                      T_ADAS_ActiveFeature L_ADAS_ActiveFeature,
+                      T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
                       double               L_ADAS_Pct_SD_FwdRev,
                       double               L_ADAS_Pct_SD_Strafe,
                       double               L_ADAS_Pct_SD_Rotate,

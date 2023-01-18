@@ -366,8 +366,8 @@ void Robot::RobotPeriodic()
                    V_ADAS_ActiveFeature,
                    V_ADAS_CameraUpperLightCmndOn,
                    V_ADAS_CameraLowerLightCmndOn,
-                  &V_CameraLightCmndOn,
-                  &V_VanityLightCmnd);
+                  &VeLC_b_CameraLightCmndOn,
+                  &VeLC_Cmd_VanityLightCmnd);
 
   VisionRun( pc_Camera1.GetLatestResult(),
              pc_Camera2.GetLatestResult(),
@@ -426,9 +426,9 @@ void Robot::RobotPeriodic()
   frc::SmartDashboard::PutNumber("TurretPosition",  VeENC_Deg_TurretPosition);
 
   /* Set light control outputs here */
-  do_CameraLightControl.Set(V_CameraLightCmndOn);
+  do_CameraLightControl.Set(VeLC_b_CameraLightCmndOn);
   #ifdef CompBot
-  m_vanityLightControler.Set(V_VanityLightCmnd);
+  m_vanityLightControler.Set(VeLC_Cmd_VanityLightCmnd);
   #endif
   }
 
