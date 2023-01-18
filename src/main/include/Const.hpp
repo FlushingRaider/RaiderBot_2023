@@ -35,7 +35,7 @@ static const int C_liftXD_ID = 12;
 static const int C_elevatorID = 13;
 static const int C_intakeID = 14;
 static const int C_turretID = 15;
-static const int C_i_Gyro = 16;
+static const int KeGRY_i_Gyro = 16;
 
 // Analog IDs:
 static const int C_MagEncoderFL_ID = 2, C_MagEncoderFR_ID = 1, C_MagEncoderRL_ID = 3, C_MagEncoderRR_ID = 0;
@@ -101,8 +101,8 @@ const double C_BlinkinLED_RainbowWithGlitter = -0.89;
 
 
 // Gyro cals
-/* K_t_GyroTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */
-const int K_t_GyroTimeoutMs = 30;
+/* KeGRY_ms_GyroTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */
+const int KeGRY_ms_GyroTimeoutMs = 30; //Waits and reports to DS if fails
 
 // Encoder / speed calculation related cals
 const double KeENC_k_ReductionRatio = 8.31; //Reduction ratio for swerve drive module
