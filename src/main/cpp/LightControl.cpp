@@ -14,19 +14,19 @@
 
 #include "Const.hpp"
 
-/* V_CameraLightOnTime: Indication of how long the light has been consecutivly on. */
-double V_CameraLightOnTime = 0;
+/* VeLC_Cnt_CameraLightOnTime: Indication of how long the light has been consecutivly on. */
+double VeLC_Cnt_CameraLightOnTime = 0;
 
-/* V_CameraLightStatus: Indication of the camera light status. */
-T_CameraLightStatus V_CameraLightStatus = E_LightTurnedOff;
+/* VeLC_Sec_CameraLightStatus: Indication of the camera light status. */
+T_CameraLightStatus VeLC_Sec_CameraLightStatus = VeLC_e_LightTurnedOff;
 
-/* V_CameraLightCmndOn: Commanded camera light on/off state. */
-bool V_CameraLightCmndOn = false;
+/* VeLC_b_CameraLightCmndOn: Commanded camera light on/off state. */
+bool VeLC_b_CameraLightCmndOn = false;
 
-/* V_VanityLightCmnd: PWM command to be sent to the blinkin controller. */
-double  V_VanityLightCmnd = 0;
+/* VeLC_Cmd_VanityLightCmnd: PWM command to be sent to the blinkin controller. */
+double  VeLC_Cmd_VanityLightCmnd = 0;
 
-bool V_CameraLightLatch = false;
+bool VeLC_b_CameraLightLatch = false;
 
 /******************************************************************************
  * Function:     CameraLightControl
@@ -36,68 +36,68 @@ bool V_CameraLightLatch = false;
  *               - Informs targeting logic when camera feed should have had 
  *                 enough time with light on for accurate data.
  ******************************************************************************/
-bool CameraLightControl(bool                 L_Driver_CameraLight,
-                        T_ADAS_ActiveFeature L_ADAS_ActiveFeature,
-                        bool                 L_ADAS_CameraUpperLightCmndOn)
+bool CameraLightControl(bool                 LeLC_b_Driver_CameraLight,
+                        T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
+                        bool                 LeLC_b_ADASCameraUpperLightCmndOn)
   {
-    bool L_CameraLightCmndOn = false;
+    bool LeLC_Cmd_CameraLightCmndOn = false;
 
-    // if ((V_CameraLightLatch == false && L_Driver_CameraLight == true) ||
+    // if ((VeLC_b_CameraLightLatch == false && LeLC_b_Driver_CameraLight == true) ||
     //     ())
     //   {
-    //   L_CameraLightCmndOn = true;
-    //   V_CameraLightLatch = true;
+    //   LeLC_Cmd_CameraLightCmndOn = true;
+    //   VeLC_b_CameraLightLatch = true;
     //   }
 
-    if (((L_ADAS_ActiveFeature > E_ADAS_Disabled) &&    /* Swerve drive targeting has been requested or is in process */
-         (L_ADAS_CameraUpperLightCmndOn == true)) ||
-        (L_Driver_CameraLight == true))  /* Driver override is present */
+    if (((LeLC_e_ADASActiveFeature > E_ADAS_Disabled) &&    /* Swerve drive targeting has been requested or is in process */
+         (LeLC_b_ADASCameraUpperLightCmndOn == true)) ||
+        (LeLC_b_Driver_CameraLight == true))  /* Driver override is present */
       {
-      L_CameraLightCmndOn = true;
+      LeLC_Cmd_CameraLightCmndOn = true;
       }
 
-    if ((L_CameraLightCmndOn == true) &&
-        (V_CameraLightOnTime < K_CameraLightMaxOnTime) &&
-        (V_CameraLightStatus != E_LightForcedOffDueToOvertime))
+    if ((LeLC_Cmd_CameraLightCmndOn == true) &&
+        (VeLC_Cnt_CameraLightOnTime < K_CameraLightMaxOnTime) &&
+        (VeLC_Sec_CameraLightStatus != E_LightForcedOffDueToOvertime))
       {
-      V_CameraLightOnTime += C_ExeTime;
+      VeLC_Cnt_CameraLightOnTime += C_ExeTime;
 
-      if (V_CameraLightOnTime >= K_CameraLightDelay)
+      if (VeLC_Cnt_CameraLightOnTime >= K_CameraLightDelay)
         {
-        V_CameraLightStatus = E_LightOnTargetingReady;
+        VeLC_Sec_CameraLightStatus = E_LightOnTargetingReady;
         }
       else
         {
-        V_CameraLightStatus = E_LightOnWaitingForTarget;
+        VeLC_Sec_CameraLightStatus = E_LightOnWaitingForTarget;
         }
       }
-    else if ((L_CameraLightCmndOn == true) &&
-             (V_CameraLightOnTime >= K_CameraLightMaxOnTime))
+    else if ((LeLC_Cmd_CameraLightCmndOn == true) &&
+             (VeLC_Cnt_CameraLightOnTime >= K_CameraLightMaxOnTime))
       {
-        L_CameraLightCmndOn = false; // turn light off, give time to cool down
-        V_CameraLightLatch = false;
+        LeLC_Cmd_CameraLightCmndOn = false; // turn light off, give time to cool down
+        VeLC_b_CameraLightLatch = false;
 
-        V_CameraLightStatus = E_LightForcedOffDueToOvertime;
+        VeLC_Sec_CameraLightStatus = E_LightForcedOffDueToOvertime;
       }
     else
       {
-      V_CameraLightOnTime = 0;
-      L_CameraLightCmndOn = false;
-      V_CameraLightLatch = false;
-      V_CameraLightStatus = E_LightTurnedOff;
+      VeLC_Cnt_CameraLightOnTime = 0;
+      LeLC_Cmd_CameraLightCmndOn = false;
+      VeLC_b_CameraLightLatch = false;
+      VeLC_Sec_CameraLightStatus = VeLC_e_LightTurnedOff;
       }
   
   /* Flip the command as the camera light is inverted */
-  // if (L_CameraLightCmndOn == true)
+  // if (LeLC_Cmd_CameraLightCmndOn == true)
   //   {
-  //   L_CameraLightCmndOn = false;
+  //   LeLC_Cmd_CameraLightCmndOn = false;
   //   }
   // else
   //   {
-  //   L_CameraLightCmndOn = true;
+  //   LeLC_Cmd_CameraLightCmndOn = true;
   //   }
 
-  return (L_CameraLightCmndOn);
+  return (LeLC_Cmd_CameraLightCmndOn);
   }
 
 /******************************************************************************
@@ -108,39 +108,39 @@ bool CameraLightControl(bool                 L_Driver_CameraLight,
  *               - Will change color when in end game to help inform driver to
  *                 take action.
  ******************************************************************************/
-double VanityLightControl(double                       L_MatchTimeRemaining,
-                          frc::DriverStation::Alliance L_AllianceColor,
-                          T_ADAS_ActiveFeature         L_ADAS_ActiveFeature,
-                          bool                         L_ADAS_CameraLowerLightCmndOn,
-                          bool                         L_Driver_CameraLight)
+double VanityLightControl(double                       LeLC_Sec_MatchTimeRemaining,
+                          frc::DriverStation::Alliance LeLC_e_AllianceColor,
+                          T_ADAS_ActiveFeature         LeLC_e_ADASActiveFeature,
+                          bool                         LeLC_b_ADASCameraLowerLightCmndOn,
+                          bool                         LeLC_b_Driver_CameraLight)
   {
-    double L_LED_Command = 0;
+    double LeLC_Cmd_LEDCommand = 0;
 
-    if (((L_ADAS_ActiveFeature > E_ADAS_Disabled) &&
-         (L_ADAS_CameraLowerLightCmndOn == true)) ||
-         (L_Driver_CameraLight == true))
+    if (((LeLC_e_ADASActiveFeature > E_ADAS_Disabled) &&
+         (LeLC_b_ADASCameraLowerLightCmndOn == true)) ||
+         (LeLC_b_Driver_CameraLight == true))
       {
-      L_LED_Command = C_BlinkinLED_SolidWhite;
+      LeLC_Cmd_LEDCommand = C_BlinkinLED_SolidWhite;
       }
-    else if ((L_MatchTimeRemaining <= C_End_game_time) &&
-             (L_MatchTimeRemaining > 0))
+    else if ((LeLC_Sec_MatchTimeRemaining <= C_End_game_time) &&
+             (LeLC_Sec_MatchTimeRemaining > 0))
       {
-      L_LED_Command = C_BlinkinLED_RainbowWithGlitter;
+      LeLC_Cmd_LEDCommand = C_BlinkinLED_RainbowWithGlitter;
       }
-    else if (L_AllianceColor == frc::DriverStation::Alliance::kRed)
+    else if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
       {
-      L_LED_Command = C_BlinkinLED_BreathRed;
+      LeLC_Cmd_LEDCommand = C_BlinkinLED_BreathRed;
       }
-    else if (L_AllianceColor == frc::DriverStation::Alliance::kBlue)
+    else if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue)
       {
-      L_LED_Command = C_BlinkinLED_BreathBlue;
+      LeLC_Cmd_LEDCommand = C_BlinkinLED_BreathBlue;
       }
     else
       {
-      L_LED_Command = C_BlinkinLED_LightChaseGray;
+      LeLC_Cmd_LEDCommand = C_BlinkinLED_LightChaseGray;
       }
 
-    return(L_LED_Command);
+    return(LeLC_Cmd_LEDCommand);
   }
 
 /******************************************************************************
@@ -149,22 +149,22 @@ double VanityLightControl(double                       L_MatchTimeRemaining,
  * Description:  Contains the functionality for controlling the camera 
  *               illumination lights and LED vanity lights.
  ******************************************************************************/
-void LightControlMain(double                       L_MatchTimeRemaining,
-                      frc::DriverStation::Alliance L_AllianceColor,
-                      bool                         L_Driver_CameraLight,
-                      T_ADAS_ActiveFeature         L_ADAS_ActiveFeature,
-                      bool                         L_ADAS_CameraUpperLightCmndOn,
-                      bool                         L_ADAS_CameraLowerLightCmndOn,
-                      bool                        *L_CameraLightCmndOn,
-                      double                      *L_VanityLightCmnd)
+void LightControlMain(double                       LeLC_Sec_MatchTimeRemaining,
+                      frc::DriverStation::Alliance LeLC_e_AllianceColor,
+                      bool                         LeLC_b_Driver_CameraLight,
+                      T_ADAS_ActiveFeature         LeLC_e_ADASActiveFeature,
+                      bool                         LeLC_b_ADASCameraUpperLightCmndOn,
+                      bool                         LeLC_b_ADASCameraLowerLightCmndOn,
+                      bool                        *LeLC_Cmd_CameraLightCmndOn,
+                      double                      *LeLC_Cmd_VanityLightCmnd)
   {
-  *L_CameraLightCmndOn = CameraLightControl(L_Driver_CameraLight,
-                                            L_ADAS_ActiveFeature,
-                                            L_ADAS_CameraUpperLightCmndOn);
+  *LeLC_Cmd_CameraLightCmndOn = CameraLightControl(LeLC_b_Driver_CameraLight,
+                                            LeLC_e_ADASActiveFeature,
+                                            LeLC_b_ADASCameraUpperLightCmndOn);
 
-  *L_VanityLightCmnd = VanityLightControl(L_MatchTimeRemaining,
-                                          L_AllianceColor,
-                                          L_ADAS_ActiveFeature,
-                                          L_ADAS_CameraLowerLightCmndOn,
-                                          L_Driver_CameraLight);
+  *LeLC_Cmd_VanityLightCmnd = VanityLightControl(LeLC_Sec_MatchTimeRemaining,
+                                          LeLC_e_AllianceColor,
+                                          LeLC_e_ADASActiveFeature,
+                                          LeLC_b_ADASCameraLowerLightCmndOn,
+                                          LeLC_b_Driver_CameraLight);
   }
