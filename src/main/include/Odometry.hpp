@@ -7,11 +7,11 @@
   Contains the code related to the odemetry tracking of the robot.
  */
 
-extern double V_l_RobotDisplacementX;
-extern double V_l_RobotDisplacementY;
+extern double VeODO_Cnt_RobotDisplacementX;
+extern double VeODO_Cnt_RobotDisplacementY;
 
 void OdometryInit(void);
 
 void DtrmnSwerveBotLocation(double  L_Rad_Gyro,
                             double *L_Rad_WheelAngleFwd,
-                            double *L_M_DeltaWheelDistance);
+                            double *LeODO_In_DeltaWheelDistance);
