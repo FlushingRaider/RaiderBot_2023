@@ -80,7 +80,7 @@ typedef enum T_LauncherStates
 
 typedef enum T_CameraLightStatus
 {
-  E_LightTurnedOff,
+  VeLC_e_LightTurnedOff,
   E_LightOnWaitingForTarget,
   E_LightOnTargetingReady,
   E_LightForcedOffDueToOvertime

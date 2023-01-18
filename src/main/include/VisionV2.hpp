@@ -7,20 +7,18 @@
    Contains content from vision.
  */
 
-extern bool   V_VisionTargetAquired[E_CamLocSz];
-extern double V_VisionYaw[E_CamLocSz];
-extern double V_VisionTargetDistanceMeters[E_CamLocSz];
-extern int    V_VisionCameraIndex[E_CamSz];
-extern T_CameraNumber V_VisionCamNumber[E_CamLocSz];
-extern double V_VisionTopCamNumberTemp;
-extern bool V_VisionDriverModeCmndFinal;
+extern bool   VeVIS_b_VisionTargetAquired[E_CamLocSz];
+extern double VeVIS_Deg_VisionYaw[E_CamLocSz];
+extern double VeVIS_m_VisionTargetDistance[E_CamLocSz];
+extern int    VnVIS_int_VisionCameraIndex[E_CamSz];
+extern bool VeVIS_b_VisionDriverRequestedModeCmnd;
 
 void VisionRobotInit();
 
-void VisionInit(frc::DriverStation::Alliance L_AllianceColor);
+void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor);
 
-void VisionRun(photonlib::PhotonPipelineResult pc_L_TopResult,
-               photonlib::PhotonPipelineResult pc_L_BottomResult,
+void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
+               photonlib::PhotonPipelineResult LsVIS_Str_BottomResult,
                bool                            L_AutoTargetRequest,
                bool                            L_DriverDriveModeReq,
                bool                           *L_VisionDriverModeCmndFinal);

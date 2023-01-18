@@ -166,7 +166,7 @@ void BallHandlerInit()
  ******************************************************************************/
 double BallLauncher(bool                 L_DisableShooter,
                     bool                 L_AutoShootReq,
-                    T_ADAS_ActiveFeature L_ADAS_ActiveFeature,
+                    T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
                     double               L_ADAS_RPM_BH_Launcher,
                     double               L_ManualShooter,
                     double               L_LauncherCurrentSpeed)
@@ -181,7 +181,7 @@ double BallLauncher(bool                 L_DisableShooter,
     L_ShooterSpeedCmndTarget = V_ShooterTestSpeed;
     L_LauncherState = E_LauncherManualActive;
     }
-  else if (L_ADAS_ActiveFeature > E_ADAS_Disabled)
+  else if (LeLC_e_ADASActiveFeature > E_ADAS_Disabled)
     {
     /* ADAS is active, pass through the request: */
     L_ShooterSpeedCmndTarget = L_ADAS_RPM_BH_Launcher;
@@ -234,14 +234,14 @@ double BallLauncher(bool                 L_DisableShooter,
  ******************************************************************************/
 double BallIntake(bool                 L_DriverIntakeInCmnd,
                   bool                 L_DriverIntakeOutCmnd,
-                  T_ADAS_ActiveFeature L_ADAS_ActiveFeature,
+                  T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
                   double               L_ADAS_Pct_BH_Intake,
                   bool                 L_LowerBallDetected,
                   bool                 L_UpperBallDetected)
   {
   double L_IntakeMotorCmnd = 0;
 
-  if (L_ADAS_ActiveFeature > E_ADAS_Disabled)
+  if (LeLC_e_ADASActiveFeature > E_ADAS_Disabled)
     {
     if ((L_ADAS_Pct_BH_Intake > 0) && 
         ((L_LowerBallDetected == true && L_UpperBallDetected == false) ||
@@ -279,7 +279,7 @@ double BallElevator(bool L_BallDetected,
                     bool L_ElevatorCmndUp,
                     bool L_ElevatorCmndDwn,
                     bool L_LauncherTargetSpeedReached,
-                    T_ADAS_ActiveFeature L_ADAS_ActiveFeature,
+                    T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
                     bool L_ADAS_Pct_BH_Elevator,
                     bool L_Intake,
                     double L_LauncherRPM_Cmnd)
@@ -289,13 +289,13 @@ double BallElevator(bool L_BallDetected,
     if(((L_ElevatorCmndUp == true) || 
         (L_Intake == true)) ||
 
-       ((L_ADAS_ActiveFeature > E_ADAS_Disabled) &&
+       ((LeLC_e_ADASActiveFeature > E_ADAS_Disabled) &&
         (L_ADAS_Pct_BH_Elevator > 0)))
       {
         if ((L_BallDetected == false) ||
             ((L_LauncherTargetSpeedReached == true) && (fabs(L_LauncherRPM_Cmnd) > K_BH_LauncherMinCmndSpd)))
           {
-          if (L_ADAS_ActiveFeature == E_ADAS_Disabled)
+          if (LeLC_e_ADASActiveFeature == E_ADAS_Disabled)
             {
             L_ElevatorPowerCmnd = K_BH_ElevatorPowerUp;
             }
@@ -333,7 +333,7 @@ void BallHandlerControlMain(bool L_IntakeInCmnd,
                             bool L_AutoShootReq,
                             double L_LauncherCurrentSpeed,
                             double L_ManualShooter,
-                            T_ADAS_ActiveFeature L_ADAS_ActiveFeature,
+                            T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
                             double L_ADAS_RPM_BH_Launcher,
                             double L_ADAS_Pct_BH_Intake,
                             double L_ADAS_Pct_BH_Elevator,
@@ -347,14 +347,14 @@ void BallHandlerControlMain(bool L_IntakeInCmnd,
 
     L_LauncherRPM = BallLauncher( L_DisableShooter,
                                   L_AutoShootReq,
-                                  L_ADAS_ActiveFeature,
+                                  LeLC_e_ADASActiveFeature,
                                   L_ADAS_RPM_BH_Launcher,
                                   L_ManualShooter,
                                   L_LauncherCurrentSpeed);
 
     L_IntakePowerCmnd = BallIntake(L_IntakeInCmnd,
                                    L_IntakeOutCmnd,
-                                   L_ADAS_ActiveFeature,
+                                   LeLC_e_ADASActiveFeature,
                                    L_ADAS_Pct_BH_Intake,
                                    L_BallDetectedLower,
                                    L_BallDetected);
@@ -364,7 +364,7 @@ void BallHandlerControlMain(bool L_IntakeInCmnd,
                                        L_ElevatorCmndUp,
                                        L_ElevatorCmndDwn,
                                        V_ShooterTargetSpeedReached,
-                                       L_ADAS_ActiveFeature,
+                                       LeLC_e_ADASActiveFeature,
                                        L_ADAS_Pct_BH_Elevator,
                                        L_IntakeInCmnd,
                                        L_LauncherRPM);

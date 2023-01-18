@@ -17,29 +17,20 @@
 
 
 
-
-
-
-
-
-
-
 // all our favorite variables
-double         V_VisionTopCamNumberTemp = 1;
-int            V_VisionCameraIndex[E_CamSz];
-T_CameraNumber V_VisionCamNumber[E_CamLocSz];
+// double         V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
+int            VnVIS_int_VisionCameraIndex[E_CamSz]; // 
+T_CameraNumber VnVIS_e_VisionCamNumber[E_CamLocSz];
 
-bool           V_VisionTargetAquired[E_CamLocSz];
-double         V_VisionYaw[E_CamLocSz];
-double         V_VisionTargetDistanceMeters[E_CamLocSz];
+bool           VeVIS_b_VisionTargetAquired[E_CamLocSz]; // 
+double         VeVIS_Deg_VisionYaw[E_CamLocSz];
+double         VeVIS_m_VisionTargetDistance[E_CamLocSz];
 
-double         V_VisionDriverModeDelayTime; // Time to delay before allowing calculations.  This is needed to allow the driver mode to be communicated with the PI and then to allow the data to come back once in the correct mode.
+bool           VeVIS_b_VisionDriverRequestedModeCmnd; // Requested driver mode override
+bool           VeVIS_b_VisionDriverRequestedModeCmndLatched; // Latched state of the driver requested mode
+bool           VeVIS_b_VisionDriverRequestedModeCmndPrev; // Requested driver mode override previous
 
-bool           V_VisionDriverRequestedModeCmnd; // Requested driver mode override
-bool           V_VisionDriverRequestedModeCmndLatched; // Latched state of the driver requested mode
-bool           V_VisionDriverRequestedModeCmndPrev; // Requested driver mode override previous
-
-bool           V_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
+bool           VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
 
 /******************************************************************************
  * Function:     VisionRobotInit
@@ -59,35 +50,35 @@ void VisionRobotInit()
  *
  * Description:  Initialize vision and related variables.
  ******************************************************************************/
-void VisionInit(frc::DriverStation::Alliance L_AllianceColor)
+void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
   {
   // /* Check the driver station for what the top camera number should be: */
   // V_VisionTopCamNumberTemp = frc::SmartDashboard::GetNumber("Top Camera Number", V_VisionTopCamNumberTemp);
 
   // if (fabs(V_VisionTopCamNumberTemp) < 1.5)
   //   {
-  //   V_VisionCamNumber[E_CamTop] = E_Cam1;
-  //   V_VisionCamNumber[E_CamBottom] = E_Cam2;
+  //   VnVIS_e_VisionCamNumber[E_CamTop] = E_Cam1;
+  //   VnVIS_e_VisionCamNumber[E_CamBottom] = E_Cam2;
   //   }
   // else
   //   {
-  //   V_VisionCamNumber[E_CamTop] = E_Cam2;
-  //   V_VisionCamNumber[E_CamBottom] = E_Cam1;
+  //   VnVIS_e_VisionCamNumber[E_CamTop] = E_Cam2;
+  //   VnVIS_e_VisionCamNumber[E_CamBottom] = E_Cam1;
   //   }
 
-  V_VisionCamNumber[E_CamTop] = E_Cam1;
-  V_VisionCamNumber[E_CamBottom] = E_Cam2;
+  VnVIS_e_VisionCamNumber[E_CamTop] = E_Cam1;
+  VnVIS_e_VisionCamNumber[E_CamBottom] = E_Cam2;
 
   // gets flag from the driver station to choose between alliance colors
-  if (L_AllianceColor == frc::DriverStation::Alliance::kRed)
+  if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
     {
-    V_VisionCameraIndex[V_VisionCamNumber[E_CamBottom]] = 0; // 1 is the index for a red ball
-    V_VisionCameraIndex[V_VisionCamNumber[E_CamTop]] = 1; // 1 is the top camera targeting index
+    VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamBottom]] = 0; // 1 is the index for a red ball
+    VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamTop]] = 1; // 1 is the top camera targeting index
     }
-  else // if (L_AllianceColor == frc::DriverStation::Alliance::kBlue) -> must be either red or blue
+  else // if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue) -> must be either red or blue
     {
-    V_VisionCameraIndex[V_VisionCamNumber[E_CamBottom]] = 1; // 2 is the index for a blue ball
-    V_VisionCameraIndex[V_VisionCamNumber[E_CamTop]] = 1; // 1 is the top camera targeting index
+    VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamBottom]] = 1; // 2 is the index for a blue ball
+    VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamTop]] = 1; // 1 is the top camera targeting index
     }
   }
 
@@ -98,83 +89,83 @@ void VisionInit(frc::DriverStation::Alliance L_AllianceColor)
  * Description:  Contains the necessary code relative to processing the 
  *               vision output.
  ******************************************************************************/
-void VisionRun(photonlib::PhotonPipelineResult pc_L_TopResult,
-               photonlib::PhotonPipelineResult pc_L_BottomResult,
-               bool                            L_AutoTargetRequest,
-               bool                            L_DriverDriveModeReq,
-               bool                           *L_VisionDriverModeCmndFinal)
+void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
+               photonlib::PhotonPipelineResult LsVIS_Str_BottomResult,
+               bool                            LbVIS_b_AutoTargetRequest,
+               bool                            LbVIS_b_DriverDriveModeReq,
+               bool                           *LbVIS_b_VisionDriverModeCmndFinal)
   {
-  T_CameraLocation L_Index = E_CamTop;
-  units::meter_t L_Range = 0_m;
-  photonlib::PhotonTrackedTarget L_Target;
-  photonlib::PhotonPipelineResult pc_L_Result[E_CamSz];
-  bool L_VisionDriverModeCmndFinalTemp = false;
+  T_CameraLocation LeVIS_Int_Index = E_CamTop;
+  units::meter_t LeVIS_m_Range = 0_m;
+  photonlib::PhotonTrackedTarget LsVIS_Str_Target;
+  photonlib::PhotonPipelineResult pc_LsVIS_Str_Result[E_CamSz];
+  //bool L_VisionDriverModeCmndFinalTemp = false;
 
-  pc_L_Result[E_Cam1] = pc_L_TopResult;
-  pc_L_Result[E_Cam2] = pc_L_BottomResult;
+  pc_LsVIS_Str_Result[E_Cam1] = LsVIS_Str_TopResult;
+  pc_LsVIS_Str_Result[E_Cam2] = LsVIS_Str_BottomResult;
   
   /* Check to see what the driver wants for the driver mode: */
-  if ((L_DriverDriveModeReq != V_VisionDriverRequestedModeCmndPrev) && (L_DriverDriveModeReq == true))
+  if ((LbVIS_b_DriverDriveModeReq != VeVIS_b_VisionDriverRequestedModeCmndPrev) && (LbVIS_b_DriverDriveModeReq == true))
     {
     /* Ok, we seem to have experienced a button press.  Let's flip the latched state*/
-    if (V_VisionDriverRequestedModeCmndLatched == true)
+    if (VeVIS_b_VisionDriverRequestedModeCmndLatched == true)
       {
-      V_VisionDriverRequestedModeCmndLatched = false; // When false, the driver is requesting to revert to the targeting overlay
+      VeVIS_b_VisionDriverRequestedModeCmndLatched = false; // When false, the driver is requesting to revert to the targeting overlay
       }
     else
       {
-      V_VisionDriverRequestedModeCmndLatched = true;  // When true, the driver is wanting a clear picture.
+      VeVIS_b_VisionDriverRequestedModeCmndLatched = true;  // When true, the driver is wanting a clear picture.
       }
     }
 
   /* Save the previous version to help determine when there is a transition in the driver button press. */
-  V_VisionDriverRequestedModeCmndPrev = L_DriverDriveModeReq;
+  VeVIS_b_VisionDriverRequestedModeCmndPrev = LbVIS_b_DriverDriveModeReq;
 
   /* Let's do the calculations here: */
-  if ((V_VisionDriverRequestedModeCmndLatched == false))
+  if ((VeVIS_b_VisionDriverRequestedModeCmndLatched == false))
     {
     /* Ok, we want vision to be active and sending data: */
-    for (L_Index = E_CamTop;
-         L_Index < E_CamLocSz;
-         L_Index = T_CameraLocation(int(L_Index) + 1))
+    for (LeVIS_Int_Index = E_CamTop;
+         LeVIS_Int_Index < E_CamLocSz;
+         LeVIS_Int_Index = T_CameraLocation(int(LeVIS_Int_Index) + 1))
       {
-      V_VisionTargetAquired[L_Index] = pc_L_Result[V_VisionCamNumber[L_Index]].HasTargets(); //returns true if the camera has a target  
+      VeVIS_b_VisionTargetAquired[LeVIS_Int_Index] = pc_LsVIS_Str_Result[VnVIS_e_VisionCamNumber[LeVIS_Int_Index]].HasTargets(); //returns true if the camera has a target  
     
-      if (V_VisionTargetAquired[L_Index] == true)
+      if (VeVIS_b_VisionTargetAquired[LeVIS_Int_Index] == true)
         {
-        L_Target = pc_L_Result[V_VisionCamNumber[L_Index]].GetBestTarget(); //gets the best target  
+        LsVIS_Str_Target = pc_LsVIS_Str_Result[VnVIS_e_VisionCamNumber[LeVIS_Int_Index]].GetBestTarget(); //gets the best target  
     
-        // V_VisionYaw[L_Index] = L_Target.GetYaw(); // Yaw of the best target
+        // VeVIS_Deg_VisionYaw[LeVIS_Int_Index] = LsVIS_Str_Target.GetYaw(); // Yaw of the best target
 
-        V_VisionYaw[L_Index] = Filter_FirstOrderLag(L_Target.GetYaw(), V_VisionYaw[L_Index], K_VisionYawLagFilter[L_Index]);
+        VeVIS_Deg_VisionYaw[LeVIS_Int_Index] = Filter_FirstOrderLag(LsVIS_Str_Target.GetYaw(), VeVIS_Deg_VisionYaw[LeVIS_Int_Index], K_VisionYawLagFilter[LeVIS_Int_Index]);
       
-        L_Range = photonlib::PhotonUtils::CalculateDistanceToTarget(
-                     K_VisionHeight[L_Index], K_VisionTargetHeight[L_Index], K_VisionCameraPitch[L_Index],
-                     units::degree_t{pc_L_Result[V_VisionCamNumber[L_Index]].GetBestTarget().GetPitch()}); // first 3 variables are constants from Const.hpp  
+        LeVIS_m_Range = photonlib::PhotonUtils::CalculateDistanceToTarget(
+                     K_VisionHeight[LeVIS_Int_Index], K_VisionTargetHeight[LeVIS_Int_Index], K_VisionCameraPitch[LeVIS_Int_Index],
+                     units::degree_t{pc_LsVIS_Str_Result[VnVIS_e_VisionCamNumber[LeVIS_Int_Index]].GetBestTarget().GetPitch()}); // first 3 variables are constants from Const.hpp  
         
-        if (L_Range < 0_m)
+        if (LeVIS_m_Range < 0_m)
           {
-          L_Range = 0_m;
+          LeVIS_m_Range = 0_m;
           }
-        // V_VisionTargetDistanceMeters[L_Index] = L_Range.value();
+        // VeVIS_m_VisionTargetDistance[LeVIS_Int_Index] = LeVIS_m_Range.value();
 
-        V_VisionTargetDistanceMeters[L_Index] = Filter_FirstOrderLag(L_Range.value(), V_VisionTargetDistanceMeters[L_Index], K_VisionTargetDistLagFilter[L_Index]);
+        VeVIS_m_VisionTargetDistance[LeVIS_Int_Index] = Filter_FirstOrderLag(LeVIS_m_Range.value(), VeVIS_m_VisionTargetDistance[LeVIS_Int_Index], K_VisionTargetDistLagFilter[LeVIS_Int_Index]);
         }
       }
     }
   else
     {
-    for (L_Index = E_CamTop;
-         L_Index < E_CamLocSz;
-         L_Index = T_CameraLocation(int(L_Index) + 1))
+    for (LeVIS_Int_Index = E_CamTop;
+         LeVIS_Int_Index < E_CamLocSz;
+         LeVIS_Int_Index = T_CameraLocation(int(LeVIS_Int_Index) + 1))
       {
       /* We don't want to be active, default everything to indicate no data: */
-      V_VisionTargetAquired[L_Index] = false;
-      V_VisionYaw[L_Index] = 0;
-      V_VisionTargetDistanceMeters[L_Index] = 0;
+      VeVIS_b_VisionTargetAquired[LeVIS_Int_Index] = false;
+      VeVIS_Deg_VisionYaw[LeVIS_Int_Index] = 0;
+      VeVIS_m_VisionTargetDistance[LeVIS_Int_Index] = 0;
       }
     }
 
   /* Send the command out to photon vision: */
-  *L_VisionDriverModeCmndFinal = V_VisionDriverRequestedModeCmndLatched;
+  *LbVIS_b_VisionDriverModeCmndFinal = VeVIS_b_VisionDriverRequestedModeCmndLatched;
   }

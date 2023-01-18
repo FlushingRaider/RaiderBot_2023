@@ -8,8 +8,8 @@
 
  */
 
-extern double V_GyroYawAngleDegrees;
-extern double V_GyroYawAngleRad;
+extern double VeGRY_Deg_GyroYawAngleDegrees;
+extern double VeGRY_Rad_GyroYawAngleRad;
 
 void GyroInit();
-void ReadGyro2(bool L_DriverZeroGyroCmnd);
+void ReadGyro2(bool LeGRY_b_Cmd_DriverZeroGyroCmnd);
