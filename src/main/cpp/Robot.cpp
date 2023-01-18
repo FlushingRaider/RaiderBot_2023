@@ -285,7 +285,7 @@ void Robot::RobotPeriodic()
 
   ReadGyro2(VsDriverInput.b_ZeroGyro);
 
-  DtrmnSwerveBotLocation( V_GyroYawAngleRad,
+  DtrmnSwerveBotLocation( VeGRY_Rad_GyroYawAngleRad,
                          &VaENC_Rad_WheelAngleFwd[0],
                          &VaENC_In_WheelDeltaDistance[0]);
 
@@ -305,7 +305,7 @@ void Robot::RobotPeriodic()
                                            VsDriverInput.b_StopShooterAutoClimbResetGyro,
                                            VsDriverInput.b_SwerveGoalAutoCenter,
                                            VsDriverInput.b_AutoIntake,
-                                           V_GyroYawAngleDegrees,
+                                           VeGRY_Deg_GyroYawAngleDegrees,
                                            V_l_RobotDisplacementX,
                                            V_l_RobotDisplacementY,
                                            VeVIS_b_VisionTargetAquired[E_CamTop],
@@ -335,8 +335,8 @@ void Robot::RobotPeriodic()
                     V_ADAS_Pct_SD_Strafe,
                     V_ADAS_Pct_SD_Rotate,
                     V_ADAS_SD_RobotOriented,
-                    V_GyroYawAngleDegrees,
-                    V_GyroYawAngleRad,
+                    VeGRY_Deg_GyroYawAngleDegrees,
+                    VeGRY_Rad_GyroYawAngleRad,
                    &VaENC_Deg_WheelAngleFwd[0],
                    &VaENC_Deg_WheelAngleRev[0],
                    &V_SD_WheelSpeedCmnd[0],
@@ -366,8 +366,8 @@ void Robot::RobotPeriodic()
                    V_ADAS_ActiveFeature,
                    V_ADAS_CameraUpperLightCmndOn,
                    V_ADAS_CameraLowerLightCmndOn,
-                  &V_CameraLightCmndOn,
-                  &V_VanityLightCmnd);
+                  &VeLC_b_CameraLightCmndOn,
+                  &VeLC_Cmd_VanityLightCmnd);
 
   VisionRun( pc_Camera1.GetLatestResult(),
              pc_Camera2.GetLatestResult(),
@@ -398,7 +398,7 @@ void Robot::RobotPeriodic()
                                        &V_LiftXD_TestPowerCmnd,
                                        VsRobotSensors.b_XY_LimitDetected,
                                        VsRobotSensors.b_XD_LimitDetected,
-                                       V_GyroYawAngleDegrees,
+                                       VeGRY_Deg_GyroYawAngleDegrees,
                                        m_liftMotorYD.GetOutputCurrent(),
                                        m_liftMotorXD.GetOutputCurrent(),
                                        m_encoderLiftYD,
@@ -426,9 +426,9 @@ void Robot::RobotPeriodic()
   frc::SmartDashboard::PutNumber("TurretPosition",  VeENC_Deg_TurretPosition);
 
   /* Set light control outputs here */
-  do_CameraLightControl.Set(V_CameraLightCmndOn);
+  do_CameraLightControl.Set(VeLC_b_CameraLightCmndOn);
   #ifdef CompBot
-  m_vanityLightControler.Set(V_VanityLightCmnd);
+  m_vanityLightControler.Set(VeLC_Cmd_VanityLightCmnd);
   #endif
   }
 

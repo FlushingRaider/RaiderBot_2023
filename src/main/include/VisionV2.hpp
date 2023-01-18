@@ -15,7 +15,7 @@ extern bool VeVIS_b_VisionDriverRequestedModeCmnd;
 
 void VisionRobotInit();
 
-void VisionInit(frc::DriverStation::Alliance L_AllianceColor);
+void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor);
 
 void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
                photonlib::PhotonPipelineResult LsVIS_Str_BottomResult,

@@ -50,7 +50,7 @@ void VisionRobotInit()
  *
  * Description:  Initialize vision and related variables.
  ******************************************************************************/
-void VisionInit(frc::DriverStation::Alliance L_AllianceColor)
+void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
   {
   // /* Check the driver station for what the top camera number should be: */
   // V_VisionTopCamNumberTemp = frc::SmartDashboard::GetNumber("Top Camera Number", V_VisionTopCamNumberTemp);
@@ -70,12 +70,12 @@ void VisionInit(frc::DriverStation::Alliance L_AllianceColor)
   VnVIS_e_VisionCamNumber[E_CamBottom] = E_Cam2;
 
   // gets flag from the driver station to choose between alliance colors
-  if (L_AllianceColor == frc::DriverStation::Alliance::kRed)
+  if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
     {
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamBottom]] = 0; // 1 is the index for a red ball
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamTop]] = 1; // 1 is the top camera targeting index
     }
-  else // if (L_AllianceColor == frc::DriverStation::Alliance::kBlue) -> must be either red or blue
+  else // if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue) -> must be either red or blue
     {
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamBottom]] = 1; // 2 is the index for a blue ball
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamTop]] = 1; // 1 is the top camera targeting index
