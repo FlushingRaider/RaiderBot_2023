@@ -15,70 +15,70 @@
  *
  * Description:  Single dimension lookup table.
  ******************************************************************************/
-double LookUp1D_Table(const double *L_X_Axis,
-                      const double *L_TableData1D,
-                            int     L_AxisSize,
-                            int     L_CalArraySize,
-                            double  L_Input)
+double LookUp1D_Table(const double *LKLU_Cmd_XAxis,
+                      const double *LKLU_Cmd_TableData1D,
+                            int     LeLU_Int_AxisSize,
+                            int     LaLU_CalArraySize,
+                            double  LeLU_Cmd_Input)
   {
-  int    L_Index        = 0;
-  double L_LookupX1     = 0.0;
-  double L_LookupX2     = 0.0;
-  double L_LookupX_Diff = 0.0;
-  double L_LookupY1     = 0.0;
-  double L_LookupY2     = 0.0;
-  double L_LookupY_Diff = 0.0;
-  double L_LookupDiv    = 0.0;
-  bool L_LookupPt1Found = false;
-  double L_Output       = 0.0;
+  int    LeLU_Int_Index        = 0;
+  double LeLU_Int_LookupX1     = 0.0;
+  double LeLU_Int_LookupX2     = 0.0;
+  double LeLU_Int_LookupXDiff = 0.0;
+  double LeLU_Int_LookupY1     = 0.0;
+  double LeLU_Int_LookupY2     = 0.0;
+  double LeLU_Int_LookupYDiff = 0.0;
+  double LeLU_Int_LookupDiv    = 0.0;
+  bool LeLU_b_LookUpPt1Found = false;
+  double LeLU_Int_LOutput       = 0.0;
 
   /* Table length MUST equal axis length. */
-  if (L_CalArraySize == L_AxisSize)
+  if (LaLU_CalArraySize == LeLU_Int_AxisSize)
     {
-    if (L_Input >= (L_X_Axis[L_AxisSize - 1]))
+    if (LeLU_Cmd_Input >= (LKLU_Cmd_XAxis[LeLU_Int_AxisSize - 1]))
       {
       // We have gone off or are at the end of the axis
-      return (L_TableData1D[L_AxisSize - 1]);
+      return (LKLU_Cmd_TableData1D[LeLU_Int_AxisSize - 1]);
       }
-    else if (L_Input <= (L_X_Axis[0]))
+    else if (LeLU_Cmd_Input <= (LKLU_Cmd_XAxis[0]))
       {
       // We have gone off or are at the beginning of the axis
-      return (L_TableData1D[0]);
+      return (LKLU_Cmd_TableData1D[0]);
       }
     else
       {
-      for (L_Index = 0; ((L_Index < (L_AxisSize - 1)) && (L_LookupPt1Found == false)) ; L_Index++)
+      for (LeLU_Int_Index = 0; ((LeLU_Int_Index < (LeLU_Int_AxisSize - 1)) && (LeLU_b_LookUpPt1Found == false)) ; LeLU_Int_Index++)
         {
-        if ((L_Input >= L_X_Axis[L_Index])     &&
-            (L_Input <  L_X_Axis[L_Index + 1]) &&
-            (L_LookupPt1Found == false))
+        if ((LeLU_Cmd_Input >= LKLU_Cmd_XAxis[LeLU_Int_Index])     &&
+            (LeLU_Cmd_Input <  LKLU_Cmd_XAxis[LeLU_Int_Index + 1]) &&
+            (LeLU_b_LookUpPt1Found == false))
           {
-          L_LookupX1 = L_X_Axis[L_Index];
-          L_LookupY1 = L_TableData1D[L_Index];
-          L_LookupX2 = L_X_Axis[L_Index + 1];
-          L_LookupY2 = L_TableData1D[L_Index + 1];
-          L_LookupPt1Found = true;
+          LeLU_Int_LookupX1 = LKLU_Cmd_XAxis[LeLU_Int_Index];
+          LeLU_Int_LookupY1 = LKLU_Cmd_TableData1D[LeLU_Int_Index];
+          LeLU_Int_LookupX2 = LKLU_Cmd_XAxis[LeLU_Int_Index + 1];
+          LeLU_Int_LookupY2 = LKLU_Cmd_TableData1D[LeLU_Int_Index + 1];
+          LeLU_b_LookUpPt1Found = true;
 
-          L_Index = L_AxisSize;
+          LeLU_Int_Index = LeLU_Int_AxisSize;
           }
         }
 
-      if ((L_LookupPt1Found == true))
+      if ((LeLU_b_LookUpPt1Found == true))
         {
-        L_LookupX_Diff = L_LookupX2 - L_LookupX1;
-        L_LookupY_Diff = L_LookupY2 - L_LookupY1;
-        if (L_LookupX_Diff != 0.0)
+        LeLU_Int_LookupXDiff = LeLU_Int_LookupX2 - LeLU_Int_LookupX1;
+        LeLU_Int_LookupYDiff = LeLU_Int_LookupY2 - LeLU_Int_LookupY1;
+        if (LeLU_Int_LookupXDiff != 0.0)
           {
           /* Protect for zero division */
-          L_LookupDiv = L_LookupY_Diff / L_LookupX_Diff;
+          LeLU_Int_LookupDiv = LeLU_Int_LookupYDiff / LeLU_Int_LookupXDiff;
           }
         else
           {
-          L_LookupDiv = 0.0;
+          LeLU_Int_LookupDiv = 0.0;
           }
-        L_Output = L_LookupY1 + (L_Input-L_LookupX1) * L_LookupDiv;
+        LeLU_Int_LOutput = LeLU_Int_LookupY1 + (LeLU_Cmd_Input-LeLU_Int_LookupX1) * LeLU_Int_LookupDiv;
 
-        return L_Output;
+        return LeLU_Int_LOutput;
         }
       }
     }
@@ -93,32 +93,32 @@ double LookUp1D_Table(const double *L_X_Axis,
  *
  * Description:  Function to ramp from one value to another.
  *****************************************************************************/
-double RampTo(double  L_Final,
-              double  L_Current,
-              double  L_Slope)
+double RampTo(double  LeLU_Cmd_Final,
+              double  LeLU_Cmd_Current,
+              double  LeLU_Cmd_Slope)
   {
-  if (L_Final - L_Current > 0)
+  if (LeLU_Cmd_Final - LeLU_Cmd_Current > 0)
     {
-    L_Current += L_Slope;
+    LeLU_Cmd_Current += LeLU_Cmd_Slope;
 
-    if (L_Current >= L_Final)
+    if (LeLU_Cmd_Current >= LeLU_Cmd_Final)
       {
-      L_Current = L_Final;
+      LeLU_Cmd_Current = LeLU_Cmd_Final;
       }
     }
-  else if (L_Final - L_Current < 0)
+  else if (LeLU_Cmd_Final - LeLU_Cmd_Current < 0)
     {
-    L_Current -= L_Slope;
-    if (L_Current <= L_Final)
+    LeLU_Cmd_Current -= LeLU_Cmd_Slope;
+    if (LeLU_Cmd_Current <= LeLU_Cmd_Final)
       {
-      L_Current = L_Final;
+      LeLU_Cmd_Current = LeLU_Cmd_Final;
       }
     }
   else
     {
-    L_Current = L_Final;
+    LeLU_Cmd_Current = LeLU_Cmd_Final;
     }
-  return (L_Current);
+  return (LeLU_Cmd_Current);
   }
 
 
@@ -127,66 +127,66 @@ double RampTo(double  L_Final,
  *
  * Description:  Single axis lookup.
  ******************************************************************************/
-void LookUp1D_Axis(const double *L_Axis,
-                         int     L_AxisSize,
-                         int    *L_Index_i,
-                         int    *L_Index_j,
-                         double  L_Input,
-                         double *L_InputScalar,
-                         double *L_InputScalar1Minus)
+void LookUp1D_Axis(const double *LKLU_Cmd_Axis,
+                         int     LeLU_Int_AxisSize,
+                         int    *LeLU_Int_Index_i,
+                         int    *LeLU_Int_Index_j,
+                         double  LeLU_Cmd_Input,
+                         double *LeLU_Cmd_InputScalar,
+                         double *LeLU_Cmd_InputScalar1Minus)
   {
-  int    L_Index          = 0;
-  bool   L_LookupPt1Found = false;
+  int    LeLU_Int_Index          = 0;
+  bool   LeLU_b_LookUpPt1Found = false;
   double L_Denomenator    = 0.0;
 
-  if (L_Input >= (L_Axis[L_AxisSize - 1]))
+  if (LeLU_Cmd_Input >= (LKLU_Cmd_Axis[LeLU_Int_AxisSize - 1]))
     {
     // We have gone off or are at the end of the axis
-    *L_Index_i     = L_AxisSize - 2;
-    *L_Index_j     = L_AxisSize - 1;
-    *L_InputScalar = 1;
-    *L_InputScalar1Minus = 0;
+    *LeLU_Int_Index_i     = LeLU_Int_AxisSize - 2;
+    *LeLU_Int_Index_j     = LeLU_Int_AxisSize - 1;
+    *LeLU_Cmd_InputScalar = 1;
+    *LeLU_Cmd_InputScalar1Minus = 0;
     }
-  else if (L_Input <= (L_Axis[0]))
+  else if (LeLU_Cmd_Input <= (LKLU_Cmd_Axis[0]))
     {
     // We have gone off or are at the beginning of the axis
-    *L_Index_i     = 0;
-    *L_Index_j     = 1;
-    *L_InputScalar = 0;
-    *L_InputScalar1Minus = 1;
+    *LeLU_Int_Index_i     = 0;
+    *LeLU_Int_Index_j     = 1;
+    *LeLU_Cmd_InputScalar = 0;
+    *LeLU_Cmd_InputScalar1Minus = 1;
     }
   else
     {
-    for (L_Index = 0; ((L_Index < (L_AxisSize - 1)) && (L_LookupPt1Found == false)) ; L_Index++)
+    for (LeLU_Int_Index = 0; ((LeLU_Int_Index < (LeLU_Int_AxisSize - 1)) && (LeLU_b_LookUpPt1Found == false)) ; LeLU_Int_Index++)
       {
-      if ((L_Input >= L_Axis[L_Index])     &&
-          (L_Input <  L_Axis[L_Index + 1]) &&
-          (L_LookupPt1Found == false))
+      if ((LeLU_Cmd_Input >= LKLU_Cmd_Axis[LeLU_Int_Index])     &&
+          (LeLU_Cmd_Input <  LKLU_Cmd_Axis[LeLU_Int_Index + 1]) &&
+          (LeLU_b_LookUpPt1Found == false))
         {
-        L_LookupPt1Found = true;
-        *L_Index_i        = L_Index;
-        *L_Index_j        = L_Index + 1;
-        L_Denomenator = L_Axis[L_Index + 1] - L_Axis[L_Index];
+        LeLU_b_LookUpPt1Found = true;
+        *LeLU_Int_Index_i        = LeLU_Int_Index;
+        *LeLU_Int_Index_j        = LeLU_Int_Index + 1;
+        L_Denomenator = LKLU_Cmd_Axis[LeLU_Int_Index + 1] - LKLU_Cmd_Axis[LeLU_Int_Index];
         if (L_Denomenator != 0.0)
           {
           /* Protect for zero division */
-          *L_InputScalar1Minus = (L_Axis[L_Index + 1] - L_Input) / (L_Denomenator);
+          *LeLU_Cmd_InputScalar1Minus = (LKLU_Cmd_Axis[LeLU_Int_Index + 1] - LeLU_Cmd_Input) / (L_Denomenator);
           }
         else
           {
-          *L_InputScalar1Minus = 1;
+          *LeLU_Cmd_InputScalar1Minus = 1;
           }
-        *L_InputScalar = 1 - *L_InputScalar1Minus;
+        *LeLU_Cmd_InputScalar = 1 - *LeLU_Cmd_InputScalar1Minus;
         }
       }
 
-    if (L_LookupPt1Found == false)
+    if (LeLU_b_LookUpPt1Found == false)
       {
       /* Defensive programming.  We really shouldn't reach here... */
-      *L_Index_i           = 0;
-      *L_Index_j           = 1;
-      *L_InputScalar       = 0;
-      *L_InputScalar1Minus = 1 - *L_InputScalar;
+      *LeLU_Int_Index_i           = 0;
+      *LeLU_Int_Index_j           = 1;
+      *LeLU_Cmd_InputScalar       = 0;
+      *LeLU_Cmd_InputScalar1Minus = 1 - *LeLU_Cmd_InputScalar;
       }
     }
   }
@@ -199,8 +199,8 @@ void LookUp1D_Axis(const double *L_Axis,
  *               at the link below:
  *               https://en.wikipedia.org/wiki/Bilinear_interpolation
  ******************************************************************************/
-double LookUp2D_Table(double const *L_X_Axis,
-                      int           L_X_AxisSize,
+double LookUp2D_Table(double const *LKLU_Cmd_XAxis,
+                      int           LKLU_Cmd_XAxisSize,
                       double        L_X_Input,
                       double const *L_Y_Axis,
                       int           L_Y_AxisSize,
@@ -219,10 +219,10 @@ double LookUp2D_Table(double const *L_X_Axis,
   double L_F_XiYj              = 0.0;
   double L_F_XjYi              = 0.0;
   double L_F_XjYj              = 0.0;
-  double L_Output              = 0.0;
+  double LeLU_Int_LOutput              = 0.0;
 
-  LookUp1D_Axis(&L_X_Axis[0],
-                 L_X_AxisSize,
+  LookUp1D_Axis(&LKLU_Cmd_XAxis[0],
+                 LKLU_Cmd_XAxisSize,
                 &L_X_Index_i,
                 &L_X_Index_j,
                  L_X_Input,
@@ -242,12 +242,12 @@ double LookUp2D_Table(double const *L_X_Axis,
   L_F_XjYi = L_TableData2D[(int)L_X_Index_j][(int)L_Y_Index_i];
   L_F_XjYj = L_TableData2D[(int)L_X_Index_j][(int)L_Y_Index_j];
 
-  L_Output = L_F_XiYi * L_X_IndexScalar1Minus * L_Y_IndexScalar1Minus +
+  LeLU_Int_LOutput = L_F_XiYi * L_X_IndexScalar1Minus * L_Y_IndexScalar1Minus +
              L_F_XjYi * L_X_IndexScalar       * L_Y_IndexScalar1Minus +
              L_F_XiYj * L_X_IndexScalar1Minus * L_Y_IndexScalar +
              L_F_XjYj * L_X_IndexScalar       * L_Y_IndexScalar;
 
-  return (L_Output);
+  return (LeLU_Int_LOutput);
   }
 
 
@@ -422,19 +422,19 @@ void DesiredAutonLocation(double  L_t_AutonTime,
 double ScaleJoystickAxis(double L_JoystickAxis)
   {
   double L_DesiredDriveSpeed = 0.0;
-  int L_AxisSize             = (int)(sizeof(K_SD_DesiredDriveSpeedAxis) / sizeof(K_SD_DesiredDriveSpeed[0]));
-  int L_CalArraySize         = (int)(sizeof(K_SD_DesiredDriveSpeed) / sizeof(K_SD_DesiredDriveSpeed[0]));
+  int LeLU_Int_AxisSize             = (int)(sizeof(K_SD_DesiredDriveSpeedAxis) / sizeof(K_SD_DesiredDriveSpeed[0]));
+  int LaLU_CalArraySize         = (int)(sizeof(K_SD_DesiredDriveSpeed) / sizeof(K_SD_DesiredDriveSpeed[0]));
 
   L_DesiredDriveSpeed = LookUp1D_Table(&K_SD_DesiredDriveSpeedAxis[0],
                                        &K_SD_DesiredDriveSpeed[0],
-                                        L_AxisSize,
-                                        L_CalArraySize,
+                                        LeLU_Int_AxisSize,
+                                        LaLU_CalArraySize,
                                         L_JoystickAxis);
 
   return L_DesiredDriveSpeed;
   }
 
-/******************************************************************************
+/****************************************************************************
  * Function:     DtrmnAutoLauncherSpeed
  *
  * Description:  Function to determine the desired launcher speed based on 
@@ -443,13 +443,13 @@ double ScaleJoystickAxis(double L_JoystickAxis)
 double DtrmnAutoLauncherSpeed(double L_TargetDistance)
   {
   double L_DesiredLaunchSpeed = 0.0;
-  int L_AxisSize             = (int)(sizeof(K_BH_LauncherSpeedAxis) / sizeof(K_BH_LauncherSpeed[0]));
-  int L_CalArraySize         = (int)(sizeof(K_BH_LauncherSpeed) / sizeof(K_BH_LauncherSpeed[0]));
+  int LeLU_Int_AxisSize             = (int)(sizeof(K_BH_LauncherSpeedAxis) / sizeof(K_BH_LauncherSpeed[0]));
+  int LaLU_CalArraySize         = (int)(sizeof(K_BH_LauncherSpeed) / sizeof(K_BH_LauncherSpeed[0]));
 
   L_DesiredLaunchSpeed = LookUp1D_Table(&K_BH_LauncherSpeedAxis[0],
                                         &K_BH_LauncherSpeed[0],
-                                         L_AxisSize,
-                                         L_CalArraySize,
+                                         LeLU_Int_AxisSize,
+                                         LaLU_CalArraySize,
                                          L_TargetDistance);
 
   return L_DesiredLaunchSpeed;
@@ -465,13 +465,13 @@ double DtrmnAutoLauncherSpeed(double L_TargetDistance)
 double DtrmnTimeToDriveToCaptureBall(double L_EstTargetDistance)
   {
   double L_DesiredDriveTime = 0.0;
-  int L_AxisSize            = (int)(sizeof(K_ADAS_BT_DriveTimeAxis) / sizeof(K_ADAS_BT_DriveTime[0]));
-  int L_CalArraySize        = (int)(sizeof(K_ADAS_BT_DriveTime) / sizeof(K_ADAS_BT_DriveTime[0]));
+  int LeLU_Int_AxisSize            = (int)(sizeof(K_ADAS_BT_DriveTimeAxis) / sizeof(K_ADAS_BT_DriveTime[0]));
+  int LaLU_CalArraySize        = (int)(sizeof(K_ADAS_BT_DriveTime) / sizeof(K_ADAS_BT_DriveTime[0]));
 
   L_DesiredDriveTime = LookUp1D_Table(&K_ADAS_BT_DriveTimeAxis[0],
                                         &K_ADAS_BT_DriveTime[0],
-                                         L_AxisSize,
-                                         L_CalArraySize,
+                                         LeLU_Int_AxisSize,
+                                         LaLU_CalArraySize,
                                          L_EstTargetDistance);
 
   return L_DesiredDriveTime;
@@ -486,13 +486,13 @@ double DtrmnTimeToDriveToCaptureBall(double L_EstTargetDistance)
 double DesiredRotateSpeed(double L_Error)
   {
   double L_DesiredRotateSpeed = 0.0;
-  int L_AxisSize             = (int)(sizeof(K_DesiredRotateSpeedAxis) / sizeof(K_DesiredRotateSpeed[0]));
-  int L_CalArraySize         = (int)(sizeof(K_DesiredRotateSpeed) / sizeof(K_DesiredRotateSpeed[0]));
+  int LeLU_Int_AxisSize             = (int)(sizeof(K_DesiredRotateSpeedAxis) / sizeof(K_DesiredRotateSpeed[0]));
+  int LaLU_CalArraySize         = (int)(sizeof(K_DesiredRotateSpeed) / sizeof(K_DesiredRotateSpeed[0]));
 
   L_DesiredRotateSpeed = LookUp1D_Table(&K_DesiredRotateSpeedAxis[0],
                                         &K_DesiredRotateSpeed[0],
-                                         L_AxisSize,
-                                         L_CalArraySize,
+                                         LeLU_Int_AxisSize,
+                                         LaLU_CalArraySize,
                                          L_Error);
 
   return L_DesiredRotateSpeed;
@@ -507,13 +507,13 @@ double DesiredRotateSpeed(double L_Error)
 double DesiredAutoRotateSpeed(double L_Error)
   {
   double L_DesiredRotateSpeed = 0.0;
-  int L_AxisSize             = (int)(sizeof(K_DesiredAutoRotateSpeedAxis) / sizeof(K_DesiredAutoRotateSpeed[0]));
-  int L_CalArraySize         = (int)(sizeof(K_DesiredAutoRotateSpeed) / sizeof(K_DesiredAutoRotateSpeed[0]));
+  int LeLU_Int_AxisSize             = (int)(sizeof(K_DesiredAutoRotateSpeedAxis) / sizeof(K_DesiredAutoRotateSpeed[0]));
+  int LaLU_CalArraySize         = (int)(sizeof(K_DesiredAutoRotateSpeed) / sizeof(K_DesiredAutoRotateSpeed[0]));
 
   L_DesiredRotateSpeed = LookUp1D_Table(&K_DesiredAutoRotateSpeedAxis[0],
                                         &K_DesiredAutoRotateSpeed[0],
-                                         L_AxisSize,
-                                         L_CalArraySize,
+                                         LeLU_Int_AxisSize,
+                                         LaLU_CalArraySize,
                                          L_Error);
 
   return L_DesiredRotateSpeed;
