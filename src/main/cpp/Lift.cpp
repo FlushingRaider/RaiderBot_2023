@@ -17,38 +17,38 @@
 #include "Driver_inputs.hpp"
 #include "Encoders.hpp"
 
-T_Lift_State V_Lift_state = E_S0_BEGONE;
-T_Lift_Iteration V_LiftIteration = E_LiftIteration1;
+T_Lift_State VeLFT_Cnt_Lift_state = VeLFT_e_S0_BEGONE; 
+T_Lift_Iteration VeLFT_Cnt_LiftIteration = VeLFT_Cnt_LiftIteration1;
 
-double V_LiftDebounceTimer = 0; // owo, because Chloe
-bool   V_criteria_met = false;
-bool   V_LiftInitialized = false;
+double VeLFT_Cnt_LiftDebounceTimer = 0; // owo, because Chloe
+bool   VeLFT_b_CriteriaMet = false;
+bool   VeLFT_b_LiftInitialized = false;
 
-double V_lift_command_YD = 0;
-double V_lift_command_XD = 0;
+double VeLFT_Cnt_CommandYD = 0;
+double VeLFT_Cnt_CommandXD = 0;
 
-double V_LiftYD_TestLocation = 0;
-double V_LiftXD_TestLocation = 0;
+double VeLFT_Cnt_LiftYDTestLocation = 0;
+double VeLFT_Cnt_LiftXDTestLocation = 0;
 
-double V_LiftYD_TestPowerCmnd = 0;
-double V_LiftXD_TestPowerCmnd = 0;
+double VeLFT_Cnt_LiftYDTestPowerCmnd = 0;
+double VeLFT_Cnt_LiftXDTestPowerCmnd = 0;
 
-double V_LiftMotorYD_MaxCurrent[E_Lift_State_Sz];
-double V_LiftMotorXD_MaxCurrent[E_Lift_State_Sz];
+double VaLFT_v_LiftMotorYDMaxCurrent[E_Lift_State_Sz];
+double VaLFT_v_LiftMotorXDMaxCurrent[E_Lift_State_Sz];
 
-bool   V_Lift_WaitingForDriverINS = false;  // Instrumentation only, but indication that we are waiting for the driver to press button for next step.
-bool   V_Lift_Paused = false;
-double V_Lift_PausedXD_Position = 0;
-double V_Lift_PausedYD_Position = 0;
+bool   VeLFT_b_WaitingForDriverINS = false;  // Instrumentation only, but indication that we are waiting for the driver to press button for next step.
+bool   VeLFT_b_Paused = false;
+double VeLFT_b_PausedXDPosition = 0;
+double VeLFT_b_PausedYDPosition = 0;
 
-double KV_LiftRampRateYD[E_Lift_State_Sz][E_LiftIterationSz];
-double KV_LiftRampRateXD[E_Lift_State_Sz][E_LiftIterationSz];
+double VaLFT_Cnt_LiftRampRateYD[E_Lift_State_Sz][E_LiftIterationSz];
+double VaLFT_Cnt_LiftRampRateXD[E_Lift_State_Sz][E_LiftIterationSz];
 
 #ifdef LiftXY_Test
-bool   V_LiftXY_Test = false; // temporary, we don't want to use the manual overrides
+bool   VeLFT_b_LiftXYTest = false; // temporary, we don't want to use the manual overrides
 double V_LiftPID_Gx[E_PID_SparkMaxCalSz];
 #else
-bool V_LiftXY_Test = false;
+bool VeLFT_b_LiftXYTest = false;
 #endif
 
 
@@ -61,8 +61,8 @@ bool V_LiftXY_Test = false;
 void LiftMotorConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
                           rev::SparkMaxPIDController m_liftpidXD)
   {
-  T_Lift_State     L_Index1;
-  T_Lift_Iteration L_Index2;
+  T_Lift_State     LeLFT_Cnt_Index1;
+  T_Lift_Iteration LeLFT_Cnt_Index2;
 
   // set PID coefficients
   m_liftpidYD.SetP(K_LiftPID_Gx[E_kP]);
@@ -79,16 +79,16 @@ void LiftMotorConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
   m_liftpidXD.SetFF(K_LiftPID_Gx[E_kFF]);
   m_liftpidXD.SetOutputRange(K_LiftPID_Gx[E_kMinOutput], K_LiftPID_Gx[E_kMaxOutput]);
 
-  for (L_Index2 = E_LiftIteration1;
-       L_Index2 < E_LiftIterationSz;
-       L_Index2 = T_Lift_Iteration(int(L_Index2) + 1))
+  for (LeLFT_Cnt_Index2 = VeLFT_Cnt_LiftIteration1;
+       LeLFT_Cnt_Index2 < E_LiftIterationSz;
+       LeLFT_Cnt_Index2 = T_Lift_Iteration(int(LeLFT_Cnt_Index2) + 1))
       {
-      for (L_Index1 = E_S0_BEGONE;
-           L_Index1 < E_Lift_State_Sz;
-           L_Index1 = T_Lift_State(int(L_Index1) + 1))
+      for (LeLFT_Cnt_Index1 = VeLFT_e_S0_BEGONE;
+           LeLFT_Cnt_Index1 < E_Lift_State_Sz;
+           LeLFT_Cnt_Index1 = T_Lift_State(int(LeLFT_Cnt_Index1) + 1))
           {
-          KV_LiftRampRateYD[L_Index1][L_Index2] = K_LiftRampRateYD[L_Index1][L_Index2];
-          KV_LiftRampRateXD[L_Index1][L_Index2] = K_LiftRampRateXD[L_Index1][L_Index2];
+          VaLFT_Cnt_LiftRampRateYD[LeLFT_Cnt_Index1][LeLFT_Cnt_Index2] = K_LiftRampRateYD[LeLFT_Cnt_Index1][LeLFT_Cnt_Index2];
+          VaLFT_Cnt_LiftRampRateXD[LeLFT_Cnt_Index1][LeLFT_Cnt_Index2] = K_LiftRampRateXD[LeLFT_Cnt_Index1][LeLFT_Cnt_Index2];
           }
       }
   
@@ -115,18 +115,18 @@ void LiftMotorConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
   // frc::SmartDashboard::PutNumber("Set Position Y", 0);
   // frc::SmartDashboard::PutNumber("Set Position X", 0);
 
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration1]",            K_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration1]",      K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration1]",   K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration1]",     K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration1]",   K_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration1]",   K_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration1]",      K_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration1]", K_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration1]",      K_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration1]",         K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration1]",        K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration2]",            K_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]",            K_LiftRampRateXD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]",      K_LiftRampRateXD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateXD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]",     K_LiftRampRateXD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateXD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateXD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]",      K_LiftRampRateXD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1]", K_LiftRampRateXD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]",      K_LiftRampRateXD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]",         K_LiftRampRateXD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]",        K_LiftRampRateXD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[VeLFT_e_S0_BEGONE][E_LiftIteration2]",            K_LiftRampRateXD[VeLFT_e_S0_BEGONE][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]",      K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]",   K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]",     K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]);
@@ -138,18 +138,18 @@ void LiftMotorConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]",         K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]",        K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]);
 
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration1]",            K_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration1]",      K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration1]",   K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration1]",     K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration1]",   K_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration1]",   K_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration1]",      K_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration1]", K_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration1]",      K_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S10_final_YD][E_LiftIteration1]",         K_LiftRampRateYD[E_S10_final_YD][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration1]",        K_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration2]",            K_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]",            K_LiftRampRateYD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]",      K_LiftRampRateYD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateYD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]",     K_LiftRampRateYD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateYD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateYD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]",      K_LiftRampRateYD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1]", K_LiftRampRateYD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]",      K_LiftRampRateYD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]",         K_LiftRampRateYD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]",        K_LiftRampRateYD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[VeLFT_e_S0_BEGONE][E_LiftIteration2]",            K_LiftRampRateYD[VeLFT_e_S0_BEGONE][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]",      K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]",   K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]",     K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]);
@@ -187,8 +187,8 @@ void LiftMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
   // double L_maxA = frc::SmartDashboard::GetNumber("Max Acceleration", 0);
   // double L_allE = frc::SmartDashboard::GetNumber("Allowed Closed Loop Error", 0);
 
-  // V_LiftYD_TestLocation = frc::SmartDashboard::GetNumber("Set Position Y", 0);
-  // V_LiftXD_TestLocation = frc::SmartDashboard::GetNumber("Set Position X", 0);
+  // VeLFT_Cnt_LiftYDTestLocation = frc::SmartDashboard::GetNumber("Set Position Y", 0);
+  // VeLFT_Cnt_LiftXDTestLocation = frc::SmartDashboard::GetNumber("Set Position X", 0);
 
   // if((L_p != V_LiftPID_Gx[E_kP]))   { m_liftpidYD.SetP(L_p); m_liftpidXD.SetP(L_p); V_LiftPID_Gx[E_kP] = L_p; }
   // if((L_i != V_LiftPID_Gx[E_kI]))   { m_liftpidYD.SetI(L_i); m_liftpidXD.SetI(L_i); V_LiftPID_Gx[E_kI] = L_i; }
@@ -197,51 +197,51 @@ void LiftMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
   // if((L_ff != V_LiftPID_Gx[E_kFF])) { m_liftpidYD.SetFF(L_ff); m_liftpidXD.SetFF(L_ff); V_LiftPID_Gx[E_kFF] = L_ff; }
   // if((L_max != V_LiftPID_Gx[E_kMaxOutput]) || (L_min != V_LiftPID_Gx[E_kMinOutput])) { m_liftpidYD.SetOutputRange(L_min, L_max); m_liftpidXD.SetOutputRange(L_min, L_max); V_LiftPID_Gx[E_kMinOutput] = L_min; V_LiftPID_Gx[E_kMaxOutput] = L_max; }
   
-  KV_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration1]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration1]",            KV_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration1]",      KV_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration1]",   KV_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration1]     = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration1]",     KV_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration1]",   KV_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration1]",   KV_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration1]",      KV_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration1] = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration1]", KV_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration1]",      KV_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S10_final_YD][E_LiftIteration1]         = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration1]",         KV_LiftRampRateXD[E_S10_final_YD][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration1]        = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration1]",        KV_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration1]);
-  KV_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration2]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration2]",            KV_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]",      KV_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]",   KV_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]     = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]",     KV_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration2]",   KV_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration2]",   KV_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration2]",      KV_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration2] = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration2]", KV_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration2]",      KV_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]         = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]",         KV_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]);
-  KV_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]        = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]",        KV_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]",            VaLFT_Cnt_LiftRampRateXD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]",      VaLFT_Cnt_LiftRampRateXD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]",   VaLFT_Cnt_LiftRampRateXD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]     = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]",     VaLFT_Cnt_LiftRampRateXD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]",   VaLFT_Cnt_LiftRampRateXD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]",   VaLFT_Cnt_LiftRampRateXD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]",      VaLFT_Cnt_LiftRampRateXD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1] = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1]", VaLFT_Cnt_LiftRampRateXD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]",      VaLFT_Cnt_LiftRampRateXD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]         = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]",         VaLFT_Cnt_LiftRampRateXD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]        = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]",        VaLFT_Cnt_LiftRampRateXD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateXD[VeLFT_e_S0_BEGONE][E_LiftIteration2]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[VeLFT_e_S0_BEGONE][E_LiftIteration2]",            VaLFT_Cnt_LiftRampRateXD[VeLFT_e_S0_BEGONE][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]",      VaLFT_Cnt_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]",   VaLFT_Cnt_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]     = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]",     VaLFT_Cnt_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration2]",   VaLFT_Cnt_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration2]",   VaLFT_Cnt_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration2]",      VaLFT_Cnt_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration2] = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration2]", VaLFT_Cnt_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration2]",      VaLFT_Cnt_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]         = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]",         VaLFT_Cnt_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]        = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]",        VaLFT_Cnt_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]);
 
-  KV_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration1]            = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration1]",            KV_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration1]",      KV_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration1]",   KV_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration1]     = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration1]",     KV_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration1]",   KV_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration1]",   KV_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration1]",      KV_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration1] = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration1]", KV_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration1]",      KV_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S10_final_YD][E_LiftIteration1]         = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S10_final_YD][E_LiftIteration1]",         KV_LiftRampRateYD[E_S10_final_YD][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration1]        = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration1]",        KV_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration1]);
-  KV_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration2]            = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration2]",            KV_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]",      KV_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]",   KV_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]     = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]",     KV_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration2]",   KV_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration2]",   KV_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration2]",      KV_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration2] = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration2]", KV_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration2]",      KV_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S10_final_YD][E_LiftIteration2]         = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S10_final_YD][E_LiftIteration2]",         KV_LiftRampRateYD[E_S10_final_YD][E_LiftIteration2]);
-  KV_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration2]        = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration2]",        KV_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]            = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]",            VaLFT_Cnt_LiftRampRateYD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]",      VaLFT_Cnt_LiftRampRateYD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]",   VaLFT_Cnt_LiftRampRateYD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]     = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]",     VaLFT_Cnt_LiftRampRateYD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]",   VaLFT_Cnt_LiftRampRateYD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]",   VaLFT_Cnt_LiftRampRateYD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]",      VaLFT_Cnt_LiftRampRateYD[E_S7_move_back_XD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1] = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1]", VaLFT_Cnt_LiftRampRateYD[E_S8_more_down_some_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]",      VaLFT_Cnt_LiftRampRateYD[E_S9_back_rest_XD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]         = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]",         VaLFT_Cnt_LiftRampRateYD[E_S10_final_YD][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]        = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]",        VaLFT_Cnt_LiftRampRateYD[E_S11_final_OWO][VeLFT_Cnt_LiftIteration1]);
+  VaLFT_Cnt_LiftRampRateYD[VeLFT_e_S0_BEGONE][E_LiftIteration2]            = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[VeLFT_e_S0_BEGONE][E_LiftIteration2]",            VaLFT_Cnt_LiftRampRateYD[VeLFT_e_S0_BEGONE][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]",      VaLFT_Cnt_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]",   VaLFT_Cnt_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]     = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]",     VaLFT_Cnt_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration2]",   VaLFT_Cnt_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration2]",   VaLFT_Cnt_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration2]",      VaLFT_Cnt_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration2] = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration2]", VaLFT_Cnt_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration2]",      VaLFT_Cnt_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S10_final_YD][E_LiftIteration2]         = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S10_final_YD][E_LiftIteration2]",         VaLFT_Cnt_LiftRampRateYD[E_S10_final_YD][E_LiftIteration2]);
+  VaLFT_Cnt_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration2]        = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration2]",        VaLFT_Cnt_LiftRampRateYD[E_S11_final_OWO][E_LiftIteration2]);
   #endif
   }
 
@@ -254,34 +254,34 @@ void LiftControlInit()
   {
   T_Lift_State L_Index;
 
-  V_Lift_state = E_S0_BEGONE;
-  V_LiftIteration = E_LiftIteration1;
-  V_LiftDebounceTimer = 0;
-  V_criteria_met = false;
+  VeLFT_Cnt_Lift_state = VeLFT_e_S0_BEGONE;
+ VeLFT_Cnt_LiftIteration = VeLFT_Cnt_LiftIteration1;
+  VeLFT_Cnt_LiftDebounceTimer = 0;
+  VeLFT_b_CriteriaMet = false;
 
-  V_lift_command_YD = 0;
-  V_lift_command_XD = 0;
+  VeLFT_Cnt_CommandYD = 0;
+  VeLFT_Cnt_CommandXD = 0;
 
-  V_LiftYD_TestLocation = 0;
-  V_LiftXD_TestLocation = 0;
+  VeLFT_Cnt_LiftYDTestLocation = 0;
+  VeLFT_Cnt_LiftXDTestLocation = 0;
 
-  V_LiftYD_TestPowerCmnd = 0;
-  V_LiftXD_TestPowerCmnd = 0;
+  VeLFT_Cnt_LiftYDTestPowerCmnd = 0;
+  VeLFT_Cnt_LiftXDTestPowerCmnd = 0;
 
-  V_Lift_Paused = false;
-  V_Lift_PausedXD_Position = 0;
-  V_Lift_PausedYD_Position = 0;
+  VeLFT_b_Paused = false;
+  VeLFT_b_PausedXDPosition = 0;
+  VeLFT_b_PausedYDPosition = 0;
 
-  V_Lift_WaitingForDriverINS = false;
+  VeLFT_b_WaitingForDriverINS = false;
 
-  V_LiftInitialized = false;
+  VeLFT_b_LiftInitialized = false;
 
-  for (L_Index = E_S0_BEGONE;
+  for (L_Index = VeLFT_e_S0_BEGONE;
        L_Index < E_Lift_State_Sz;
        L_Index = T_Lift_State(int(L_Index) + 1))
       {
-      V_LiftMotorYD_MaxCurrent[L_Index] = 0;
-      V_LiftMotorXD_MaxCurrent[L_Index] = 0;
+      VaLFT_v_LiftMotorYDMaxCurrent[L_Index] = 0;
+      VaLFT_v_LiftMotorXDMaxCurrent[L_Index] = 0;
       }
   }
 
@@ -295,14 +295,14 @@ void RecordLiftMotorMaxCurrent(T_Lift_State L_current_state,
                                double       L_liftMotorYD_CurrentOut,
                                double       L_liftMotorXD_CurrentOut)
   {
-  if (fabs(L_liftMotorYD_CurrentOut) > fabs(V_LiftMotorYD_MaxCurrent[L_current_state]))
+  if (fabs(L_liftMotorYD_CurrentOut) > fabs(VaLFT_v_LiftMotorYDMaxCurrent[L_current_state]))
     {
-    V_LiftMotorYD_MaxCurrent[L_current_state] = L_liftMotorYD_CurrentOut;
+    VaLFT_v_LiftMotorYDMaxCurrent[L_current_state] = L_liftMotorYD_CurrentOut;
     }
   
-  if (fabs(L_liftMotorXD_CurrentOut) > fabs(V_LiftMotorXD_MaxCurrent[L_current_state]))
+  if (fabs(L_liftMotorXD_CurrentOut) > fabs(VaLFT_v_LiftMotorXDMaxCurrent[L_current_state]))
     {
-    V_LiftMotorXD_MaxCurrent[L_current_state] = L_liftMotorXD_CurrentOut;
+    VaLFT_v_LiftMotorXDMaxCurrent[L_current_state] = L_liftMotorXD_CurrentOut;
     }
   }
 
@@ -321,12 +321,12 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
   {
   double L_LiftYD_Power = 0;
   double L_LiftXD_Power = 0;
-  T_Lift_State L_current_state = E_S0_BEGONE; // Not really the lift state, but allows us record the max currents
+  T_Lift_State L_current_state = VeLFT_e_S0_BEGONE; // Not really the lift state, but allows us record the max currents
 
     if (L_DriverLiftCmndDirection == E_LiftCmndUp)
       {
       L_LiftYD_Power = K_lift_driver_manual_up_YD;
-      L_current_state = E_S0_BEGONE;
+      L_current_state = VeLFT_e_S0_BEGONE;
       }
     else if ((L_DriverLiftCmndDirection == E_LiftCmndDown) &&
              (L_YD_LimitDetected == false))
@@ -375,9 +375,9 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_XD = K_lift_min_XD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S2_lift_down_YD][L_LiftIteration];
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S2_lift_down_YD][L_LiftIteration];
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S2_lift_down_YD][L_LiftIteration];
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S2_lift_down_YD][L_LiftIteration];
 
   if (L_lift_measured_position_YD <= (K_lift_S2_YD + K_lift_deadband_YD) && L_lift_measured_position_YD >= (K_lift_S2_YD - K_lift_deadband_YD)) {
     L_criteria_met = true;
@@ -406,19 +406,19 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_YD = K_lift_S3_YD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S3_move_forward_XD][L_LiftIteration];
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S3_move_forward_XD][L_LiftIteration];
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S3_move_forward_XD][L_LiftIteration];
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S3_move_forward_XD][L_LiftIteration];
 
   if (L_lift_measured_position_XD <= (K_lift_S3_XD + K_lift_deadband_XD) && L_lift_measured_position_XD >= (K_lift_S3_XD - K_lift_deadband_XD)) {
-    V_LiftDebounceTimer += C_ExeTime;
-    if (V_LiftDebounceTimer >= K_Lift_deadband_timer){
+    VeLFT_Cnt_LiftDebounceTimer += C_ExeTime;
+    if (VeLFT_Cnt_LiftDebounceTimer >= K_Lift_deadband_timer){
          L_criteria_met = true;
-         V_LiftDebounceTimer = 0;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
     }
   }
   else {
-    V_LiftDebounceTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
 
   return(L_criteria_met);
@@ -444,24 +444,24 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_XD = K_lift_S4_XD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S4_stretch_up_YD][L_LiftIteration];
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S4_stretch_up_YD][L_LiftIteration];
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S4_stretch_up_YD][L_LiftIteration];
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S4_stretch_up_YD][L_LiftIteration];
 
   if (L_lift_measured_position_YD <= (K_lift_S4_YD + K_lift_deadband_YD) && L_lift_measured_position_YD >= (K_lift_S4_YD - K_lift_deadband_YD)) {
-    V_LiftDebounceTimer += C_ExeTime;
-    if (V_LiftDebounceTimer >= K_Lift_deadband_timer){
-      V_Lift_WaitingForDriverINS = true;
+    VeLFT_Cnt_LiftDebounceTimer += C_ExeTime;
+    if (VeLFT_Cnt_LiftDebounceTimer >= K_Lift_deadband_timer){
+      VeLFT_b_WaitingForDriverINS = true;
       if (L_driver_auto_climb_button == true){
          /* Let the driver determine when we are not swinging and can proceed */
          L_criteria_met = true;
-         V_LiftDebounceTimer = 0;
-         V_Lift_WaitingForDriverINS = false;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
+         VeLFT_b_WaitingForDriverINS = false;
       }
     }
   }
   else {
-    V_LiftDebounceTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(L_criteria_met);
@@ -487,19 +487,19 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_YD = K_lift_S5_YD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S5_more_forward_XD][L_LiftIteration];
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S5_more_forward_XD][L_LiftIteration];
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S5_more_forward_XD][L_LiftIteration];
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S5_more_forward_XD][L_LiftIteration];
 
   if (L_lift_measured_position_XD <= (K_lift_S5_XD + K_lift_deadband_XD) && L_lift_measured_position_XD >= (K_lift_S5_XD - K_lift_deadband_XD)) {
-    V_LiftDebounceTimer += C_ExeTime;
-    if (V_LiftDebounceTimer >= K_Lift_deadband_timer){
+    VeLFT_Cnt_LiftDebounceTimer += C_ExeTime;
+    if (VeLFT_Cnt_LiftDebounceTimer >= K_Lift_deadband_timer){
          L_criteria_met = true;
-         V_LiftDebounceTimer = 0;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
     }
   }
   else {
-    V_LiftDebounceTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(L_criteria_met);
@@ -525,19 +525,19 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_XD = K_lift_S6_XD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S6_lift_up_more_YD][L_LiftIteration];
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S6_lift_up_more_YD][L_LiftIteration];
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S6_lift_up_more_YD][L_LiftIteration];
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S6_lift_up_more_YD][L_LiftIteration];
 
   if (L_lift_measured_position_YD <= (K_lift_S6_YD + K_lift_deadband_YD) && L_lift_measured_position_YD >= (K_lift_S6_YD - K_lift_deadband_YD)) {
-    V_LiftDebounceTimer += C_ExeTime;
-    if (V_LiftDebounceTimer >= K_Lift_deadband_timer){
+    VeLFT_Cnt_LiftDebounceTimer += C_ExeTime;
+    if (VeLFT_Cnt_LiftDebounceTimer >= K_Lift_deadband_timer){
          L_criteria_met = true;
-         V_LiftDebounceTimer = 0;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
     }
   }
   else {
-    V_LiftDebounceTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(L_criteria_met);
@@ -564,24 +564,24 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_YD = K_lift_S7_YD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S7_move_back_XD][L_LiftIteration];
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S7_move_back_XD][L_LiftIteration];
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S7_move_back_XD][L_LiftIteration]; // Don't go too fast, going slower will help to reduce rocking
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S7_move_back_XD][L_LiftIteration]; // Don't go too fast, going slower will help to reduce rocking
 
   if (L_lift_measured_position_XD <= (K_lift_S7_XD + K_lift_deadband_XD)  && L_lift_measured_position_XD >= (K_lift_S7_XD - K_lift_deadband_XD)) {
-    V_LiftDebounceTimer += C_ExeTime;
-    if (V_LiftDebounceTimer >= K_Lift_deadband_timer){
-      V_Lift_WaitingForDriverINS = true;
+    VeLFT_Cnt_LiftDebounceTimer += C_ExeTime;
+    if (VeLFT_Cnt_LiftDebounceTimer >= K_Lift_deadband_timer){
+      VeLFT_b_WaitingForDriverINS = true;
       if (L_driver_auto_climb_button == true){
          /* Let the driver determine when we are not swinging and can proceed */
          L_criteria_met = true;
-         V_LiftDebounceTimer = 0;
-         V_Lift_WaitingForDriverINS = false;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
+         VeLFT_b_WaitingForDriverINS = false;
       }
     }
   }
   else {
-    V_LiftDebounceTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   return(L_criteria_met);
 }
@@ -606,24 +606,24 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_XD = K_lift_S8_XD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S8_more_down_some_YD][L_LiftIteration];
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S8_more_down_some_YD][L_LiftIteration];
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S8_more_down_some_YD][L_LiftIteration];
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S8_more_down_some_YD][L_LiftIteration];
 
   if (L_lift_measured_position_YD <= (K_lift_S8_YD + K_lift_deadband_YD) && L_lift_measured_position_YD >= (K_lift_S8_YD - K_lift_deadband_YD)) {
-    V_LiftDebounceTimer += C_ExeTime;
-    if (V_LiftDebounceTimer >= K_Lift_deadband_timer){
-      V_Lift_WaitingForDriverINS = true;
+    VeLFT_Cnt_LiftDebounceTimer += C_ExeTime;
+    if (VeLFT_Cnt_LiftDebounceTimer >= K_Lift_deadband_timer){
+      VeLFT_b_WaitingForDriverINS = true;
       if (L_driver_auto_climb_button == true){
          /* Let the driver determine when we are not swinging and can proceed */
          L_criteria_met = true;
-         V_LiftDebounceTimer = 0;
-         V_Lift_WaitingForDriverINS = false;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
+         VeLFT_b_WaitingForDriverINS = false;
       }
     }
   }
   else {
-    V_LiftDebounceTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(L_criteria_met);
@@ -649,24 +649,24 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_YD = K_lift_S9_YD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S9_back_rest_XD][L_LiftIteration];
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S9_back_rest_XD][L_LiftIteration];
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S9_back_rest_XD][L_LiftIteration];
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S9_back_rest_XD][L_LiftIteration];
 
   if (L_lift_measured_position_XD <= (K_lift_S9_XD + K_lift_deadband_XD) && L_lift_measured_position_XD >= (K_lift_S9_XD - K_lift_deadband_XD)) {
-    V_LiftDebounceTimer += C_ExeTime;
-    if (V_LiftDebounceTimer >= K_Lift_deadband_timer){
-      V_Lift_WaitingForDriverINS = true;
+    VeLFT_Cnt_LiftDebounceTimer += C_ExeTime;
+    if (VeLFT_Cnt_LiftDebounceTimer >= K_Lift_deadband_timer){
+      VeLFT_b_WaitingForDriverINS = true;
       if (L_driver_auto_climb_button == true){
          /* Let the driver determine when we are not swinging and can proceed */
          L_criteria_met = true;
-         V_LiftDebounceTimer = 0;
-         V_Lift_WaitingForDriverINS = false;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
+         VeLFT_b_WaitingForDriverINS = false;
       }
     }
   }
   else {
-    V_LiftDebounceTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(L_criteria_met);
@@ -692,19 +692,19 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_XD = K_lift_S10_XD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S10_final_YD][L_LiftIteration]; // Slow down, don't yank too hard
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S10_final_YD][L_LiftIteration]; // Slow down, don't yank too hard
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S10_final_YD][L_LiftIteration];
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S10_final_YD][L_LiftIteration];
 
   if (L_lift_measured_position_YD <= (K_lift_S10_YD + K_lift_deadband_YD) && L_lift_measured_position_YD >= (K_lift_S10_YD - K_lift_deadband_YD)) {
-    V_LiftDebounceTimer += C_ExeTime;
-    if (V_LiftDebounceTimer >= K_Lift_deadband_timer){
+    VeLFT_Cnt_LiftDebounceTimer += C_ExeTime;
+    if (VeLFT_Cnt_LiftDebounceTimer >= K_Lift_deadband_timer){
          L_criteria_met = true;
-         V_LiftDebounceTimer = 0;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
     }
   }
   else {
-    V_LiftDebounceTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(L_criteria_met);
@@ -730,24 +730,24 @@ void Lift_Control_ManualOverride(double *L_lift_command_YD,
 
   *L_lift_command_XD = K_lift_S11_XD;
 
-  *L_lift_command_rate_YD = KV_LiftRampRateYD[E_S11_final_OWO][L_LiftIteration];
+  *L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[E_S11_final_OWO][L_LiftIteration];
 
-  *L_lift_command_rate_XD = KV_LiftRampRateXD[E_S11_final_OWO][L_LiftIteration];
+  *L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[E_S11_final_OWO][L_LiftIteration];
 
   if (L_lift_measured_position_YD <= (K_lift_S11_YD + K_lift_deadband_YD) && L_lift_measured_position_YD >= (K_lift_S11_YD - K_lift_deadband_YD)) {
-    V_LiftDebounceTimer += C_ExeTime;
-    if (V_LiftDebounceTimer >= K_Lift_deadband_timer){
-      V_Lift_WaitingForDriverINS = true;
+    VeLFT_Cnt_LiftDebounceTimer += C_ExeTime;
+    if (VeLFT_Cnt_LiftDebounceTimer >= K_Lift_deadband_timer){
+      VeLFT_b_WaitingForDriverINS = true;
       if (L_driver_auto_climb_button == true){
          /* Let the driver determine when we are not swinging and can proceed */
          L_criteria_met = true;
-         V_LiftDebounceTimer = 0;
-         V_Lift_WaitingForDriverINS = false;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
+         VeLFT_b_WaitingForDriverINS = false;
       }
     }
   }
   else {
-    V_LiftDebounceTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(L_criteria_met);
@@ -781,18 +781,18 @@ T_Lift_State Lift_Control_Dictator(bool                L_driver_auto_climb_butto
   T_Lift_State L_Commanded_State = L_current_state;
   double L_lift_command_YD_Temp = 0;
   double L_lift_command_XD_Temp = 0;
-  double L_lift_command_rate_YD = KV_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration1];
-  double L_lift_command_rate_XD = KV_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration1];;
+  double L_lift_command_rate_YD = VaLFT_Cnt_LiftRampRateYD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1];
+  double L_lift_command_rate_XD = VaLFT_Cnt_LiftRampRateXD[VeLFT_e_S0_BEGONE][VeLFT_Cnt_LiftIteration1];;
   double L_LiftYD_Power = 0;
   double L_LiftXD_Power = 0;
 
-  if (V_LiftXY_Test == true)
+  if (VeLFT_b_LiftXYTest == true)
     {
     /* Only used for testing. */
-    L_lift_command_YD_Temp = V_LiftYD_TestLocation;
-    L_lift_command_XD_Temp = V_LiftXD_TestLocation;
+    L_lift_command_YD_Temp = VeLFT_Cnt_LiftYDTestLocation;
+    L_lift_command_XD_Temp = VeLFT_Cnt_LiftXDTestLocation;
     }
-  else if (V_LiftInitialized == false)
+  else if (VeLFT_b_LiftInitialized == false)
     {
     if (L_YD_LimitDetected == false)
       {
@@ -809,32 +809,32 @@ T_Lift_State Lift_Control_Dictator(bool                L_driver_auto_climb_butto
       {
       L_LiftYD_Power = 0;
       L_LiftXD_Power = 0;
-      V_LiftInitialized = true;
+      VeLFT_b_LiftInitialized = true;
 
       EncodersLiftInit(m_encoderLiftYD,
                        m_encoderLiftXD);
       }
     }
-  else if ((L_driver_auto_climb_pause == true) && (V_Lift_Paused == false))
+  else if ((L_driver_auto_climb_pause == true) && (VeLFT_b_Paused == false))
     {
     /* The driver pressed a button to puase the climb process.  Let's save the current locations and hold. */
-    V_Lift_Paused = true;
-    V_Lift_PausedXD_Position = L_lift_measured_position_XD;
-    V_Lift_PausedYD_Position = L_lift_measured_position_YD;
+    VeLFT_b_Paused = true;
+    VeLFT_b_PausedXDPosition = L_lift_measured_position_XD;
+    VeLFT_b_PausedYDPosition = L_lift_measured_position_YD;
     /* Set commanded location to current measured location for this loop. */
     L_lift_command_XD_Temp = L_lift_measured_position_XD;
     L_lift_command_YD_Temp = L_lift_measured_position_YD;
     }
-  else if (((L_driver_auto_climb_button == true) && (V_Lift_Paused == true)) || 
-            (V_Lift_Paused == false))
+  else if (((L_driver_auto_climb_button == true) && (VeLFT_b_Paused == true)) || 
+            (VeLFT_b_Paused == false))
     {
-    V_Lift_Paused = false;
-    V_Lift_PausedXD_Position = L_lift_measured_position_XD;
-    V_Lift_PausedYD_Position = L_lift_measured_position_YD;
+    VeLFT_b_Paused = false;
+    VeLFT_b_PausedXDPosition = L_lift_measured_position_XD;
+    VeLFT_b_PausedYDPosition = L_lift_measured_position_YD;
 
     switch (L_current_state)
       {
-        case E_S0_BEGONE:
+        case VeLFT_e_S0_BEGONE:
             if (L_DriverLiftCmndDirection == E_LiftCmndUp)
               {
               L_lift_command_YD_Temp = *L_lift_command_YD + K_lift_driver_up_rate_YD;
@@ -854,75 +854,75 @@ T_Lift_State Lift_Control_Dictator(bool                L_driver_auto_climb_butto
         break;
 
         case E_S2_lift_down_YD:
-            V_criteria_met = S2_lift_down_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true){
+            VeLFT_b_CriteriaMet = S2_lift_down_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true){
               L_Commanded_State =   E_S3_move_forward_XD;
             }
         break;
 
         case E_S3_move_forward_XD:
-            V_criteria_met = S3_move_forward_XD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true){
+            VeLFT_b_CriteriaMet = S3_move_forward_XD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true){
               L_Commanded_State =   E_S4_stretch_up_YD;
             }
         break;
 
         case E_S4_stretch_up_YD:
-            V_criteria_met = S4_stretch_up_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true){
+            VeLFT_b_CriteriaMet = S4_stretch_up_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true){
               L_Commanded_State =   E_S5_more_forward_XD;
             }
         break;
 
         case E_S5_more_forward_XD:
-            V_criteria_met = S5_more_forward_XD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true){
+            VeLFT_b_CriteriaMet = S5_more_forward_XD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true){
               L_Commanded_State =   E_S6_lift_up_more_YD;
             }
         break;
 
         case E_S6_lift_up_more_YD:
-            V_criteria_met = S6_lift_up_more_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true){
+            VeLFT_b_CriteriaMet = S6_lift_up_more_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true){
               L_Commanded_State =   E_S7_move_back_XD;
             }
         break;
 
         case E_S7_move_back_XD:
-            V_criteria_met = S7_move_back_XD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, L_gyro_yawangledegrees, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true){
+            VeLFT_b_CriteriaMet = S7_move_back_XD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, L_gyro_yawangledegrees, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true){
               L_Commanded_State =   E_S8_more_down_some_YD;
             }
         break;
 
         case E_S8_more_down_some_YD:
-            V_criteria_met = S8_more_down_some_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true){
+            VeLFT_b_CriteriaMet = S8_more_down_some_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true){
               L_Commanded_State =   E_S9_back_rest_XD;
             }
         break;
 
         case E_S9_back_rest_XD:
-            V_criteria_met = S9_back_rest_XD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true){
+            VeLFT_b_CriteriaMet = S9_back_rest_XD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true){
               L_Commanded_State =   E_S10_final_YD;
             }
         break;
 
         case E_S10_final_YD:
-            V_criteria_met = S10_final_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true){
+            VeLFT_b_CriteriaMet = S10_final_YD(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true){
               L_Commanded_State = E_S11_final_OWO;
             }
         break;
 
         case E_S11_final_OWO:
-            V_criteria_met = S11_final_OWO(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD, V_LiftIteration);
-            if(V_criteria_met == true && V_LiftIteration < E_LiftIteration2){
+            VeLFT_b_CriteriaMet = S11_final_OWO(L_driver_auto_climb_button, L_lift_measured_position_YD, L_lift_measured_position_XD, &L_lift_command_YD_Temp, &L_lift_command_XD_Temp, &L_lift_command_rate_YD, &L_lift_command_rate_XD,VeLFT_Cnt_LiftIteration);
+            if(VeLFT_b_CriteriaMet == true &&VeLFT_Cnt_LiftIteration < E_LiftIteration2){
               L_Commanded_State = E_S2_lift_down_YD;
-              V_LiftIteration = E_LiftIteration2;
+             VeLFT_Cnt_LiftIteration = E_LiftIteration2;
             }
-            else if(V_criteria_met == true && V_LiftIteration >= E_LiftIteration2){
+            else if(VeLFT_b_CriteriaMet == true &&VeLFT_Cnt_LiftIteration >= E_LiftIteration2){
               L_Commanded_State = E_S11_final_OWO;
             }
         break;
@@ -931,8 +931,8 @@ T_Lift_State Lift_Control_Dictator(bool                L_driver_auto_climb_butto
   else
     {
     /* Lift is currently paused: */
-    L_lift_command_XD_Temp = V_Lift_PausedXD_Position;
-    L_lift_command_YD_Temp = V_Lift_PausedYD_Position;
+    L_lift_command_XD_Temp = VeLFT_b_PausedXDPosition;
+    L_lift_command_YD_Temp = VeLFT_b_PausedYDPosition;
     }
 
   /* Place limits on the travel of XD and YD to prevent damage: */

@@ -9,15 +9,15 @@
    lift STATE machine? another government scam smh -chloe
  */
 
-extern double       V_lift_command_YD;
-extern double       V_lift_command_XD;
-extern T_Lift_State V_Lift_state;
-extern double V_LiftYD_TestPowerCmnd;
-extern double V_LiftXD_TestPowerCmnd;
-extern double V_LiftMotorYD_MaxCurrent[E_Lift_State_Sz];
-extern double V_LiftMotorXD_MaxCurrent[E_Lift_State_Sz];
-extern bool   V_Lift_WaitingForDriverINS;
-extern bool   V_LiftInitialized;
+extern double       VeLFT_Cnt_CommandYD;
+extern double       VeLFT_Cnt_CommandXD;
+extern T_Lift_State VeLFT_Cnt_Lift_state;
+extern double VeLFT_Cnt_LiftYDTestPowerCmnd;
+extern double VeLFT_Cnt_LiftXDTestPowerCmnd;
+extern double VaLFT_v_LiftMotorYDMaxCurrent[E_Lift_State_Sz];
+extern double VaLFT_v_LiftMotorXDMaxCurrent[E_Lift_State_Sz];
+extern bool   VeLFT_b_WaitingForDriverINS;
+extern bool   VeLFT_b_LiftInitialized;
 
 void LiftMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
                          rev::SparkMaxPIDController m_liftpidXD);

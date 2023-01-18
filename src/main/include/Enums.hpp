@@ -112,7 +112,7 @@ typedef enum T_LED_LightCmnd
 
 typedef enum T_Lift_State
 {
-  E_S0_BEGONE,
+  VeLFT_e_S0_BEGONE,
   E_S2_lift_down_YD,
   E_S3_move_forward_XD,
   E_S4_stretch_up_YD,
@@ -128,7 +128,7 @@ typedef enum T_Lift_State
 
 typedef enum T_Lift_Iteration
 {
-  E_LiftIteration1,
+  VeLFT_Cnt_LiftIteration1,
   E_LiftIteration2,
   E_LiftIterationSz
 } T_Lift_Iteration;
