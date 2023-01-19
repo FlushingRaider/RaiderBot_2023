@@ -8,7 +8,7 @@
 
 double Control_PID(double  L_DesiredSpeed,
                    double  L_CurrentSpeed,
-                   double *L_ErrorPrev,
+                   double *LeLU_Cmd_ErrorPrev,
                    double *L_IntegralPrev,
                    double  L_ProportionalGx,
                    double  L_IntegralGx,

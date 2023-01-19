@@ -14,7 +14,7 @@
  ******************************************************************************/
 double Control_PID(double  L_DesiredSpeed,
                    double  L_CurrentSpeed,
-                   double *L_ErrorPrev,
+                   double *LeLU_Cmd_ErrorPrev,
                    double *L_IntegralPrev,
                    double  L_ProportionalGx,
                    double  L_IntegralGx,
@@ -28,21 +28,21 @@ double Control_PID(double  L_DesiredSpeed,
                    double  L_OutputUpperLimit,
                    double  L_OutputLowerLimit)
   {
-  double L_Error        = 0.0;
+  double LeLU_Cmd_Error        = 0.0;
   double L_Proportional = 0.0;
   double L_Integral     = 0.0;
   double L_Derivative   = 0.0;
   double L_OutputCmnd   = 0.0;
 
-  L_Error = L_DesiredSpeed - L_CurrentSpeed;
+  LeLU_Cmd_Error = L_DesiredSpeed - L_CurrentSpeed;
 
-  L_Proportional = L_Error * L_ProportionalGx;
+  L_Proportional = LeLU_Cmd_Error * L_ProportionalGx;
 
-  L_Integral = *L_IntegralPrev + (L_Error * L_IntegralGx);
+  L_Integral = *L_IntegralPrev + (LeLU_Cmd_Error * L_IntegralGx);
 
-  L_Derivative = L_DerivativeGx * (*L_ErrorPrev / 0.01);
+  L_Derivative = L_DerivativeGx * (*LeLU_Cmd_ErrorPrev / 0.01);
 
-  *L_ErrorPrev = L_Error;
+  *LeLU_Cmd_ErrorPrev = LeLU_Cmd_Error;
 
   if (L_Proportional > L_ProportionalUpperLimit)
     {

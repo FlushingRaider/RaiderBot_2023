@@ -310,7 +310,7 @@ T_ADAS_BT_BallTarget ADAS_BT_IntakeAndRun(double *L_Pct_FwdRev,
                                           bool    L_BallDetectedLower)
   {
   T_ADAS_BT_BallTarget L_ADAS_BT_State = E_ADAS_BT_IntakeAndRun;
-  bool                 L_DistanceFound = false;
+  bool                 LeLU_In_DistanceFound = false;
 
   *L_CameraLowerLightCmndOn = true;
   *L_SD_RobotOriented = true;
