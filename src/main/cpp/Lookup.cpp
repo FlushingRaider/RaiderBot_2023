@@ -15,7 +15,7 @@
  *
  * Description:  Single dimension lookup table.
  ******************************************************************************/
-double LookUp1D_Table(const double *LKLU_Cmd_XAxis,
+double LookUp1D_Table(const double *LKeLU_Cmd_XAxis,
                       const double *LKLU_Cmd_TableData1D,
                             int     LeLU_Int_AxisSize,
                             int     LaLU_CalArraySize,
@@ -30,17 +30,17 @@ double LookUp1D_Table(const double *LKLU_Cmd_XAxis,
   double LeLU_Int_LookupYDiff = 0.0;
   double LeLU_Int_LookupDiv    = 0.0;
   bool LeLU_b_LookUpPt1Found = false;
-  double LeLU_Int_LOutput       = 0.0;
+  double LeLU_Int_Output       = 0.0;
 
   /* Table length MUST equal axis length. */
   if (LaLU_CalArraySize == LeLU_Int_AxisSize)
     {
-    if (LeLU_Cmd_Input >= (LKLU_Cmd_XAxis[LeLU_Int_AxisSize - 1]))
+    if (LeLU_Cmd_Input >= (LKeLU_Cmd_XAxis[LeLU_Int_AxisSize - 1]))
       {
       // We have gone off or are at the end of the axis
       return (LKLU_Cmd_TableData1D[LeLU_Int_AxisSize - 1]);
       }
-    else if (LeLU_Cmd_Input <= (LKLU_Cmd_XAxis[0]))
+    else if (LeLU_Cmd_Input <= (LKeLU_Cmd_XAxis[0]))
       {
       // We have gone off or are at the beginning of the axis
       return (LKLU_Cmd_TableData1D[0]);
@@ -49,13 +49,13 @@ double LookUp1D_Table(const double *LKLU_Cmd_XAxis,
       {
       for (LeLU_Int_Index = 0; ((LeLU_Int_Index < (LeLU_Int_AxisSize - 1)) && (LeLU_b_LookUpPt1Found == false)) ; LeLU_Int_Index++)
         {
-        if ((LeLU_Cmd_Input >= LKLU_Cmd_XAxis[LeLU_Int_Index])     &&
-            (LeLU_Cmd_Input <  LKLU_Cmd_XAxis[LeLU_Int_Index + 1]) &&
+        if ((LeLU_Cmd_Input >= LKeLU_Cmd_XAxis[LeLU_Int_Index])     &&
+            (LeLU_Cmd_Input <  LKeLU_Cmd_XAxis[LeLU_Int_Index + 1]) &&
             (LeLU_b_LookUpPt1Found == false))
           {
-          LeLU_Int_LookupX1 = LKLU_Cmd_XAxis[LeLU_Int_Index];
+          LeLU_Int_LookupX1 = LKeLU_Cmd_XAxis[LeLU_Int_Index];
           LeLU_Int_LookupY1 = LKLU_Cmd_TableData1D[LeLU_Int_Index];
-          LeLU_Int_LookupX2 = LKLU_Cmd_XAxis[LeLU_Int_Index + 1];
+          LeLU_Int_LookupX2 = LKeLU_Cmd_XAxis[LeLU_Int_Index + 1];
           LeLU_Int_LookupY2 = LKLU_Cmd_TableData1D[LeLU_Int_Index + 1];
           LeLU_b_LookUpPt1Found = true;
 
@@ -76,9 +76,9 @@ double LookUp1D_Table(const double *LKLU_Cmd_XAxis,
           {
           LeLU_Int_LookupDiv = 0.0;
           }
-        LeLU_Int_LOutput = LeLU_Int_LookupY1 + (LeLU_Cmd_Input-LeLU_Int_LookupX1) * LeLU_Int_LookupDiv;
+        LeLU_Int_Output = LeLU_Int_LookupY1 + (LeLU_Cmd_Input-LeLU_Int_LookupX1) * LeLU_Int_LookupDiv;
 
-        return LeLU_Int_LOutput;
+        return LeLU_Int_Output;
         }
       }
     }
@@ -137,7 +137,7 @@ void LookUp1D_Axis(const double *LKLU_Cmd_Axis,
   {
   int    LeLU_Int_Index          = 0;
   bool   LeLU_b_LookUpPt1Found = false;
-  double L_Denomenator    = 0.0;
+  double LeLU_Int_Denomenator    = 0.0;
 
   if (LeLU_Cmd_Input >= (LKLU_Cmd_Axis[LeLU_Int_AxisSize - 1]))
     {
@@ -166,11 +166,11 @@ void LookUp1D_Axis(const double *LKLU_Cmd_Axis,
         LeLU_b_LookUpPt1Found = true;
         *LeLU_Int_Index_i        = LeLU_Int_Index;
         *LeLU_Int_Index_j        = LeLU_Int_Index + 1;
-        L_Denomenator = LKLU_Cmd_Axis[LeLU_Int_Index + 1] - LKLU_Cmd_Axis[LeLU_Int_Index];
-        if (L_Denomenator != 0.0)
+        LeLU_Int_Denomenator = LKLU_Cmd_Axis[LeLU_Int_Index + 1] - LKLU_Cmd_Axis[LeLU_Int_Index];
+        if (LeLU_Int_Denomenator != 0.0)
           {
           /* Protect for zero division */
-          *LeLU_Cmd_InputScalar1Minus = (LKLU_Cmd_Axis[LeLU_Int_Index + 1] - LeLU_Cmd_Input) / (L_Denomenator);
+          *LeLU_Cmd_InputScalar1Minus = (LKLU_Cmd_Axis[LeLU_Int_Index + 1] - LeLU_Cmd_Input) / (LeLU_Int_Denomenator);
           }
         else
           {
@@ -199,55 +199,55 @@ void LookUp1D_Axis(const double *LKLU_Cmd_Axis,
  *               at the link below:
  *               https://en.wikipedia.org/wiki/Bilinear_interpolation
  ******************************************************************************/
-double LookUp2D_Table(double const *LKLU_Cmd_XAxis,
-                      int           LKLU_Cmd_XAxisSize,
-                      double        L_X_Input,
-                      double const *L_Y_Axis,
-                      int           L_Y_AxisSize,
-                      double        L_Y_Input,
-                      double      **L_TableData2D)
+double LookUp2D_Table(double const *LKeLU_Cmd_XAxis,
+                      int           LeLU_Cmd_XAxisSize,
+                      double        LeLU_Cmd_X_Input,
+                      double const *LKeLU_Cmd_Y_Axis,
+                      int           LeLU_Cmd_Y_AxisSize,
+                      double        LeLU_Cmd_Y_Input,
+                      double      **LeLU_Cmd_TableData2D)
   {
-  int    L_X_Index_i           = 0;
-  int    L_X_Index_j           = 0;
-  double L_X_IndexScalar       = 0.0;
-  double L_X_IndexScalar1Minus = 0.0;
-  int    L_Y_Index_i           = 0;
-  int    L_Y_Index_j           = 0;
-  double L_Y_IndexScalar       = 0.0;
-  double L_Y_IndexScalar1Minus = 0.0;
-  double L_F_XiYi              = 0.0;
-  double L_F_XiYj              = 0.0;
-  double L_F_XjYi              = 0.0;
-  double L_F_XjYj              = 0.0;
-  double LeLU_Int_LOutput              = 0.0;
+  int    LeLU_Int_X_Index_i           = 0;
+  int    LeLU_Int_X_Index_j           = 0;
+  double LeLU_Int_X_IndexScalar       = 0.0;
+  double LeLU_Int_X_IndexScalar1Minus = 0.0;
+  int    LeLU_Int_Y_Index_i           = 0;
+  int    LeLU_Int_Y_Index_j           = 0;
+  double LeLU_Int_Y_IndexScalar       = 0.0;
+  double LeLU_Int_Y_IndexScalar1Minus = 0.0;
+  double LeLU_Int_F_XiYi              = 0.0;
+  double LeLU_Int_F_XiYj              = 0.0;
+  double LeLU_Int_F_XjYi              = 0.0;
+  double LeLU_Int_F_XjYj              = 0.0;
+  double LeLU_Int_Output              = 0.0;
 
-  LookUp1D_Axis(&LKLU_Cmd_XAxis[0],
-                 LKLU_Cmd_XAxisSize,
-                &L_X_Index_i,
-                &L_X_Index_j,
-                 L_X_Input,
-                &L_X_IndexScalar,
-                &L_X_IndexScalar1Minus);
+  LookUp1D_Axis(&LKeLU_Cmd_XAxis[0],
+                 LeLU_Cmd_XAxisSize,
+                &LeLU_Int_X_Index_i,
+                &LeLU_Int_X_Index_j,
+                 LeLU_Cmd_X_Input,
+                &LeLU_Int_X_IndexScalar,
+                &LeLU_Int_X_IndexScalar1Minus);
 
-  LookUp1D_Axis(&L_Y_Axis[0],
-                 L_Y_AxisSize,
-                &L_Y_Index_i,
-                &L_Y_Index_j,
-                 L_Y_Input,
-                &L_Y_IndexScalar,
-                &L_Y_IndexScalar1Minus);
+  LookUp1D_Axis(&LKeLU_Cmd_Y_Axis[0],
+                 LeLU_Cmd_Y_AxisSize,
+                &LeLU_Int_Y_Index_i,
+                &LeLU_Int_Y_Index_j,
+                 LeLU_Cmd_Y_Input,
+                &LeLU_Int_Y_IndexScalar,
+                &LeLU_Int_Y_IndexScalar1Minus);
 
-  L_F_XiYi = L_TableData2D[(int)L_X_Index_i][(int)L_Y_Index_i];
-  L_F_XiYj = L_TableData2D[(int)L_X_Index_i][(int)L_Y_Index_j];
-  L_F_XjYi = L_TableData2D[(int)L_X_Index_j][(int)L_Y_Index_i];
-  L_F_XjYj = L_TableData2D[(int)L_X_Index_j][(int)L_Y_Index_j];
+  LeLU_Int_F_XiYi = LeLU_Cmd_TableData2D[(int)LeLU_Int_X_Index_i][(int)LeLU_Int_Y_Index_i];
+  LeLU_Int_F_XiYj = LeLU_Cmd_TableData2D[(int)LeLU_Int_X_Index_i][(int)LeLU_Int_Y_Index_j];
+  LeLU_Int_F_XjYi = LeLU_Cmd_TableData2D[(int)LeLU_Int_X_Index_j][(int)LeLU_Int_Y_Index_i];
+  LeLU_Int_F_XjYj = LeLU_Cmd_TableData2D[(int)LeLU_Int_X_Index_j][(int)LeLU_Int_Y_Index_j];
 
-  LeLU_Int_LOutput = L_F_XiYi * L_X_IndexScalar1Minus * L_Y_IndexScalar1Minus +
-             L_F_XjYi * L_X_IndexScalar       * L_Y_IndexScalar1Minus +
-             L_F_XiYj * L_X_IndexScalar1Minus * L_Y_IndexScalar +
-             L_F_XjYj * L_X_IndexScalar       * L_Y_IndexScalar;
+  LeLU_Int_Output = LeLU_Int_F_XiYi * LeLU_Int_X_IndexScalar1Minus * LeLU_Int_Y_IndexScalar1Minus +
+             LeLU_Int_F_XjYi * LeLU_Int_X_IndexScalar       * LeLU_Int_Y_IndexScalar1Minus +
+             LeLU_Int_F_XiYj * LeLU_Int_X_IndexScalar1Minus * LeLU_Int_Y_IndexScalar +
+             LeLU_Int_F_XjYj * LeLU_Int_X_IndexScalar       * LeLU_Int_Y_IndexScalar;
 
-  return (LeLU_Int_LOutput);
+  return (LeLU_Int_Output);
   }
 
 
@@ -256,128 +256,128 @@ double LookUp2D_Table(double const *LKLU_Cmd_XAxis,
  *
  * Description:  Determine the desired X/Y location based on the current time.
  ******************************************************************************/
-bool DesiredAutonLocation2(double  L_t_AutonTime,
-                           int     L_int_AutonSelection,
-                           double *L_L_X_Location,
-                           double *L_L_Y_Location,
-                           double *L_Deg_Angle)
+bool DesiredAutonLocation2(double  LeLU_s_AutonTime,
+                           int     LeLU_Int_AutonSelection,
+                           double *LeLU_Cmd_L_X_Location,
+                           double *LeLU_Cmd_L_Y_Location,
+                           double *LeLU_Cmd_Deg_Angle)
   {
-  double L_L_X_Loc = 0.0;
-  double L_L_Y_Loc = 0.0;
-  double L_Deg_Ang = 0.0;
-  int L_i_X_AxisSize     = 0;
-  int L_i_X_CalArraySize = 0;
-  int L_i_Y_AxisSize     = 0;
-  int L_i_Y_CalArraySize = 0;
-  int L_i_Ang_AxisSize     = 0;
-  int L_i_Ang_CalArraySize = 0;
-  bool L_timeTableDONE = false;
+  double LeLU_Int_L_X_Loc        = 0.0;
+  double LeLU_Cmd_L_Y_Loc        = 0.0;
+  double LeLU_Deg_Ang            = 0.0;
+  int LeLU_Int_X_AxisSize        = 0;
+  int LeLU_Int_X_CalArraySize    = 0;
+  int LeLU_Int_Y_AxisSize        = 0;
+  int LeLU_Inr_Y_CalArraySize    = 0;
+  int LeLU_Int_Ang_AxisSize      = 0;
+  int LeLU_Int_Ang_CalArraySize  = 0;
+  bool LeLU_b_timeTableDONE      = false;
 
-    switch (L_int_AutonSelection)
+    switch (LeLU_Int_AutonSelection)
       {
         case 1:
-        L_i_X_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_1T) / sizeof(K_l_ADAS_DM_Red_1X[0]));
-        L_i_X_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_1X) / sizeof(K_l_ADAS_DM_Red_1X[0]));
-        L_i_Y_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_1T) / sizeof(K_l_ADAS_DM_Red_1Y[0]));
-        L_i_Y_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_1Y) / sizeof(K_l_ADAS_DM_Red_1Y[0]));
-        L_i_Ang_AxisSize           = (int)(sizeof(K_t_ADAS_DM_Red_1T) / sizeof(K_rad_ADAS_DM_Red_1Ang[0]));
-        L_i_Ang_CalArraySize       = (int)(sizeof(K_rad_ADAS_DM_Red_1Ang) / sizeof(K_rad_ADAS_DM_Red_1Ang[0]));
+        LeLU_Int_X_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_1T) / sizeof(K_l_ADAS_DM_Red_1X[0]));
+        LeLU_Int_X_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_1X) / sizeof(K_l_ADAS_DM_Red_1X[0]));
+        LeLU_Int_Y_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_1T) / sizeof(K_l_ADAS_DM_Red_1Y[0]));
+        LeLU_Inr_Y_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_1Y) / sizeof(K_l_ADAS_DM_Red_1Y[0]));
+        LeLU_Int_Ang_AxisSize           = (int)(sizeof(K_t_ADAS_DM_Red_1T) / sizeof(K_rad_ADAS_DM_Red_1Ang[0]));
+        LeLU_Int_Ang_CalArraySize       = (int)(sizeof(K_rad_ADAS_DM_Red_1Ang) / sizeof(K_rad_ADAS_DM_Red_1Ang[0]));
 
-        L_L_X_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_1T[0],
+        LeLU_Int_L_X_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_1T[0],
                                    &K_l_ADAS_DM_Red_1X[0],
-                                    L_i_X_AxisSize,
-                                    L_i_X_CalArraySize,
-                                    L_t_AutonTime);
+                                    LeLU_Int_X_AxisSize,
+                                    LeLU_Int_X_CalArraySize,
+                                    LeLU_s_AutonTime);
 
-        L_L_Y_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_1T[0],
+        LeLU_Cmd_L_Y_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_1T[0],
                                    &K_l_ADAS_DM_Red_1Y[0],
-                                    L_i_Y_AxisSize,
-                                    L_i_Y_CalArraySize,
-                                    L_t_AutonTime);
+                                    LeLU_Int_Y_AxisSize,
+                                    LeLU_Inr_Y_CalArraySize,
+                                    LeLU_s_AutonTime);
 
-        L_Deg_Ang = LookUp1D_Table(&K_t_ADAS_DM_Red_1T[0],
+        LeLU_Deg_Ang = LookUp1D_Table(&K_t_ADAS_DM_Red_1T[0],
                                   &K_rad_ADAS_DM_Red_1Ang[0],
-                                   L_i_Ang_AxisSize,
-                                   L_i_Ang_CalArraySize,
-                                   L_t_AutonTime);
+                                   LeLU_Int_Ang_AxisSize,
+                                   LeLU_Int_Ang_CalArraySize,
+                                   LeLU_s_AutonTime);
                                                                       
-       if (L_t_AutonTime >= K_t_ADAS_DM_Red_1T[L_i_X_AxisSize - 1]) {
-           L_timeTableDONE = true;
+       if (LeLU_s_AutonTime >= K_t_ADAS_DM_Red_1T[LeLU_Int_X_AxisSize - 1]) {
+           LeLU_b_timeTableDONE = true;
         }
                                    
         break;
 
         case 2:
-        L_i_X_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_2T)   / sizeof(K_l_ADAS_DM_Red_2X[0]));
-        L_i_X_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_2X)   / sizeof(K_l_ADAS_DM_Red_2X[0]));
-        L_i_Y_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_2T)   / sizeof(K_l_ADAS_DM_Red_2Y[0]));
-        L_i_Y_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_2Y)   / sizeof(K_l_ADAS_DM_Red_2Y[0]));
-        L_i_Ang_AxisSize           = (int)(sizeof(K_t_ADAS_DM_Red_2T)   / sizeof(K_rad_ADAS_DM_Red_2Ang[0]));
-        L_i_Ang_CalArraySize       = (int)(sizeof(K_rad_ADAS_DM_Red_2Ang) / sizeof(K_rad_ADAS_DM_Red_2Ang[0]));
+        LeLU_Int_X_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_2T)   / sizeof(K_l_ADAS_DM_Red_2X[0]));
+        LeLU_Int_X_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_2X)   / sizeof(K_l_ADAS_DM_Red_2X[0]));
+        LeLU_Int_Y_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_2T)   / sizeof(K_l_ADAS_DM_Red_2Y[0]));
+        LeLU_Inr_Y_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_2Y)   / sizeof(K_l_ADAS_DM_Red_2Y[0]));
+        LeLU_Int_Ang_AxisSize           = (int)(sizeof(K_t_ADAS_DM_Red_2T)   / sizeof(K_rad_ADAS_DM_Red_2Ang[0]));
+        LeLU_Int_Ang_CalArraySize       = (int)(sizeof(K_rad_ADAS_DM_Red_2Ang) / sizeof(K_rad_ADAS_DM_Red_2Ang[0]));
 
-        L_L_X_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_2T[0],
+        LeLU_Int_L_X_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_2T[0],
                                    &K_l_ADAS_DM_Red_2X[0],
-                                    L_i_X_AxisSize,
-                                    L_i_X_CalArraySize,
-                                    L_t_AutonTime);
+                                    LeLU_Int_X_AxisSize,
+                                    LeLU_Int_X_CalArraySize,
+                                    LeLU_s_AutonTime);
 
-        L_L_Y_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_2T[0],
+        LeLU_Cmd_L_Y_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_2T[0],
                                    &K_l_ADAS_DM_Red_2Y[0],
-                                    L_i_Y_AxisSize,
-                                    L_i_Y_CalArraySize,
-                                    L_t_AutonTime);
+                                    LeLU_Int_Y_AxisSize,
+                                    LeLU_Inr_Y_CalArraySize,
+                                    LeLU_s_AutonTime);
 
-        L_Deg_Ang = LookUp1D_Table(&K_t_ADAS_DM_Red_2T[0],
+        LeLU_Deg_Ang = LookUp1D_Table(&K_t_ADAS_DM_Red_2T[0],
                                    &K_rad_ADAS_DM_Red_2Ang[0],
-                                   L_i_Ang_AxisSize,
-                                   L_i_Ang_CalArraySize,
-                                   L_t_AutonTime);
+                                   LeLU_Int_Ang_AxisSize,
+                                   LeLU_Int_Ang_CalArraySize,
+                                   LeLU_s_AutonTime);
                                    
-       if (L_t_AutonTime >= K_t_ADAS_DM_Red_2T[L_i_X_AxisSize - 1]) {
-           L_timeTableDONE = true;
+       if (LeLU_s_AutonTime >= K_t_ADAS_DM_Red_2T[LeLU_Int_X_AxisSize - 1]) {
+           LeLU_b_timeTableDONE = true;
         }
         
         break;
 
         case 3:
         default:
-        L_i_X_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_3T)   / sizeof(K_l_ADAS_DM_Red_3X[0]));
-        L_i_X_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_3X)   / sizeof(K_l_ADAS_DM_Red_3X[0]));
-        L_i_Y_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_3T)   / sizeof(K_l_ADAS_DM_Red_3Y[0]));
-        L_i_Y_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_3Y)   / sizeof(K_l_ADAS_DM_Red_3Y[0]));
-        L_i_Ang_AxisSize           = (int)(sizeof(K_t_ADAS_DM_Red_3T)   / sizeof(K_rad_ADAS_DM_Red_3Ang[0]));
-        L_i_Ang_CalArraySize       = (int)(sizeof(K_rad_ADAS_DM_Red_3Ang) / sizeof(K_rad_ADAS_DM_Red_3Ang[0]));
+        LeLU_Int_X_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_3T)   / sizeof(K_l_ADAS_DM_Red_3X[0]));
+        LeLU_Int_X_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_3X)   / sizeof(K_l_ADAS_DM_Red_3X[0]));
+        LeLU_Int_Y_AxisSize             = (int)(sizeof(K_t_ADAS_DM_Red_3T)   / sizeof(K_l_ADAS_DM_Red_3Y[0]));
+        LeLU_Inr_Y_CalArraySize         = (int)(sizeof(K_l_ADAS_DM_Red_3Y)   / sizeof(K_l_ADAS_DM_Red_3Y[0]));
+        LeLU_Int_Ang_AxisSize           = (int)(sizeof(K_t_ADAS_DM_Red_3T)   / sizeof(K_rad_ADAS_DM_Red_3Ang[0]));
+        LeLU_Int_Ang_CalArraySize       = (int)(sizeof(K_rad_ADAS_DM_Red_3Ang) / sizeof(K_rad_ADAS_DM_Red_3Ang[0]));
 
-        L_L_X_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_3T[0],
+        LeLU_Int_L_X_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_3T[0],
                                    &K_l_ADAS_DM_Red_3X[0],
-                                    L_i_X_AxisSize,
-                                    L_i_X_CalArraySize,
-                                    L_t_AutonTime);
+                                    LeLU_Int_X_AxisSize,
+                                    LeLU_Int_X_CalArraySize,
+                                    LeLU_s_AutonTime);
 
-        L_L_Y_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_3T[0],
+        LeLU_Cmd_L_Y_Loc = LookUp1D_Table(&K_t_ADAS_DM_Red_3T[0],
                                    &K_l_ADAS_DM_Red_3Y[0],
-                                    L_i_Y_AxisSize,
-                                    L_i_Y_CalArraySize,
-                                    L_t_AutonTime);
+                                    LeLU_Int_Y_AxisSize,
+                                    LeLU_Inr_Y_CalArraySize,
+                                    LeLU_s_AutonTime);
 
-        L_Deg_Ang = LookUp1D_Table(&K_t_ADAS_DM_Red_3T[0],
+        LeLU_Deg_Ang = LookUp1D_Table(&K_t_ADAS_DM_Red_3T[0],
                                    &K_rad_ADAS_DM_Red_3Ang[0],
-                                   L_i_Ang_AxisSize,
-                                   L_i_Ang_CalArraySize,
-                                   L_t_AutonTime);
+                                   LeLU_Int_Ang_AxisSize,
+                                   LeLU_Int_Ang_CalArraySize,
+                                   LeLU_s_AutonTime);
 
-       if (L_t_AutonTime >= K_t_ADAS_DM_Red_3T[L_i_X_AxisSize - 1]) {
-           L_timeTableDONE = true;
+       if (LeLU_s_AutonTime >= K_t_ADAS_DM_Red_3T[LeLU_Int_X_AxisSize - 1]) {
+           LeLU_b_timeTableDONE = true;
         }
 
         break;
       }
 
-  *L_L_X_Location = L_L_X_Loc;
-  *L_L_Y_Location = L_L_Y_Loc;
-  *L_Deg_Angle    = L_Deg_Ang;
+  *LeLU_Cmd_L_X_Location = LeLU_Int_L_X_Loc;
+  *LeLU_Cmd_L_Y_Location = LeLU_Cmd_L_Y_Loc;
+  *LeLU_Cmd_Deg_Angle    = LeLU_Deg_Ang;
 
-  return (L_timeTableDONE);
+  return (LeLU_b_timeTableDONE);
   }
 
 /******************************************************************************
@@ -385,32 +385,32 @@ bool DesiredAutonLocation2(double  L_t_AutonTime,
  *
  * Description:  Determine the desired X/Y location based on the current time.
  ******************************************************************************/
-void DesiredAutonLocation(double  L_t_AutonTime,
-                          int     L_int_AutonSelection,
-                          double *L_L_X_Location,
-                          double *L_L_Y_Location)
+void DesiredAutonLocation(double  LeLU_s_AutonTime,
+                          int     LeLU_Int_AutonSelection,
+                          double *LeLU_Cmd_L_X_Location,
+                          double *LeLU_Cmd_L_Y_Location)
   {
-  // double L_L_X_Loc = 0.0;
-  // double L_L_Y_Loc = 0.0;
-  // int L_i_X_AxisSize             = (int)(sizeof(K_t_Slalom_V125A50_T) / sizeof(K_l_Slalom_V125A50_X[0]));
-  // int L_i_X_CalArraySize         = (int)(sizeof(K_l_Slalom_V125A50_X) / sizeof(K_l_Slalom_V125A50_X[0]));
-  // int L_i_Y_AxisSize             = (int)(sizeof(K_t_Slalom_V125A50_T) / sizeof(K_l_Slalom_V125A50_Y[0]));
-  // int L_i_Y_CalArraySize         = (int)(sizeof(K_l_Slalom_V125A50_Y) / sizeof(K_l_Slalom_V125A50_Y[0]));
+  // double LeLU_Int_L_X_Loc = 0.0;
+  // double LeLU_Cmd_L_Y_Loc = 0.0;
+  // int LeLU_Int_X_AxisSize             = (int)(sizeof(K_t_Slalom_V125A50_T) / sizeof(K_l_Slalom_V125A50_X[0]));
+  // int LeLU_Int_X_CalArraySize         = (int)(sizeof(K_l_Slalom_V125A50_X) / sizeof(K_l_Slalom_V125A50_X[0]));
+  // int LeLU_Int_Y_AxisSize             = (int)(sizeof(K_t_Slalom_V125A50_T) / sizeof(K_l_Slalom_V125A50_Y[0]));
+  // int LeLU_Inr_Y_CalArraySize         = (int)(sizeof(K_l_Slalom_V125A50_Y) / sizeof(K_l_Slalom_V125A50_Y[0]));
 
-  // L_L_X_Loc = LookUp1D_Table(&K_t_Slalom_V125A50_T[0],
+  // LeLU_Int_L_X_Loc = LookUp1D_Table(&K_t_Slalom_V125A50_T[0],
   //                            &K_l_Slalom_V125A50_X[0],
-  //                             L_i_X_AxisSize,
-  //                             L_i_X_CalArraySize,
-  //                             L_t_AutonTime);
+  //                             LeLU_Int_X_AxisSize,
+  //                             LeLU_Int_X_CalArraySize,
+  //                             LeLU_s_AutonTime);
                               
-  // L_L_Y_Loc = LookUp1D_Table(&K_t_Slalom_V125A50_T[0],
+  // LeLU_Cmd_L_Y_Loc = LookUp1D_Table(&K_t_Slalom_V125A50_T[0],
   //                            &K_l_Slalom_V125A50_Y[0],
-  //                             L_i_Y_AxisSize,
-  //                             L_i_Y_CalArraySize,
-  //                             L_t_AutonTime);
+  //                             LeLU_Int_Y_AxisSize,
+  //                             LeLU_Inr_Y_CalArraySize,
+  //                             LeLU_s_AutonTime);
 
-  // *L_L_X_Location = L_L_X_Loc;
-  // *L_L_Y_Location = L_L_Y_Loc;
+  // *LeLU_Cmd_L_X_Location = LeLU_Int_L_X_Loc;
+  // *LeLU_Cmd_L_Y_Location = LeLU_Cmd_L_Y_Loc;
   }
 
 /******************************************************************************
@@ -419,19 +419,19 @@ void DesiredAutonLocation(double  L_t_AutonTime,
  * Description:  Function to scale the joystick input.
  *               Primarily used for smooth debouncing.
  ******************************************************************************/
-double ScaleJoystickAxis(double L_JoystickAxis)
+double ScaleJoystickAxis(double LeLU_Cmd_JoystickAxis)
   {
-  double L_DesiredDriveSpeed = 0.0;
+  double LeLU_RPM_DesiredDriveSpeed = 0.0; //may or may not be RPM
   int LeLU_Int_AxisSize             = (int)(sizeof(K_SD_DesiredDriveSpeedAxis) / sizeof(K_SD_DesiredDriveSpeed[0]));
   int LaLU_CalArraySize         = (int)(sizeof(K_SD_DesiredDriveSpeed) / sizeof(K_SD_DesiredDriveSpeed[0]));
 
-  L_DesiredDriveSpeed = LookUp1D_Table(&K_SD_DesiredDriveSpeedAxis[0],
+  LeLU_RPM_DesiredDriveSpeed = LookUp1D_Table(&K_SD_DesiredDriveSpeedAxis[0],
                                        &K_SD_DesiredDriveSpeed[0],
                                         LeLU_Int_AxisSize,
                                         LaLU_CalArraySize,
-                                        L_JoystickAxis);
+                                        LeLU_Cmd_JoystickAxis);
 
-  return L_DesiredDriveSpeed;
+  return LeLU_RPM_DesiredDriveSpeed;
   }
 
 /****************************************************************************
@@ -440,19 +440,19 @@ double ScaleJoystickAxis(double L_JoystickAxis)
  * Description:  Function to determine the desired launcher speed based on 
  *               estimated distance from taget from vision.
  ******************************************************************************/
-double DtrmnAutoLauncherSpeed(double L_TargetDistance)
+double DtrmnAutoLauncherSpeed(double LeLU_Cmd_TargetDistance)
   {
-  double L_DesiredLaunchSpeed = 0.0;
+  double LeLU_RPM_DesiredLaunchSpeed = 0.0; //may or may not be RPM
   int LeLU_Int_AxisSize             = (int)(sizeof(K_BH_LauncherSpeedAxis) / sizeof(K_BH_LauncherSpeed[0]));
   int LaLU_CalArraySize         = (int)(sizeof(K_BH_LauncherSpeed) / sizeof(K_BH_LauncherSpeed[0]));
 
-  L_DesiredLaunchSpeed = LookUp1D_Table(&K_BH_LauncherSpeedAxis[0],
+  LeLU_RPM_DesiredLaunchSpeed = LookUp1D_Table(&K_BH_LauncherSpeedAxis[0],
                                         &K_BH_LauncherSpeed[0],
                                          LeLU_Int_AxisSize,
                                          LaLU_CalArraySize,
-                                         L_TargetDistance);
+                                         LeLU_Cmd_TargetDistance);
 
-  return L_DesiredLaunchSpeed;
+  return LeLU_RPM_DesiredLaunchSpeed;
   }
 
 
@@ -462,19 +462,19 @@ double DtrmnAutoLauncherSpeed(double L_TargetDistance)
  * Description:  Function to determine the amount of time to drive forward to 
  *               capture the ball.
  ******************************************************************************/
-double DtrmnTimeToDriveToCaptureBall(double L_EstTargetDistance)
+double DtrmnTimeToDriveToCaptureBall(double LeLU_Cmd_EstTargetDistance)
   {
-  double L_DesiredDriveTime = 0.0;
+  double LeLU_s_DesiredDriveTime = 0.0; //may or may not be seconds
   int LeLU_Int_AxisSize            = (int)(sizeof(K_ADAS_BT_DriveTimeAxis) / sizeof(K_ADAS_BT_DriveTime[0]));
   int LaLU_CalArraySize        = (int)(sizeof(K_ADAS_BT_DriveTime) / sizeof(K_ADAS_BT_DriveTime[0]));
 
-  L_DesiredDriveTime = LookUp1D_Table(&K_ADAS_BT_DriveTimeAxis[0],
+  LeLU_s_DesiredDriveTime = LookUp1D_Table(&K_ADAS_BT_DriveTimeAxis[0],
                                         &K_ADAS_BT_DriveTime[0],
                                          LeLU_Int_AxisSize,
                                          LaLU_CalArraySize,
-                                         L_EstTargetDistance);
+                                         LeLU_Cmd_EstTargetDistance);
 
-  return L_DesiredDriveTime;
+  return LeLU_s_DesiredDriveTime;
   }
 
 /******************************************************************************
@@ -483,19 +483,19 @@ double DtrmnTimeToDriveToCaptureBall(double L_EstTargetDistance)
  * Description:  Function to determine the speed at which to rotate the robot 
  *               (for auto targeting and auto rotate).
  ******************************************************************************/
-double DesiredRotateSpeed(double L_Error)
+double DesiredRotateSpeed(double LeLU_Cmd_Error)
   {
-  double L_DesiredRotateSpeed = 0.0;
+  double LeLU_RPM_DesiredRotateSpeed = 0.0; //may or may not be RPM
   int LeLU_Int_AxisSize             = (int)(sizeof(K_DesiredRotateSpeedAxis) / sizeof(K_DesiredRotateSpeed[0]));
   int LaLU_CalArraySize         = (int)(sizeof(K_DesiredRotateSpeed) / sizeof(K_DesiredRotateSpeed[0]));
 
-  L_DesiredRotateSpeed = LookUp1D_Table(&K_DesiredRotateSpeedAxis[0],
+  LeLU_RPM_DesiredRotateSpeed = LookUp1D_Table(&K_DesiredRotateSpeedAxis[0],
                                         &K_DesiredRotateSpeed[0],
                                          LeLU_Int_AxisSize,
                                          LaLU_CalArraySize,
-                                         L_Error);
+                                         LeLU_Cmd_Error);
 
-  return L_DesiredRotateSpeed;
+  return LeLU_RPM_DesiredRotateSpeed;
   }
 
 /******************************************************************************
@@ -504,19 +504,19 @@ double DesiredRotateSpeed(double L_Error)
  * Description:  Function to determine the speed at which to rotate the robot 
  *               (for auto targeting and auto rotate).
  ******************************************************************************/
-double DesiredAutoRotateSpeed(double L_Error)
+double DesiredAutoRotateSpeed(double LeLU_Cmd_Error)
   {
-  double L_DesiredRotateSpeed = 0.0;
+  double LeLU_RPM_DesiredRotateSpeed = 0.0;
   int LeLU_Int_AxisSize             = (int)(sizeof(K_DesiredAutoRotateSpeedAxis) / sizeof(K_DesiredAutoRotateSpeed[0]));
   int LaLU_CalArraySize         = (int)(sizeof(K_DesiredAutoRotateSpeed) / sizeof(K_DesiredAutoRotateSpeed[0]));
 
-  L_DesiredRotateSpeed = LookUp1D_Table(&K_DesiredAutoRotateSpeedAxis[0],
+  LeLU_RPM_DesiredRotateSpeed = LookUp1D_Table(&K_DesiredAutoRotateSpeedAxis[0],
                                         &K_DesiredAutoRotateSpeed[0],
                                          LeLU_Int_AxisSize,
                                          LaLU_CalArraySize,
-                                         L_Error);
+                                         LeLU_Cmd_Error);
 
-  return L_DesiredRotateSpeed;
+  return LeLU_RPM_DesiredRotateSpeed;
   }
 
 /******************************************************************************
@@ -529,10 +529,10 @@ double DesiredAutoRotateSpeed(double L_Error)
  *
  *               Not currently used
  ******************************************************************************/
-void DesiredRollerSpeed(double  L_Distance,
-                        double  L_Angle,
-                        double *L_UpperCmnd,
-                        double *L_LowerCmnd)
+void DesiredRollerSpeed(double  LeLU_In_Distance, //may or may not be inches
+                        double  LeLU_Deg_Angle, //may or may not be degrees
+                        double *LeLU_Cmd_UpperCmnd,
+                        double *LeLU_Cmd_LowerCmnd)
   {
   // double  L_DesiredRobotAngle       = 0.0;
   // double  L_DesiredRollerSpeedUpper = 0.0;
@@ -553,10 +553,10 @@ void DesiredRollerSpeed(double  L_Distance,
 
   // L_DesiredRollerSpeedUpper = LookUp2D_Table(&K_BallLauncherDistanceAxis[0],
   //                                             K_BallLauncherDistanceSz,
-  //                                             L_Distance,
+  //                                             LeLU_In_Distance,
   //                                            &K_BallLauncherAngleAxis[0],
   //                                             K_BallLauncherAngleSz,
-  //                                             L_Angle,
+  //                                             LeLU_Deg_Angle,
   //                                             L_RollerSpeedCalibration);
 
   // for (i = 0; i < K_BallLauncherDistanceSz; i++)
@@ -570,12 +570,12 @@ void DesiredRollerSpeed(double  L_Distance,
 
   // L_DesiredRollerSpeedLower = LookUp2D_Table(&K_BallLauncherDistanceAxis[0],
   //                                             K_BallLauncherDistanceSz,
-  //                                             L_Distance,
+  //                                             LeLU_In_Distance,
   //                                            &K_BallLauncherAngleAxis[0],
   //                                             K_BallLauncherAngleSz,
-  //                                             L_Angle,
+  //                                             LeLU_Deg_Angle,
   //                                             L_RollerSpeedCalibration);
 
-  // *L_UpperCmnd  = L_DesiredRollerSpeedUpper;
-  // *L_LowerCmnd  = L_DesiredRollerSpeedLower;
+  // *LeLU_Cmd_UpperCmnd  = L_DesiredRollerSpeedUpper;
+  // *LeLU_Cmd_LowerCmnd  = L_DesiredRollerSpeedLower;
   }
