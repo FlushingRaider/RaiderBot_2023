@@ -760,9 +760,9 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  * Description:  Main calling function for lift control.
  ******************************************************************************/
 T_Lift_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
-                                   bool                L_driver_auto_climb_pause,
+                                   bool                LeLFT_b_DriverAutoClimbPause,
                                    TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
-                                   double              L_game_time,
+                                   double              LeLFT_SEC_GameTime,
                                    T_Lift_State        LeLFT_Cnt_CurrentState,                                
                                    double              LeLFT_In_MeasuredPositionYD,
                                    double              LeLFT_In_MeasuredPositionXD,
