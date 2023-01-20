@@ -315,7 +315,7 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
                                  double *LeLFT_Cmd_CommandXD,
                                  double  LeLFT_v_MotorYDCurrentOut,
                                  double  LeLFT_v_MotorXDCurrentOut,
-                                 T_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
+                                 TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
                                  bool    LeLFT_b_LimitDetectedYD,
                                  bool    LeLFT_b_LimitDetectedXD)
   {
@@ -761,7 +761,7 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  ******************************************************************************/
 T_Lift_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
                                    bool                L_driver_auto_climb_pause,
-                                   T_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
+                                   TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
                                    double              L_game_time,
                                    T_Lift_State        LeLFT_Cnt_CurrentState,                                
                                    double              L_lift_measured_position_YD,

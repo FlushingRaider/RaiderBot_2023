@@ -203,7 +203,7 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 //                                  double *LeLFT_Cmd_CommandXD,
 //                                  double  LeLFT_v_MotorYDCurrentOut,
 //                                  double  LeLFT_v_MotorXDCurrentOut,
-//                                  T_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
+//                                  TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
 //                                  bool    LeLFT_b_LimitDetectedYD,
 //                                  bool    LeLFT_b_LimitDetectedXD)
 //   {
@@ -564,7 +564,7 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 //  ******************************************************************************/
 // void TurretControlMain(bool                LeLFT_b_AutoClimbButton,
 //                                    bool                L_driver_auto_climb_pause,
-//                                    T_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
+//                                    TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
 //                                    double              L_game_time,
 //                                    T_Lift_State        LeLFT_Cnt_CurrentState,                                
 //                                    double              L_lift_measured_position_YD,

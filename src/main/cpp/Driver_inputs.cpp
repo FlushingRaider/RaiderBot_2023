@@ -19,56 +19,56 @@ RobotUserInput VsDriverInput;
  *
  * Description:  Captures and maps driver inputs.
  ******************************************************************************/
-void Joystick_robot_mapping(bool    L_Driver2_buttonA,
-                            bool    L_Driver2_buttonB,
-                            bool    L_Driver2_buttonRB,
-                            bool    L_Driver2_buttonLB,
-                            bool    L_Driver2_buttonstart,
-                            bool    L_Driver1_buttonback,
-                            bool    L_Driver1_buttonstart,
-                            bool    L_Driver2_ButtonX,
-                            bool    L_Driver2_ButtonY,
-                            double  L_Driver2_left_Axis_y,
-                            double  L_Driver2_right_Axis_y,
-                            double  L_Driver1_left_Axis_y,
-                            double  L_Driver1_left_Axis_x,
-                            double  L_Driver1_right_Axis_x,
-                            double  L_Driver1_left_trigger_Axis,
-                            bool    L_Driver1_buttonA,
-                            bool    L_Driver1_ButtonX,
-                            bool    L_Driver1_ButtonY,
-                            int     L_Driver2_POV,
-                            bool    L_Driver1_buttonRB,
-                            bool    L_Driver1_buttonB,
-                            bool    L_Driver1_ButtonLB,
-                            bool    L_Driver2_buttonback,
-                            int     L_Driver1_POV)
+void Joystick_robot_mapping(bool    LeCont_b_Driver2ButtonA,
+                            bool    LeCont_b_Driver2ButtonB,
+                            bool    LeCont_b_Driver2ButtonRB,
+                            bool    LeCont_b_Driver2ButtonLB,
+                            bool    LeCont_b_Driver2ButtonStart,
+                            bool    LeCont_b_Driver1ButtonBack,
+                            bool    LeCont_b_Driver1ButtonStart,
+                            bool    LeCont_b_Driver2ButtonX,
+                            bool    LeCont_b_Driver2ButtonY,
+                            double  LeCont_Cmd_Driver2LeftAxisY,
+                            double  LeCont_Cmd_Driver2RightAxisY,
+                            double  LeCont_Cmd_Driver1LeftAxisY,
+                            double  LeCont_Cmd_Driver1LeftAxisX,
+                            double  LeCont_Cmd_Driver1RightAxisX,
+                            double  LeCont_Cmd_Driver1LeftTriggerAxis,
+                            bool    LeCont_b_Driver1ButtonA,
+                            bool    LeCont_b_Driver1ButtonX,
+                            bool    LeCont_b_Driver1ButtonY,
+                            int     LeCont_Deg_Driver2POV,
+                            bool    LeCont_b_Driver1ButtonRB,
+                            bool    LeCont_b_Driver1ButtonB,
+                            bool    LeCont_b_Driver1ButtonLB,
+                            bool    LeCont_b_Driver2ButtonBack,
+                            int     LeCont_Deg_Driver1POV)
   {
   double                L_AxisTotal             = 0;
   bool                  L_JoystickActive        = false;
-  T_LiftCmndDirection   L_LiftCmndDirection     = E_LiftCmndNone;
+  TeLFT_e_LiftCmndDirection   L_LiftCmndDirection     = E_LiftCmndNone;
   T_TurretCmndDirection L_e_TurretCmndDirection = E_TurrentCmndNone;
 
 
-  VsDriverInput.b_ElevatorUp                    = L_Driver2_buttonA;                       //Controller 2, A button (1), (robot.cpp) Elevator goes up
-  VsDriverInput.b_ElevatorDown                  = L_Driver2_buttonB;                     //Controller 2, B button (2), (robot.cpp) Elevator goes down
-  VsDriverInput.b_ZeroGyro                      = (L_Driver1_buttonback || L_Driver1_buttonstart);     //Controller 1, Back button (7), (robot.cpp, gyro.cpp) zeroes out the gyro  
-  VsDriverInput.b_StopShooterAutoClimbResetGyro = L_Driver2_buttonLB;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
-  VsDriverInput.b_AutoSetSpeedShooter           = L_Driver2_buttonstart;         //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
-  VsDriverInput.pct_ManualShooterDesiredSpeed   = L_Driver2_left_Axis_y;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
-  VsDriverInput.b_LiftControl                   = L_Driver2_buttonRB;                     //Controller 2, X button (3), (Lift.cpp) starts automated states machine
-  VsDriverInput.b_IntakeIn                      = L_Driver2_ButtonX;                         //Controller 2 (3), controlls the intake in on trigger pressed
-  VsDriverInput.b_IntakeOut                     = L_Driver2_ButtonY;                         //Controller 2 (4), controlls the intake out on trigger pressed
-  VsDriverInput.pct_SwerveForwardBack           = ScaleJoystickAxis(L_Driver1_left_Axis_y);  // Scale the axis, also used for debouncing
-  VsDriverInput.pct_SwerveStrafe                = ScaleJoystickAxis(L_Driver1_left_Axis_x);        // Scale the axis, also used for debouncing
-  VsDriverInput.deg_SwerveRotate                = ScaleJoystickAxis(L_Driver1_right_Axis_x);      // Scale the axis, also used for debouncing
-  VsDriverInput.v_SwerveSpeed                   = ScaleJoystickAxis(L_Driver1_left_trigger_Axis);  // Scale the axis, also used for debouncing
-  VsDriverInput.b_SwerveGoalAutoCenter          = L_Driver1_buttonA;
-  VsDriverInput.b_SwerveRotateTo0               = L_Driver1_ButtonX;
-  VsDriverInput.b_SwerveRotateTo90              = L_Driver1_ButtonY;
-  VsDriverInput.b_CameraLight                   = L_Driver1_buttonRB;                      //Controller 1, X button (3), when held, turns on the camera light
-  VsDriverInput.b_AutoIntake                    = L_Driver1_buttonB;
-  VsDriverInput.b_VisionDriverModeOverride      = L_Driver1_ButtonLB;
+  VsDriverInput.b_ElevatorUp                    = LeCont_b_Driver2ButtonA;                       //Controller 2, A button (1), (robot.cpp) Elevator goes up
+  VsDriverInput.b_ElevatorDown                  = LeCont_b_Driver2ButtonB;                     //Controller 2, B button (2), (robot.cpp) Elevator goes down
+  VsDriverInput.b_ZeroGyro                      = (LeCont_b_Driver1ButtonBack || LeCont_b_Driver1ButtonStart);     //Controller 1, Back button (7), (robot.cpp, gyro.cpp) zeroes out the gyro  
+  VsDriverInput.b_StopShooterAutoClimbResetGyro = LeCont_b_Driver2ButtonLB;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
+  VsDriverInput.b_AutoSetSpeedShooter           = LeCont_b_Driver2ButtonStart;         //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
+  VsDriverInput.pct_ManualShooterDesiredSpeed   = LeCont_Cmd_Driver2LeftAxisY;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
+  VsDriverInput.b_LiftControl                   = LeCont_b_Driver2ButtonRB;                     //Controller 2, X button (3), (Lift.cpp) starts automated states machine
+  VsDriverInput.b_IntakeIn                      = LeCont_b_Driver2ButtonX;                         //Controller 2 (3), controlls the intake in on trigger pressed
+  VsDriverInput.b_IntakeOut                     = LeCont_b_Driver2ButtonY;                         //Controller 2 (4), controlls the intake out on trigger pressed
+  VsDriverInput.pct_SwerveForwardBack           = ScaleJoystickAxis(LeCont_Cmd_Driver1LeftAxisY);  // Scale the axis, also used for debouncing
+  VsDriverInput.pct_SwerveStrafe                = ScaleJoystickAxis(LeCont_Cmd_Driver1LeftAxisX);        // Scale the axis, also used for debouncing
+  VsDriverInput.deg_SwerveRotate                = ScaleJoystickAxis(LeCont_Cmd_Driver1RightAxisX);      // Scale the axis, also used for debouncing
+  VsDriverInput.v_SwerveSpeed                   = ScaleJoystickAxis(LeCont_Cmd_Driver1LeftTriggerAxis);  // Scale the axis, also used for debouncing
+  VsDriverInput.b_SwerveGoalAutoCenter          = LeCont_b_Driver1ButtonA;
+  VsDriverInput.b_SwerveRotateTo0               = LeCont_b_Driver1ButtonX;
+  VsDriverInput.b_SwerveRotateTo90              = LeCont_b_Driver1ButtonY;
+  VsDriverInput.b_CameraLight                   = LeCont_b_Driver1ButtonRB;                      //Controller 1, X button (3), when held, turns on the camera light
+  VsDriverInput.b_AutoIntake                    = LeCont_b_Driver1ButtonB;
+  VsDriverInput.b_VisionDriverModeOverride      = LeCont_b_Driver1ButtonLB;
    
   L_AxisTotal = (fabs(VsDriverInput.pct_SwerveStrafe) + fabs(VsDriverInput.deg_SwerveRotate) + fabs(VsDriverInput.v_SwerveSpeed));
   
@@ -79,19 +79,19 @@ void Joystick_robot_mapping(bool    L_Driver2_buttonA,
 
   VsDriverInput.b_JoystickActive = L_JoystickActive;
 
-  if (L_Driver2_POV == 0)
+  if (LeCont_Deg_Driver2POV == 0)
     {
     L_LiftCmndDirection = E_LiftCmndUp;
     }
-  else if (L_Driver2_POV == 180)
+  else if (LeCont_Deg_Driver2POV == 180)
     {
     L_LiftCmndDirection = E_LiftCmndDown;
     }
-  else if (L_Driver2_POV == 90)
+  else if (LeCont_Deg_Driver2POV == 90)
     {
     L_LiftCmndDirection = E_LiftCmndForward;
     }
-  else if (L_Driver2_POV == 270)
+  else if (LeCont_Deg_Driver2POV == 270)
     {
     L_LiftCmndDirection = E_LiftCmndBack;
     }
@@ -102,11 +102,11 @@ void Joystick_robot_mapping(bool    L_Driver2_buttonA,
 
   VsDriverInput.e_LiftCmndDirection = L_LiftCmndDirection;
 
-  if (L_Driver1_POV == 270)
+  if (LeCont_Deg_Driver1POV == 270)
     {
     L_e_TurretCmndDirection = E_TurrentCmndLeft;
     }
-  else if (L_Driver1_POV == 90)
+  else if (LeCont_Deg_Driver1POV == 90)
     {
     L_e_TurretCmndDirection = E_TurrentCmndRight;
     }
@@ -126,35 +126,35 @@ void Joystick_robot_mapping(bool    L_Driver2_buttonA,
  *
  * Description:  Captures and maps driver inputs from controller 1.
  ******************************************************************************/
-void Joystick1_robot_mapping(bool    L_Driver1_buttonback,
-                             bool    L_Driver1_buttonstart,
-                             double  L_Driver1_left_Axis_y,
-                             double  L_Driver1_left_Axis_x,
-                             double  L_Driver1_right_Axis_x,
-                             double  L_Driver1_left_trigger_Axis,
-                             bool    L_Driver1_buttonA,
-                             bool    L_Driver1_ButtonX,
-                             bool    L_Driver1_ButtonY,
-                             bool    L_Driver1_buttonRB,
-                             bool    L_Driver1_buttonB,
-                             bool    L_Driver1_ButtonLB,
-                             int     L_Driver1_POV)
+void Joystick1_robot_mapping(bool    LeCont_b_Driver1ButtonBack,
+                             bool    LeCont_b_Driver1ButtonStart,
+                             double  LeCont_Cmd_Driver1LeftAxisY,
+                             double  LeCont_Cmd_Driver1LeftAxisX,
+                             double  LeCont_Cmd_Driver1RightAxisX,
+                             double  LeCont_Cmd_Driver1LeftTriggerAxis,
+                             bool    LeCont_b_Driver1ButtonA,
+                             bool    LeCont_b_Driver1ButtonX,
+                             bool    LeCont_b_Driver1ButtonY,
+                             bool    LeCont_b_Driver1ButtonRB,
+                             bool    LeCont_b_Driver1ButtonB,
+                             bool    LeCont_b_Driver1ButtonLB,
+                             int     LeCont_Deg_Driver1POV)
   {
   double                L_AxisTotal             = 0;
   bool                  L_JoystickActive        = false;
   T_TurretCmndDirection L_e_TurretCmndDirection = E_TurrentCmndNone;
 
-  VsDriverInput.b_ZeroGyro                      = (L_Driver1_buttonback || L_Driver1_buttonstart);     //Controller 1, Back button (7), (robot.cpp, gyro.cpp) zeroes out the gyro  
-  VsDriverInput.pct_SwerveForwardBack           = ScaleJoystickAxis(L_Driver1_left_Axis_y);  // Scale the axis, also used for debouncing
-  VsDriverInput.pct_SwerveStrafe                = ScaleJoystickAxis(L_Driver1_left_Axis_x);        // Scale the axis, also used for debouncing
-  VsDriverInput.deg_SwerveRotate                = ScaleJoystickAxis(L_Driver1_right_Axis_x);      // Scale the axis, also used for debouncing
-  VsDriverInput.v_SwerveSpeed                   = ScaleJoystickAxis(L_Driver1_left_trigger_Axis);  // Scale the axis, also used for debouncing
-  VsDriverInput.b_SwerveGoalAutoCenter          = L_Driver1_buttonA;
-  VsDriverInput.b_SwerveRotateTo0               = L_Driver1_ButtonX;
-  VsDriverInput.b_SwerveRotateTo90              = L_Driver1_ButtonY;
-  VsDriverInput.b_CameraLight                   = L_Driver1_buttonRB;                      //Controller 1, X button (3), when held, turns on the camera light
-  VsDriverInput.b_AutoIntake                    = L_Driver1_buttonB;
-  VsDriverInput.b_VisionDriverModeOverride      = L_Driver1_ButtonLB;
+  VsDriverInput.b_ZeroGyro                      = (LeCont_b_Driver1ButtonBack || LeCont_b_Driver1ButtonStart);     //Controller 1, Back button (7), (robot.cpp, gyro.cpp) zeroes out the gyro  
+  VsDriverInput.pct_SwerveForwardBack           = ScaleJoystickAxis(LeCont_Cmd_Driver1LeftAxisY);  // Scale the axis, also used for debouncing
+  VsDriverInput.pct_SwerveStrafe                = ScaleJoystickAxis(LeCont_Cmd_Driver1LeftAxisX);        // Scale the axis, also used for debouncing
+  VsDriverInput.deg_SwerveRotate                = ScaleJoystickAxis(LeCont_Cmd_Driver1RightAxisX);      // Scale the axis, also used for debouncing
+  VsDriverInput.v_SwerveSpeed                   = ScaleJoystickAxis(LeCont_Cmd_Driver1LeftTriggerAxis);  // Scale the axis, also used for debouncing
+  VsDriverInput.b_SwerveGoalAutoCenter          = LeCont_b_Driver1ButtonA;
+  VsDriverInput.b_SwerveRotateTo0               = LeCont_b_Driver1ButtonX;
+  VsDriverInput.b_SwerveRotateTo90              = LeCont_b_Driver1ButtonY;
+  VsDriverInput.b_CameraLight                   = LeCont_b_Driver1ButtonRB;                      //Controller 1, X button (3), when held, turns on the camera light
+  VsDriverInput.b_AutoIntake                    = LeCont_b_Driver1ButtonB;
+  VsDriverInput.b_VisionDriverModeOverride      = LeCont_b_Driver1ButtonLB;
    
   L_AxisTotal = (fabs(VsDriverInput.pct_SwerveStrafe) + fabs(VsDriverInput.deg_SwerveRotate) + fabs(VsDriverInput.v_SwerveSpeed));
   
@@ -165,11 +165,11 @@ void Joystick1_robot_mapping(bool    L_Driver1_buttonback,
 
   VsDriverInput.b_JoystickActive = L_JoystickActive;
 
-  if (L_Driver1_POV == 270)
+  if (LeCont_Deg_Driver1POV == 270)
     {
     L_e_TurretCmndDirection = E_TurrentCmndLeft;
     }
-  else if (L_Driver1_POV == 90)
+  else if (LeCont_Deg_Driver1POV == 90)
     {
     L_e_TurretCmndDirection = E_TurrentCmndRight;
     }
@@ -186,44 +186,44 @@ void Joystick1_robot_mapping(bool    L_Driver1_buttonback,
  *
  * Description:  Captures and maps driver inputs from controller 2.
  ******************************************************************************/
-void Joystick2_robot_mapping(bool    L_Driver2_buttonA,
-                             bool    L_Driver2_buttonB,
-                             bool    L_Driver2_buttonRB,
-                             bool    L_Driver2_buttonLB,
-                             bool    L_Driver2_buttonstart,
-                             bool    L_Driver2_ButtonX,
-                             bool    L_Driver2_ButtonY,
-                             double  L_Driver2_left_Axis_y,
-                             double  L_Driver2_right_Axis_y,
-                             int     L_Driver2_POV,
-                             bool    L_Driver2_buttonback)
+void Joystick2_robot_mapping(bool    LeCont_b_Driver2ButtonA,
+                             bool    LeCont_b_Driver2ButtonB,
+                             bool    LeCont_b_Driver2ButtonRB,
+                             bool    LeCont_b_Driver2ButtonLB,
+                             bool    LeCont_b_Driver2ButtonStart,
+                             bool    LeCont_b_Driver2ButtonX,
+                             bool    LeCont_b_Driver2ButtonY,
+                             double  LeCont_Cmd_Driver2LeftAxisY,
+                             double  LeCont_Cmd_Driver2RightAxisY,
+                             int     LeCont_Deg_Driver2POV,
+                             bool    LeCont_b_Driver2ButtonBack)
   {
-  T_LiftCmndDirection   L_LiftCmndDirection     = E_LiftCmndNone;
+  TeLFT_e_LiftCmndDirection   L_LiftCmndDirection     = E_LiftCmndNone;
   T_TurretCmndDirection L_e_TurretCmndDirection = E_TurrentCmndNone;
 
 
-  VsDriverInput.b_ElevatorUp                    = L_Driver2_buttonA;      //Controller 2, A button (1), (robot.cpp) Elevator goes up
-  VsDriverInput.b_ElevatorDown                  = L_Driver2_buttonB;      //Controller 2, B button (2), (robot.cpp) Elevator goes down
-  VsDriverInput.b_StopShooterAutoClimbResetGyro = L_Driver2_buttonLB;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
-  VsDriverInput.b_AutoSetSpeedShooter           = L_Driver2_buttonstart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
-  VsDriverInput.pct_ManualShooterDesiredSpeed   = L_Driver2_left_Axis_y;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
-  VsDriverInput.b_LiftControl                   = L_Driver2_buttonRB;     //Controller 2, X button (3), (Lift.cpp) starts automated states machine
-  VsDriverInput.b_IntakeIn                      = L_Driver2_ButtonX;      //Controller 2 (3), controlls the intake in on trigger pressed
-  VsDriverInput.b_IntakeOut                     = L_Driver2_ButtonY;      //Controller 2 (4), controlls the intake out on trigger pressed
+  VsDriverInput.b_ElevatorUp                    = LeCont_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) Elevator goes up
+  VsDriverInput.b_ElevatorDown                  = LeCont_b_Driver2ButtonB;      //Controller 2, B button (2), (robot.cpp) Elevator goes down
+  VsDriverInput.b_StopShooterAutoClimbResetGyro = LeCont_b_Driver2ButtonLB;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
+  VsDriverInput.b_AutoSetSpeedShooter           = LeCont_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
+  VsDriverInput.pct_ManualShooterDesiredSpeed   = LeCont_Cmd_Driver2LeftAxisY;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
+  VsDriverInput.b_LiftControl                   = LeCont_b_Driver2ButtonRB;     //Controller 2, X button (3), (Lift.cpp) starts automated states machine
+  VsDriverInput.b_IntakeIn                      = LeCont_b_Driver2ButtonX;      //Controller 2 (3), controlls the intake in on trigger pressed
+  VsDriverInput.b_IntakeOut                     = LeCont_b_Driver2ButtonY;      //Controller 2 (4), controlls the intake out on trigger pressed
 
-  if (L_Driver2_POV == 0)
+  if (LeCont_Deg_Driver2POV == 0)
     {
     L_LiftCmndDirection = E_LiftCmndUp;
     }
-  else if (L_Driver2_POV == 180)
+  else if (LeCont_Deg_Driver2POV == 180)
     {
     L_LiftCmndDirection = E_LiftCmndDown;
     }
-  else if (L_Driver2_POV == 90)
+  else if (LeCont_Deg_Driver2POV == 90)
     {
     L_LiftCmndDirection = E_LiftCmndForward;
     }
-  else if (L_Driver2_POV == 270)
+  else if (LeCont_Deg_Driver2POV == 270)
     {
     L_LiftCmndDirection = E_LiftCmndBack;
     }
