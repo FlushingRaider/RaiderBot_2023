@@ -13,6 +13,8 @@ extern double VeVIS_m_VisionTargetDistance[E_CamLocSz];
 extern int    VnVIS_int_VisionCameraIndex[E_CamSz];
 extern bool VeVIS_b_VisionDriverRequestedModeCmnd;
 
+#ifdef OldVision
+
 void VisionRobotInit();
 
 void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor);
@@ -22,3 +24,9 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
                bool                            L_AutoTargetRequest,
                bool                            L_DriverDriveModeReq,
                bool                           *L_VisionDriverModeCmndFinal);
+#endif
+
+#ifdef TestVision
+void TestVisionRun(photonlib::PhotonPipelineResult CamResult);
+
+#endif

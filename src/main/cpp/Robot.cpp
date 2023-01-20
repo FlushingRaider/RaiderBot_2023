@@ -199,9 +199,14 @@ void Robot::RobotInit()
   ADAS_UT_ConfigsInit();
   ADAS_BT_ConfigsInit();
 
+
+  #ifdef OldVision
   VisionRobotInit();
 
   VisionInit(V_AllianceColor);
+
+  #endif
+
   }
 
 
@@ -369,11 +374,14 @@ void Robot::RobotPeriodic()
                   &VeLC_b_CameraLightCmndOn,
                   &VeLC_Cmd_VanityLightCmnd);
 
+
+  #ifdef OldVision
   VisionRun( pc_Camera1.GetLatestResult(),
              pc_Camera2.GetLatestResult(),
              V_ADAS_Vision_RequestedTargeting,
              VsDriverInput.b_VisionDriverModeOverride,
             &VeVIS_b_VisionDriverRequestedModeCmnd);
+ 
 
   pc_Camera1.SetDriverMode(VeVIS_b_VisionDriverRequestedModeCmnd);
   pc_Camera2.SetDriverMode(VeVIS_b_VisionDriverRequestedModeCmnd);
@@ -383,6 +391,18 @@ void Robot::RobotPeriodic()
     // pc_Camera1.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam1]);  // Shouldn't need this one so long as Cam1 remains as top
     pc_Camera2.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam2]);  // Need to comment this out if Photon Vision is being calibrated/tweaked
     }
+   #endif
+
+  #ifdef TestVision
+
+
+  TestVisionRun(Cam1.GetLatestResult());
+
+
+  #endif
+
+
+
 
   #ifdef CompBot
   VeLFT_Cnt_Lift_state = Lift_Control_Dictator(VsDriverInput.b_LiftControl,
@@ -449,7 +469,10 @@ void Robot::AutonomousInit()
     LiftControlInit();
     ADAS_Main_Reset();
     OdometryInit();
+
+  #ifdef OldVision
     VisionInit(V_AllianceColor);
+  #endif
   }
 
 
@@ -481,7 +504,9 @@ void Robot::TeleopInit()
   BallHandlerInit();
   LiftControlInit();
   OdometryInit();
+  #ifdef OldVision
   VisionInit(V_AllianceColor);
+  #endif
   #ifdef CompBot
   m_encoderrightShooter.SetPosition(0);
   m_encoderleftShooter.SetPosition(0);

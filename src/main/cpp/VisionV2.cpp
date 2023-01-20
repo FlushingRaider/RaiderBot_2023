@@ -66,10 +66,13 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
   //   VnVIS_e_VisionCamNumber[E_CamBottom] = E_Cam1;
   //   }
 
+
+#ifdef OldVision
   VnVIS_e_VisionCamNumber[E_CamTop] = E_Cam1;
   VnVIS_e_VisionCamNumber[E_CamBottom] = E_Cam2;
 
   // gets flag from the driver station to choose between alliance colors
+  
   if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
     {
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamBottom]] = 0; // 1 is the index for a red ball
@@ -80,6 +83,7 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamBottom]] = 1; // 2 is the index for a blue ball
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamTop]] = 1; // 1 is the top camera targeting index
     }
+    #endif
   }
 
 
@@ -89,12 +93,16 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
  * Description:  Contains the necessary code relative to processing the 
  *               vision output.
  ******************************************************************************/
+#ifdef OldVision
 void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
                photonlib::PhotonPipelineResult LsVIS_Str_BottomResult,
                bool                            LbVIS_b_AutoTargetRequest,
                bool                            LbVIS_b_DriverDriveModeReq,
                bool                           *LbVIS_b_VisionDriverModeCmndFinal)
   {
+
+    
+  
   T_CameraLocation LeVIS_Int_Index = E_CamTop;
   units::meter_t LeVIS_m_Range = 0_m;
   photonlib::PhotonTrackedTarget LsVIS_Str_Target;
@@ -168,4 +176,24 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 
   /* Send the command out to photon vision: */
   *LbVIS_b_VisionDriverModeCmndFinal = VeVIS_b_VisionDriverRequestedModeCmndLatched;
+
+  
+
+
   }
+  #endif
+
+  #ifdef TestVision
+  void TestVisionRun(photonlib::PhotonPipelineResult CamResult){
+
+        bool HasTarget = CamResult.HasTargets();
+    
+    
+
+
+    
+
+  }
+
+
+  #endif

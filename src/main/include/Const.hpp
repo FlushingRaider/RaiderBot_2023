@@ -8,6 +8,8 @@
 // Define the bot type: CompBot, PracticeBot
 #define PracticeBot
 
+#define TestVision // or OldVision
+
 // RoboRio controller execution time
 const double C_ExeTime = 0.02; // Set to match the the default controller loop time of 20 ms
 const units::second_t C_ExeTime_t = 0.02_s; // Set to match the the default controller loop time of 20 ms
