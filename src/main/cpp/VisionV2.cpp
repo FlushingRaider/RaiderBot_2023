@@ -14,9 +14,10 @@
 #include <photonlib/PhotonUtils.h>
 #include "Const.hpp"
 #include "Filter.hpp"
+#include <frc/apriltag/AprilTagFieldLayout.h>
 
-
-
+#include <photonlib/PhotonPoseEstimator.h>
+#include <photonlib/RobotPoseEstimator.h>
 // all our favorite variables
 // double         V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
 int            VnVIS_int_VisionCameraIndex[E_CamSz]; // 
@@ -41,6 +42,15 @@ double V_Tagy;
 double V_Tagz;
 int V_TagID;
 int V_CamIndex; // 1 is cone, 2 is cube, 3 is tag
+
+
+
+
+
+
+
+
+
 #endif
 
 /******************************************************************************
@@ -212,9 +222,31 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
     
     V_CamYaw = CamResult.GetBestTarget().GetYaw();
 
+    // copy pasted from docs:
     
-    
+    std::vector<frc::AprilTag> tags = {
+    {0, frc::Pose3d(units::meter_t(3), units::meter_t(3), units::meter_t(3),
+                    frc::Rotation3d())},
+    {1, frc::Pose3d(units::meter_t(5), units::meter_t(5), units::meter_t(5),
+                    frc::Rotation3d())}};
+std::shared_ptr<frc::AprilTagFieldLayout> aprilTags =std::make_shared<frc::AprilTagFieldLayout>(tags, 54_ft, 27_ft);
 
+// Forward Camera
+std::shared_ptr<photonlib::PhotonCamera> cameraOne =
+    std::make_shared<photonlib::PhotonCamera>("testCamera");
+// Camera is mounted facing forward, half a meter forward of center, half a
+// meter up from center.
+frc::Transform3d robotToCam =
+    frc::Transform3d(frc::Translation3d(0.5_m, 0_m, 0.5_m),
+                    frc::Rotation3d(0_rad, 0_rad, 0_rad));
+
+// ... Add other cameras here
+
+// Assemble the list of cameras & mount locations
+std::vector<std::pair<std::shared_ptr<photonlib::PhotonCamera>, frc::Transform3d>> cameras;
+cameras.push_back(std::make_pair(cameraOne, robotToCam));
+
+photonlib::RobotPoseEstimator estimator( aprilTags, photonlib::LOWEST_AMBIGUITY, cameras);
     
 
   }
