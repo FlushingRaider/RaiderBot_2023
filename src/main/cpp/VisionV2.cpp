@@ -32,6 +32,17 @@ bool           VeVIS_b_VisionDriverRequestedModeCmndPrev; // Requested driver mo
 
 bool           VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
 
+#ifdef TestVision
+bool V_HasTarget;
+double  V_CamYaw;
+frc::Transform3d VisionTrans;
+double V_Tagx;
+double V_Tagy;
+double V_Tagz;
+int V_TagID;
+int V_CamIndex; // 1 is cone, 2 is cube, 3 is tag
+#endif
+
 /******************************************************************************
  * Function:     VisionRobotInit
  *
@@ -184,12 +195,25 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
   #endif
 
   #ifdef TestVision
-  void TestVisionRun(photonlib::PhotonPipelineResult CamResult){
+  void TestVisionRun(photonlib::PhotonPipelineResult CamResult, photonlib::PhotonCamera Cam){
+    V_CamIndex = Cam.GetPipelineIndex();
+    V_HasTarget = CamResult.HasTargets();
 
-        bool HasTarget = CamResult.HasTargets();
+    if (V_CamIndex == 3){
+      VisionTrans = CamResult.GetBestTarget().GetBestCameraToTarget();
+    V_Tagx = VisionTrans.X().value();
+    V_Tagy = VisionTrans.Y().value();
+    V_Tagz = VisionTrans.Z().value();
+    
+    V_TagID = CamResult.GetBestTarget().GetFiducialId();
+
+
+    }
+    
+    V_CamYaw = CamResult.GetBestTarget().GetYaw();
+
     
     
-
 
     
 

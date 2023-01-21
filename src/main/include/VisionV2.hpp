@@ -13,6 +13,14 @@ extern double VeVIS_m_VisionTargetDistance[E_CamLocSz];
 extern int    VnVIS_int_VisionCameraIndex[E_CamSz];
 extern bool VeVIS_b_VisionDriverRequestedModeCmnd;
 
+extern bool V_HasTarget;
+extern double V_CamYaw;
+extern double V_Tagx;
+extern double V_Tagy;
+extern double V_Tagz;
+extern int V_TagID;
+
+
 #ifdef OldVision
 
 void VisionRobotInit();
@@ -28,5 +36,4 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 
 #ifdef TestVision
 void TestVisionRun(photonlib::PhotonPipelineResult CamResult);
-
 #endif

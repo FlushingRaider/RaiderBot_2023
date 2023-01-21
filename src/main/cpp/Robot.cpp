@@ -397,8 +397,12 @@ void Robot::RobotPeriodic()
 
 
   TestVisionRun(Cam1.GetLatestResult());
-
-
+ frc::SmartDashboard::PutBoolean("has target" ,  V_HasTarget);
+ frc::SmartDashboard::PutNumber("cam1 yaw" ,  V_CamYaw);
+ frc::SmartDashboard::PutNumber("cam1 x" ,  V_Tagx);
+ frc::SmartDashboard::PutNumber("cam1 y" ,  V_Tagy);
+ frc::SmartDashboard::PutNumber("cam1 z" ,  V_Tagz);
+ frc::SmartDashboard::PutNumber("TagID ", V_TagID);
   #endif
 
 
