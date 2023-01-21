@@ -42,6 +42,8 @@ double KV_SD_WheelSpeedPID_V2_Gx[E_PID_SparkMaxCalSz];
 double KV_SD_WheelSpeedRampRate = 0;
 double KV_SD_WheelGx[E_RobotCornerSz];
 
+double VaDRC_k_WheelDirection[E_RobotCornerSz];
+
 
 /******************************************************************************
  * Function:     SwerveDriveMotorConfigsInit
@@ -236,6 +238,7 @@ void DriveControlInit()
         V_k_SD_WheelAngleIntegral[L_Index] = 0;
         V_Deg_SD_WheelAngleArb[L_Index] = 0;
         V_SD_WheelSpeedCmndPrev[L_Index] = 0; 
+        VaDRC_k_WheelDirection[L_Index] = 0;
       }
   Ve_b_SD_DriveWheelsInPID = false;
 
@@ -502,10 +505,12 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
     if (L_Deg_SD_WA_FWD_Delta <= L_Deg_SD_WA_REV_Delta)
       {
         V_Deg_SD_WheelAngleArb[L_Index] = L_Deg_SD_WA_FWD;
+        VaDRC_k_WheelDirection[L_Index] = KV_SD_WheelGx[L_Index];
       }
     else
       {
         V_Deg_SD_WheelAngleArb[L_Index] = L_Deg_SD_WA_REV;
+        VaDRC_k_WheelDirection[L_Index] = -KV_SD_WheelGx[L_Index];
         L_RPM_SD_WS[L_Index] *= (-1); // Need to flip sign of drive wheel to account for reverse direction
       }
 

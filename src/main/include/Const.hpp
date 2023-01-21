@@ -105,8 +105,8 @@ const double C_BlinkinLED_RainbowWithGlitter = -0.89;
 const int KeGRY_ms_GyroTimeoutMs = 30; //Waits and reports to DS if fails
 
 // Encoder / speed calculation related cals
-const double KeENC_k_ReductionRatio = 8.31; //Reduction ratio for swerve drive module
-const double KeENC_In_WheelCircumfrence = 0.3191764; // Circumferance of wheel, in inches
+const double KeENC_k_ReductionRatio = 8.33; //Reduction ratio for swerve drive module
+const double KeENC_In_WheelCircumfrence = 12.566; // Circumferance of wheel, in inches (4in nominal diameter)
 
 
 // Turret cals

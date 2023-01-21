@@ -12,6 +12,7 @@
 extern double V_k_SD_WheelAngleCmnd[E_RobotCornerSz];
 extern double V_SD_WheelSpeedCmnd[E_RobotCornerSz];
 extern bool   Ve_b_SD_DriveWheelsInPID;
+extern double VaDRC_k_WheelDirection[E_RobotCornerSz];
 
 void SwerveDriveMotorConfigsInit(rev::SparkMaxPIDController m_frontLeftDrivePID,
                                  rev::SparkMaxPIDController m_frontRightDrivePID,

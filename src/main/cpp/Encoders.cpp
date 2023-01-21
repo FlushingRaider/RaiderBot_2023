@@ -175,7 +175,12 @@ void Read_Encoders(double                       LeENC_Cnt_EncoderWheelAngleFront
   VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontRight] = m_encoderFrontRightDrive.GetPosition();
   VaENC_Cnt_WheelDeltaDistanceCurr[E_RearRight]  = m_encoderRearRightDrive.GetPosition();
   VaENC_Cnt_WheelDeltaDistanceCurr[E_RearLeft]   = m_encoderRearLeftDrive.GetPosition();
-  
+
+   frc::SmartDashboard::PutNumber("DeltaWheel_FL",  VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontLeft]);
+   frc::SmartDashboard::PutNumber("DeltaWheel_FR",  VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontRight]);
+   frc::SmartDashboard::PutNumber("DeltaWheel_RR",  VaENC_Cnt_WheelDeltaDistanceCurr[E_RearRight]);
+   frc::SmartDashboard::PutNumber("DeltaWheel_RL",  VaENC_Cnt_WheelDeltaDistanceCurr[E_RearLeft]);
+
   for (LeENC_e_Index = E_FrontLeft;
        LeENC_e_Index < E_RobotCornerSz;
        LeENC_e_Index = T_RobotCorner(int(LeENC_e_Index) + 1))
@@ -245,6 +250,11 @@ void Read_Encoders2(double                       LeENC_Cnt_EncoderWheelAngleFron
   VaENC_Cnt_WheelDeltaDistanceCurr[E_RearRight]  = m_encoderRearRightDrive.GetPosition();
   VaENC_Cnt_WheelDeltaDistanceCurr[E_RearLeft]   = m_encoderRearLeftDrive.GetPosition();
   
+   frc::SmartDashboard::PutNumber("DeltaWheel_FL",  VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontLeft]);
+   frc::SmartDashboard::PutNumber("DeltaWheel_FR",  VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontRight]);
+   frc::SmartDashboard::PutNumber("DeltaWheel_RR",  VaENC_Cnt_WheelDeltaDistanceCurr[E_RearRight]);
+   frc::SmartDashboard::PutNumber("DeltaWheel_RL",  VaENC_Cnt_WheelDeltaDistanceCurr[E_RearLeft]);
+
   for (LeENC_e_Index = E_FrontLeft;
        LeENC_e_Index < E_RobotCornerSz;
        LeENC_e_Index = T_RobotCorner(int(LeENC_e_Index) + 1))
@@ -272,10 +282,12 @@ void Read_Encoders2(double                       LeENC_Cnt_EncoderWheelAngleFron
     /* Create a copy of the Angle Fwd, but in radians */
     VaENC_Rad_WheelAngleFwd[LeENC_e_Index] = VaENC_Deg_WheelAngleFwd[LeENC_e_Index] * (C_PI/180);
 
+    // VaENC_In_WheelDeltaDistance[LeENC_e_Index]  = ((VaENC_Cnt_WheelDeltaDistanceCurr[LeENC_e_Index]  - VaENC_Cnt_WheelDeltaDistancePrev[LeENC_e_Index]));
     VaENC_In_WheelDeltaDistance[LeENC_e_Index]  = ((((VaENC_Cnt_WheelDeltaDistanceCurr[LeENC_e_Index]  - VaENC_Cnt_WheelDeltaDistancePrev[LeENC_e_Index])/  KeENC_k_ReductionRatio)) * KeENC_In_WheelCircumfrence );
     VaENC_Cnt_WheelDeltaDistancePrev[LeENC_e_Index]  = VaENC_Cnt_WheelDeltaDistanceCurr[LeENC_e_Index];
     }
 
+  
   VaENC_InS_WheelVelocity[E_FrontLeft]  = ((m_encoderFrontLeftDrive.GetVelocity()  / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_FrontRight] = ((m_encoderFrontRightDrive.GetVelocity() / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearRight]  = ((m_encoderRearRightDrive.GetVelocity()  / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;

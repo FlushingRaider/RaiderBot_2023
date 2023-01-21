@@ -287,7 +287,9 @@ void Robot::RobotPeriodic()
 
   DtrmnSwerveBotLocation( VeGRY_Rad_GyroYawAngleRad,
                          &VaENC_Rad_WheelAngleFwd[0],
-                         &VaENC_In_WheelDeltaDistance[0]);
+                         &VaENC_In_WheelDeltaDistance[0],
+                         VsDriverInput.b_ZeroGyro,
+                         &VaDRC_k_WheelDirection[0]);
 
   ADAS_DetermineMode();
 
@@ -306,8 +308,8 @@ void Robot::RobotPeriodic()
                                            VsDriverInput.b_SwerveGoalAutoCenter,
                                            VsDriverInput.b_AutoIntake,
                                            VeGRY_Deg_GyroYawAngleDegrees,
-                                           VeODO_Cnt_RobotDisplacementX,
-                                           VeODO_Cnt_RobotDisplacementY,
+                                           VeODO_In_RobotDisplacementX,
+                                           VeODO_In_RobotDisplacementY,
                                            VeVIS_b_VisionTargetAquired[E_CamTop],
                                            VeVIS_Deg_VisionYaw[E_CamTop],
                                            VeVIS_m_VisionTargetDistance[E_CamTop],
@@ -424,6 +426,8 @@ void Robot::RobotPeriodic()
 /* Output all of the content to the dashboard here: */
   frc::SmartDashboard::PutBoolean("Turret",         VsRobotSensors.b_TurretZero);
   frc::SmartDashboard::PutNumber("TurretPosition",  VeENC_Deg_TurretPosition);
+  frc::SmartDashboard::PutNumber("RobotDisplacementY",  VeODO_In_RobotDisplacementY);
+  frc::SmartDashboard::PutNumber("RobotDisplacementX",  VeODO_In_RobotDisplacementX);
 
   /* Set light control outputs here */
   do_CameraLightControl.Set(VeLC_b_CameraLightCmndOn);
