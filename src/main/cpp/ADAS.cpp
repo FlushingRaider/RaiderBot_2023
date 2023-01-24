@@ -156,7 +156,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double               *L_Pct_FwdRev,
                                       bool                  L_DriverRequestIntake,
                                       T_ADAS_ActiveFeature  LeLC_e_ADASActiveFeature)
   {
-  T_ADAS_ActiveFeature LeLC_e_ADASActiveFeaturePrev = LeLC_e_ADASActiveFeature;
 
   /* First, let's determine what we are going to do: */
   if (L_RobotState == E_Teleop)

@@ -9,10 +9,9 @@
    2022-02-15: Cleaned up file
  */
 
-extern double V_k_SD_WheelAngleCmnd[E_RobotCornerSz];
-extern double V_SD_WheelSpeedCmnd[E_RobotCornerSz];
-extern bool   Ve_b_SD_DriveWheelsInPID;
-extern double VaDRC_k_WheelDirection[E_RobotCornerSz];
+extern double VaDRC_Pct_WheelAngleCmnd[E_RobotCornerSz];
+extern double VaDRC_RPM_WheelSpeedCmnd[E_RobotCornerSz];
+extern bool   VeDRC_b_DriveWheelsInPID;
 
 void SwerveDriveMotorConfigsInit(rev::SparkMaxPIDController m_frontLeftDrivePID,
                                  rev::SparkMaxPIDController m_frontRightDrivePID,

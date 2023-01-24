@@ -13,9 +13,8 @@
 #include "Enums.hpp"
 #include "Const.hpp"
 
-double VeODO_In_RobotDisplacementX = 0;
-double VeODO_In_RobotDisplacementY = 0;
-double VeODO_In_DeltaWheelDistance[E_RobotCornerSz];
+double VeODO_In_RobotDisplacementX = 0;  // Displacement in the X direction, which is left/right
+double VeODO_In_RobotDisplacementY = 0;  // Displacement in the Y direction, which is forward/back
 
 
 /******************************************************************************
@@ -40,8 +39,7 @@ void OdometryInit()
 void DtrmnSwerveBotLocation(double  LeODO_Rad_Gyro,
                             double *LeODO_Rad_WheelAngleArb,
                             double *LeODO_In_DeltaWheelDistance,
-                            bool    LeODO_b_ResetButton,
-                            double  *LaODO_k_WheelDirection)
+                            bool    LeODO_b_ResetButton)
   {
     T_RobotCorner LnODO_Cnt_Index;
     double        LeODO_Rad_RelativeAngle[E_RobotCornerSz];
@@ -61,24 +59,13 @@ void DtrmnSwerveBotLocation(double  LeODO_Rad_Gyro,
        LnODO_Cnt_Index = T_RobotCorner(int(LnODO_Cnt_Index) + 1))
     {
       LeODO_Rad_RelativeAngle[LnODO_Cnt_Index] = LeODO_Rad_Gyro + LeODO_Rad_WheelAngleArb[LnODO_Cnt_Index];
-      LeODO_In_DeltaCornerDisplacementX[LnODO_Cnt_Index] = sin(LeODO_Rad_RelativeAngle[LnODO_Cnt_Index]) * LeODO_In_DeltaWheelDistance[LnODO_Cnt_Index] * (LaODO_k_WheelDirection[LnODO_Cnt_Index]);
-      LeODO_In_DeltaCornerDisplacementY[LnODO_Cnt_Index] = cos(LeODO_Rad_RelativeAngle[LnODO_Cnt_Index]) * LeODO_In_DeltaWheelDistance[LnODO_Cnt_Index] * (LaODO_k_WheelDirection[LnODO_Cnt_Index]);
+      LeODO_In_DeltaCornerDisplacementX[LnODO_Cnt_Index] = sin(LeODO_Rad_RelativeAngle[LnODO_Cnt_Index]) * LeODO_In_DeltaWheelDistance[LnODO_Cnt_Index];
+      LeODO_In_DeltaCornerDisplacementY[LnODO_Cnt_Index] = cos(LeODO_Rad_RelativeAngle[LnODO_Cnt_Index]) * LeODO_In_DeltaWheelDistance[LnODO_Cnt_Index];
 
       LeODO_In_TotalDeltaX += LeODO_In_DeltaCornerDisplacementX[LnODO_Cnt_Index];
-      LeODO_In_TotalDeltaY -= LeODO_In_DeltaCornerDisplacementY[LnODO_Cnt_Index];
-      VeODO_In_DeltaWheelDistance[LnODO_Cnt_Index] += LeODO_In_DeltaWheelDistance[LnODO_Cnt_Index];
+      LeODO_In_TotalDeltaY -= LeODO_In_DeltaCornerDisplacementY[LnODO_Cnt_Index];  // Negative to have movement to the left as negative
     }
   
-  frc::SmartDashboard::PutNumber("DeltaDistance_FL", VeODO_In_DeltaWheelDistance[E_FrontLeft]);
-  frc::SmartDashboard::PutNumber("DeltaDistance_FR", VeODO_In_DeltaWheelDistance[E_FrontRight]);
-  frc::SmartDashboard::PutNumber("DeltaDistance_RL", VeODO_In_DeltaWheelDistance[E_RearLeft]);
-  frc::SmartDashboard::PutNumber("DeltaDistance_RR", VeODO_In_DeltaWheelDistance[E_RearRight]);
-
-    frc::SmartDashboard::PutNumber("Dir_FL", LaODO_k_WheelDirection[E_FrontLeft]);
-  frc::SmartDashboard::PutNumber("Dir_FR", LaODO_k_WheelDirection[E_FrontRight]);
-  frc::SmartDashboard::PutNumber("Dir_RL", LaODO_k_WheelDirection[E_RearLeft]);
-  frc::SmartDashboard::PutNumber("Dir_RR", LaODO_k_WheelDirection[E_RearRight]);
-
   LeODO_In_TotalDeltaX = LeODO_In_TotalDeltaX / 4;
   LeODO_In_TotalDeltaY = LeODO_In_TotalDeltaY / 4;
 

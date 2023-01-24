@@ -294,13 +294,13 @@ const double KeENC_Deg_SD_WheelOffsetAngle[E_RobotCornerSz] = {174.527239,   // 
    reading from the absolute encoder that is indicated in order for the wheel to point straight.  For practice bot only. */
 const double KeENC_k_WheelOffsetAnglePractieBot[E_RobotCornerSz] = {-177.9,  // E_FrontLeft 1.3  -176
                                                                     -16.1,  // E_FrontRight 163.5
-                                                                    -127.1,   // E_RearLeft 230.8
+                                                                     52.9,   // E_RearLeft 230.8  -127.1
                                                                      96.9};  // E_RearRight 282.0
 
 /* K_SD_WheelGx: Gain multiplied by each calculated desired speed.  Intended to account for variation in wheel size. */
 const double K_SD_WheelGx[E_RobotCornerSz] = {-1.0,  // E_FrontLeft
                                               -1.0,  // E_FrontRight 
-                                              1.0,  // E_RearLeft
+                                              -1.0,  // E_RearLeft // +
                                               -1.0}; // E_RearRight 
 
 /* K_SD_MinGain: Min gain applied to the wheel speed for swerve drive. */

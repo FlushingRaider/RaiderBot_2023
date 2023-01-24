@@ -44,16 +44,16 @@ void Robot::RobotMotorCommands()
   // Motor output commands:
   // Swerve drive motors
   // Swerve stear motors
-  if (Ve_b_SD_DriveWheelsInPID == true)
+  if (VeDRC_b_DriveWheelsInPID == true)
     {
-    m_frontLeftDrivePID.SetReference(V_SD_WheelSpeedCmnd[E_FrontLeft],   rev::ControlType::kVelocity);
-    m_frontRightDrivePID.SetReference(V_SD_WheelSpeedCmnd[E_FrontRight], rev::ControlType::kVelocity);
-    m_rearLeftDrivePID.SetReference(V_SD_WheelSpeedCmnd[E_RearLeft],     rev::ControlType::kVelocity);
-    m_rearRightDrivePID.SetReference(V_SD_WheelSpeedCmnd[E_RearRight],   rev::ControlType::kVelocity);
-    m_frontLeftSteerMotor.Set(V_k_SD_WheelAngleCmnd[E_FrontLeft]);
-    m_frontRightSteerMotor.Set(V_k_SD_WheelAngleCmnd[E_FrontRight]);
-    m_rearLeftSteerMotor.Set(V_k_SD_WheelAngleCmnd[E_RearLeft]);
-    m_rearRightSteerMotor.Set(V_k_SD_WheelAngleCmnd[E_RearRight]);
+    m_frontLeftDrivePID.SetReference(VaDRC_RPM_WheelSpeedCmnd[E_FrontLeft],   rev::CANSparkMax::ControlType::kVelocity);  // rev::ControlType::kVelocity
+    m_frontRightDrivePID.SetReference(VaDRC_RPM_WheelSpeedCmnd[E_FrontRight], rev::CANSparkMax::ControlType::kVelocity);
+    m_rearLeftDrivePID.SetReference(VaDRC_RPM_WheelSpeedCmnd[E_RearLeft],     rev::CANSparkMax::ControlType::kVelocity);
+    m_rearRightDrivePID.SetReference(VaDRC_RPM_WheelSpeedCmnd[E_RearRight],   rev::CANSparkMax::ControlType::kVelocity);
+    m_frontLeftSteerMotor.Set(VaDRC_Pct_WheelAngleCmnd[E_FrontLeft]);
+    m_frontRightSteerMotor.Set(VaDRC_Pct_WheelAngleCmnd[E_FrontRight]);
+    m_rearLeftSteerMotor.Set(VaDRC_Pct_WheelAngleCmnd[E_RearLeft]);
+    m_rearRightSteerMotor.Set(VaDRC_Pct_WheelAngleCmnd[E_RearRight]);
     }
   else
     {
@@ -288,8 +288,7 @@ void Robot::RobotPeriodic()
   DtrmnSwerveBotLocation( VeGRY_Rad_GyroYawAngleRad,
                          &VaENC_Rad_WheelAngleFwd[0],
                          &VaENC_In_WheelDeltaDistance[0],
-                         VsDriverInput.b_ZeroGyro,
-                         &VaDRC_k_WheelDirection[0]);
+                         VsDriverInput.b_ZeroGyro);
 
   ADAS_DetermineMode();
 
@@ -341,8 +340,8 @@ void Robot::RobotPeriodic()
                     VeGRY_Rad_GyroYawAngleRad,
                    &VaENC_Deg_WheelAngleFwd[0],
                    &VaENC_Deg_WheelAngleRev[0],
-                   &V_SD_WheelSpeedCmnd[0],
-                   &V_k_SD_WheelAngleCmnd[0]);
+                   &VaDRC_RPM_WheelSpeedCmnd[0],
+                   &VaDRC_Pct_WheelAngleCmnd[0]);
 
   BallHandlerControlMain( VsDriverInput.b_IntakeIn,
                           VsDriverInput.b_IntakeOut,
@@ -424,8 +423,6 @@ void Robot::RobotPeriodic()
   ADAS_BT_ConfigsCal();
 
 /* Output all of the content to the dashboard here: */
-  frc::SmartDashboard::PutBoolean("Turret",         VsRobotSensors.b_TurretZero);
-  frc::SmartDashboard::PutNumber("TurretPosition",  VeENC_Deg_TurretPosition);
   frc::SmartDashboard::PutNumber("RobotDisplacementY",  VeODO_In_RobotDisplacementY);
   frc::SmartDashboard::PutNumber("RobotDisplacementX",  VeODO_In_RobotDisplacementX);
 
