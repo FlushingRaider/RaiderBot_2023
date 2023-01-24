@@ -362,15 +362,10 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
       }
     } 
 
-  // L_Deg_GyroAngle == -L_Deg_GyroAngle;
-
   /* Here, we are attempting to determine if the drive/ADAS is attempting to turn the robot.  If we are 
      attempting to rotate the robot, allow the "desired" angle to update to the current measured angle.  */
-  if (L_JoyStick1_ResetDesiredAngle == true)
-    {
-      VeDRC_Deg_AutoCorrectDesired = L_Deg_GyroAngle;
-    }
-  else if (fabs(L_RCW) >= K_SD_RotateDeadBand)
+  if ((L_JoyStick1_ResetDesiredAngle == true) ||
+      (fabs(L_RCW) >= K_SD_RotateDeadBand))
     {
     VeDRC_Deg_AutoCorrectDesired = L_Deg_GyroAngle;
     }
@@ -415,8 +410,6 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
                                              Ke_SD_AutoCorrectPID_Gx[E_D_Ll],
                                              Ke_SD_AutoCorrectPID_Gx[E_Max_Ul],
                                              Ke_SD_AutoCorrectPID_Gx[E_Max_Ll]);
-
-  // Le_k_SD_RotateCorrectionGx = L_Deg_SD_AngleError;  // This needs to be smarter....
 
   /* Swerve drive calculaltions: */
   L_temp =  L_FWD * cos(L_Rad_GyroAngle) + L_STR * sin(L_Rad_GyroAngle);

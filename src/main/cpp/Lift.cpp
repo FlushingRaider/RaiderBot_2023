@@ -255,7 +255,7 @@ void LiftControlInit()
   T_Lift_State LeLFT_e_Index;
 
   VeLFT_Cnt_Lift_state = E_S0_BEGONE;
- VeLFT_Cnt_LiftIteration = VeLFT_Cnt_LiftIteration1;
+  VeLFT_Cnt_LiftIteration = VeLFT_Cnt_LiftIteration1;
   VeLFT_Cnt_LiftDebounceTimer = 0;
   VeLFT_b_CriteriaMet = false;
 

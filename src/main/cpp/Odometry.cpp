@@ -58,7 +58,7 @@ void DtrmnSwerveBotLocation(double  LeODO_Rad_Gyro,
        LnODO_Cnt_Index < E_RobotCornerSz;
        LnODO_Cnt_Index = T_RobotCorner(int(LnODO_Cnt_Index) + 1))
     {
-      LeODO_Rad_RelativeAngle[LnODO_Cnt_Index] = LeODO_Rad_Gyro + LeODO_Rad_WheelAngleArb[LnODO_Cnt_Index];
+      LeODO_Rad_RelativeAngle[LnODO_Cnt_Index] = LeODO_Rad_Gyro - LeODO_Rad_WheelAngleArb[LnODO_Cnt_Index];
       LeODO_In_DeltaCornerDisplacementX[LnODO_Cnt_Index] = sin(LeODO_Rad_RelativeAngle[LnODO_Cnt_Index]) * LeODO_In_DeltaWheelDistance[LnODO_Cnt_Index];
       LeODO_In_DeltaCornerDisplacementY[LnODO_Cnt_Index] = cos(LeODO_Rad_RelativeAngle[LnODO_Cnt_Index]) * LeODO_In_DeltaWheelDistance[LnODO_Cnt_Index];
 
