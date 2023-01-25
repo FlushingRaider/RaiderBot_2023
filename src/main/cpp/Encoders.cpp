@@ -7,6 +7,7 @@
 
 #include "rev/CANSparkMax.h"
 #include <frc/smartdashboard/SmartDashboard.h>
+#include "ctre/Phoenix.h"
 
 #include "Const.hpp"
 
@@ -149,7 +150,8 @@ void Read_Encoders(double                       LeENC_Cnt_EncoderWheelAngleFront
                    rev::SparkMaxRelativeEncoder m_encoderleftShooter,
                    rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                    rev::SparkMaxRelativeEncoder m_encoderLiftXD,
-                   double                       LeENC_Cnt_EncoderTurretAngle)
+                   double                       LeENC_Cnt_EncoderTurretAngle,
+                   WPI_CANCoder LsENC_o_CEncFL)
   {
   T_RobotCorner LeENC_e_Index;
 

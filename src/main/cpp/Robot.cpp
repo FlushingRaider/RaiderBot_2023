@@ -222,17 +222,19 @@ void Robot::RobotPeriodic()
                   di_XY_LimitSwitch.Get(), // XY Limit - di_XY_LimitSwitch.Get()
                   false); //di_TurrentLimitSwitch.Get());
   
-  Joystick1_robot_mapping(c_joyStick2.GetRawButton(1),
-                          c_joyStick2.GetRawButton(2),
-                          c_joyStick2.GetRawButton(6), 
-                          c_joyStick2.GetRawButton(5),
-                          c_joyStick2.GetRawButton(8),
-                          c_joyStick2.GetRawButton(3),
-                          c_joyStick2.GetRawButton(4),
-                          c_joyStick2.GetRawAxis(1),
-                          c_joyStick2.GetRawAxis(5),
-                          c_joyStick2.GetPOV(),
-                          c_joyStick2.GetRawButton(7));
+   Joystick1_robot_mapping(c_joyStick.GetRawButton(7),
+                          c_joyStick.GetRawButton(8),
+                          c_joyStick.GetRawAxis(1),
+                          c_joyStick.GetRawAxis(0),
+                          c_joyStick.GetRawAxis(4),
+                          c_joyStick.GetRawAxis(3),
+                          c_joyStick.GetRawButton(1),
+                          c_joyStick.GetRawButton(3),
+                          c_joyStick.GetRawButton(4),
+                          c_joyStick.GetRawButton(6),
+                          c_joyStick.GetRawButton(2),
+                          c_joyStick.GetRawButton(5),
+                          c_joyStick.GetPOV());
 
   Read_Encoders(a_encoderWheelAngleFrontLeft.Get().value(),
                 a_encoderWheelAngleFrontRight.Get().value(),
@@ -250,7 +252,8 @@ void Robot::RobotPeriodic()
                 m_encoderleftShooter,
                 m_encoderLiftYD,
                 m_encoderLiftXD,
-                m_turret.GetSelectedSensorPosition(1));  //m_turret.GetSelectedSensorPosition()
+                m_turret.GetSelectedSensorPosition(1),
+                CEncFL);  //m_turret.GetSelectedSensorPosition()
 #else
   Joystick1_robot_mapping(c_joyStick.GetRawButton(7),
                           c_joyStick.GetRawButton(8),

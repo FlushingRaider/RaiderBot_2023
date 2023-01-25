@@ -34,7 +34,8 @@
                     rev::SparkMaxRelativeEncoder m_encoderleftShooter,
                     rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                     rev::SparkMaxRelativeEncoder m_encoderLiftXD,
-                    double                       LeENC_Cnt_EncoderTurretAngle);
+                    double                       LeENC_Cnt_EncoderTurretAngle,
+                    WPI_CANCoder LsENC_o_CEncFL);
 
 void Read_Encoders2(double                       LeENC_Cnt_EncoderWheelAngleFrontLeftRawPracticeBot,
                     double                       LeENC_Cnt_EncoderWheelAngleFrontRightRawPracticeBot,

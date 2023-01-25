@@ -49,6 +49,7 @@ class Robot : public frc::TimedRobot {
   frc::DutyCycleEncoder a_encoderWheelAngleFrontRight {C_MagEncoderFR_ID};
   frc::DutyCycleEncoder a_encoderWheelAngleRearLeft   {C_MagEncoderRL_ID};
   frc::DutyCycleEncoder a_encoderWheelAngleRearRight  {C_MagEncoderRR_ID};
+   WPI_CANCoder CEncFL{KeEnc_i_WheelAngleFL, "rio"};
 
   frc::DigitalInput     di_XY_LimitSwitch     {C_XY_LimitSwitch_ID};
   frc::DigitalInput     di_XD_LimitSwitch     {C_XD_LimitSwitch_ID};
@@ -122,7 +123,7 @@ class Robot : public frc::TimedRobot {
   // Driver Inputs
   frc::Joystick c_joyStick{0};
 #ifdef CompBot
-  // frc::Joystick c_joyStick2{1};
+  frc::Joystick c_joyStick2{1};
 #endif
 
 
