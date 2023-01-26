@@ -150,8 +150,7 @@ void Read_Encoders(double                       LeENC_Cnt_EncoderWheelAngleFront
                    rev::SparkMaxRelativeEncoder m_encoderleftShooter,
                    rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                    rev::SparkMaxRelativeEncoder m_encoderLiftXD,
-                   double                       LeENC_Cnt_EncoderTurretAngle,
-                   WPI_CANCoder LsENC_o_CEncFL)
+                   double                       LeENC_Cnt_EncoderTurretAngle)
   {
   T_RobotCorner LeENC_e_Index;
 

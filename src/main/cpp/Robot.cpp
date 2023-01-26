@@ -236,7 +236,7 @@ void Robot::RobotPeriodic()
                           c_joyStick.GetRawButton(5),
                           c_joyStick.GetPOV());
 
-  Read_Encoders(a_encoderWheelAngleFrontLeft.Get().value(),
+  Read_Encoders(m_encoderWheelAngleCAN_FL.GetPosition(),
                 a_encoderWheelAngleFrontRight.Get().value(),
                 a_encoderWheelAngleRearLeft.Get().value(),
                 a_encoderWheelAngleRearRight.Get().value(),
@@ -252,8 +252,7 @@ void Robot::RobotPeriodic()
                 m_encoderleftShooter,
                 m_encoderLiftYD,
                 m_encoderLiftXD,
-                m_turret.GetSelectedSensorPosition(1),
-                CEncFL);  //m_turret.GetSelectedSensorPosition()
+                m_turret.GetSelectedSensorPosition(1));  //m_turret.GetSelectedSensorPosition()
 #else
   Joystick1_robot_mapping(c_joyStick.GetRawButton(7),
                           c_joyStick.GetRawButton(8),
