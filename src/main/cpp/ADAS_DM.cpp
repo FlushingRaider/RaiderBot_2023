@@ -481,15 +481,15 @@ bool ADAS_DM_DriveStraight(double     *L_Pct_FwdRev,
   *L_Pct_Intake = 0;
   *L_Pct_Elevator = 0;
 
-  V_ADAS_DM_DebounceTime += C_ExeTime;
+  V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
 
-  if (V_ADAS_DM_DebounceTime <= K_ADAS_DM_DriveTimeLong)
+  if (V_ADAS_DM_DebounceTime <= K_ADAS_DM_DriveTimeLong) // check that we are still in the time we have given ourselves
     {
-    *L_Pct_FwdRev = K_ADAS_DM_DriveFWD_Pct;
+    *L_Pct_FwdRev = K_ADAS_DM_DriveFWD_Pct; // set our strafe percent to this constant
     }
   else
     {
-    *L_Pct_FwdRev = 0;
+    *L_Pct_FwdRev = 0;                      // reset all the variables a driver state
     *L_SD_RobotOriented = false;
     V_ADAS_DM_DebounceTime = 0;
     L_ADAS_DM_StateComplete = true;
