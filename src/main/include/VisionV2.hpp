@@ -7,6 +7,9 @@
    Contains content from vision.
  */
 
+#include <Enums.hpp>
+
+
 extern bool   VeVIS_b_VisionTargetAquired[E_CamLocSz];
 extern double VeVIS_Deg_VisionYaw[E_CamLocSz];
 extern double VeVIS_m_VisionTargetDistance[E_CamLocSz];
@@ -19,6 +22,7 @@ extern double V_Tagx;
 extern double V_Tagy;
 extern double V_Tagz;
 extern int V_TagID;
+
 
 
 #ifdef OldVision
@@ -35,5 +39,5 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 #endif
 
 #ifdef TestVision
-void TestVisionRun(photonlib::PhotonPipelineResult CamResult);
+void TestVisionRun();
 #endif

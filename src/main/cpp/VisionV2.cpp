@@ -8,6 +8,8 @@
   
  */
 
+
+
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/DriverStation.h>
 #include <photonlib/PhotonCamera.h>
@@ -17,7 +19,13 @@
 #include <frc/apriltag/AprilTagFieldLayout.h>
 
 #include <photonlib/PhotonPoseEstimator.h>
-#include <photonlib/RobotPoseEstimator.h>
+#include <VisionV2.hpp>
+
+#include <frc/Filesystem.h>
+#include <wpi/fs.h>
+
+
+
 // all our favorite variables
 // double         V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
 int            VnVIS_int_VisionCameraIndex[E_CamSz]; // 
@@ -43,11 +51,9 @@ double V_Tagz;
 int V_TagID;
 int V_CamIndex; // 1 is cone, 2 is cube, 3 is tag
 
+photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1");
 
-
-
-
-
+fs::path aprilTagsjson;
 
 
 
@@ -63,6 +69,9 @@ void VisionRobotInit()
   /* Place an input on the dash.  A value of 1 indicates top camera is cam 1, 
      otherwise it is camera 2 */
   // frc::SmartDashboard::PutNumber("Top Camera Number", V_VisionTopCamNumberTemp);
+
+
+
   }
 
 
@@ -88,6 +97,62 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
   //   }
 
 
+
+
+aprilTagsjson = frc::filesystem::GetDeployDirectory();
+aprilTagsjson = aprilTagsjson / "2023_chargedUp.json";
+
+// frc::AprilTagFieldLayout aprilTags(aprilTagsJson);
+
+//     photonlib::PhotonPoseEstimator estimator(
+//       aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
+//   auto estimatedPose = estimator.Update();
+//   frc::Pose3d pose = estimatedPose.value().estimatedPose;
+
+
+// static std::vector<frc::AprilTag> tags = {
+//     {0, frc::Pose3d(units::meter_t(3), units::meter_t(3), units::meter_t(3),
+//                     frc::Rotation3d())},
+//     {1, frc::Pose3d(units::meter_t(5), units::meter_t(5), units::meter_t(5),
+//                     frc::Rotation3d())}};
+
+static frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
+
+// static wpi::SmallVector<std::pair<double, double>, 4> corners{
+//     std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 6}, std::pair{7, 8}};
+// static std::vector<std::pair<double, double>> detectedCorners{
+//     std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 6}, std::pair{7, 8}};
+
+//     wpi::SmallVector<photonlib::PhotonTrackedTarget, 3> targets{
+//       photonlib::PhotonTrackedTarget{
+//           3.0, -4.0, 9.0, 4.0, 0,
+//           frc::Transform3d(frc::Translation3d(1_m, 2_m, 3_m),
+//                            frc::Rotation3d(1_rad, 2_rad, 3_rad)),
+//           frc::Transform3d(frc::Translation3d(1_m, 2_m, 3_m),
+//                            frc::Rotation3d(1_rad, 2_rad, 3_rad)),
+//           0.7, corners, detectedCorners},
+//       photonlib::PhotonTrackedTarget{
+//           3.0, -4.0, 9.1, 6.7, 1,
+//           frc::Transform3d(frc::Translation3d(4_m, 2_m, 3_m),
+//                            frc::Rotation3d(0_rad, 0_rad, 0_rad)),
+//           frc::Transform3d(frc::Translation3d(4_m, 2_m, 3_m),
+//                            frc::Rotation3d(0_rad, 0_rad, 0_rad)),
+//           0.3, corners, detectedCorners},
+//       photonlib::PhotonTrackedTarget{
+//           9.0, -2.0, 19.0, 3.0, 0,
+//           frc::Transform3d(frc::Translation3d(1_m, 2_m, 3_m),
+//                            frc::Rotation3d(1_rad, 2_rad, 3_rad)),
+//           frc::Transform3d(frc::Translation3d(1_m, 2_m, 3_m),
+//                            frc::Rotation3d(1_rad, 2_rad, 3_rad)),
+//           0.4, corners, detectedCorners}};
+
+ photonlib::PhotonPoseEstimator estimator(
+      aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
+  auto estimatedPose = estimator.Update();
+  frc::Pose3d pose = estimatedPose.value().estimatedPose;
+
+
+
 #ifdef OldVision
   VnVIS_e_VisionCamNumber[E_CamTop] = E_Cam1;
   VnVIS_e_VisionCamNumber[E_CamBottom] = E_Cam2;
@@ -105,6 +170,12 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamTop]] = 1; // 1 is the top camera targeting index
     }
     #endif
+
+  #ifdef TestVision
+
+  #endif
+
+
   }
 
 
@@ -164,6 +235,8 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
         {
         LsVIS_Str_Target = pc_LsVIS_Str_Result[VnVIS_e_VisionCamNumber[LeVIS_Int_Index]].GetBestTarget(); //gets the best target  
     
+
+    
         // VeVIS_Deg_VisionYaw[LeVIS_Int_Index] = LsVIS_Str_Target.GetYaw(); // Yaw of the best target
 
         VeVIS_Deg_VisionYaw[LeVIS_Int_Index] = Filter_FirstOrderLag(LsVIS_Str_Target.GetYaw(), VeVIS_Deg_VisionYaw[LeVIS_Int_Index], K_VisionYawLagFilter[LeVIS_Int_Index]);
@@ -205,8 +278,11 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
   #endif
 
   #ifdef TestVision
-  void TestVisionRun(photonlib::PhotonPipelineResult CamResult, photonlib::PhotonCamera Cam){
-    V_CamIndex = Cam.GetPipelineIndex();
+  void TestVisionRun(){
+    // V_CamIndex = Cam.GetPipelineIndex();
+
+   photonlib::PhotonPipelineResult CamResult = Cam1.GetLatestResult();
+
     V_HasTarget = CamResult.HasTargets();
 
     if (V_CamIndex == 3){
@@ -222,31 +298,8 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
     
     V_CamYaw = CamResult.GetBestTarget().GetYaw();
 
-    // copy pasted from docs:
-    
-    std::vector<frc::AprilTag> tags = {
-    {0, frc::Pose3d(units::meter_t(3), units::meter_t(3), units::meter_t(3),
-                    frc::Rotation3d())},
-    {1, frc::Pose3d(units::meter_t(5), units::meter_t(5), units::meter_t(5),
-                    frc::Rotation3d())}};
-std::shared_ptr<frc::AprilTagFieldLayout> aprilTags =std::make_shared<frc::AprilTagFieldLayout>(tags, 54_ft, 27_ft);
 
-// Forward Camera
-std::shared_ptr<photonlib::PhotonCamera> cameraOne =
-    std::make_shared<photonlib::PhotonCamera>("testCamera");
-// Camera is mounted facing forward, half a meter forward of center, half a
-// meter up from center.
-frc::Transform3d robotToCam =
-    frc::Transform3d(frc::Translation3d(0.5_m, 0_m, 0.5_m),
-                    frc::Rotation3d(0_rad, 0_rad, 0_rad));
 
-// ... Add other cameras here
-
-// Assemble the list of cameras & mount locations
-std::vector<std::pair<std::shared_ptr<photonlib::PhotonCamera>, frc::Transform3d>> cameras;
-cameras.push_back(std::make_pair(cameraOne, robotToCam));
-
-photonlib::RobotPoseEstimator estimator( aprilTags, photonlib::LOWEST_AMBIGUITY, cameras);
     
 
   }

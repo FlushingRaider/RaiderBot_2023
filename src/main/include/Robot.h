@@ -132,7 +132,6 @@ class Robot : public frc::TimedRobot {
 #endif
 
 #ifdef TestVision
-  photonlib::PhotonCamera Cam1{"Cam1"};
 
 
 #endif
