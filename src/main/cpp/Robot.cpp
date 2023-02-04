@@ -78,10 +78,10 @@ void Robot::RobotMotorCommands()
     L_Temp = K_Pct_TurretOpenLoopCmnd;
     }
 
-  m_turret.Set(ControlMode::PercentOutput, L_Temp);
+  // m_turret.Set(ControlMode::PercentOutput, L_Temp);
 
 
-#ifdef CompBot
+#ifdef CompBot2
   // Ball launcher motors
   if (V_BH_LauncherActive == true)
     {
@@ -135,7 +135,7 @@ void Robot::RobotInit()
                      m_encoderFrontLeftDrive,
                      m_encoderRearRightDrive,
                      m_encoderRearLeftDrive);
-  #ifdef CompBot
+  #ifdef CompBot2
   EncodersInitComp(m_encoderLiftYD,
                    m_encoderLiftXD,
                    m_encoderrightShooter,
@@ -160,16 +160,16 @@ void Robot::RobotInit()
   m_rearRightSteerMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_rearRightDriveMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
-  m_turret.ConfigFactoryDefault();
-  m_turret.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
-  m_turret.SetSensorPhase(true);
-  m_turret.SetSelectedSensorPosition(0);
-  m_turret.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
-  m_turret.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
-  m_turret.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
-  m_turret.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
+  // m_turret.ConfigFactoryDefault();
+  // m_turret.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
+  // m_turret.SetSensorPhase(true);
+  // m_turret.SetSelectedSensorPosition(0);
+  // m_turret.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
+  // m_turret.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
+  // m_turret.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
+  // m_turret.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
 
-  #ifdef CompBot
+  #ifdef CompBot2
   m_liftMotorYD.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_liftMotorXD.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
@@ -184,7 +184,7 @@ void Robot::RobotInit()
                               m_rearLeftDrivePID,
                               m_rearRightDrivePID);
 
-  #ifdef CompBot
+  #ifdef CompBot2
   BallHandlerMotorConfigsInit(m_rightShooterpid,
                               m_leftShooterpid);
 
@@ -199,9 +199,13 @@ void Robot::RobotInit()
   ADAS_UT_ConfigsInit();
   ADAS_BT_ConfigsInit();
 
+
+  #ifdef OldVision
   VisionRobotInit();
 
   VisionInit(V_AllianceColor);
+
+  #endif
   }
 
 
@@ -236,10 +240,10 @@ void Robot::RobotPeriodic()
                   di_XY_LimitSwitch.Get(), // XY Limit - di_XY_LimitSwitch.Get()
                   false); //di_TurrentLimitSwitch.Get());
   
-  Read_Encoders(m_encoderWheelAngleCAN_FL.GetPosition(),
-                a_encoderWheelAngleFrontRight.Get().value(),
-                a_encoderWheelAngleRearLeft.Get().value(),
-                a_encoderWheelAngleRearRight.Get().value(),
+  Read_Encoders(m_encoderWheelAngleCAN_FL.GetAbsolutePosition(),
+                m_encoderWheelAngleCAN_FR.GetAbsolutePosition(),
+                m_encoderWheelAngleCAN_RL.GetAbsolutePosition(),
+                m_encoderWheelAngleCAN_RR.GetAbsolutePosition(),
                 a_encoderFrontLeftSteer.GetVoltage(),
                 a_encoderFrontRightSteer.GetVoltage(),
                 a_encoderRearLeftSteer.GetVoltage(),
@@ -248,11 +252,11 @@ void Robot::RobotPeriodic()
                 m_encoderFrontRightDrive,
                 m_encoderRearLeftDrive,
                 m_encoderRearRightDrive,
-                m_encoderrightShooter,
-                m_encoderleftShooter,
-                m_encoderLiftYD,
-                m_encoderLiftXD,
-                m_turret.GetSelectedSensorPosition(1));  //m_turret.GetSelectedSensorPosition()
+                m_encoderRearRightDrive, // m_encoderrightShooter
+                m_encoderRearRightDrive, // m_encoderleftShooter
+                m_encoderRearRightDrive, //m_encoderLiftYD
+                m_encoderRearRightDrive, //m_encoderLiftXD
+                0);  //m_turret.GetSelectedSensorPosition()
 
   Joystick2_robot_mapping(c_joyStick2.GetRawButton(1),
                           c_joyStick2.GetRawButton(2),
@@ -274,7 +278,7 @@ void Robot::RobotPeriodic()
                  m_encoderFrontRightDrive,
                  m_encoderRearLeftDrive,
                  m_encoderRearRightDrive,
-                 m_turret.GetSelectedSensorPosition(1)); 
+                 0); 
 
   Read_IO_Sensors(false, // ball sensor upper - di_IR_Sensor.Get()
                   false, // ball sensor lower - di_BallSensorLower.Get()
@@ -370,11 +374,14 @@ void Robot::RobotPeriodic()
                   &VeLC_b_CameraLightCmndOn,
                   &VeLC_Cmd_VanityLightCmnd);
 
+
+  #ifdef OldVision
   VisionRun( pc_Camera1.GetLatestResult(),
              pc_Camera2.GetLatestResult(),
              V_ADAS_Vision_RequestedTargeting,
              VsCONT_s_DriverInput.b_VisionDriverModeOverride,
             &VeVIS_b_VisionDriverRequestedModeCmnd);
+ 
 
   pc_Camera1.SetDriverMode(VeVIS_b_VisionDriverRequestedModeCmnd);
   pc_Camera2.SetDriverMode(VeVIS_b_VisionDriverRequestedModeCmnd);
@@ -384,8 +391,29 @@ void Robot::RobotPeriodic()
     // pc_Camera1.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam1]);  // Shouldn't need this one so long as Cam1 remains as top
     pc_Camera2.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam2]);  // Need to comment this out if Photon Vision is being calibrated/tweaked
     }
+   #endif
 
-  #ifdef CompBot
+  #ifdef TestVision
+
+
+TestVisionRun();
+ frc::SmartDashboard::PutBoolean("has target" ,  V_HasTarget);
+ frc::SmartDashboard::PutNumber("cam1 yaw" ,  V_CamYaw);
+ frc::SmartDashboard::PutNumber("cam1 x" ,  V_Tagx);
+ frc::SmartDashboard::PutNumber("cam1 y" ,  V_Tagy);
+ frc::SmartDashboard::PutNumber("cam1 z" ,  V_Tagz);
+ frc::SmartDashboard::PutNumber("TagID ", V_TagID);
+
+
+
+
+
+  #endif
+
+
+
+
+  #ifdef CompBot2
   VeLFT_Cnt_Lift_state = Lift_Control_Dictator(VsCONT_s_DriverInput.b_LiftControl,
                                        VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro,
                                        VsCONT_s_DriverInput.e_LiftCmndDirection,
@@ -411,7 +439,7 @@ void Robot::RobotPeriodic()
                              m_frontRightDrivePID,
                              m_rearLeftDrivePID,
                              m_rearRightDrivePID);
-  #ifdef CompBot
+  #ifdef CompBot2
   BallHandlerMotorConfigsCal(m_rightShooterpid,
                              m_leftShooterpid);
 
@@ -450,7 +478,10 @@ void Robot::AutonomousInit()
     LiftControlInit();
     ADAS_Main_Reset();
     OdometryInit();
+
+  #ifdef OldVision
     VisionInit(V_AllianceColor);
+  #endif
   }
 
 
@@ -482,12 +513,12 @@ void Robot::TeleopInit()
   BallHandlerInit();
   LiftControlInit();
   OdometryInit();
-  VisionInit(V_AllianceColor);
-  #ifdef CompBot
+  // VisionInit(V_AllianceColor);
+  #ifdef CompBot2
   m_encoderrightShooter.SetPosition(0);
   m_encoderleftShooter.SetPosition(0);
   #endif
-  m_turret.SetSelectedSensorPosition(0);
+  // m_turret.SetSelectedSensorPosition(0);
   }
 
 
@@ -509,7 +540,7 @@ void Robot::TeleopPeriodic()
  ******************************************************************************/
 void Robot::TestPeriodic()
   {
-  #ifdef CompBot
+  #ifdef CompBot2
   Lift_Control_ManualOverride(&VeLFT_Cnt_LiftYDTestPowerCmnd,
                               &VeLFT_Cnt_LiftXDTestPowerCmnd,
                                m_liftMotorYD.GetOutputCurrent(),
@@ -529,7 +560,7 @@ void Robot::TestPeriodic()
                  m_encoderFrontLeftDrive,
                  m_encoderRearRightDrive,
                  m_encoderRearLeftDrive);
-    #ifdef CompBot
+    #ifdef CompBot2
     EncodersInitComp(m_encoderLiftYD,
                      m_encoderLiftXD,
                      m_encoderrightShooter,
@@ -547,7 +578,7 @@ void Robot::TestPeriodic()
   m_rearLeftSteerMotor.Set(0);
   m_rearRightSteerMotor.Set(0);
 
-  #ifdef CompBot
+  #ifdef CompBot2
   m_liftMotorYD.Set(VeLFT_Cnt_LiftYDTestPowerCmnd);
   m_liftMotorXD.Set(VeLFT_Cnt_LiftXDTestPowerCmnd);
 
@@ -558,7 +589,7 @@ void Robot::TestPeriodic()
   m_elevator.Set(ControlMode::PercentOutput, 0);
   #endif
   
-  m_turret.SetSelectedSensorPosition(0);
+  // m_turret.SetSelectedSensorPosition(0);
   }
 
 

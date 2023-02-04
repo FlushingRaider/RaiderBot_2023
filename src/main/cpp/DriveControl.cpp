@@ -256,29 +256,29 @@ void DriveControlInit()
 double DtrmnEncoderRelativeToCmnd(double          L_JoystickCmnd,
                                   double          L_EncoderReading)
   {
-  double L_Opt1;
-  double L_Opt2;
-  double L_Opt3;
-  double L_Output;
+  double LeSD_Deg_ActualDelta;
+  double LeSD_Deg_PosDelta;
+  double LeSD_Deg_NegDelta;
+  double LeSD_Deg_Output;
 
-  L_Opt1 = fabs(L_JoystickCmnd - L_EncoderReading);
-  L_Opt2 = fabs(L_JoystickCmnd - (L_EncoderReading + 360));
-  L_Opt3 = fabs(L_JoystickCmnd - (L_EncoderReading - 360));
+  LeSD_Deg_ActualDelta = fabs(L_JoystickCmnd - L_EncoderReading);
+  LeSD_Deg_PosDelta = fabs(L_JoystickCmnd - (L_EncoderReading + 360));
+  LeSD_Deg_NegDelta = fabs(L_JoystickCmnd - (L_EncoderReading - 360));
 
-  if ((L_Opt1 < L_Opt2) && (L_Opt1 < L_Opt3))
+   if((LeSD_Deg_ActualDelta < LeSD_Deg_PosDelta) && (LeSD_Deg_ActualDelta < LeSD_Deg_NegDelta))
     {
-    L_Output = L_EncoderReading;
+    LeSD_Deg_Output = L_EncoderReading;
     }
-  else if ((L_Opt2 < L_Opt1) && (L_Opt2 < L_Opt3))
+  else if ((LeSD_Deg_PosDelta < LeSD_Deg_ActualDelta) && (LeSD_Deg_PosDelta < LeSD_Deg_NegDelta))
     {
-    L_Output = L_EncoderReading + 360;
+    LeSD_Deg_Output = L_EncoderReading + 360;
     }
   else
     {
-    L_Output = L_EncoderReading - 360;
+    LeSD_Deg_Output = L_EncoderReading - 360;
     }
 
-  return (L_Output);
+  return (LeSD_Deg_Output);
   }
 
 

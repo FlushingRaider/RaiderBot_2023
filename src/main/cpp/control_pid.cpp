@@ -25,14 +25,14 @@ double Control_PID(double  L_DesiredSpeed,
                    double  L_IntegralLowerLimit,
                    double  L_DerivativeUpperLimit,
                    double  L_DerivativeLowerLimit,
-                   double  L_OutputUpperLimit,
-                   double  L_OutputLowerLimit)
+                   double  LeSD_Deg_OutputUpperLimit,
+                   double  LeSD_Deg_OutputLowerLimit)
   {
   double LeLU_Cmd_Error        = 0.0;
   double L_Proportional = 0.0;
   double L_Integral     = 0.0;
   double L_Derivative   = 0.0;
-  double L_OutputCmnd   = 0.0;
+  double LeSD_Deg_OutputCmnd   = 0.0;
 
   LeLU_Cmd_Error = L_DesiredSpeed - L_CurrentSpeed;
 
@@ -75,18 +75,18 @@ double Control_PID(double  L_DesiredSpeed,
   *L_IntegralPrev = L_Integral;
 
   /* Lets add all three controllers. */
-  L_OutputCmnd = L_Proportional + L_Integral + L_Derivative;
+  LeSD_Deg_OutputCmnd = L_Proportional + L_Integral + L_Derivative;
 
   /* This is kind of redundant, but lets limit the output to the min and max
    * allowed for the controller: */
-  if (L_OutputCmnd > L_OutputUpperLimit)
+  if (LeSD_Deg_OutputCmnd > LeSD_Deg_OutputUpperLimit)
     {
-    L_OutputCmnd = L_OutputUpperLimit;
+    LeSD_Deg_OutputCmnd = LeSD_Deg_OutputUpperLimit;
     }
-  else if (L_OutputCmnd < L_OutputLowerLimit)
+  else if (LeSD_Deg_OutputCmnd < LeSD_Deg_OutputLowerLimit)
     {
-    L_OutputCmnd = L_OutputLowerLimit;
+    LeSD_Deg_OutputCmnd = LeSD_Deg_OutputLowerLimit;
     }
 
-  return L_OutputCmnd;
+  return LeSD_Deg_OutputCmnd;
 }
