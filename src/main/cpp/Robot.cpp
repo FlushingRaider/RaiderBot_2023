@@ -78,7 +78,7 @@ void Robot::RobotMotorCommands()
     L_Temp = K_Pct_TurretOpenLoopCmnd;
     }
 
-  m_turret.Set(ControlMode::PercentOutput, L_Temp);
+  // m_turret.Set(ControlMode::PercentOutput, L_Temp);
 
 
 #ifdef CompBot2
@@ -160,14 +160,14 @@ void Robot::RobotInit()
   m_rearRightSteerMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_rearRightDriveMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
-  m_turret.ConfigFactoryDefault();
-  m_turret.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
-  m_turret.SetSensorPhase(true);
-  m_turret.SetSelectedSensorPosition(0);
-  m_turret.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
-  m_turret.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
-  m_turret.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
-  m_turret.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
+  // m_turret.ConfigFactoryDefault();
+  // m_turret.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
+  // m_turret.SetSensorPhase(true);
+  // m_turret.SetSelectedSensorPosition(0);
+  // m_turret.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
+  // m_turret.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
+  // m_turret.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
+  // m_turret.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
 
   #ifdef CompBot2
   m_liftMotorYD.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
@@ -199,9 +199,14 @@ void Robot::RobotInit()
   ADAS_UT_ConfigsInit();
   ADAS_BT_ConfigsInit();
 
+
+  #ifdef OldVision
   VisionRobotInit();
 
   VisionInit(V_AllianceColor);
+
+  #endif
+
   }
 
 
@@ -274,7 +279,7 @@ void Robot::RobotPeriodic()
                  m_encoderFrontRightDrive,
                  m_encoderRearLeftDrive,
                  m_encoderRearRightDrive,
-                 m_turret.GetSelectedSensorPosition(1)); 
+                //  m_turret.GetSelectedSensorPosition(1)); 
 
   Read_IO_Sensors(false, // ball sensor upper - di_IR_Sensor.Get()
                   false, // ball sensor lower - di_BallSensorLower.Get()
@@ -370,11 +375,14 @@ void Robot::RobotPeriodic()
                   &VeLC_b_CameraLightCmndOn,
                   &VeLC_Cmd_VanityLightCmnd);
 
+
+  #ifdef OldVision
   VisionRun( pc_Camera1.GetLatestResult(),
              pc_Camera2.GetLatestResult(),
              V_ADAS_Vision_RequestedTargeting,
              VsCONT_s_DriverInput.b_VisionDriverModeOverride,
             &VeVIS_b_VisionDriverRequestedModeCmnd);
+ 
 
   pc_Camera1.SetDriverMode(VeVIS_b_VisionDriverRequestedModeCmnd);
   pc_Camera2.SetDriverMode(VeVIS_b_VisionDriverRequestedModeCmnd);
@@ -384,6 +392,27 @@ void Robot::RobotPeriodic()
     // pc_Camera1.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam1]);  // Shouldn't need this one so long as Cam1 remains as top
     pc_Camera2.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam2]);  // Need to comment this out if Photon Vision is being calibrated/tweaked
     }
+   #endif
+
+  #ifdef TestVision
+
+
+TestVisionRun();
+ frc::SmartDashboard::PutBoolean("has target" ,  V_HasTarget);
+ frc::SmartDashboard::PutNumber("cam1 yaw" ,  V_CamYaw);
+ frc::SmartDashboard::PutNumber("cam1 x" ,  V_Tagx);
+ frc::SmartDashboard::PutNumber("cam1 y" ,  V_Tagy);
+ frc::SmartDashboard::PutNumber("cam1 z" ,  V_Tagz);
+ frc::SmartDashboard::PutNumber("TagID ", V_TagID);
+
+
+
+
+
+  #endif
+
+
+
 
   #ifdef CompBot2
   VeLFT_Cnt_Lift_state = Lift_Control_Dictator(VsCONT_s_DriverInput.b_LiftControl,
@@ -450,7 +479,10 @@ void Robot::AutonomousInit()
     LiftControlInit();
     ADAS_Main_Reset();
     OdometryInit();
+
+  #ifdef OldVision
     VisionInit(V_AllianceColor);
+  #endif
   }
 
 
@@ -487,7 +519,7 @@ void Robot::TeleopInit()
   m_encoderrightShooter.SetPosition(0);
   m_encoderleftShooter.SetPosition(0);
   #endif
-  m_turret.SetSelectedSensorPosition(0);
+  // m_turret.SetSelectedSensorPosition(0);
   }
 
 
@@ -558,7 +590,7 @@ void Robot::TestPeriodic()
   m_elevator.Set(ControlMode::PercentOutput, 0);
   #endif
   
-  m_turret.SetSelectedSensorPosition(0);
+  // m_turret.SetSelectedSensorPosition(0);
   }
 
 

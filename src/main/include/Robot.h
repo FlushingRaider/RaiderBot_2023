@@ -130,11 +130,18 @@ class Robot : public frc::TimedRobot {
   frc::Joystick c_joyStick2{1};
 #endif
 
-
+#ifdef OldVision
   // Network tables
   photonlib::PhotonCamera pc_Camera1{"Top"};
   photonlib::PhotonCamera pc_Camera2{"Bottom"};
-  
+#endif
+
+#ifdef TestVision
+
+
+#endif
+
+
  private:
   frc::SendableChooser<std::string> m_chooser;
   const std::string kAutoNameDefault = "Default";
