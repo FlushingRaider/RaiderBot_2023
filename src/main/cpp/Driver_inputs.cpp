@@ -97,7 +97,7 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro = LeCONT_b_Driver2ButtonLB;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
   VsCONT_s_DriverInput.b_AutoSetSpeedShooter           = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
   VsCONT_s_DriverInput.pct_ManualShooterDesiredSpeed   = LeCONT_Cmd_Driver2LeftAxisY;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
-  VsCONT_s_DriverInput.b_LiftControl                   = LeCONT_b_Driver2ButtonRB;     //Controller 2, X button (3), (Lift.cpp) starts automated states machine
+  VsCONT_s_DriverInput.b_LiftControl                   = LeCONT_b_Driver2ButtonRB;     //Controller 2, X button (3), (Manipulator.cpp) starts automated states machine
   VsCONT_s_DriverInput.b_IntakeIn                      = LeCONT_b_Driver2ButtonX;      //Controller 2 (3), controlls the intake in on trigger pressed
   VsCONT_s_DriverInput.b_IntakeOut                     = LeCONT_b_Driver2ButtonY;      //Controller 2 (4), controlls the intake out on trigger pressed
 

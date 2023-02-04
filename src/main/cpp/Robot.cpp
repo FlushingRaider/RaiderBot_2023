@@ -19,7 +19,7 @@
 #include "Driver_inputs.hpp"
 #include "Odometry.hpp"
 #include "DriveControl.hpp"
-#include "Lift.hpp"
+#include "Manipulator.hpp"
 #include "BallHandler.hpp"
 #include "LightControl.hpp"
 #include "VisionV2.hpp"
