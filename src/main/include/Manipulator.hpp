@@ -1,5 +1,5 @@
 /*
-  Lift.hpp
+  Manipulator.hpp
 
    Created on: Feb 01, 2022
    Author: 5561

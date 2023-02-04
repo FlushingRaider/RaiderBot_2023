@@ -1,5 +1,5 @@
 /*
-  Lift.cpp
+  Manipulator.cpp
 
    Created on: Feb 01, 2022
    Author: Lauren and Chloe
