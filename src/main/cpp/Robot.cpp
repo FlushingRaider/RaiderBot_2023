@@ -81,7 +81,7 @@ void Robot::RobotMotorCommands()
   m_turret.Set(ControlMode::PercentOutput, L_Temp);
 
 
-#ifdef CompBot
+#ifdef CompBot2
   // Ball launcher motors
   if (V_BH_LauncherActive == true)
     {
@@ -135,7 +135,7 @@ void Robot::RobotInit()
                      m_encoderFrontLeftDrive,
                      m_encoderRearRightDrive,
                      m_encoderRearLeftDrive);
-  #ifdef CompBot
+  #ifdef CompBot2
   EncodersInitComp(m_encoderLiftYD,
                    m_encoderLiftXD,
                    m_encoderrightShooter,
@@ -169,7 +169,7 @@ void Robot::RobotInit()
   m_turret.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
   m_turret.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
 
-  #ifdef CompBot
+  #ifdef CompBot2
   m_liftMotorYD.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_liftMotorXD.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
@@ -184,7 +184,7 @@ void Robot::RobotInit()
                               m_rearLeftDrivePID,
                               m_rearRightDrivePID);
 
-  #ifdef CompBot
+  #ifdef CompBot2
   BallHandlerMotorConfigsInit(m_rightShooterpid,
                               m_leftShooterpid);
 
@@ -237,9 +237,9 @@ void Robot::RobotPeriodic()
                   false); //di_TurrentLimitSwitch.Get());
   
   Read_Encoders(m_encoderWheelAngleCAN_FL.GetPosition(),
-                a_encoderWheelAngleFrontRight.Get().value(),
-                a_encoderWheelAngleRearLeft.Get().value(),
-                a_encoderWheelAngleRearRight.Get().value(),
+                m_encoderWheelAngleCAN_FR.GetPosition(),
+                m_encoderWheelAngleCAN_RL.GetPosition(),
+                m_encoderWheelAngleCAN_RR.GetPosition(),
                 a_encoderFrontLeftSteer.GetVoltage(),
                 a_encoderFrontRightSteer.GetVoltage(),
                 a_encoderRearLeftSteer.GetVoltage(),
@@ -248,10 +248,10 @@ void Robot::RobotPeriodic()
                 m_encoderFrontRightDrive,
                 m_encoderRearLeftDrive,
                 m_encoderRearRightDrive,
-                m_encoderrightShooter,
-                m_encoderleftShooter,
-                m_encoderLiftYD,
-                m_encoderLiftXD,
+                m_encoderRearRightDrive, // m_encoderrightShooter
+                m_encoderRearRightDrive, // m_encoderleftShooter
+                m_encoderRearRightDrive, //m_encoderLiftYD
+                m_encoderRearRightDrive, //m_encoderLiftXD
                 m_turret.GetSelectedSensorPosition(1));  //m_turret.GetSelectedSensorPosition()
 
   Joystick2_robot_mapping(c_joyStick2.GetRawButton(1),
@@ -385,7 +385,7 @@ void Robot::RobotPeriodic()
     pc_Camera2.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam2]);  // Need to comment this out if Photon Vision is being calibrated/tweaked
     }
 
-  #ifdef CompBot
+  #ifdef CompBot2
   VeLFT_Cnt_Lift_state = Lift_Control_Dictator(VsCONT_s_DriverInput.b_LiftControl,
                                        VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro,
                                        VsCONT_s_DriverInput.e_LiftCmndDirection,
@@ -411,7 +411,7 @@ void Robot::RobotPeriodic()
                              m_frontRightDrivePID,
                              m_rearLeftDrivePID,
                              m_rearRightDrivePID);
-  #ifdef CompBot
+  #ifdef CompBot2
   BallHandlerMotorConfigsCal(m_rightShooterpid,
                              m_leftShooterpid);
 
@@ -483,7 +483,7 @@ void Robot::TeleopInit()
   LiftControlInit();
   OdometryInit();
   VisionInit(V_AllianceColor);
-  #ifdef CompBot
+  #ifdef CompBot2
   m_encoderrightShooter.SetPosition(0);
   m_encoderleftShooter.SetPosition(0);
   #endif
@@ -509,7 +509,7 @@ void Robot::TeleopPeriodic()
  ******************************************************************************/
 void Robot::TestPeriodic()
   {
-  #ifdef CompBot
+  #ifdef CompBot2
   Lift_Control_ManualOverride(&VeLFT_Cnt_LiftYDTestPowerCmnd,
                               &VeLFT_Cnt_LiftXDTestPowerCmnd,
                                m_liftMotorYD.GetOutputCurrent(),
@@ -529,7 +529,7 @@ void Robot::TestPeriodic()
                  m_encoderFrontLeftDrive,
                  m_encoderRearRightDrive,
                  m_encoderRearLeftDrive);
-    #ifdef CompBot
+    #ifdef CompBot2
     EncodersInitComp(m_encoderLiftYD,
                      m_encoderLiftXD,
                      m_encoderrightShooter,
@@ -547,7 +547,7 @@ void Robot::TestPeriodic()
   m_rearLeftSteerMotor.Set(0);
   m_rearRightSteerMotor.Set(0);
 
-  #ifdef CompBot
+  #ifdef CompBot2
   m_liftMotorYD.Set(VeLFT_Cnt_LiftYDTestPowerCmnd);
   m_liftMotorXD.Set(VeLFT_Cnt_LiftXDTestPowerCmnd);
 

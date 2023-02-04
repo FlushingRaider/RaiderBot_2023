@@ -811,8 +811,8 @@ T_Lift_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
       LeLFT_v_LiftPowerXD = 0;
       VeLFT_b_LiftInitialized = true;
 
-      EncodersLiftInit(m_encoderLiftYD,
-                       m_encoderLiftXD);
+      // EncodersLiftInit(m_encoderLiftYD,
+      //                  m_encoderLiftXD);
       }
     }
   else if ((LeLFT_b_DriverAutoClimbPause == true) && (VeLFT_b_Paused == false))
