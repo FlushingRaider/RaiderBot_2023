@@ -291,10 +291,10 @@ const double K_SD_SteerMotorCurrentLimit = 25;
 
 /* KeENC_Deg_SD_WheelOffsetAngle: Offset angle for each respective corder of the swerve drive wheel.  This is the angle 
    reading from the absolute encoder that is indicated in order for the wheel to point straight. */
-const double KeENC_Deg_SD_WheelOffsetAngle[E_RobotCornerSz] = {-161.367188,   // E_FrontLeft
-                                                               -167.167969,   // E_FrontRight 
-                                                               149.501953,   // E_RearLeft
-                                                               -100.195313};  // E_RearRight
+const double KeENC_Deg_SD_WheelOffsetAngle[E_RobotCornerSz] = {152.578125,   // E_FrontLeft
+                                                               212.783203,   // E_FrontRight 
+                                                               118.740234,   // E_RearLeft
+                                                               76.289063};  // E_RearRight
 
 /* KeENC_k_WheelOffsetAnglePractieBot: Offset angle for each respective corder of the swerve drive wheel.  This is the angle 
    reading from the absolute encoder that is indicated in order for the wheel to point straight.  For practice bot only. */
@@ -355,17 +355,17 @@ const double K_SD_WheelSpeedPID_V2_Gx[E_PID_SparkMaxCalSz] = { 0.000350, // kP
                                                                0.0};     // kAllErr
 
 /* K_SD_WheelAnglePID_Gx: PID gains for the angle of the swerve drive wheels.  PID control is within the RoboRio.  */
-const double K_SD_WheelAnglePID_Gx[E_PID_CalSz] = { 0.009,      // P Gx  0.002
+const double K_SD_WheelAnglePID_Gx[E_PID_CalSz] = { 0.0035,      // P Gx  0.002
                                                                0.000001,  // I Gx 0.000001
-                                                               0.0000005, // D Gx 0.0000005
-                                                               0.9,       // P UL 0.6
-                                                              -0.9,       // P LL -0.4
+                                                               0.000005, // D Gx 0.0000005
+                                                               1.0,       // P UL 0.6
+                                                              -1.0,       // P LL -0.4
                                                                0.15,      // I UL 0.12
                                                               -0.15,      // I LL -0.12
-                                                               0.7,       // D UL 0.5
-                                                              -0.7,       // D LL -0.5
-                                                               0.9,       // Max upper 0.9
-                                                              -0.9};      // Max lower -0.9
+                                                               1.0,       // D UL 0.5
+                                                              -1.0,       // D LL -0.5
+                                                               1.0,       // Max upper 0.9
+                                                              -1.0};      // Max lower -0.9
 
 /* K_SD_WheelAnglePID_GxPracticeBot: PID gains for the angle of the swerve drive wheels on practice bot.  PID control is within the RoboRio.  */
 const double K_SD_WheelAnglePID_GxPracticeBot[E_PID_CalSz] = { 0.009,      // P Gx  0.002

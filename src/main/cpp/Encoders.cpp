@@ -158,7 +158,7 @@ void Read_Encoders(double                       LeENC_Cnt_EncoderWheelAngleFront
   VeENC_In_LiftPostitionXD = m_encoderLiftXD.GetPosition();
 
 #ifdef CompBot
-  VaENC_Deg_WheelAngleConverted[E_FrontLeft]  =  std::fmod((LeENC_Cnt_EncoderWheelAngleFrontLeftRaw  * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_FrontLeft];
+  VaENC_Deg_WheelAngleConverted[E_FrontLeft]  =  std::fmod((LeENC_Cnt_EncoderWheelAngleFrontLeftRaw  * KeENC_k_EncoderToAngle), 360) -  KeENC_Deg_SD_WheelOffsetAngle[E_FrontLeft];
   // EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleFrontLeftRaw,  KeENC_k_VoltageToAngle, KeENC_Deg_SD_WheelOffsetAngle[E_FrontLeft],  180);
   VaENC_Deg_WheelAngleConverted[E_FrontRight] = std::fmod((LeENC_Cnt_EncoderWheelAngleFrontRightRaw * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_FrontRight];
   // EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleFrontRightRaw,  KeENC_k_VoltageToAngle, KeENC_Deg_SD_WheelOffsetAngle[E_FrontRight],  180);
@@ -223,12 +223,14 @@ void Read_Encoders(double                       LeENC_Cnt_EncoderWheelAngleFront
    frc::SmartDashboard::PutNumber("WheelAng_RR",  VaENC_Deg_WheelAngleFwd[E_RearRight]);
    frc::SmartDashboard::PutNumber("WheelAng_RL",  VaENC_Deg_WheelAngleFwd[E_RearLeft]);
 
+  frc::SmartDashboard::PutNumber("REVWheelAng_RR",  VaENC_Deg_WheelAngleRev[E_RearRight]);
+  frc::SmartDashboard::PutNumber("REVWheelAng_RL",  VaENC_Deg_WheelAngleRev[E_RearLeft]);
+
   VeENC_RPM_ShooterSpeedCurr = m_encoderrightShooter.GetVelocity(); // We use the right shooter as the reference as this is rotating in the positive direction
 
   VeENC_Deg_TurretPosition = LeENC_Cnt_EncoderTurretAngle * (-KeENC_k_TurretEncoderScaler); // Negative to rotate the output.  Positive is clockwise when viewed from top.
   }
-
-
+// VaENC_Deg_WheelAngleConverted
 /******************************************************************************
  * Function:     Read_Encoders2
  *
