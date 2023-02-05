@@ -99,15 +99,15 @@ void Robot::RobotMotorCommands()
   m_elevator.Set(ControlMode::PercentOutput, V_ElevatorPowerCmnd);
 
   // XY XD lift motors
-  if (VeLFT_b_LiftInitialized == false)
+  if (VeMAN_b_ArmInitialized == false)
     {
-    m_liftMotorYD.Set(VeLFT_Cnt_LiftYDTestPowerCmnd);
-    m_liftMotorXD.Set(VeLFT_Cnt_LiftXDTestPowerCmnd);
+    m_liftMotorYD.Set(VeMAN_Cnt_MoterTestPowerCmndA);
+    m_liftMotorXD.Set(VeMAN_Cnt_MoterTestPowerCmndB);
     }
   else
     {
-    m_liftpidYD.SetReference(VeLFT_Cnt_CommandYD, rev::ControlType::kPosition); // positive is up
-    m_liftpidXD.SetReference(VeLFT_Cnt_CommandXD, rev::ControlType::kPosition); // This is temporary.  We actually want to use position, but need to force this off temporarily
+    m_liftpidYD.SetReference(VeMan_Cnt_MoterCommandA, rev::ControlType::kPosition); // positive is up
+    m_liftpidXD.SetReference(VeMAN_Cnt_MoterCommandB, rev::ControlType::kPosition); // This is temporary.  We actually want to use position, but need to force this off temporarily
     }
   #endif
   }
@@ -386,17 +386,17 @@ void Robot::RobotPeriodic()
     }
 
   #ifdef CompBot
-  VeLFT_Cnt_Lift_state = Lift_Control_Dictator(VsCONT_s_DriverInput.b_LiftControl,
+  VeMAN_Cnt_Man_state = Lift_Control_Dictator(VsCONT_s_DriverInput.b_LiftControl,
                                        VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro,
                                        VsCONT_s_DriverInput.e_LiftCmndDirection,
                                        V_MatchTimeRemaining,
-                                       VeLFT_Cnt_Lift_state,
+                                       VeMAN_Cnt_Man_state,
                                        VeENC_In_LiftPostitionYD,
                                        VeENC_In_LiftPostitionXD,
-                                       &VeLFT_Cnt_CommandYD,
-                                       &VeLFT_Cnt_CommandXD,
-                                       &VeLFT_Cnt_LiftYDTestPowerCmnd,
-                                       &VeLFT_Cnt_LiftXDTestPowerCmnd,
+                                       &VeMan_Cnt_MoterCommandA,
+                                       &VeMAN_Cnt_MoterCommandB,
+                                       &VeMAN_Cnt_MoterTestPowerCmndA,
+                                       &VeMAN_Cnt_MoterTestPowerCmndB,
                                        VsRobotSensors.b_XY_LimitDetected,
                                        VsRobotSensors.b_XD_LimitDetected,
                                        VeGRY_Deg_GyroYawAngleDegrees,
@@ -510,8 +510,8 @@ void Robot::TeleopPeriodic()
 void Robot::TestPeriodic()
   {
   #ifdef CompBot
-  Lift_Control_ManualOverride(&VeLFT_Cnt_LiftYDTestPowerCmnd,
-                              &VeLFT_Cnt_LiftXDTestPowerCmnd,
+  Lift_Control_ManualOverride(&VeMAN_Cnt_MoterTestPowerCmndA,
+                              &VeMAN_Cnt_MoterTestPowerCmndB,
                                m_liftMotorYD.GetOutputCurrent(),
                                m_liftMotorXD.GetOutputCurrent(),
                                VsCONT_s_DriverInput.e_LiftCmndDirection,
@@ -548,8 +548,8 @@ void Robot::TestPeriodic()
   m_rearRightSteerMotor.Set(0);
 
   #ifdef CompBot
-  m_liftMotorYD.Set(VeLFT_Cnt_LiftYDTestPowerCmnd);
-  m_liftMotorXD.Set(VeLFT_Cnt_LiftXDTestPowerCmnd);
+  m_liftMotorYD.Set(VeMAN_Cnt_MoterTestPowerCmndA);
+  m_liftMotorXD.Set(VeMAN_Cnt_MoterTestPowerCmndB);
 
   m_rightShooterMotor.Set(0);
   m_leftShooterMotor.Set(0);

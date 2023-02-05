@@ -9,15 +9,15 @@
    lift STATE machine? another government scam smh -chloe
  */
 
-extern double       VeLFT_Cnt_CommandYD;
-extern double       VeLFT_Cnt_CommandXD;
-extern T_Lift_State VeLFT_Cnt_Lift_state;
-extern double VeLFT_Cnt_LiftYDTestPowerCmnd;
-extern double VeLFT_Cnt_LiftXDTestPowerCmnd;
-extern double VaLFT_v_LiftMotorYDMaxCurrent[E_Lift_State_Sz];
-extern double VaLFT_v_LiftMotorXDMaxCurrent[E_Lift_State_Sz];
-extern bool   VeLFT_b_WaitingForDriverINS;
-extern bool   VeLFT_b_LiftInitialized;
+extern double       VeMan_Cnt_MoterCommandA;
+extern double       VeMAN_Cnt_MoterCommandB;
+extern T_Man_State VeMAN_Cnt_Man_state;
+extern double VeMAN_Cnt_MoterTestPowerCmndA;
+extern double VeMAN_Cnt_MoterTestPowerCmndB;
+extern double VaMAN_v_MotorMaxCurrentA[E_Lift_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentB[E_Lift_State_Sz];
+extern bool   VeMAN_b_WaitingForDriverINS;
+extern bool   VeMAN_b_ArmInitialized;
 
 void LiftMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
                          rev::SparkMaxPIDController m_liftpidXD);
@@ -35,11 +35,11 @@ void Lift_Control_ManualOverride(double              *LeLFT_Cmd_CommandYD,
                                  bool                 LeLFT_b_LimitDetectedYD,
                                  bool                 LeLFT_b_LimitDetectedXD);
 
-T_Lift_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
+T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
                                    bool                L_driver_auto_climb_pause,
                                    TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
                                    double              L_game_time,
-                                   T_Lift_State        LeLFT_Cnt_CurrentState,
+                                   T_Man_State        LeLFT_Cnt_CurrentState,
                                    double              LeLFT_In_MeasuredPositionYD,
                                    double              LeLFT_In_MeasuredPositionXD,
                                    double             *LeLFT_Cmd_CommandYD,

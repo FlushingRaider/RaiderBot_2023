@@ -110,7 +110,7 @@ typedef enum T_LED_LightCmnd
   E_LED_Orange
 } T_LED_LightCmnd;
 
-typedef enum T_Lift_State
+typedef enum T_Man_State
 {
   E_S0_BEGONE,
   E_S2_lift_down_YD,
@@ -124,14 +124,14 @@ typedef enum T_Lift_State
   E_S10_final_YD,
   E_S11_final_OWO,
   E_Lift_State_Sz
-} T_Lift_State;
+} T_Man_State;
 
-typedef enum T_Lift_Iteration
+typedef enum T_Man_Iteration
 {
-  VeLFT_Cnt_LiftIteration1,
+  VeMAN_Cnt_ManIterationNew,
   E_LiftIteration2,
   E_LiftIterationSz
-} T_Lift_Iteration;
+} T_Man_Iteration;
 
 typedef enum T_RobotState
 {
