@@ -19,5 +19,5 @@ double Control_PID(double  L_DesiredSpeed,
                    double  L_IntegralLowerLimit,
                    double  L_DerivativeUpperLimit,
                    double  L_DerivativeLowerLimit,
-                   double  L_OutputUpperLimit,
-                   double  L_OutputLowerLimit);
+                   double  LeSD_Deg_OutputUpperLimit,
+                   double  LeSD_Deg_OutputLowerLimit);

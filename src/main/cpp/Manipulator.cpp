@@ -811,8 +811,8 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
       LeLFT_v_LiftPowerXD = 0;
       VeMAN_b_ArmInitialized = true;
 
-      EncodersLiftInit(m_encoderLiftYD,
-                       m_encoderLiftXD);
+      // EncodersLiftInit(m_encoderLiftYD,
+      //                  m_encoderLiftXD);
       }
     }
   else if ((LeLFT_b_DriverAutoClimbPause == true) && (VeMAN_b_Paused == false))
