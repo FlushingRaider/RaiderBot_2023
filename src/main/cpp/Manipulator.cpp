@@ -7,6 +7,7 @@
    This will control the manipulator, aka arm, and its motors, in order to recieve, move, and score game pieces
 
    lift go brrrrrrrrrrrrrrrrrrr -chloe
+   gaslight gatekeep manipulate
  */
 
 #include "rev/CANSparkMax.h"
@@ -24,25 +25,25 @@ double VeMAN_Cnt_LayoverTimer = 0; // owo, because Chloe
 bool   VeMAN_b_CriteriaMet = false;
 bool   VeMAN_b_ArmInitialized = false;
 
-double VeMan_Cnt_MoterCommandA = 0;
-double VeMAN_Cnt_MoterCommandB = 0;
+double VeMan_Cnt_MoterCommandA = 0; //temp motor variable (temp)
+double VeMAN_Cnt_MoterCommandB = 0; //temp motor variable (temp)
 
-double VeMAN_Cnt_MoterTestLocationA = 0;
-double VeMAN_Cnt_MoterTestLocationB = 0;
+double VeMAN_Cnt_MoterTestLocationA = 0; //location it want go (temp)
+double VeMAN_Cnt_MoterTestLocationB = 0; //location it want go (temp)
 
-double VeMAN_Cnt_MoterTestPowerCmndA = 0;
-double VeMAN_Cnt_MoterTestPowerCmndB = 0;
+double VeMAN_Cnt_MoterTestPowerCmndA = 0; //power to motor (temp)
+double VeMAN_Cnt_MoterTestPowerCmndB = 0; //power to motor (temp)
 
-double VaMAN_v_MotorMaxCurrentA[E_Lift_State_Sz];
-double VaMAN_v_MotorMaxCurrentB[E_Lift_State_Sz];
+double VaMAN_v_MotorMaxCurrentA[E_Lift_State_Sz]; //max current(temp)
+double VaMAN_v_MotorMaxCurrentB[E_Lift_State_Sz]; //max current(temp)
 
 bool   VeMAN_b_WaitingForDriverINS = false;  // Instrumentation only, but indication that we are waiting for the driver to press button for next step.
-bool   VeMAN_b_Paused = false;
-double VeMAN_b_PausedMoterPositionA = 0;
-double VeMAN_b_PausedMoterPositionB = 0;
+bool   VeMAN_b_Paused = false; //Checks to see if paused (for testing)
+double VeMAN_b_PausedMoterPositionA = 0; //keeps current value of motor postion when paised (temp)
+double VeMAN_b_PausedMoterPositionB = 0; //keeps current value of motor postion when paised (temp)
 
-double VaMAN_InS_RampRateMoterA[E_Lift_State_Sz][E_LiftIterationSz];
-double VaMAN_InS_RampRateMoterB[E_Lift_State_Sz][E_LiftIterationSz];
+double VaMAN_InS_RampRateMoterA[E_Lift_State_Sz][E_LiftIterationSz]; //motor ramp rate (temp)
+double VaMAN_InS_RampRateMoterB[E_Lift_State_Sz][E_LiftIterationSz]; //motor ramp rate (temp)
 
 #ifdef LiftXY_Test
 bool   VeMAN_b_MoterTestA = false; // temporary, we don't want to use the manual overrides
