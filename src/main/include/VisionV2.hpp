@@ -8,7 +8,7 @@
  */
 
 #include <Enums.hpp>
-
+#ifdef CarsonDebug
 
 extern bool   VeVIS_b_VisionTargetAquired[E_CamLocSz];
 extern double VeVIS_Deg_VisionYaw[E_CamLocSz];
@@ -22,7 +22,7 @@ extern double V_Tagx;
 extern double V_Tagy;
 extern double V_Tagz;
 extern int V_TagID;
-
+#endif
 
 
 #ifdef OldVision
@@ -38,6 +38,6 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
                bool                           *L_VisionDriverModeCmndFinal);
 #endif
 
-#ifdef TestVision
-void TestVisionRun();
+#ifdef CarsonDebug
+void CarsonDebugRun();
 #endif

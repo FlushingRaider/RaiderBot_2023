@@ -18,12 +18,12 @@
 #include "Filter.hpp"
 #include <frc/apriltag/AprilTagFieldLayout.h>
 
-#include <photonlib/PhotonPoseEstimator.h>
+// #include <photonlib/PhotonPoseEstimator.h>
 #include <VisionV2.hpp>
 
 #include <frc/Filesystem.h>
 #include <wpi/fs.h>
-
+#ifdef CarsonDebug
 
 
 // all our favorite variables
@@ -41,7 +41,7 @@ bool           VeVIS_b_VisionDriverRequestedModeCmndPrev; // Requested driver mo
 
 bool           VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
 
-#ifdef TestVision
+#ifdef CarsonDebug
 bool V_HasTarget;
 double  V_CamYaw;
 frc::Transform3d VisionTrans;
@@ -171,7 +171,7 @@ static frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
     }
     #endif
 
-  #ifdef TestVision
+  #ifdef CarsonDebug
 
   #endif
 
@@ -277,8 +277,8 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
   }
   #endif
 
-  #ifdef TestVision
-  void TestVisionRun(){
+  #ifdef CarsonDebug
+  void CarsonDebugRun(){
     // V_CamIndex = Cam.GetPipelineIndex();
 
    photonlib::PhotonPipelineResult CamResult = Cam1.GetLatestResult();
@@ -305,4 +305,5 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
   }
 
 
+  #endif
   #endif
