@@ -23,7 +23,7 @@
 
 #include <frc/Filesystem.h>
 #include <wpi/fs.h>
-
+#include <wpinet/PortForwarder.h>
 
 
 // all our favorite variables
@@ -49,13 +49,11 @@ double V_Tagx;
 double V_Tagy;
 double V_Tagz;
 int V_TagID;
-int V_CamIndex; // 1 is cone, 2 is cube, 3 is tag
 
 photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1");
 
-fs::path aprilTagsjson;
 
-
+ photonlib::PhotonPoseEstimator *estimator;;
 
 #endif
 
@@ -98,9 +96,19 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
 
 
 
-
-aprilTagsjson = frc::filesystem::GetDeployDirectory();
+#ifdef TestVision
+fs::path aprilTagsjson = frc::filesystem::GetDeployDirectory();
 aprilTagsjson = aprilTagsjson / "2023_chargedUp.json";
+
+frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
+
+estimator = new photonlib::PhotonPoseEstimator (aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
+#endif
+/*this set of comments is VERY IMPORTANT
+    photonPoseEstimator has no c++ example code on the photon docs and I had to find this 
+    in the unit tests of photonvision
+    */
+
 
 // frc::AprilTagFieldLayout aprilTags(aprilTagsJson);
 
@@ -116,42 +124,15 @@ aprilTagsjson = aprilTagsjson / "2023_chargedUp.json";
 //     {1, frc::Pose3d(units::meter_t(5), units::meter_t(5), units::meter_t(5),
 //                     frc::Rotation3d())}};
 
-static frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
-
-// static wpi::SmallVector<std::pair<double, double>, 4> corners{
-//     std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 6}, std::pair{7, 8}};
-// static std::vector<std::pair<double, double>> detectedCorners{
-//     std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 6}, std::pair{7, 8}};
-
-//     wpi::SmallVector<photonlib::PhotonTrackedTarget, 3> targets{
-//       photonlib::PhotonTrackedTarget{
-//           3.0, -4.0, 9.0, 4.0, 0,
-//           frc::Transform3d(frc::Translation3d(1_m, 2_m, 3_m),
-//                            frc::Rotation3d(1_rad, 2_rad, 3_rad)),
-//           frc::Transform3d(frc::Translation3d(1_m, 2_m, 3_m),
-//                            frc::Rotation3d(1_rad, 2_rad, 3_rad)),
-//           0.7, corners, detectedCorners},
-//       photonlib::PhotonTrackedTarget{
-//           3.0, -4.0, 9.1, 6.7, 1,
-//           frc::Transform3d(frc::Translation3d(4_m, 2_m, 3_m),
-//                            frc::Rotation3d(0_rad, 0_rad, 0_rad)),
-//           frc::Transform3d(frc::Translation3d(4_m, 2_m, 3_m),
-//                            frc::Rotation3d(0_rad, 0_rad, 0_rad)),
-//           0.3, corners, detectedCorners},
-//       photonlib::PhotonTrackedTarget{
-//           9.0, -2.0, 19.0, 3.0, 0,
-//           frc::Transform3d(frc::Translation3d(1_m, 2_m, 3_m),
-//                            frc::Rotation3d(1_rad, 2_rad, 3_rad)),
-//           frc::Transform3d(frc::Translation3d(1_m, 2_m, 3_m),
-//                            frc::Rotation3d(1_rad, 2_rad, 3_rad)),
-//           0.4, corners, detectedCorners}};
-
- photonlib::PhotonPoseEstimator estimator(
-      aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
-  auto estimatedPose = estimator.Update();
-  frc::Pose3d pose = estimatedPose.value().estimatedPose;
+// static frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
 
 
+
+//  photonlib::PhotonPoseEstimator estimator(
+//       aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
+
+
+/****************************************/
 
 #ifdef OldVision
   VnVIS_e_VisionCamNumber[E_CamTop] = E_Cam1;
@@ -280,26 +261,30 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
   #ifdef TestVision
   void TestVisionRun(){
     // V_CamIndex = Cam.GetPipelineIndex();
+    // wpi::PortForwarder::GetInstance().Add(5800, "10.55.61.11", 5800);
 
    photonlib::PhotonPipelineResult CamResult = Cam1.GetLatestResult();
+      auto estimatedPose = estimator->Update();
+        frc::Pose3d pose = estimatedPose.value().estimatedPose;
+
 
     V_HasTarget = CamResult.HasTargets();
 
-    if (V_CamIndex == 3){
-      VisionTrans = CamResult.GetBestTarget().GetBestCameraToTarget();
-    V_Tagx = VisionTrans.X().value();
-    V_Tagy = VisionTrans.Y().value();
-    V_Tagz = VisionTrans.Z().value();
+    //   VisionTrans = CamResult.GetBestTarget().GetBestCameraToTarget();
+    // V_Tagx = VisionTrans.X().value();
+    // V_Tagy = VisionTrans.Y().value();
+    // V_Tagz = VisionTrans.Z().value();
     
-    V_TagID = CamResult.GetBestTarget().GetFiducialId();
+    // V_TagID = CamResult.GetBestTarget().GetFiducialId();
 
 
-    }
     
-    V_CamYaw = CamResult.GetBestTarget().GetYaw();
+    // V_CamYaw = CamResult.GetBestTarget().GetYaw();
+
+  V_Tagx =  pose.X().value();
 
 
-
+ 
     
 
   }

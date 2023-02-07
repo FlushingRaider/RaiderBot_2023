@@ -29,7 +29,7 @@ extern int V_TagID;
 
 void VisionRobotInit();
 
-void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor);
+
 
 void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
                photonlib::PhotonPipelineResult LsVIS_Str_BottomResult,
@@ -37,7 +37,7 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
                bool                            L_DriverDriveModeReq,
                bool                           *L_VisionDriverModeCmndFinal);
 #endif
-
+void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor);
 #ifdef TestVision
 void TestVisionRun();
 #endif

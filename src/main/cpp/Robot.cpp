@@ -203,10 +203,10 @@ void Robot::RobotInit()
   #ifdef OldVision
   VisionRobotInit();
 
-  VisionInit(V_AllianceColor);
+  
 
   #endif
-
+  VisionInit(V_AllianceColor);
   }
 
 
@@ -479,9 +479,8 @@ void Robot::AutonomousInit()
     ADAS_Main_Reset();
     OdometryInit();
 
-  #ifdef OldVision
     VisionInit(V_AllianceColor);
-  #endif
+
   }
 
 
@@ -513,9 +512,9 @@ void Robot::TeleopInit()
   BallHandlerInit();
   LiftControlInit();
   OdometryInit();
-  #ifdef OldVision
+
   VisionInit(V_AllianceColor);
-  #endif
+
   #ifdef CompBot
   m_encoderrightShooter.SetPosition(0);
   m_encoderleftShooter.SetPosition(0);
