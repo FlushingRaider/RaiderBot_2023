@@ -8,7 +8,7 @@
 // Define the bot type: CompBot, PracticeBot
 #define CompBot
 
-#define TestVision // or OldVision
+#define Testvision // or OldVision
 
 // RoboRio controller execution time
 const double C_ExeTime = 0.02; // Set to match the the default controller loop time of 20 ms
@@ -67,8 +67,8 @@ const units::meter_t K_VisionTargetHeight[E_CamLocSz] = {2.58_m,  // bottom of t
                                                          0.12_m};  // radius of the ball in cm -> bottom
 
 /* K_VisionCameraPitch: Pitch of the camera relative to the ground. */
-const units::radian_t K_VisionCameraPitch[E_CamLocSz] = {15_deg,  // camera on a 75 degree tilt  -> top
-                                                         50_deg}; //                             -> bottom
+// const units::radian_t K_VisionCameraPitch[E_CamLocSz] = {15_deg,  // camera on a 75 degree tilt  -> top
+//                                                          50_deg}; //                             -> bottom
 
 /* K_VisionCalculationDelayTime: Delay time before allowing calculations to occur */
 const double K_VisionCalculationDelayTime = 0.1;

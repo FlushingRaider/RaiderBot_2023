@@ -295,7 +295,7 @@ void Robot::RobotPeriodic()
                          VsCONT_s_DriverInput.b_ZeroGyro);
 
   ADAS_DetermineMode();
-
+#ifdef CarsonDebug
   V_ADAS_ActiveFeature = ADAS_ControlMain(&V_ADAS_Pct_SD_FwdRev,
                                           &V_ADAS_Pct_SD_Strafe,
                                           &V_ADAS_Pct_SD_Rotate,
@@ -327,7 +327,7 @@ void Robot::RobotPeriodic()
                                            VsCONT_s_DriverInput.b_ElevatorDown,
                                            VsCONT_s_DriverInput.b_IntakeIn,
                                            V_ADAS_ActiveFeature);
-
+#endif
   DriveControlMain( VsCONT_s_DriverInput.pct_SwerveForwardBack,  // swerve control forward/back
                     VsCONT_s_DriverInput.pct_SwerveStrafe,  // swerve control strafe
                     VsCONT_s_DriverInput.deg_SwerveRotate,  // rotate the robot joystick
@@ -393,10 +393,10 @@ void Robot::RobotPeriodic()
     }
    #endif
 
-  #ifdef TestVision
+  #ifdef CarsonDebug
 
 
-TestVisionRun();
+CarsonDebugRun();
  frc::SmartDashboard::PutBoolean("has target" ,  V_HasTarget);
  frc::SmartDashboard::PutNumber("cam1 yaw" ,  V_CamYaw);
  frc::SmartDashboard::PutNumber("cam1 x" ,  V_Tagx);
