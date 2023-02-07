@@ -50,7 +50,7 @@ void BallHandlerMotorConfigsInit(rev::SparkMaxPIDController m_rightShooterpid,
                                  rev::SparkMaxPIDController m_leftShooterpid)
   {
   // set PID coefficients
-  # ifdef CompBot
+  # ifdef CompBot2
   m_rightShooterpid.SetP(K_BH_LauncherPID_Gx[E_kP]);
   m_rightShooterpid.SetI(K_BH_LauncherPID_Gx[E_kI]);
   m_rightShooterpid.SetD(K_BH_LauncherPID_Gx[E_kD]);
@@ -173,19 +173,16 @@ double BallLauncher(bool                 L_DisableShooter,
   {
   double           L_ShooterSpeedCmnd       = 0;
   double           L_ShooterSpeedCmndTarget = 0;
-  T_LauncherStates L_LauncherState          = E_LauncherNotActive;
 
   if (V_BallHandlerTest == true)
     {
     // This is only used when in test mode
     L_ShooterSpeedCmndTarget = V_ShooterTestSpeed;
-    L_LauncherState = E_LauncherManualActive;
     }
   else if (LeLC_e_ADASActiveFeature > E_ADAS_Disabled)
     {
     /* ADAS is active, pass through the request: */
     L_ShooterSpeedCmndTarget = L_ADAS_RPM_BH_Launcher;
-    L_LauncherState = E_LauncherAutoTargetActive;
     }
   else if (fabs(L_ManualShooter) >= K_BH_LauncherManualDb)
     {
@@ -197,7 +194,6 @@ double BallLauncher(bool                 L_DisableShooter,
       {
       L_ShooterSpeedCmndTarget = K_BH_LauncherManualLo;
       }
-    L_LauncherState = E_LauncherManualActive;
     }
 
   L_ShooterSpeedCmnd = RampTo(L_ShooterSpeedCmndTarget, V_ShooterRPM_CmndPrev, KV_ShooterRampRate);

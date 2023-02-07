@@ -6,36 +6,36 @@
  */
 #ifndef SRC_ROBORIO2018_LOOKUP_HPP_
 #define SRC_ROBORIO2018_LOOKUP_HPP_
-extern double ScaleJoystickAxis(double L_JoystickAxis);
+extern double ScaleJoystickAxis(double LeLU_Cmd_JoystickAxis);
 
 extern double RampTo(double  L_Final,
                      double  L_Current,
                      double  L_Slope);
 
-extern void DesiredRollerSpeed(double  L_Distance,
-                               double  L_Angle,
-                               double *L_UpperCmnd,
-                               double *L_LowerCmnd);
+extern void DesiredRollerSpeed(double  LeLU_In_Distance,
+                               double  LeLU_Deg_Angle,
+                               double *LeLU_Cmd_UpperCmnd,
+                               double *LeLU_Cmd_LowerCmnd);
 
-extern double DesiredRotateSpeed(double L_Error);
+extern double DesiredRotateSpeed(double LeLU_Cmd_Error);
 
-extern double DesiredAutoRotateSpeed(double L_Error);
+extern double DesiredAutoRotateSpeed(double LeLU_Cmd_Error);
 
-extern double DesiredLowerBeamSpeed(double L_TargetDistance);
+extern double DesiredLowerBeamSpeed(double LeLU_Cmd_TargetDistance);
 
-extern double DesiredUpperBeamSpeed(double L_TargetDistance);
+extern double DesiredUpperBeamSpeed(double LeLU_Cmd_TargetDistance);
 
-extern double DtrmnAutoLauncherSpeed(double L_TargetDistance);
+extern double DtrmnAutoLauncherSpeed(double LeLU_Cmd_TargetDistance);
 
-extern double DtrmnTimeToDriveToCaptureBall(double L_EstTargetDistance);
+extern double DtrmnTimeToDriveToCaptureBall(double LeLU_Cmd_EstTargetDistance);
 
-extern void DesiredAutonLocation(double  L_t_AutonTime,
-                                 double *L_L_X_Location,
-                                 double *L_L_Y_Location);
+extern void DesiredAutonLocation(double  LeLU_s_AutonTime,
+                                 double *LeLU_Cmd_L_X_Location,
+                                 double *LeLU_Cmd_L_Y_Location);
 
-bool DesiredAutonLocation2(double  L_t_AutonTime,
-                           int     L_int_AutonSelection,
-                           double *L_L_X_Location,
-                           double *L_L_Y_Location,
-                           double *L_Deg_Angle);
+bool DesiredAutonLocation2(double  LeLU_s_AutonTime,
+                           int     LeLU_Int_AutonSelection,
+                           double *LeLU_Cmd_L_X_Location,
+                           double *LeLU_Cmd_L_Y_Location,
+                           double *LeLU_Cmd_Deg_Angle);
 #endif /* SRC_ROBORIO2018_LOOKUP_HPP_ */

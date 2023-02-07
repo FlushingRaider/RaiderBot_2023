@@ -234,7 +234,6 @@ bool ADAS_DM_RotateTo(double     *L_Pct_FwdRev,
   double L_RotateError = 0;
   double L_ClockwiseError = 0;
   double L_CounterClockwiseError = 0;
-  double L_Deg_TargetErrorActual = 0;
 
   *L_SD_RobotOriented = false;
   /* Next, let's set all the other items we aren't trying to control to off: */
@@ -263,8 +262,8 @@ bool ADAS_DM_RotateTo(double     *L_Pct_FwdRev,
       V_GyroPrevious = L_Deg_GyroAngleDeg;
       }
 
-    if (V_GyroPrevious <= -170 && L_Deg_GyroAngleDeg >= 170 ||
-        V_GyroFlipNeg && L_Deg_GyroAngleDeg < 0)
+    if ((V_GyroPrevious <= -170 && L_Deg_GyroAngleDeg >= 170) ||
+        (V_GyroFlipNeg && L_Deg_GyroAngleDeg < 0))
       {
       V_OffsettedGyro = L_Deg_GyroAngleDeg - 360;
       V_GyroFlipNeg = true;
@@ -280,7 +279,6 @@ bool ADAS_DM_RotateTo(double     *L_Pct_FwdRev,
     }
 
 
-    L_Deg_TargetErrorActual = V_TargetAngle - L_Deg_GyroAngleDeg;
     V_GyroPrevious = L_Deg_GyroAngleDeg;
 
     if (V_ADAS_DM_Rotate180TargetAngle > 180)
@@ -355,8 +353,6 @@ bool ADAS_DM_FieldOrientRotate(double     *L_Pct_FwdRev,
   {
   bool L_ADAS_DM_StateComplete = false;
   double L_RotateError = 0;
-  double L_ClockwiseError = 0;
-  double L_CounterClockwiseError = 0;
   double L_Deg_TargetErrorActual = 0;
   double L_Deg_GyroRolloverProtected = 0;
 
@@ -485,15 +481,15 @@ bool ADAS_DM_DriveStraight(double     *L_Pct_FwdRev,
   *L_Pct_Intake = 0;
   *L_Pct_Elevator = 0;
 
-  V_ADAS_DM_DebounceTime += C_ExeTime;
+  V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
 
-  if (V_ADAS_DM_DebounceTime <= K_ADAS_DM_DriveTimeLong)
+  if (V_ADAS_DM_DebounceTime <= K_ADAS_DM_DriveTimeLong) // check that we are still in the time we have given ourselves
     {
-    *L_Pct_FwdRev = K_ADAS_DM_DriveFWD_Pct;
+    *L_Pct_FwdRev = K_ADAS_DM_DriveFWD_Pct; // set our strafe percent to this constant
     }
   else
     {
-    *L_Pct_FwdRev = 0;
+    *L_Pct_FwdRev = 0;                      // reset all the variables a driver state
     *L_SD_RobotOriented = false;
     V_ADAS_DM_DebounceTime = 0;
     L_ADAS_DM_StateComplete = true;
@@ -564,7 +560,6 @@ bool ADAS_DM_BlindShot(double       *L_Pct_FwdRev,
                        bool         *L_SD_RobotOriented)
   {
   bool L_ADAS_DM_StateComplete = false;
-  double L_ADAS_DM_ShooterSpeed;
 
   *L_SD_RobotOriented = false;
   /* Next, let's set all the other items we aren't trying to control to off: */
@@ -666,11 +661,6 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
 
   L_L_RelativePosX = L_L_X_FieldPos - V_ADAS_DM_X_StartPosition;
   L_L_RelativePosY = L_L_Y_FieldPos - V_ADAS_DM_Y_StartPosition;
-
-  frc::SmartDashboard::PutNumber("Y relative pos",  L_L_RelativePosY);
-  frc::SmartDashboard::PutNumber("X relative pos",  L_L_RelativePosX);
-  frc::SmartDashboard::PutNumber("Y target pos",  L_L_TargetPositionY);
-  frc::SmartDashboard::PutNumber("X target pos",  L_L_TargetPositionX);
 
   L_L_X_Error = fabs(L_L_TargetPositionX - L_L_RelativePosX);
   L_L_Y_Error = fabs(L_L_TargetPositionY - L_L_RelativePosY);

@@ -45,10 +45,15 @@ class Robot : public frc::TimedRobot {
   
   //DIO - Inputs / Outputs
   #ifdef CompBot
-  frc::DutyCycleEncoder a_encoderWheelAngleFrontLeft  {C_MagEncoderFL_ID};
-  frc::DutyCycleEncoder a_encoderWheelAngleFrontRight {C_MagEncoderFR_ID};
-  frc::DutyCycleEncoder a_encoderWheelAngleRearLeft   {C_MagEncoderRL_ID};
-  frc::DutyCycleEncoder a_encoderWheelAngleRearRight  {C_MagEncoderRR_ID};
+  // frc::DutyCycleEncoder a_encoderWheelAngleFrontLeft  {C_MagEncoderFL_ID};
+  // frc::DutyCycleEncoder a_encoderWheelAngleFrontRight {C_MagEncoderFR_ID};
+  // frc::DutyCycleEncoder a_encoderWheelAngleRearLeft   {C_MagEncoderRL_ID};
+  // frc::DutyCycleEncoder a_encoderWheelAngleRearRight  {C_MagEncoderRR_ID};
+
+  WPI_CANCoder          m_encoderWheelAngleCAN_FL     {KeEnc_i_WheelAngleFL, "rio"};
+  WPI_CANCoder          m_encoderWheelAngleCAN_FR     {KeEnc_i_WheelAngleFR, "rio"};
+  WPI_CANCoder          m_encoderWheelAngleCAN_RL     {KeEnc_i_WheelAngleRL, "rio"};
+  WPI_CANCoder          m_encoderWheelAngleCAN_RR     {KeEnc_i_WheelAngleRR, "rio"};
 
   frc::DigitalInput     di_XY_LimitSwitch     {C_XY_LimitSwitch_ID};
   frc::DigitalInput     di_XD_LimitSwitch     {C_XD_LimitSwitch_ID};
@@ -73,7 +78,7 @@ class Robot : public frc::TimedRobot {
   rev::CANSparkMax                           m_rearLeftDriveMotor  {rearLeftDriveDeviceID,   rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax                           m_rearRightSteerMotor {rearRightSteerDeviceID,  rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax                           m_rearRightDriveMotor {rearRightDriveDeviceID,  rev::CANSparkMax::MotorType::kBrushless};
-#ifdef CompBot
+#ifdef CompBot2
   rev::CANSparkMax                           m_rightShooterMotor   {rightShooterID,          rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax                           m_leftShooterMotor    {leftShooterID,           rev::CANSparkMax::MotorType::kBrushless};
                         
@@ -109,7 +114,7 @@ class Robot : public frc::TimedRobot {
   rev::SparkMaxRelativeEncoder               m_encoderRearLeftDrive   = m_rearLeftDriveMotor.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_encoderRearRightSteer  = m_rearRightSteerMotor.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_encoderRearRightDrive  = m_rearRightDriveMotor.GetEncoder();
-#ifdef CompBot
+#ifdef CompBot2
   rev::SparkMaxRelativeEncoder               m_encoderrightShooter    = m_rightShooterMotor.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_encoderleftShooter     = m_leftShooterMotor.GetEncoder();
 
@@ -122,7 +127,7 @@ class Robot : public frc::TimedRobot {
   // Driver Inputs
   frc::Joystick c_joyStick{0};
 #ifdef CompBot
-  // frc::Joystick c_joyStick2{1};
+  frc::Joystick c_joyStick2{1};
 #endif
 
 #ifdef OldVision

@@ -310,7 +310,6 @@ T_ADAS_BT_BallTarget ADAS_BT_IntakeAndRun(double *L_Pct_FwdRev,
                                           bool    L_BallDetectedLower)
   {
   T_ADAS_BT_BallTarget L_ADAS_BT_State = E_ADAS_BT_IntakeAndRun;
-  bool                 L_DistanceFound = false;
 
   *L_CameraLowerLightCmndOn = true;
   *L_SD_RobotOriented = true;
@@ -353,8 +352,8 @@ T_ADAS_BT_BallTarget ADAS_BT_IntakeAndRun(double *L_Pct_FwdRev,
   else if ((V_ADAS_BT_DebounceTime < KV_ADAS_BT_TimedOutDriveForward) &&                         // This is a generic time out.  Don't want to drive forever...
 
            (((L_BallDetectedUpper == false) && (L_BallDetectedLower == false)) ||                // We don't believe we have any balls in the ball handler
-             (L_BallDetectedLower == true) && (V_ADAS_BT_BallInLowerElevatorAtInit == true)) ||  // We have a ball in the lower eleveator from the begining, don't stop because of this
-             (L_BallDetectedLower == false))                                                     // We still don't have a ball present at the intake
+            ((L_BallDetectedLower == true) && (V_ADAS_BT_BallInLowerElevatorAtInit == true)) ||  // We have a ball in the lower eleveator from the begining, don't stop because of this
+             (L_BallDetectedLower == false)))                                                    // We still don't have a ball present at the intake
     {
     *L_Pct_FwdRev = KV_ADAS_BT_DriveForwardPct;
     *L_Pct_Intake = K_BH_IntakePower;
