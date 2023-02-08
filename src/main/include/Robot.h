@@ -78,26 +78,25 @@ class Robot : public frc::TimedRobot {
   rev::CANSparkMax                           m_rearLeftDriveMotor  {rearLeftDriveDeviceID,   rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax                           m_rearRightSteerMotor {rearRightSteerDeviceID,  rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax                           m_rearRightDriveMotor {rearRightDriveDeviceID,  rev::CANSparkMax::MotorType::kBrushless};
-#ifdef CompBot2
-  rev::CANSparkMax                           m_rightShooterMotor   {rightShooterID,          rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax                           m_leftShooterMotor    {leftShooterID,           rev::CANSparkMax::MotorType::kBrushless};
+  rev::CANSparkMax                           m_ArmPivot            {KeMAN_i_ArmPivot,          rev::CANSparkMax::MotorType::kBrushless};
+  rev::CANSparkMax                           m_Wrist               {KeMAN_i_Wrist,           rev::CANSparkMax::MotorType::kBrushless};
                         
-  rev::CANSparkMax                           m_liftMotorYD         {C_liftYD_ID,             rev::CANSparkMax::MotorType::kBrushless};
-  rev::CANSparkMax                           m_liftMotorXD         {C_liftXD_ID,             rev::CANSparkMax::MotorType::kBrushless};
+  rev::CANSparkMax                           m_Gripper             {KeMAN_i_Gripper,             rev::CANSparkMax::MotorType::kBrushless};
+  rev::CANSparkMax                           m_IntakeRollers       {KeINT_i_IntakeRollers,             rev::CANSparkMax::MotorType::kBrushless};
 
-  rev::SparkMaxPIDController                 m_rightShooterpid        = m_rightShooterMotor.GetPIDController();
-  rev::SparkMaxPIDController                 m_leftShooterpid         = m_leftShooterMotor.GetPIDController();
+  rev::SparkMaxPIDController                 m_ArmPivotPID         = m_ArmPivot.GetPIDController();
+  rev::SparkMaxPIDController                 m_WristPID            = m_Wrist.GetPIDController();
        
-  rev::SparkMaxPIDController                 m_liftpidYD              = m_liftMotorYD.GetPIDController();
-  rev::SparkMaxPIDController                 m_liftpidXD              = m_liftMotorXD.GetPIDController();
+  rev::SparkMaxPIDController                 m_GripperPID          = m_Gripper.GetPIDController();
+  rev::SparkMaxPIDController                 m_IntakeRollersPID    = m_IntakeRollers.GetPIDController();
 
-  ctre::phoenix::motorcontrol::can::TalonSRX m_intake              {C_intakeID};
-  ctre::phoenix::motorcontrol::can::TalonSRX m_elevator            {C_elevatorID};
-#endif
-  rev::SparkMaxPIDController                 m_frontLeftDrivePID      = m_frontLeftDriveMotor.GetPIDController();
-  rev::SparkMaxPIDController                 m_frontRightDrivePID     = m_frontRightDriveMotor.GetPIDController();
-  rev::SparkMaxPIDController                 m_rearLeftDrivePID       = m_rearLeftDriveMotor.GetPIDController();
-  rev::SparkMaxPIDController                 m_rearRightDrivePID      = m_rearRightDriveMotor.GetPIDController();
+  WPI_TalonSRX                                m_TurretRotate         {KeMAN_i_TurretRotate};
+  WPI_TalonSRX                               m_LinearSlide          {KeMAN_i_LinearSlide};
+
+  rev::SparkMaxPIDController                 m_frontLeftDrivePID    = m_frontLeftDriveMotor.GetPIDController();
+  rev::SparkMaxPIDController                 m_frontRightDrivePID   = m_frontRightDriveMotor.GetPIDController();
+  rev::SparkMaxPIDController                 m_rearLeftDrivePID     = m_rearLeftDriveMotor.GetPIDController();
+  rev::SparkMaxPIDController                 m_rearRightDrivePID    = m_rearRightDriveMotor.GetPIDController();
 
   // PWM Motor / Light Controllers
   #ifdef CompBot
@@ -114,16 +113,16 @@ class Robot : public frc::TimedRobot {
   rev::SparkMaxRelativeEncoder               m_encoderRearLeftDrive   = m_rearLeftDriveMotor.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_encoderRearRightSteer  = m_rearRightSteerMotor.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_encoderRearRightDrive  = m_rearRightDriveMotor.GetEncoder();
-#ifdef CompBot2
-  rev::SparkMaxRelativeEncoder               m_encoderrightShooter    = m_rightShooterMotor.GetEncoder();
-  rev::SparkMaxRelativeEncoder               m_encoderleftShooter     = m_leftShooterMotor.GetEncoder();
 
-  rev::SparkMaxRelativeEncoder               m_encoderLiftYD          = m_liftMotorYD.GetEncoder();
-  rev::SparkMaxRelativeEncoder               m_encoderLiftXD          = m_liftMotorXD.GetEncoder();
-#endif
+  rev::SparkMaxRelativeEncoder               m_ArmPivotEncoder        = m_ArmPivot.GetEncoder();
+  rev::SparkMaxRelativeEncoder               m_WristEncoder           = m_Wrist.GetEncoder();
+
+  rev::SparkMaxRelativeEncoder               m_GripperEncoder         = m_Gripper.GetEncoder();
+  rev::SparkMaxRelativeEncoder               m_IntakeRollersEncoder   = m_IntakeRollers.GetEncoder();
+
 
   WPI_TalonSRX                               m_turret{C_turretID};
-
+  WPI_TalonSRX
   // Driver Inputs
   frc::Joystick c_joyStick{0};
 #ifdef CompBot
