@@ -48,6 +48,7 @@ frc::Transform3d VisionTrans;
 double V_Tagx;
 double V_Tagy;
 double V_Tagz;
+double V_TagRot;
 int V_TagID;
 
 photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1");
@@ -267,31 +268,28 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
   void TestVisionRun(){
     // V_CamIndex = Cam.GetPipelineIndex();
     // wpi::PortForwarder::GetInstance().Add(5800, "10.55.61.11", 5800);
-  photonlib::PhotonPipelineResult CamResult = Cam1.GetLatestResult();
+  photonlib::PhotonPipelineResult CamResult = estimator.GetCamera().GetLatestResult();
+
   V_HasTarget = CamResult.HasTargets();
 
   if (V_HasTarget){
  
       auto estimatedPose = estimator.Update();
         frc::Pose3d pose = estimatedPose.value().estimatedPose;
+      V_TagID = CamResult.GetBestTarget().GetFiducialId();
 
+      V_CamYaw = CamResult.GetBestTarget().GetYaw();
 
-    
-
-    //   VisionTrans = CamResult.GetBestTarget().GetBestCameraToTarget();
-    // V_Tagx = VisionTrans.X().value();
-    // V_Tagy = VisionTrans.Y().value();
-    // V_Tagz = VisionTrans.Z().value();
-    
-    // V_TagID = CamResult.GetBestTarget().GetFiducialId();
-
-
-    
-    // V_CamYaw = CamResult.GetBestTarget().GetYaw();
-
-    V_Tagx =  pose.X().value();
+      V_Tagx =  pose.X().value();
+      V_Tagy =  pose.Y().value();
+      V_Tagz =  pose.Z().value();
+      // V_TagRot = pose.
 
     } 
+    else{
+
+
+    }
     
 
   }

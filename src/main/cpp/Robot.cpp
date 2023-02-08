@@ -404,6 +404,7 @@ TestVisionRun();
  frc::SmartDashboard::PutNumber("cam1 y" ,  V_Tagy);
  frc::SmartDashboard::PutNumber("cam1 z" ,  V_Tagz);
  frc::SmartDashboard::PutNumber("TagID ", V_TagID);
+ frc::SmartDashboard::PutNumber("TagRot", V_TagRot);
 
 
 
