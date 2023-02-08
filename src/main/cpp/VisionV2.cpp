@@ -51,9 +51,14 @@ double V_Tagz;
 int V_TagID;
 
 photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1");
+fs::path aprilTagsjsonPath = frc::filesystem::GetDeployDirectory();
+std::string aprilTagsjson = aprilTagsjsonPath / "2023_chargedUp.json";
 
+frc::AprilTagFieldLayout aprilTags{aprilTagsjson};
 
- photonlib::PhotonPoseEstimator *estimator;;
+//  photonlib::PhotonPoseEstimator *estimator;;
+photonlib::PhotonPoseEstimator estimator(aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
+
 
 #endif
 
@@ -97,12 +102,12 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
 
 
 #ifdef TestVision
-fs::path aprilTagsjson = frc::filesystem::GetDeployDirectory();
-aprilTagsjson = aprilTagsjson / "2023_chargedUp.json";
+// fs::path aprilTagsjson = frc::filesystem::GetDeployDirectory();
+// aprilTagsjson = aprilTagsjson / "2023_chargedUp.json";
 
-frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
+// frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
 
-estimator = new photonlib::PhotonPoseEstimator (aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
+// estimator = new photonlib::PhotonPoseEstimator (aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
 #endif
 /*this set of comments is VERY IMPORTANT
     photonPoseEstimator has no c++ example code on the photon docs and I had to find this 
@@ -262,13 +267,16 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
   void TestVisionRun(){
     // V_CamIndex = Cam.GetPipelineIndex();
     // wpi::PortForwarder::GetInstance().Add(5800, "10.55.61.11", 5800);
+  photonlib::PhotonPipelineResult CamResult = Cam1.GetLatestResult();
+  V_HasTarget = CamResult.HasTargets();
 
-   photonlib::PhotonPipelineResult CamResult = Cam1.GetLatestResult();
-      auto estimatedPose = estimator->Update();
+  if (V_HasTarget){
+ 
+      auto estimatedPose = estimator.Update();
         frc::Pose3d pose = estimatedPose.value().estimatedPose;
 
 
-    V_HasTarget = CamResult.HasTargets();
+    
 
     //   VisionTrans = CamResult.GetBestTarget().GetBestCameraToTarget();
     // V_Tagx = VisionTrans.X().value();
@@ -281,10 +289,9 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
     
     // V_CamYaw = CamResult.GetBestTarget().GetYaw();
 
-  V_Tagx =  pose.X().value();
+    V_Tagx =  pose.X().value();
 
-
- 
+    } 
     
 
   }

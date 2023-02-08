@@ -513,15 +513,8 @@ void Robot::TeleopInit()
   BallHandlerInit();
   LiftControlInit();
   OdometryInit();
-<<<<<<< HEAD
-
-  VisionInit(V_AllianceColor);
-
-  #ifdef CompBot
-=======
   VisionInit(V_AllianceColor);
   #ifdef CompBot2
->>>>>>> d81322b562c9fba1661bf755afcee194f3ac4527
   m_encoderrightShooter.SetPosition(0);
   m_encoderleftShooter.SetPosition(0);
   #endif
