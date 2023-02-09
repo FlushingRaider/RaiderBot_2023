@@ -90,7 +90,7 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
                              int     LeCONT_Deg_Driver2POV,
                              bool    LeCONT_b_Driver2ButtonBack)
   {
-  TeLFT_e_LiftCmndDirection   LeCONT_e_LiftCmndDirection     = E_LiftCmndNone;
+  T_Manipulator_CmndDirection   LeCONT_e_LiftCmndDirection     = E_LiftCmndNone;
 
   VsCONT_s_DriverInput.b_ElevatorUp                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) Elevator goes up
   VsCONT_s_DriverInput.b_ElevatorDown                  = LeCONT_b_Driver2ButtonB;      //Controller 2, B button (2), (robot.cpp) Elevator goes down

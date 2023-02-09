@@ -188,7 +188,7 @@ void Robot::RobotInit()
   BallHandlerMotorConfigsInit(m_rightShooterpid,
                               m_leftShooterpid);
 
-  LiftMotorConfigsInit(m_liftpidYD,
+  ManipulatorMoterConfigsInit(m_liftpidYD,
                        m_liftpidXD);
   #endif
 
@@ -443,7 +443,7 @@ CarsonDebugRun();
   BallHandlerMotorConfigsCal(m_rightShooterpid,
                              m_leftShooterpid);
 
-  LiftMotorConfigsCal(m_liftpidYD,
+  ManipulatorMotorConfigsCal(m_liftpidYD,
                       m_liftpidXD);
   #endif
   ADAS_UT_ConfigsCal();
@@ -475,7 +475,7 @@ void Robot::AutonomousInit()
     GyroInit();
     DriveControlInit();
     BallHandlerInit();
-    LiftControlInit();
+    ManipulatorControlInit();
     ADAS_Main_Reset();
     OdometryInit();
 
@@ -511,7 +511,7 @@ void Robot::TeleopInit()
   ADAS_Main_Reset();
   DriveControlInit();
   BallHandlerInit();
-  LiftControlInit();
+  ManipulatorControlInit();
   OdometryInit();
   // VisionInit(V_AllianceColor);
   #ifdef CompBot2
@@ -541,7 +541,7 @@ void Robot::TeleopPeriodic()
 void Robot::TestPeriodic()
   {
   #ifdef CompBot2
-  Lift_Control_ManualOverride(&VeMAN_Cnt_MoterTestPowerCmndA,
+  Manipulator_Control_ManualOverride(&VeMAN_Cnt_MoterTestPowerCmndA,
                               &VeMAN_Cnt_MoterTestPowerCmndB,
                                m_liftMotorYD.GetOutputCurrent(),
                                m_liftMotorXD.GetOutputCurrent(),
