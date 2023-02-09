@@ -185,8 +185,8 @@ const double K_lift_enable_auto_YD = 150; //distance the lift must be above to a
 const double K_lift_deadband_YD = 1.1; //it's a deadband for the y lift yeah
 const double K_lift_driver_up_rate_YD = 1.8; // This is the amount of traversal added per loop (0.02 sec)
 const double K_lift_driver_down_rate_YD = 0.3; // This is the amount of traversal added per loop (0.02 sec)
-const double K_lift_driver_manual_up_YD = 0.25; // Manual override power
-const double K_lift_driver_manual_down_YD = -0.25; // Manual override power
+const double K_Manipulator_Driver_manual_MoterA = 0.25; // Manual override power
+const double K_Manipulator_Driver_manual_MoterB = -0.25; // Manual override power
 const double K_lift_autoResetDown_YD = -0.20; // Auto reset power
 
 const double K_lift_S3_XD = 30; //move XD onto the rungs

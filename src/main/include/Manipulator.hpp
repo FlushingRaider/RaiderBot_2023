@@ -19,37 +19,37 @@ extern double VaMAN_v_MotorMaxCurrentB[E_Lift_State_Sz];
 extern bool   VeMAN_b_WaitingForDriverINS;
 extern bool   VeMAN_b_ArmInitialized;
 
-void LiftMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
+void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
                          rev::SparkMaxPIDController m_liftpidXD);
  
-void LiftMotorConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
+void ManipulatorMoterConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
                           rev::SparkMaxPIDController m_liftpidXD);
 
-void LiftControlInit();
+void ManipulatorControlInit();
 
-void Lift_Control_ManualOverride(double              *LeLFT_Cmd_CommandYD,
-                                 double              *LeLFT_Cmd_CommandXD,
-                                 double               LeLFT_v_MotorYDCurrentOut,
-                                 double               LeLFT_v_MotorXDCurrentOut,
-                                 TeLFT_e_LiftCmndDirection  LeLFT_Cmd_DriverLiftDirection,
-                                 bool                 LeLFT_b_LimitDetectedYD,
-                                 bool                 LeLFT_b_LimitDetectedXD);
+void Manipulator_Control_ManualOverride(double              *LeMAN_Cmd_CommandA,
+                                 double              *LeMAN_Cmd_CommandB,
+                                 double               LeMAN_v_MotorCurrentOutA,
+                                 double               LeMAN_v_MotorCurrentOutB,
+                                 T_Manipulator_CmndDirection  LeMAN_Cmd_DriverMANDirection,
+                                 bool                 LeMAN_b_LimitDetectedA,
+                                 bool                 LeMAN_b_LimitDetectedB);
 
 T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
                                    bool                L_driver_auto_climb_pause,
-                                   TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
+                                   T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
                                    double              L_game_time,
-                                   T_Man_State        LeLFT_Cnt_CurrentState,
+                                   T_Man_State        LeMAN_Cnt_CurrentState,
                                    double              LeLFT_In_MeasuredPositionYD,
                                    double              LeLFT_In_MeasuredPositionXD,
-                                   double             *LeLFT_Cmd_CommandYD,
-                                   double             *LeLFT_Cmd_CommandXD,
+                                   double             *LeMAN_Cmd_CommandA,
+                                   double             *LeMAN_Cmd_CommandB,
                                    double             *LeLFT_Pct_CommandPwrYD,
                                    double             *LeLFT_Pct_CommandPwrXD,
-                                   bool                LeLFT_b_LimitDetectedYD,
-                                   bool                LeLFT_b_LimitDetectedXD,
+                                   bool                LeMAN_b_LimitDetectedA,
+                                   bool                LeMAN_b_LimitDetectedB,
                                    double              LeLEFT_Deg_GyroAngleYaws,
-                                   double              LeLFT_v_MotorYDCurrentOut,
-                                   double              LeLFT_v_MotorXDCurrentOut,
+                                   double              LeMAN_v_MotorCurrentOutA,
+                                   double              LeMAN_v_MotorCurrentOutB,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftXD);

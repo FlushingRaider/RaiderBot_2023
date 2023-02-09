@@ -47,23 +47,23 @@ double VaMAN_InS_RampRateMoterB[E_Lift_State_Sz][E_LiftIterationSz]; //motor ram
 
 #ifdef LiftXY_Test
 bool   VeMAN_b_MoterTestA = false; // temporary, we don't want to use the manual overrides
-double V_LiftPID_Gx[E_PID_SparkMaxCalSz];
+double VMAN_PID_Gx[E_PID_SparkMaxCalSz];
 #else
 bool VeMAN_b_MoterTestA = false;
 #endif
 
 
 /******************************************************************************
- * Function:     LiftMotorConfigsInit
+ * Function:     ManipulatorMotorConfigsInit
  *
- * Description:  Contains the motor configurations for the lift motors.
- *               - XD and YD
+ * Description:  Contains the motor configurations for the Arm and intake motors.
+ *               - A through G
  ******************************************************************************/
-void LiftMotorConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
+void ManipulatorMoterConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
                           rev::SparkMaxPIDController m_liftpidXD)
   {
-  T_Man_State     LeLFT_Cnt_Index1;
-  T_Man_Iteration LeLFT_Cnt_Index2;
+  T_Man_State     LeMAN_Cnt_Index1;
+  T_Man_Iteration LeMAN_Cnt_Index2;
 
   // set PID coefficients
   m_liftpidYD.SetP(K_LiftPID_Gx[E_kP]);
@@ -80,27 +80,27 @@ void LiftMotorConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
   m_liftpidXD.SetFF(K_LiftPID_Gx[E_kFF]);
   m_liftpidXD.SetOutputRange(K_LiftPID_Gx[E_kMinOutput], K_LiftPID_Gx[E_kMaxOutput]);
 
-  for (LeLFT_Cnt_Index2 = VeMAN_Cnt_ManIterationNew;
-       LeLFT_Cnt_Index2 < E_LiftIterationSz;
-       LeLFT_Cnt_Index2 = T_Man_Iteration(int(LeLFT_Cnt_Index2) + 1))
+  for (LeMAN_Cnt_Index2 = VeMAN_Cnt_ManIterationNew;
+       LeMAN_Cnt_Index2 < E_LiftIterationSz;
+       LeMAN_Cnt_Index2 = T_Man_Iteration(int(LeMAN_Cnt_Index2) + 1))
       {
-      for (LeLFT_Cnt_Index1 = E_S0_BEGONE;
-           LeLFT_Cnt_Index1 < E_Lift_State_Sz;
-           LeLFT_Cnt_Index1 = T_Man_State(int(LeLFT_Cnt_Index1) + 1))
+      for (LeMAN_Cnt_Index1 = E_S0_BEGONE;
+           LeMAN_Cnt_Index1 < E_Lift_State_Sz;
+           LeMAN_Cnt_Index1 = T_Man_State(int(LeMAN_Cnt_Index1) + 1))
           {
-          VaMAN_InS_RampRateMoterA[LeLFT_Cnt_Index1][LeLFT_Cnt_Index2] = K_LiftRampRateYD[LeLFT_Cnt_Index1][LeLFT_Cnt_Index2];
-          VaMAN_InS_RampRateMoterB[LeLFT_Cnt_Index1][LeLFT_Cnt_Index2] = K_LiftRampRateXD[LeLFT_Cnt_Index1][LeLFT_Cnt_Index2];
+          VaMAN_InS_RampRateMoterA[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateYD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
+          VaMAN_InS_RampRateMoterB[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateXD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
           }
       }
   
   #ifdef LiftXY_Test
-  T_PID_SparkMaxCal LeLFT_e_Index = E_kP;
+  T_PID_SparkMaxCal LeMAN_e_Index = E_kP;
 
-  for (LeLFT_e_Index = E_kP;
-       LeLFT_e_Index < E_PID_SparkMaxCalSz;
-       LeLFT_e_Index = T_PID_SparkMaxCal(int(LeLFT_e_Index) + 1))
+  for (LeMAN_e_Index = E_kP;
+       LeMAN_e_Index < E_PID_SparkMaxCalSz;
+       LeMAN_e_Index = T_PID_SparkMaxCal(int(LeMAN_e_Index) + 1))
       {
-      V_LiftPID_Gx[LeLFT_e_Index] = K_LiftPID_Gx[LeLFT_e_Index];
+      VMAN_PID_Gx[LeMAN_e_Index] = K_LiftPID_Gx[LeMAN_e_Index];
       }
   
   // display PID coefficients on SmartDashboard
@@ -166,12 +166,12 @@ void LiftMotorConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
 
 
 /******************************************************************************
- * Function:     LiftMotorConfigsCal
+ * Function:     ManipulatorMotorConfigsCal
  *
  * Description:  Contains the motor configurations for the lift motors.  This 
  *               allows for rapid calibration, but must not be used for comp.
  ******************************************************************************/
-void LiftMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
+void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
                          rev::SparkMaxPIDController m_liftpidXD)
   {
   // read PID coefficients from SmartDashboard
@@ -191,12 +191,12 @@ void LiftMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
   // VeMAN_Cnt_MoterTestLocationA = frc::SmartDashboard::GetNumber("Set Position Y", 0);
   // VeMAN_Cnt_MoterTestLocationB = frc::SmartDashboard::GetNumber("Set Position X", 0);
 
-  // if((L_p != V_LiftPID_Gx[E_kP]))   { m_liftpidYD.SetP(L_p); m_liftpidXD.SetP(L_p); V_LiftPID_Gx[E_kP] = L_p; }
-  // if((L_i != V_LiftPID_Gx[E_kI]))   { m_liftpidYD.SetI(L_i); m_liftpidXD.SetI(L_i); V_LiftPID_Gx[E_kI] = L_i; }
-  // if((L_d != V_LiftPID_Gx[E_kD]))   { m_liftpidYD.SetD(L_d); m_liftpidXD.SetD(L_d); V_LiftPID_Gx[E_kD] = L_d; }
-  // if((L_iz != V_LiftPID_Gx[E_kIz])) { m_liftpidYD.SetIZone(L_iz); m_liftpidXD.SetIZone(L_iz); V_LiftPID_Gx[E_kIz] = L_iz; }
-  // if((L_ff != V_LiftPID_Gx[E_kFF])) { m_liftpidYD.SetFF(L_ff); m_liftpidXD.SetFF(L_ff); V_LiftPID_Gx[E_kFF] = L_ff; }
-  // if((L_max != V_LiftPID_Gx[E_kMaxOutput]) || (L_min != V_LiftPID_Gx[E_kMinOutput])) { m_liftpidYD.SetOutputRange(L_min, L_max); m_liftpidXD.SetOutputRange(L_min, L_max); V_LiftPID_Gx[E_kMinOutput] = L_min; V_LiftPID_Gx[E_kMaxOutput] = L_max; }
+  // if((L_p != VMAN_PID_Gx[E_kP]))   { m_liftpidYD.SetP(L_p); m_liftpidXD.SetP(L_p); VMAN_PID_Gx[E_kP] = L_p; }
+  // if((L_i != VMAN_PID_Gx[E_kI]))   { m_liftpidYD.SetI(L_i); m_liftpidXD.SetI(L_i); VMAN_PID_Gx[E_kI] = L_i; }
+  // if((L_d != VMAN_PID_Gx[E_kD]))   { m_liftpidYD.SetD(L_d); m_liftpidXD.SetD(L_d); VMAN_PID_Gx[E_kD] = L_d; }
+  // if((L_iz != VMAN_PID_Gx[E_kIz])) { m_liftpidYD.SetIZone(L_iz); m_liftpidXD.SetIZone(L_iz); VMAN_PID_Gx[E_kIz] = L_iz; }
+  // if((L_ff != VMAN_PID_Gx[E_kFF])) { m_liftpidYD.SetFF(L_ff); m_liftpidXD.SetFF(L_ff); VMAN_PID_Gx[E_kFF] = L_ff; }
+  // if((L_max != VMAN_PID_Gx[E_kMaxOutput]) || (L_min != VMAN_PID_Gx[E_kMinOutput])) { m_liftpidYD.SetOutputRange(L_min, L_max); m_liftpidXD.SetOutputRange(L_min, L_max); VMAN_PID_Gx[E_kMinOutput] = L_min; VMAN_PID_Gx[E_kMaxOutput] = L_max; }
   
   VaMAN_InS_RampRateMoterB[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]",            VaMAN_InS_RampRateMoterB[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]);
@@ -247,13 +247,13 @@ void LiftMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
   }
 
 /******************************************************************************
- * Function:     LiftControlInit
+ * Function:     ManipulatorControlInit
  *
- * Description:  Initialization function for the lift control.
+ * Description:  Initialization function for the Manipulator controls.
  ******************************************************************************/
-void LiftControlInit()
+void ManipulatorControlInit()
   {
-  T_Man_State LeLFT_e_Index;
+  T_Man_State LeMAN_e_Index;
 
   VeMAN_Cnt_Man_state = E_S0_BEGONE;
   VeMAN_Cnt_ManIteration = VeMAN_Cnt_ManIterationNew;
@@ -277,82 +277,82 @@ void LiftControlInit()
 
   VeMAN_b_ArmInitialized = false;
 
-  for (LeLFT_e_Index = E_S0_BEGONE;
-       LeLFT_e_Index < E_Lift_State_Sz;
-       LeLFT_e_Index = T_Man_State(int(LeLFT_e_Index) + 1))
+  for (LeMAN_e_Index = E_S0_BEGONE;
+       LeMAN_e_Index < E_Lift_State_Sz;
+       LeMAN_e_Index = T_Man_State(int(LeMAN_e_Index) + 1))
       {
-      VaMAN_v_MotorMaxCurrentA[LeLFT_e_Index] = 0;
-      VaMAN_v_MotorMaxCurrentB[LeLFT_e_Index] = 0;
+      VaMAN_v_MotorMaxCurrentA[LeMAN_e_Index] = 0;
+      VaMAN_v_MotorMaxCurrentB[LeMAN_e_Index] = 0;
       }
   }
 
 /******************************************************************************
- * Function:     RecordLiftMotorMaxCurrent
+ * Function:     RecordManipulatorMotorMaxCurrent
  *
  * Description:  Record the max observed current.  
  *               This is for instrumentation only.
  ******************************************************************************/
-void RecordLiftMotorMaxCurrent(T_Man_State LeLFT_Cnt_CurrentState,                                
-                               double       LeLFT_v_MotorYDCurrentOut,
-                               double       LeLFT_v_MotorXDCurrentOut)
+void RecordManipulatorMotorMaxCurrent(T_Man_State LeMAN_Cnt_CurrentState,                                
+                               double       LeMAN_v_MotorCurrentOutA,
+                               double       LeMAN_v_MotorCurrentOutB)
   {
-  if (fabs(LeLFT_v_MotorYDCurrentOut) > fabs(VaMAN_v_MotorMaxCurrentA[LeLFT_Cnt_CurrentState]))
+  if (fabs(LeMAN_v_MotorCurrentOutA) > fabs(VaMAN_v_MotorMaxCurrentA[LeMAN_Cnt_CurrentState]))
     {
-    VaMAN_v_MotorMaxCurrentA[LeLFT_Cnt_CurrentState] = LeLFT_v_MotorYDCurrentOut;
+    VaMAN_v_MotorMaxCurrentA[LeMAN_Cnt_CurrentState] = LeMAN_v_MotorCurrentOutA;
     }
   
-  if (fabs(LeLFT_v_MotorXDCurrentOut) > fabs(VaMAN_v_MotorMaxCurrentB[LeLFT_Cnt_CurrentState]))
+  if (fabs(LeMAN_v_MotorCurrentOutB) > fabs(VaMAN_v_MotorMaxCurrentB[LeMAN_Cnt_CurrentState]))
     {
-    VaMAN_v_MotorMaxCurrentB[LeLFT_Cnt_CurrentState] = LeLFT_v_MotorXDCurrentOut;
+    VaMAN_v_MotorMaxCurrentB[LeMAN_Cnt_CurrentState] = LeMAN_v_MotorCurrentOutB;
     }
   }
 
 /******************************************************************************
- * Function:     Lift_Control_ManualOverride
+ * Function:     Manipulator_Control_ManualOverride
  *
  * Description:  Manual override control used during the FRC test section.
  ******************************************************************************/
-void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
-                                 double *LeLFT_Cmd_CommandXD,
-                                 double  LeLFT_v_MotorYDCurrentOut,
-                                 double  LeLFT_v_MotorXDCurrentOut,
-                                 TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
-                                 bool    LeLFT_b_LimitDetectedYD,
-                                 bool    LeLFT_b_LimitDetectedXD)
+void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
+                                 double *LeMAN_Cmd_CommandB,
+                                 double  LeMAN_v_MotorCurrentOutA,
+                                 double  LeMAN_v_MotorCurrentOutB,
+                                 T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
+                                 bool    LeMAN_b_LimitDetectedA,
+                                 bool    LeMAN_b_LimitDetectedB)
   {
-  double LeLFT_v_LiftPowerYD = 0;
-  double LeLFT_v_LiftPowerXD = 0;
-  T_Man_State LeLFT_Cnt_CurrentState = E_S0_BEGONE; // Not really the lift state, but allows us record the max currents
+  double LeMAN_v_MoterPowerA= 0;
+  double LeMAN_v_MoterPowerB= 0;
+  T_Man_State LeMAN_Cnt_CurrentState = E_S0_BEGONE; // Not really the lift state, but allows us record the max currents
 
-    if (LeLFT_Cmd_DriverLiftDirection == E_LiftCmndUp)
+    if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndUp)
       {
-      LeLFT_v_LiftPowerYD = K_lift_driver_manual_up_YD;
-      LeLFT_Cnt_CurrentState = E_S0_BEGONE;
+      LeMAN_v_MoterPowerA= K_Manipulator_Driver_manual_MoterA;
+      LeMAN_Cnt_CurrentState = E_S0_BEGONE;
       }
-    else if ((LeLFT_Cmd_DriverLiftDirection == E_LiftCmndDown) &&
-             (LeLFT_b_LimitDetectedYD == false))
+    else if ((LeMAN_Cmd_DriverMANDirection == E_LiftCmndDown) &&
+             (LeMAN_b_LimitDetectedA == false))
       {
-      LeLFT_v_LiftPowerYD = K_lift_driver_manual_down_YD;
-      LeLFT_Cnt_CurrentState = E_S2_lift_down_YD;
+      LeMAN_v_MoterPowerA= K_Manipulator_Driver_manual_MoterB;
+      LeMAN_Cnt_CurrentState = E_S2_lift_down_YD;
       }
-    else if ((LeLFT_Cmd_DriverLiftDirection == E_LiftCmndBack) &&
-             (LeLFT_b_LimitDetectedXD == false))
+    else if ((LeMAN_Cmd_DriverMANDirection == E_LiftCmndBack) &&
+             (LeMAN_b_LimitDetectedB == false))
       {
-      LeLFT_v_LiftPowerXD = K_lift_driver_manual_back_XD;
-      LeLFT_Cnt_CurrentState = E_S7_move_back_XD;
+      LeMAN_v_MoterPowerB= K_lift_driver_manual_back_XD;
+      LeMAN_Cnt_CurrentState = E_S7_move_back_XD;
       }
-    else if (LeLFT_Cmd_DriverLiftDirection == E_LiftCmndForward)
+    else if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndForward)
       {
-      LeLFT_v_LiftPowerXD = K_lift_driver_manual_forward_XD;
-      LeLFT_Cnt_CurrentState = E_S3_move_forward_XD;
+      LeMAN_v_MoterPowerB= K_lift_driver_manual_forward_XD;
+      LeMAN_Cnt_CurrentState = E_S3_move_forward_XD;
       }
 
-  RecordLiftMotorMaxCurrent(LeLFT_Cnt_CurrentState,                                
-                            LeLFT_v_MotorYDCurrentOut,
-                            LeLFT_v_MotorXDCurrentOut);
+  RecordManipulatorMotorMaxCurrent(LeMAN_Cnt_CurrentState,                                
+                            LeMAN_v_MotorCurrentOutA,
+                            LeMAN_v_MotorCurrentOutB);
 
-  *LeLFT_Cmd_CommandYD = LeLFT_v_LiftPowerYD;
-  *LeLFT_Cmd_CommandXD = LeLFT_v_LiftPowerXD;
+  *LeMAN_Cmd_CommandA = LeMAN_v_MoterPowerA;
+  *LeMAN_Cmd_CommandB = LeMAN_v_MoterPowerB;
   }
 
 
@@ -364,17 +364,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  bool S2_lift_down_YD(double         LeLFT_b_AutoClimbButton,
                       double         LeLFT_In_MeasuredPositionYD,
                       double         LeLFT_In_MeasuredPositionXD,
-                      double        *LeLFT_Cmd_CommandYD,
-                      double        *LeLFT_Cmd_CommandXD,
+                      double        *LeMAN_Cmd_CommandA,
+                      double        *LeMAN_Cmd_CommandB,
                       double        *LeLFT_InS_CommandRateYD,
                       double        *LeLFT_InS_CommandRateXD,
                       T_Man_Iteration LeLFT_Cmd_LiftIteration)
 {
   bool LeLFT_b_CriteriaMet = false;
 
-  *LeLFT_Cmd_CommandYD = K_lift_S2_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S2_YD;
 
-  *LeLFT_Cmd_CommandXD = K_lift_min_XD;
+  *LeMAN_Cmd_CommandB = K_lift_min_XD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S2_lift_down_YD][LeLFT_Cmd_LiftIteration];
 
@@ -395,17 +395,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  bool S3_move_forward_XD(double         LeLFT_b_AutoClimbButton,
                          double         LeLFT_In_MeasuredPositionYD,
                          double         LeLFT_In_MeasuredPositionXD,
-                         double        *LeLFT_Cmd_CommandYD,
-                         double        *LeLFT_Cmd_CommandXD,
+                         double        *LeMAN_Cmd_CommandA,
+                         double        *LeMAN_Cmd_CommandB,
                          double        *LeLFT_InS_CommandRateYD,
                          double        *LeLFT_InS_CommandRateXD,
                          T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
   
-  *LeLFT_Cmd_CommandXD = K_lift_S3_XD;
+  *LeMAN_Cmd_CommandB = K_lift_S3_XD;
 
-  *LeLFT_Cmd_CommandYD = K_lift_S3_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S3_YD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S3_move_forward_XD][LeLFT_Cmd_LiftIteration];
 
@@ -433,17 +433,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  bool S4_stretch_up_YD(double         LeLFT_b_AutoClimbButton,
                        double         LeLFT_In_MeasuredPositionYD,
                        double         LeLFT_In_MeasuredPositionXD,
-                       double        *LeLFT_Cmd_CommandYD,
-                       double        *LeLFT_Cmd_CommandXD,
+                       double        *LeMAN_Cmd_CommandA,
+                       double        *LeMAN_Cmd_CommandB,
                        double        *LeLFT_InS_CommandRateYD,
                        double        *LeLFT_InS_CommandRateXD,
                        T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
    bool LeLFT_b_CriteriaMet = false;
   
-  *LeLFT_Cmd_CommandYD = K_lift_S4_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S4_YD;
 
-  *LeLFT_Cmd_CommandXD = K_lift_S4_XD;
+  *LeMAN_Cmd_CommandB = K_lift_S4_XD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S4_stretch_up_YD][LeLFT_Cmd_LiftIteration];
 
@@ -476,17 +476,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  bool S5_more_forward_XD(double         LeLFT_b_AutoClimbButton,
                          double         LeLFT_In_MeasuredPositionYD,
                          double         LeLFT_In_MeasuredPositionXD,
-                         double        *LeLFT_Cmd_CommandYD,
-                         double        *LeLFT_Cmd_CommandXD,
+                         double        *LeMAN_Cmd_CommandA,
+                         double        *LeMAN_Cmd_CommandB,
                          double        *LeLFT_InS_CommandRateYD,
                          double        *LeLFT_InS_CommandRateXD,
                          T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
 
-  *LeLFT_Cmd_CommandXD = K_lift_S5_XD;
+  *LeMAN_Cmd_CommandB = K_lift_S5_XD;
 
-  *LeLFT_Cmd_CommandYD = K_lift_S5_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S5_YD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S5_more_forward_XD][LeLFT_Cmd_LiftIteration];
 
@@ -514,17 +514,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  bool S6_lift_up_more_YD(double         LeLFT_b_AutoClimbButton,
                          double         LeLFT_In_MeasuredPositionYD,
                          double         LeLFT_In_MeasuredPositionXD,
-                         double        *LeLFT_Cmd_CommandYD,
-                         double        *LeLFT_Cmd_CommandXD,
+                         double        *LeMAN_Cmd_CommandA,
+                         double        *LeMAN_Cmd_CommandB,
                          double        *LeLFT_InS_CommandRateYD,
                          double        *LeLFT_InS_CommandRateXD,
                          T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
 
-  *LeLFT_Cmd_CommandYD = K_lift_S6_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S6_YD;
 
-  *LeLFT_Cmd_CommandXD = K_lift_S6_XD;
+  *LeMAN_Cmd_CommandB = K_lift_S6_XD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S6_lift_up_more_YD][LeLFT_Cmd_LiftIteration];
 
@@ -553,17 +553,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
                       double         LeLFT_In_MeasuredPositionYD,
                       double         LeLFT_In_MeasuredPositionXD,
                       double         LeLEFT_Deg_GyroAngleYaws,
-                      double        *LeLFT_Cmd_CommandYD,
-                      double        *LeLFT_Cmd_CommandXD,
+                      double        *LeMAN_Cmd_CommandA,
+                      double        *LeMAN_Cmd_CommandB,
                       double        *LeLFT_InS_CommandRateYD,
                       double        *LeLFT_InS_CommandRateXD,
                       T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
 
-  *LeLFT_Cmd_CommandXD = K_lift_S7_XD;
+  *LeMAN_Cmd_CommandB = K_lift_S7_XD;
 
-  *LeLFT_Cmd_CommandYD = K_lift_S7_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S7_YD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S7_move_back_XD][LeLFT_Cmd_LiftIteration];
 
@@ -595,17 +595,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  bool S8_more_down_some_YD(double         LeLFT_b_AutoClimbButton,
                            double         LeLFT_In_MeasuredPositionYD,
                            double         LeLFT_In_MeasuredPositionXD,
-                           double        *LeLFT_Cmd_CommandYD,
-                           double        *LeLFT_Cmd_CommandXD,
+                           double        *LeMAN_Cmd_CommandA,
+                           double        *LeMAN_Cmd_CommandB,
                            double        *LeLFT_InS_CommandRateYD,
                            double        *LeLFT_InS_CommandRateXD,
                            T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
   
-  *LeLFT_Cmd_CommandYD = K_lift_S8_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S8_YD;
 
-  *LeLFT_Cmd_CommandXD = K_lift_S8_XD;
+  *LeMAN_Cmd_CommandB = K_lift_S8_XD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S8_more_down_some_YD][LeLFT_Cmd_LiftIteration];
 
@@ -638,17 +638,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  bool S9_back_rest_XD(double         LeLFT_b_AutoClimbButton,
                       double         LeLFT_In_MeasuredPositionYD,
                       double         LeLFT_In_MeasuredPositionXD,
-                      double        *LeLFT_Cmd_CommandYD,
-                      double        *LeLFT_Cmd_CommandXD,
+                      double        *LeMAN_Cmd_CommandA,
+                      double        *LeMAN_Cmd_CommandB,
                       double        *LeLFT_InS_CommandRateYD,
                       double        *LeLFT_InS_CommandRateXD,
                       T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
   
-  *LeLFT_Cmd_CommandXD = K_lift_S9_XD;
+  *LeMAN_Cmd_CommandB = K_lift_S9_XD;
 
-  *LeLFT_Cmd_CommandYD = K_lift_S9_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S9_YD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S9_back_rest_XD][LeLFT_Cmd_LiftIteration];
 
@@ -681,17 +681,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  bool S10_final_YD(double         LeLFT_b_AutoClimbButton,
                    double         LeLFT_In_MeasuredPositionYD,
                    double         LeLFT_In_MeasuredPositionXD,
-                   double        *LeLFT_Cmd_CommandYD,
-                   double        *LeLFT_Cmd_CommandXD,
+                   double        *LeMAN_Cmd_CommandA,
+                   double        *LeMAN_Cmd_CommandB,
                    double        *LeLFT_InS_CommandRateYD,
                    double        *LeLFT_InS_CommandRateXD,
                    T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
   
-  *LeLFT_Cmd_CommandYD = K_lift_S10_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S10_YD;
 
-  *LeLFT_Cmd_CommandXD = K_lift_S10_XD;
+  *LeMAN_Cmd_CommandB = K_lift_S10_XD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S10_final_YD][LeLFT_Cmd_LiftIteration]; // Slow down, don't yank too hard
 
@@ -719,17 +719,17 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  bool S11_final_OWO(double         LeLFT_b_AutoClimbButton,
                     double         LeLFT_In_MeasuredPositionYD,
                     double         LeLFT_In_MeasuredPositionXD,
-                    double        *LeLFT_Cmd_CommandYD,
-                    double        *LeLFT_Cmd_CommandXD,
+                    double        *LeMAN_Cmd_CommandA,
+                    double        *LeMAN_Cmd_CommandB,
                     double        *LeLFT_InS_CommandRateYD,
                     double        *LeLFT_InS_CommandRateXD,
                     T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
   
-  *LeLFT_Cmd_CommandYD = K_lift_S11_YD;
+  *LeMAN_Cmd_CommandA = K_lift_S11_YD;
 
-  *LeLFT_Cmd_CommandXD = K_lift_S11_XD;
+  *LeMAN_Cmd_CommandB = K_lift_S11_XD;
 
   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S11_final_OWO][LeLFT_Cmd_LiftIteration];
 
@@ -762,54 +762,54 @@ void Lift_Control_ManualOverride(double *LeLFT_Cmd_CommandYD,
  ******************************************************************************/
 T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
                                    bool                LeLFT_b_DriverAutoClimbPause,
-                                   TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
+                                   T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
                                    double              LeLFT_SEC_GameTime,
-                                   T_Man_State        LeLFT_Cnt_CurrentState,                                
+                                   T_Man_State        LeMAN_Cnt_CurrentState,                                
                                    double              LeLFT_In_MeasuredPositionYD,
                                    double              LeLFT_In_MeasuredPositionXD,
-                                   double             *LeLFT_Cmd_CommandYD,
-                                   double             *LeLFT_Cmd_CommandXD,
+                                   double             *LeMAN_Cmd_CommandA,
+                                   double             *LeMAN_Cmd_CommandB,
                                    double             *LeLFT_Pct_CommandPwrYD,
                                    double             *LeLFT_Pct_CommandPwrXD,
-                                   bool                LeLFT_b_LimitDetectedYD,
-                                   bool                LeLFT_b_LimitDetectedXD,
+                                   bool                LeMAN_b_LimitDetectedA,
+                                   bool                LeMAN_b_LimitDetectedB,
                                    double              LeLEFT_Deg_GyroAngleYaws,
-                                   double              LeLFT_v_MotorYDCurrentOut,
-                                   double              LeLFT_v_MotorXDCurrentOut,
+                                   double              LeMAN_v_MotorCurrentOutA,
+                                   double              LeMAN_v_MotorCurrentOutB,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftXD)
   {
-  T_Man_State LeLFT_e_CommandedState = LeLFT_Cnt_CurrentState;
-  double LeLFT_Cmd_CommandYD_Temp = 0;
-  double LeLFT_Cmd_CommandXD_Temp = 0;
+  T_Man_State LeLFT_e_CommandedState = LeMAN_Cnt_CurrentState;
+  double LeMAN_Cmd_CommandA_Temp = 0;
+  double LeMAN_Cmd_CommandB_Temp = 0;
   double LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew];
   double LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew];
-  double LeLFT_v_LiftPowerYD = 0;
-  double LeLFT_v_LiftPowerXD = 0;
+  double LeMAN_v_MoterPowerA= 0;
+  double LeMAN_v_MoterPowerB= 0;
 
   if (VeMAN_b_MoterTestA == true)
     {
     /* Only used for testing. */
-    LeLFT_Cmd_CommandYD_Temp = VeMAN_Cnt_MoterTestLocationA;
-    LeLFT_Cmd_CommandXD_Temp = VeMAN_Cnt_MoterTestLocationB;
+    LeMAN_Cmd_CommandA_Temp = VeMAN_Cnt_MoterTestLocationA;
+    LeMAN_Cmd_CommandB_Temp = VeMAN_Cnt_MoterTestLocationB;
     }
   else if (VeMAN_b_ArmInitialized == false)
     {
-    if (LeLFT_b_LimitDetectedYD == false)
+    if (LeMAN_b_LimitDetectedA == false)
       {
-      LeLFT_v_LiftPowerYD = K_lift_autoResetDown_YD;
+      LeMAN_v_MoterPowerA= K_lift_autoResetDown_YD;
       }
 
-    if (LeLFT_b_LimitDetectedXD == false)
+    if (LeMAN_b_LimitDetectedB == false)
       {
-      LeLFT_v_LiftPowerXD = K_lift_driver_manual_back_XD;
+      LeMAN_v_MoterPowerB= K_lift_driver_manual_back_XD;
       }
     
-    if (LeLFT_b_LimitDetectedYD == true && 
-        LeLFT_b_LimitDetectedXD == true)
+    if (LeMAN_b_LimitDetectedA == true && 
+        LeMAN_b_LimitDetectedB == true)
       {
-      LeLFT_v_LiftPowerYD = 0;
-      LeLFT_v_LiftPowerXD = 0;
+      LeMAN_v_MoterPowerA= 0;
+      LeMAN_v_MoterPowerB= 0;
       VeMAN_b_ArmInitialized = true;
 
       // EncodersLiftInit(m_encoderLiftYD,
@@ -823,8 +823,8 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
     VeMAN_b_PausedMoterPositionA = LeLFT_In_MeasuredPositionXD;
     VeMAN_b_PausedMoterPositionB = LeLFT_In_MeasuredPositionYD;
     /* Set commanded location to current measured location for this loop. */
-    LeLFT_Cmd_CommandXD_Temp = LeLFT_In_MeasuredPositionXD;
-    LeLFT_Cmd_CommandYD_Temp = LeLFT_In_MeasuredPositionYD;
+    LeMAN_Cmd_CommandB_Temp = LeLFT_In_MeasuredPositionXD;
+    LeMAN_Cmd_CommandA_Temp = LeLFT_In_MeasuredPositionYD;
     }
   else if (((LeLFT_b_AutoClimbButton == true) && (VeMAN_b_Paused == true)) || 
             (VeMAN_b_Paused == false))
@@ -833,20 +833,20 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
     VeMAN_b_PausedMoterPositionA = LeLFT_In_MeasuredPositionXD;
     VeMAN_b_PausedMoterPositionB = LeLFT_In_MeasuredPositionYD;
 
-    switch (LeLFT_Cnt_CurrentState)
+    switch (LeMAN_Cnt_CurrentState)
       {
         case E_S0_BEGONE:
-            if (LeLFT_Cmd_DriverLiftDirection == E_LiftCmndUp)
+            if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndUp)
               {
-              LeLFT_Cmd_CommandYD_Temp = *LeLFT_Cmd_CommandYD + K_lift_driver_up_rate_YD;
+              LeMAN_Cmd_CommandA_Temp = *LeMAN_Cmd_CommandA + K_lift_driver_up_rate_YD;
               }
-            else if (LeLFT_Cmd_DriverLiftDirection == E_LiftCmndDown)
+            else if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndDown)
               {
-              LeLFT_Cmd_CommandYD_Temp = *LeLFT_Cmd_CommandYD - K_lift_driver_down_rate_YD;
+              LeMAN_Cmd_CommandA_Temp = *LeMAN_Cmd_CommandA - K_lift_driver_down_rate_YD;
               }
               else 
               {
-                LeLFT_Cmd_CommandYD_Temp = *LeLFT_Cmd_CommandYD;
+                LeMAN_Cmd_CommandA_Temp = *LeMAN_Cmd_CommandA;
               }
             /* The driver should only initiate the state machine once the robot has become suspended. */
             if (LeLFT_b_AutoClimbButton == true && LeLFT_In_MeasuredPositionYD >= K_lift_enable_auto_YD) {
@@ -855,70 +855,70 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
         break;
 
         case E_S2_lift_down_YD:
-            VeMAN_b_CriteriaMet = S2_lift_down_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S2_lift_down_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S3_move_forward_XD;
             }
         break;
 
         case E_S3_move_forward_XD:
-            VeMAN_b_CriteriaMet = S3_move_forward_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S3_move_forward_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S4_stretch_up_YD;
             }
         break;
 
         case E_S4_stretch_up_YD:
-            VeMAN_b_CriteriaMet = S4_stretch_up_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S4_stretch_up_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S5_more_forward_XD;
             }
         break;
 
         case E_S5_more_forward_XD:
-            VeMAN_b_CriteriaMet = S5_more_forward_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S5_more_forward_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S6_lift_up_more_YD;
             }
         break;
 
         case E_S6_lift_up_more_YD:
-            VeMAN_b_CriteriaMet = S6_lift_up_more_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S6_lift_up_more_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S7_move_back_XD;
             }
         break;
 
         case E_S7_move_back_XD:
-            VeMAN_b_CriteriaMet = S7_move_back_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, LeLEFT_Deg_GyroAngleYaws, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S7_move_back_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, LeLEFT_Deg_GyroAngleYaws, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S8_more_down_some_YD;
             }
         break;
 
         case E_S8_more_down_some_YD:
-            VeMAN_b_CriteriaMet = S8_more_down_some_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S8_more_down_some_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S9_back_rest_XD;
             }
         break;
 
         case E_S9_back_rest_XD:
-            VeMAN_b_CriteriaMet = S9_back_rest_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S9_back_rest_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S10_final_YD;
             }
         break;
 
         case E_S10_final_YD:
-            VeMAN_b_CriteriaMet = S10_final_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S10_final_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState = E_S11_final_OWO;
             }
         break;
 
         case E_S11_final_OWO:
-            VeMAN_b_CriteriaMet = S11_final_OWO(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeLFT_Cmd_CommandYD_Temp, &LeLFT_Cmd_CommandXD_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S11_final_OWO(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true &&VeMAN_Cnt_ManIteration < E_LiftIteration2){
               LeLFT_e_CommandedState = E_S2_lift_down_YD;
              VeMAN_Cnt_ManIteration = E_LiftIteration2;
@@ -932,40 +932,40 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
   else
     {
     /* Lift is currently paused: */
-    LeLFT_Cmd_CommandXD_Temp = VeMAN_b_PausedMoterPositionA;
-    LeLFT_Cmd_CommandYD_Temp = VeMAN_b_PausedMoterPositionB;
+    LeMAN_Cmd_CommandB_Temp = VeMAN_b_PausedMoterPositionA;
+    LeMAN_Cmd_CommandA_Temp = VeMAN_b_PausedMoterPositionB;
     }
 
   /* Place limits on the travel of XD and YD to prevent damage: */
-  if (LeLFT_Cmd_CommandYD_Temp > K_lift_max_YD)
+  if (LeMAN_Cmd_CommandA_Temp > K_lift_max_YD)
     {
-    LeLFT_Cmd_CommandYD_Temp = K_lift_max_YD;
+    LeMAN_Cmd_CommandA_Temp = K_lift_max_YD;
     }
-  else if (LeLFT_Cmd_CommandYD_Temp < K_lift_min_YD)
+  else if (LeMAN_Cmd_CommandA_Temp < K_lift_min_YD)
     {
-    LeLFT_Cmd_CommandYD_Temp = K_lift_max_YD;
-    }
-
-  if (LeLFT_Cmd_CommandXD_Temp > K_lift_max_XD)
-    {
-    LeLFT_Cmd_CommandXD_Temp = K_lift_max_XD;
-    }
-  else if (LeLFT_Cmd_CommandXD_Temp < K_lift_min_XD)
-    {
-    LeLFT_Cmd_CommandXD_Temp = K_lift_max_XD;
+    LeMAN_Cmd_CommandA_Temp = K_lift_max_YD;
     }
 
-  *LeLFT_Cmd_CommandYD= RampTo(LeLFT_Cmd_CommandYD_Temp, *LeLFT_Cmd_CommandYD, LeLFT_InS_CommandRateYD);
+  if (LeMAN_Cmd_CommandB_Temp > K_lift_max_XD)
+    {
+    LeMAN_Cmd_CommandB_Temp = K_lift_max_XD;
+    }
+  else if (LeMAN_Cmd_CommandB_Temp < K_lift_min_XD)
+    {
+    LeMAN_Cmd_CommandB_Temp = K_lift_max_XD;
+    }
 
-  *LeLFT_Cmd_CommandXD= RampTo(LeLFT_Cmd_CommandXD_Temp, *LeLFT_Cmd_CommandXD, LeLFT_InS_CommandRateXD);
+  *LeMAN_Cmd_CommandA= RampTo(LeMAN_Cmd_CommandA_Temp, *LeMAN_Cmd_CommandA, LeLFT_InS_CommandRateYD);
 
-  *LeLFT_Pct_CommandPwrYD = LeLFT_v_LiftPowerYD;
+  *LeMAN_Cmd_CommandB= RampTo(LeMAN_Cmd_CommandB_Temp, *LeMAN_Cmd_CommandB, LeLFT_InS_CommandRateXD);
+
+  *LeLFT_Pct_CommandPwrYD = LeMAN_v_MoterPowerA;
   
-  *LeLFT_Pct_CommandPwrXD = LeLFT_v_LiftPowerXD;
+  *LeLFT_Pct_CommandPwrXD = LeMAN_v_MoterPowerB;
 
-  RecordLiftMotorMaxCurrent(LeLFT_Cnt_CurrentState,
-                            LeLFT_v_MotorYDCurrentOut,
-                            LeLFT_v_MotorXDCurrentOut);
+  RecordManipulatorMotorMaxCurrent(LeMAN_Cnt_CurrentState,
+                            LeMAN_v_MotorCurrentOutA,
+                            LeMAN_v_MotorCurrentOutB);
 
   return(LeLFT_e_CommandedState);
 }

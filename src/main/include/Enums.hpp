@@ -86,14 +86,14 @@ typedef enum T_CameraLightStatus
   E_LightForcedOffDueToOvertime
 } T_CameraLightStatus;
 
-typedef enum TeLFT_e_LiftCmndDirection
+typedef enum T_Manipulator_CmndDirection
 {
   E_LiftCmndNone,
   E_LiftCmndUp,
   E_LiftCmndDown,
   E_LiftCmndForward,
   E_LiftCmndBack
-} TeLFT_e_LiftCmndDirection;
+} T_Manipulator_CmndDirection;
 
 typedef enum T_TurretCmndDirection
 {
@@ -272,7 +272,7 @@ struct RobotUserInput
   bool                  b_SwerveRotateTo90;
   bool                  b_LiftYD_Up;
   bool                  b_LiftYD_Down;
-  TeLFT_e_LiftCmndDirection   e_LiftCmndDirection;
+  T_Manipulator_CmndDirection   e_LiftCmndDirection;
   bool                  b_CameraLight;
   bool                  b_AutoIntake;
   bool                  b_JoystickActive;
