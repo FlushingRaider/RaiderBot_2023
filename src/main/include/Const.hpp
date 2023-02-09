@@ -28,7 +28,7 @@ static const double KeENC_k_VoltageToAngle = 72.0; // Gain that converts the mea
 
 
 // CAN Device IDs:
-static const int C_PDP_ID = 0;
+static const int C_PDP_ID = 21;
 static const int frontLeftSteerDeviceID = 1, frontLeftDriveDeviceID = 2, frontRightSteerDeviceID = 4, frontRightDriveDeviceID = 3;
 static const int rearLeftSteerDeviceID  = 5, rearLeftDriveDeviceID  = 6, rearRightSteerDeviceID  = 7, rearRightDriveDeviceID  = 8;
 // static const int rightShooterID = 10, leftShooterID = 9;
@@ -37,6 +37,7 @@ static const int rearLeftSteerDeviceID  = 5, rearLeftDriveDeviceID  = 6, rearRig
 // static const int C_elevatorID = 13;
 // static const int C_intakeID = 14;
 // static const int C_turretID = 15;
+//  KeMAN_i_TurretRotate and KeMAN_i_LinearSlide are talonSRX's
 static const int KeMAN_i_TurretRotate = 9; 
 static const int KeMAN_i_LinearSlide = 10;
 static const int KeMAN_i_ArmPivot = 11;
