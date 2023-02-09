@@ -398,13 +398,14 @@ void Robot::RobotPeriodic()
 
 
 TestVisionRun();
- frc::SmartDashboard::PutBoolean("has target" ,  V_HasTarget);
- frc::SmartDashboard::PutNumber("cam1 yaw" ,  V_CamYaw);
- frc::SmartDashboard::PutNumber("cam1 x" ,  V_Tagx);
- frc::SmartDashboard::PutNumber("cam1 y" ,  V_Tagy);
- frc::SmartDashboard::PutNumber("cam1 z" ,  V_Tagz);
- frc::SmartDashboard::PutNumber("TagID ", V_TagID);
- frc::SmartDashboard::PutNumber("TagRot", V_TagRot);
+frc::SmartDashboard::PutBoolean("has target" ,  V_HasTarget);
+frc::SmartDashboard::PutNumber("cam1 x" ,  V_Tagx);
+frc::SmartDashboard::PutNumber("cam1 y" ,  V_Tagy);
+frc::SmartDashboard::PutNumber("cam1 z" ,  V_Tagz);
+frc::SmartDashboard::PutNumber("TagID ", V_TagID);
+frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
+frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
+frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
 
 
 

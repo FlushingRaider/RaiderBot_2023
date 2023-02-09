@@ -22,7 +22,9 @@ extern double V_Tagx;
 extern double V_Tagy;
 extern double V_Tagz;
 extern int V_TagID;
-extern double V_TagRot;
+extern double V_TagRoll;
+extern double V_TagPitch;
+extern double V_TagYaw;
 
 
 
