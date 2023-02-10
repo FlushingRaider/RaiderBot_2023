@@ -11,11 +11,23 @@
 
 extern double       VeMan_Cnt_MoterCommandA;
 extern double       VeMAN_Cnt_MoterCommandB;
+extern double       VeMan_Cnt_MoterCommandC;
+extern double       VeMAN_Cnt_MoterCommandD;
+extern double       VeMan_Cnt_MoterCommandE;
+extern double       VeMan_Cnt_MoterCommandF;
 extern T_Man_State VeMAN_Cnt_Man_state;
 extern double VeMAN_Cnt_MoterTestPowerCmndA;
 extern double VeMAN_Cnt_MoterTestPowerCmndB;
+extern double VeMAN_Cnt_MoterTestPowerCmndC;
+extern double VeMAN_Cnt_MoterTestPowerCmndD;
+extern double VeMAN_Cnt_MoterTestPowerCmndE;
+extern double VeMAN_Cnt_MoterTestPowerCmndF;
 extern double VaMAN_v_MotorMaxCurrentA[E_Lift_State_Sz];
 extern double VaMAN_v_MotorMaxCurrentB[E_Lift_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentC[E_Lift_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentD[E_Lift_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentE[E_Lift_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentF[E_Lift_State_Sz];
 extern bool   VeMAN_b_WaitingForDriverINS;
 extern bool   VeMAN_b_ArmInitialized;
 
@@ -31,6 +43,10 @@ void Manipulator_Control_ManualOverride(double              *LeMAN_Cmd_CommandA,
                                  double              *LeMAN_Cmd_CommandB,
                                  double               LeMAN_v_MotorCurrentOutA,
                                  double               LeMAN_v_MotorCurrentOutB,
+                                 double       LeMAN_v_MotorCurrentOutC,
+                                 double       LeMAN_v_MotorCurrentOutD,
+                                 double       LeMAN_v_MotorCurrentOutE,
+                                 double       LeMAN_v_MotorCurrentOutF,
                                  T_Manipulator_CmndDirection  LeMAN_Cmd_DriverMANDirection,
                                  bool                 LeMAN_b_LimitDetectedA,
                                  bool                 LeMAN_b_LimitDetectedB);
@@ -51,5 +67,9 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
                                    double              LeLEFT_Deg_GyroAngleYaws,
                                    double              LeMAN_v_MotorCurrentOutA,
                                    double              LeMAN_v_MotorCurrentOutB,
+                                   double              LeMAN_v_MotorCurrentOutC,
+                                   double              LeMAN_v_MotorCurrentOutD,
+                                   double              LeMAN_v_MotorCurrentOutE,
+                                   double              LeMAN_v_MotorCurrentOutF,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftXD);
