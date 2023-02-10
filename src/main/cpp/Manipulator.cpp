@@ -18,7 +18,7 @@
 #include "Driver_inputs.hpp"
 #include "Encoders.hpp"
 
-T_Man_State VeMAN_Cnt_Man_state = E_S0_BEGONE; 
+T_Man_DoesStuffMaybe VeMAN_CnT_Man_DoesStuffMaybe = E_S0_Rest; 
 T_Man_Iteration VeMAN_Cnt_ManIteration = VeMAN_Cnt_ManIterationNew;
 
 double VeMAN_Cnt_LayoverTimer = 0; // owo, because Chloe
@@ -34,16 +34,16 @@ double VeMAN_Cnt_MoterTestLocationB = 0; //location it want go (temp)
 double VeMAN_Cnt_MoterTestPowerCmndA = 0; //power to motor (temp)
 double VeMAN_Cnt_MoterTestPowerCmndB = 0; //power to motor (temp)
 
-double VaMAN_v_MotorMaxCurrentA[E_Lift_State_Sz]; //max current(temp)
-double VaMAN_v_MotorMaxCurrentB[E_Lift_State_Sz]; //max current(temp)
+double VaMAN_v_MotorMaxCurrentA[E_Man_State_Sz]; //max current(temp)
+double VaMAN_v_MotorMaxCurrentB[E_Man_State_Sz]; //max current(temp)
 
 bool   VeMAN_b_WaitingForDriverINS = false;  // Instrumentation only, but indication that we are waiting for the driver to press button for next step.
 bool   VeMAN_b_Paused = false; //Checks to see if paused (for testing)
 double VeMAN_b_PausedMoterPositionA = 0; //keeps current value of motor postion when paised (temp)
 double VeMAN_b_PausedMoterPositionB = 0; //keeps current value of motor postion when paised (temp)
 
-double VaMAN_InS_RampRateMoterA[E_Lift_State_Sz][E_LiftIterationSz]; //motor ramp rate (temp)
-double VaMAN_InS_RampRateMoterB[E_Lift_State_Sz][E_LiftIterationSz]; //motor ramp rate (temp)
+double VaMAN_InS_RampRateMoterA[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (temp)
+double VaMAN_InS_RampRateMoterB[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (temp)
 
 #ifdef LiftXY_Test
 bool   VeMAN_b_MoterTestA = false; // temporary, we don't want to use the manual overrides
@@ -62,7 +62,7 @@ bool VeMAN_b_MoterTestA = false;
 void ManipulatorMoterConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
                           rev::SparkMaxPIDController m_liftpidXD)
   {
-  T_Man_State     LeMAN_Cnt_Index1;
+  T_Man_DoesStuffMaybe     LeMAN_Cnt_Index1;
   T_Man_Iteration LeMAN_Cnt_Index2;
 
   // set PID coefficients
@@ -84,9 +84,9 @@ void ManipulatorMoterConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
        LeMAN_Cnt_Index2 < E_LiftIterationSz;
        LeMAN_Cnt_Index2 = T_Man_Iteration(int(LeMAN_Cnt_Index2) + 1))
       {
-      for (LeMAN_Cnt_Index1 = E_S0_BEGONE;
-           LeMAN_Cnt_Index1 < E_Lift_State_Sz;
-           LeMAN_Cnt_Index1 = T_Man_State(int(LeMAN_Cnt_Index1) + 1))
+      for (LeMAN_Cnt_Index1 = E_S0_Rest;
+           LeMAN_Cnt_Index1 < E_Man_State_Sz;
+           LeMAN_Cnt_Index1 = T_Man_DoesStuffMaybe(int(LeMAN_Cnt_Index1) + 1))
           {
           VaMAN_InS_RampRateMoterA[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateYD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
           VaMAN_InS_RampRateMoterB[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateXD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
@@ -116,47 +116,47 @@ void ManipulatorMoterConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
   // frc::SmartDashboard::PutNumber("Set Position Y", 0);
   // frc::SmartDashboard::PutNumber("Set Position X", 0);
 
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]",            K_LiftRampRateXD[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateXD[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateXD[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]",     K_LiftRampRateXD[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateXD[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateXD[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateXD[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S0_Rest][VeMAN_Cnt_ManIterationNew]",            K_LiftRampRateXD[E_S0_Rest][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S1_Intake][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateXD[E_S1_Intake][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateXD[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]",     K_LiftRampRateXD[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateXD[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateXD[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateXD[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]", K_LiftRampRateXD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateXD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]",         K_LiftRampRateXD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]",        K_LiftRampRateXD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration2]",            K_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]",      K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]",   K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]",     K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration2]",   K_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration2]",   K_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration2]",      K_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S0_Rest][E_LiftIteration2]",            K_LiftRampRateXD[E_S0_Rest][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S1_Intake][E_LiftIteration2]",      K_LiftRampRateXD[E_S1_Intake][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S2_TradeOff][E_LiftIteration2]",   K_LiftRampRateXD[E_S2_TradeOff][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S3_Swiper][E_LiftIteration2]",     K_LiftRampRateXD[E_S3_Swiper][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S4_DrivingState][E_LiftIteration2]",   K_LiftRampRateXD[E_S4_DrivingState][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S5_Positioning][E_LiftIteration2]",   K_LiftRampRateXD[E_S5_Positioning][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S6_DroppingTheLoot][E_LiftIteration2]",      K_LiftRampRateXD[E_S6_DroppingTheLoot][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration2]", K_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration2]",      K_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]",         K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]",        K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]);
 
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]",            K_LiftRampRateYD[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateYD[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateYD[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]",     K_LiftRampRateYD[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateYD[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateYD[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateYD[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S0_Rest][VeMAN_Cnt_ManIterationNew]",            K_LiftRampRateYD[E_S0_Rest][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S1_Intake][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateYD[E_S1_Intake][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateYD[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]",     K_LiftRampRateYD[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateYD[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]",   K_LiftRampRateYD[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateYD[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]", K_LiftRampRateYD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]",      K_LiftRampRateYD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]",         K_LiftRampRateYD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]",        K_LiftRampRateYD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration2]",            K_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]",      K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]",   K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]",     K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration2]",   K_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration2]",   K_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration2]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration2]",      K_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S0_Rest][E_LiftIteration2]",            K_LiftRampRateYD[E_S0_Rest][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S1_Intake][E_LiftIteration2]",      K_LiftRampRateYD[E_S1_Intake][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S2_TradeOff][E_LiftIteration2]",   K_LiftRampRateYD[E_S2_TradeOff][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S3_Swiper][E_LiftIteration2]",     K_LiftRampRateYD[E_S3_Swiper][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S4_DrivingState][E_LiftIteration2]",   K_LiftRampRateYD[E_S4_DrivingState][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S5_Positioning][E_LiftIteration2]",   K_LiftRampRateYD[E_S5_Positioning][E_LiftIteration2]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S6_DroppingTheLoot][E_LiftIteration2]",      K_LiftRampRateYD[E_S6_DroppingTheLoot][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration2]", K_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration2]",      K_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration2]);
   frc::SmartDashboard::PutNumber("K_LiftRampRateYD[E_S10_final_YD][E_LiftIteration2]",         K_LiftRampRateYD[E_S10_final_YD][E_LiftIteration2]);
@@ -198,47 +198,47 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
   // if((L_ff != VMAN_PID_Gx[E_kFF])) { m_liftpidYD.SetFF(L_ff); m_liftpidXD.SetFF(L_ff); VMAN_PID_Gx[E_kFF] = L_ff; }
   // if((L_max != VMAN_PID_Gx[E_kMaxOutput]) || (L_min != VMAN_PID_Gx[E_kMinOutput])) { m_liftpidYD.SetOutputRange(L_min, L_max); m_liftpidXD.SetOutputRange(L_min, L_max); VMAN_PID_Gx[E_kMinOutput] = L_min; VMAN_PID_Gx[E_kMaxOutput] = L_max; }
   
-  VaMAN_InS_RampRateMoterB[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]",            VaMAN_InS_RampRateMoterB[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterB[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterB[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterB[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]     = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]",     VaMAN_InS_RampRateMoterB[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterB[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterB[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterB[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterB[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterB[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterB[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterB[E_S0_Rest][VeMAN_Cnt_ManIterationNew]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S0_Rest][VeMAN_Cnt_ManIterationNew]",            VaMAN_InS_RampRateMoterB[E_S0_Rest][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterB[E_S1_Intake][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S1_Intake][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterB[E_S1_Intake][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterB[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterB[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterB[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]     = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]",     VaMAN_InS_RampRateMoterB[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterB[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterB[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterB[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterB[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterB[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterB[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterB[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew] = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]", VaMAN_InS_RampRateMoterB[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterB[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterB[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterB[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]         = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]",         VaMAN_InS_RampRateMoterB[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterB[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]        = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]",        VaMAN_InS_RampRateMoterB[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterB[E_S0_BEGONE][E_LiftIteration2]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S0_BEGONE][E_LiftIteration2]",            VaMAN_InS_RampRateMoterB[E_S0_BEGONE][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_lift_down_YD][E_LiftIteration2]",      VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterB[E_S3_move_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S3_move_forward_XD][E_LiftIteration2]",   VaMAN_InS_RampRateMoterB[E_S3_move_forward_XD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterB[E_S4_stretch_up_YD][E_LiftIteration2]     = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][E_LiftIteration2]",     VaMAN_InS_RampRateMoterB[E_S4_stretch_up_YD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterB[E_S5_more_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S5_more_forward_XD][E_LiftIteration2]",   VaMAN_InS_RampRateMoterB[E_S5_more_forward_XD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterB[E_S6_lift_up_more_YD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][E_LiftIteration2]",   VaMAN_InS_RampRateMoterB[E_S6_lift_up_more_YD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterB[E_S7_move_back_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S7_move_back_XD][E_LiftIteration2]",      VaMAN_InS_RampRateMoterB[E_S7_move_back_XD][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterB[E_S0_Rest][E_LiftIteration2]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S0_Rest][E_LiftIteration2]",            VaMAN_InS_RampRateMoterB[E_S0_Rest][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterB[E_S1_Intake][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S1_Intake][E_LiftIteration2]",      VaMAN_InS_RampRateMoterB[E_S1_Intake][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterB[E_S2_TradeOff][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_TradeOff][E_LiftIteration2]",   VaMAN_InS_RampRateMoterB[E_S2_TradeOff][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterB[E_S3_Swiper][E_LiftIteration2]     = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S3_Swiper][E_LiftIteration2]",     VaMAN_InS_RampRateMoterB[E_S3_Swiper][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterB[E_S4_DrivingState][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S4_DrivingState][E_LiftIteration2]",   VaMAN_InS_RampRateMoterB[E_S4_DrivingState][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterB[E_S5_Positioning][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S5_Positioning][E_LiftIteration2]",   VaMAN_InS_RampRateMoterB[E_S5_Positioning][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterB[E_S6_DroppingTheLoot][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S6_DroppingTheLoot][E_LiftIteration2]",      VaMAN_InS_RampRateMoterB[E_S6_DroppingTheLoot][E_LiftIteration2]);
   VaMAN_InS_RampRateMoterB[E_S8_more_down_some_YD][E_LiftIteration2] = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S8_more_down_some_YD][E_LiftIteration2]", VaMAN_InS_RampRateMoterB[E_S8_more_down_some_YD][E_LiftIteration2]);
   VaMAN_InS_RampRateMoterB[E_S9_back_rest_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S9_back_rest_XD][E_LiftIteration2]",      VaMAN_InS_RampRateMoterB[E_S9_back_rest_XD][E_LiftIteration2]);
   VaMAN_InS_RampRateMoterB[E_S10_final_YD][E_LiftIteration2]         = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S10_final_YD][E_LiftIteration2]",         VaMAN_InS_RampRateMoterB[E_S10_final_YD][E_LiftIteration2]);
   VaMAN_InS_RampRateMoterB[E_S11_final_OWO][E_LiftIteration2]        = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S11_final_OWO][E_LiftIteration2]",        VaMAN_InS_RampRateMoterB[E_S11_final_OWO][E_LiftIteration2]);
 
-  VaMAN_InS_RampRateMoterA[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]            = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]",            VaMAN_InS_RampRateMoterA[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterA[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterA[E_S2_lift_down_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterA[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterA[E_S3_move_forward_XD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterA[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]     = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]",     VaMAN_InS_RampRateMoterA[E_S4_stretch_up_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterA[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterA[E_S5_more_forward_XD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterA[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterA[E_S6_lift_up_more_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterA[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterA[E_S7_move_back_XD][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterA[E_S0_Rest][VeMAN_Cnt_ManIterationNew]            = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S0_Rest][VeMAN_Cnt_ManIterationNew]",            VaMAN_InS_RampRateMoterA[E_S0_Rest][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterA[E_S1_Intake][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S1_Intake][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterA[E_S1_Intake][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterA[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterA[E_S2_TradeOff][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterA[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]     = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]",     VaMAN_InS_RampRateMoterA[E_S3_Swiper][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterA[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterA[E_S4_DrivingState][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterA[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterA[E_S5_Positioning][VeMAN_Cnt_ManIterationNew]);
+  VaMAN_InS_RampRateMoterA[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterA[E_S6_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterA[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew] = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]", VaMAN_InS_RampRateMoterA[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterA[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterA[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterA[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]         = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]",         VaMAN_InS_RampRateMoterA[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterA[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]        = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]",        VaMAN_InS_RampRateMoterA[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterA[E_S0_BEGONE][E_LiftIteration2]            = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S0_BEGONE][E_LiftIteration2]",            VaMAN_InS_RampRateMoterA[E_S0_BEGONE][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterA[E_S2_lift_down_YD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S2_lift_down_YD][E_LiftIteration2]",      VaMAN_InS_RampRateMoterA[E_S2_lift_down_YD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterA[E_S3_move_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S3_move_forward_XD][E_LiftIteration2]",   VaMAN_InS_RampRateMoterA[E_S3_move_forward_XD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterA[E_S4_stretch_up_YD][E_LiftIteration2]     = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S4_stretch_up_YD][E_LiftIteration2]",     VaMAN_InS_RampRateMoterA[E_S4_stretch_up_YD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterA[E_S5_more_forward_XD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S5_more_forward_XD][E_LiftIteration2]",   VaMAN_InS_RampRateMoterA[E_S5_more_forward_XD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterA[E_S6_lift_up_more_YD][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S6_lift_up_more_YD][E_LiftIteration2]",   VaMAN_InS_RampRateMoterA[E_S6_lift_up_more_YD][E_LiftIteration2]);
-  VaMAN_InS_RampRateMoterA[E_S7_move_back_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S7_move_back_XD][E_LiftIteration2]",      VaMAN_InS_RampRateMoterA[E_S7_move_back_XD][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterA[E_S0_Rest][E_LiftIteration2]            = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S0_Rest][E_LiftIteration2]",            VaMAN_InS_RampRateMoterA[E_S0_Rest][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterA[E_S1_Intake][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S1_Intake][E_LiftIteration2]",      VaMAN_InS_RampRateMoterA[E_S1_Intake][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterA[E_S2_TradeOff][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S2_TradeOff][E_LiftIteration2]",   VaMAN_InS_RampRateMoterA[E_S2_TradeOff][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterA[E_S3_Swiper][E_LiftIteration2]     = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S3_Swiper][E_LiftIteration2]",     VaMAN_InS_RampRateMoterA[E_S3_Swiper][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterA[E_S4_DrivingState][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S4_DrivingState][E_LiftIteration2]",   VaMAN_InS_RampRateMoterA[E_S4_DrivingState][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterA[E_S5_Positioning][E_LiftIteration2]   = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S5_Positioning][E_LiftIteration2]",   VaMAN_InS_RampRateMoterA[E_S5_Positioning][E_LiftIteration2]);
+  VaMAN_InS_RampRateMoterA[E_S6_DroppingTheLoot][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S6_DroppingTheLoot][E_LiftIteration2]",      VaMAN_InS_RampRateMoterA[E_S6_DroppingTheLoot][E_LiftIteration2]);
   VaMAN_InS_RampRateMoterA[E_S8_more_down_some_YD][E_LiftIteration2] = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S8_more_down_some_YD][E_LiftIteration2]", VaMAN_InS_RampRateMoterA[E_S8_more_down_some_YD][E_LiftIteration2]);
   VaMAN_InS_RampRateMoterA[E_S9_back_rest_XD][E_LiftIteration2]      = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S9_back_rest_XD][E_LiftIteration2]",      VaMAN_InS_RampRateMoterA[E_S9_back_rest_XD][E_LiftIteration2]);
   VaMAN_InS_RampRateMoterA[E_S10_final_YD][E_LiftIteration2]         = frc::SmartDashboard::GetNumber("K_LiftRampRateYD[E_S10_final_YD][E_LiftIteration2]",         VaMAN_InS_RampRateMoterA[E_S10_final_YD][E_LiftIteration2]);
@@ -253,9 +253,9 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
  ******************************************************************************/
 void ManipulatorControlInit()
   {
-  T_Man_State LeMAN_e_Index;
+  T_Man_DoesStuffMaybe LeMAN_e_Index;
 
-  VeMAN_Cnt_Man_state = E_S0_BEGONE;
+  VeMAN_CnT_Man_DoesStuffMaybe = E_S0_Rest;
   VeMAN_Cnt_ManIteration = VeMAN_Cnt_ManIterationNew;
   VeMAN_Cnt_LayoverTimer = 0;
   VeMAN_b_CriteriaMet = false;
@@ -277,9 +277,9 @@ void ManipulatorControlInit()
 
   VeMAN_b_ArmInitialized = false;
 
-  for (LeMAN_e_Index = E_S0_BEGONE;
-       LeMAN_e_Index < E_Lift_State_Sz;
-       LeMAN_e_Index = T_Man_State(int(LeMAN_e_Index) + 1))
+  for (LeMAN_e_Index = E_S0_Rest;
+       LeMAN_e_Index < E_Man_State_Sz;
+       LeMAN_e_Index = T_Man_DoesStuffMaybe(int(LeMAN_e_Index) + 1))
       {
       VaMAN_v_MotorMaxCurrentA[LeMAN_e_Index] = 0;
       VaMAN_v_MotorMaxCurrentB[LeMAN_e_Index] = 0;
@@ -292,7 +292,7 @@ void ManipulatorControlInit()
  * Description:  Record the max observed current.  
  *               This is for instrumentation only.
  ******************************************************************************/
-void RecordManipulatorMotorMaxCurrent(T_Man_State LeMAN_Cnt_CurrentState,                                
+void RecordManipulatorMotorMaxCurrent(T_Man_DoesStuffMaybe LeMAN_Cnt_CurrentState,                                
                                double       LeMAN_v_MotorCurrentOutA,
                                double       LeMAN_v_MotorCurrentOutB)
   {
@@ -322,29 +322,29 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
   {
   double LeMAN_v_MoterPowerA= 0;
   double LeMAN_v_MoterPowerB= 0;
-  T_Man_State LeMAN_Cnt_CurrentState = E_S0_BEGONE; // Not really the lift state, but allows us record the max currents
+  T_Man_DoesStuffMaybe LeMAN_Cnt_CurrentState = E_S0_Rest; // Not really the lift state, but allows us record the max currents
 
     if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndUp)
       {
       LeMAN_v_MoterPowerA= K_Manipulator_Driver_manual_MoterA;
-      LeMAN_Cnt_CurrentState = E_S0_BEGONE;
+      LeMAN_Cnt_CurrentState = E_S0_Rest;
       }
     else if ((LeMAN_Cmd_DriverMANDirection == E_LiftCmndDown) &&
              (LeMAN_b_LimitDetectedA == false))
       {
       LeMAN_v_MoterPowerA= K_Manipulator_Driver_manual_MoterB;
-      LeMAN_Cnt_CurrentState = E_S2_lift_down_YD;
+      LeMAN_Cnt_CurrentState = E_S1_Intake;
       }
     else if ((LeMAN_Cmd_DriverMANDirection == E_LiftCmndBack) &&
              (LeMAN_b_LimitDetectedB == false))
       {
       LeMAN_v_MoterPowerB= K_lift_driver_manual_back_XD;
-      LeMAN_Cnt_CurrentState = E_S7_move_back_XD;
+      LeMAN_Cnt_CurrentState = E_S6_DroppingTheLoot;
       }
     else if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndForward)
       {
       LeMAN_v_MoterPowerB= K_lift_driver_manual_forward_XD;
-      LeMAN_Cnt_CurrentState = E_S3_move_forward_XD;
+      LeMAN_Cnt_CurrentState = E_S2_TradeOff;
       }
 
   RecordManipulatorMotorMaxCurrent(LeMAN_Cnt_CurrentState,                                
@@ -376,9 +376,9 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 
   *LeMAN_Cmd_CommandB = K_lift_min_XD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S2_lift_down_YD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S1_Intake][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S1_Intake][LeLFT_Cmd_LiftIteration];
 
   if (LeLFT_In_MeasuredPositionYD <= (K_lift_S2_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S2_YD - K_lift_deadband_YD)) {
     LeLFT_b_CriteriaMet = true;
@@ -407,9 +407,9 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 
   *LeMAN_Cmd_CommandA = K_lift_S3_YD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S3_move_forward_XD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S2_TradeOff][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S3_move_forward_XD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S2_TradeOff][LeLFT_Cmd_LiftIteration];
 
   if (LeLFT_In_MeasuredPositionXD <= (K_lift_S3_XD + K_lift_deadband_XD) && LeLFT_In_MeasuredPositionXD >= (K_lift_S3_XD - K_lift_deadband_XD)) {
     VeMAN_Cnt_LayoverTimer += C_ExeTime;
@@ -445,9 +445,9 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 
   *LeMAN_Cmd_CommandB = K_lift_S4_XD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S4_stretch_up_YD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S3_Swiper][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S4_stretch_up_YD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S3_Swiper][LeLFT_Cmd_LiftIteration];
 
   if (LeLFT_In_MeasuredPositionYD <= (K_lift_S4_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S4_YD - K_lift_deadband_YD)) {
     VeMAN_Cnt_LayoverTimer += C_ExeTime;
@@ -488,9 +488,9 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 
   *LeMAN_Cmd_CommandA = K_lift_S5_YD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S5_more_forward_XD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S4_DrivingState][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S5_more_forward_XD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S4_DrivingState][LeLFT_Cmd_LiftIteration];
 
   if (LeLFT_In_MeasuredPositionXD <= (K_lift_S5_XD + K_lift_deadband_XD) && LeLFT_In_MeasuredPositionXD >= (K_lift_S5_XD - K_lift_deadband_XD)) {
     VeMAN_Cnt_LayoverTimer += C_ExeTime;
@@ -526,9 +526,9 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 
   *LeMAN_Cmd_CommandB = K_lift_S6_XD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S6_lift_up_more_YD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S5_Positioning][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S6_lift_up_more_YD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S5_Positioning][LeLFT_Cmd_LiftIteration];
 
   if (LeLFT_In_MeasuredPositionYD <= (K_lift_S6_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S6_YD - K_lift_deadband_YD)) {
     VeMAN_Cnt_LayoverTimer += C_ExeTime;
@@ -565,9 +565,9 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 
   *LeMAN_Cmd_CommandA = K_lift_S7_YD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S7_move_back_XD][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S6_DroppingTheLoot][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S7_move_back_XD][LeLFT_Cmd_LiftIteration]; // Don't go too fast, going slower will help to reduce rocking
+  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S6_DroppingTheLoot][LeLFT_Cmd_LiftIteration]; // Don't go too fast, going slower will help to reduce rocking
 
   if (LeLFT_In_MeasuredPositionXD <= (K_lift_S7_XD + K_lift_deadband_XD)  && LeLFT_In_MeasuredPositionXD >= (K_lift_S7_XD - K_lift_deadband_XD)) {
     VeMAN_Cnt_LayoverTimer += C_ExeTime;
@@ -756,15 +756,15 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 
 
 /******************************************************************************
- * Function:     Lift_Control_Dictator
+ * Function:     ManipulatorControlDictator
  *
  * Description:  Main calling function for lift control.
  ******************************************************************************/
-T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
+T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeLFT_b_AutoClimbButton,
                                    bool                LeLFT_b_DriverAutoClimbPause,
                                    T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
                                    double              LeLFT_SEC_GameTime,
-                                   T_Man_State        LeMAN_Cnt_CurrentState,                                
+                                   T_Man_DoesStuffMaybe        LeMAN_Cnt_CurrentState,                                
                                    double              LeLFT_In_MeasuredPositionYD,
                                    double              LeLFT_In_MeasuredPositionXD,
                                    double             *LeMAN_Cmd_CommandA,
@@ -779,11 +779,11 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftXD)
   {
-  T_Man_State LeLFT_e_CommandedState = LeMAN_Cnt_CurrentState;
+  T_Man_DoesStuffMaybe LeLFT_e_CommandedState = LeMAN_Cnt_CurrentState;
   double LeMAN_Cmd_CommandA_Temp = 0;
   double LeMAN_Cmd_CommandB_Temp = 0;
-  double LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew];
-  double LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S0_BEGONE][VeMAN_Cnt_ManIterationNew];
+  double LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S0_Rest][VeMAN_Cnt_ManIterationNew];
+  double LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S0_Rest][VeMAN_Cnt_ManIterationNew];
   double LeMAN_v_MoterPowerA= 0;
   double LeMAN_v_MoterPowerB= 0;
 
@@ -835,7 +835,7 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
 
     switch (LeMAN_Cnt_CurrentState)
       {
-        case E_S0_BEGONE:
+        case E_S0_Rest:
             if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndUp)
               {
               LeMAN_Cmd_CommandA_Temp = *LeMAN_Cmd_CommandA + K_lift_driver_up_rate_YD;
@@ -850,46 +850,46 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
               }
             /* The driver should only initiate the state machine once the robot has become suspended. */
             if (LeLFT_b_AutoClimbButton == true && LeLFT_In_MeasuredPositionYD >= K_lift_enable_auto_YD) {
-                LeLFT_e_CommandedState = E_S2_lift_down_YD;
+                LeLFT_e_CommandedState = E_S1_Intake;
             }
         break;
 
-        case E_S2_lift_down_YD:
+        case E_S1_Intake:
             VeMAN_b_CriteriaMet = S2_lift_down_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState =   E_S3_move_forward_XD;
+              LeLFT_e_CommandedState =   E_S2_TradeOff;
             }
         break;
 
-        case E_S3_move_forward_XD:
+        case E_S2_TradeOff:
             VeMAN_b_CriteriaMet = S3_move_forward_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState =   E_S4_stretch_up_YD;
+              LeLFT_e_CommandedState =   E_S3_Swiper;
             }
         break;
 
-        case E_S4_stretch_up_YD:
+        case E_S3_Swiper:
             VeMAN_b_CriteriaMet = S4_stretch_up_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState =   E_S5_more_forward_XD;
+              LeLFT_e_CommandedState =   E_S4_DrivingState;
             }
         break;
 
-        case E_S5_more_forward_XD:
+        case E_S4_DrivingState:
             VeMAN_b_CriteriaMet = S5_more_forward_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState =   E_S6_lift_up_more_YD;
+              LeLFT_e_CommandedState =   E_S5_Positioning;
             }
         break;
 
-        case E_S6_lift_up_more_YD:
+        case E_S5_Positioning:
             VeMAN_b_CriteriaMet = S6_lift_up_more_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState =   E_S7_move_back_XD;
+              LeLFT_e_CommandedState =   E_S6_DroppingTheLoot;
             }
         break;
 
-        case E_S7_move_back_XD:
+        case E_S6_DroppingTheLoot:
             VeMAN_b_CriteriaMet = S7_move_back_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, LeLEFT_Deg_GyroAngleYaws, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S8_more_down_some_YD;
@@ -920,7 +920,7 @@ T_Man_State Lift_Control_Dictator(bool                LeLFT_b_AutoClimbButton,
         case E_S11_final_OWO:
             VeMAN_b_CriteriaMet = S11_final_OWO(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true &&VeMAN_Cnt_ManIteration < E_LiftIteration2){
-              LeLFT_e_CommandedState = E_S2_lift_down_YD;
+              LeLFT_e_CommandedState = E_S1_Intake;
              VeMAN_Cnt_ManIteration = E_LiftIteration2;
             }
             else if(VeMAN_b_CriteriaMet == true &&VeMAN_Cnt_ManIteration >= E_LiftIteration2){

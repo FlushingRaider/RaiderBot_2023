@@ -57,7 +57,7 @@ TeTurretInitialization TurretInitialization(TeTurretInitialization   L_e_TurretI
 
 
 
-// T_Lift_State VeMAN_Cnt_Man_state = E_S0_BEGONE;
+// T_Lift_State VeMAN_CnT_Man_DoesStuffMaybe = E_S0_Rest;
 // T_Man_IterationVeLFT_Cnt_LiftIteration = VeLFT_Cnt_LiftIteration1;
 
 // double VeMAN_Cnt_LayoverTimer = 0; // owo, because Chloe
@@ -73,16 +73,16 @@ TeTurretInitialization TurretInitialization(TeTurretInitialization   L_e_TurretI
 // double VeMAN_Cnt_MoterTestPowerCmndA = 0;
 // double VeMAN_Cnt_MoterTestPowerCmndB = 0;
 
-// double VaMAN_v_MotorMaxCurrentA[E_Lift_State_Sz];
-// double VaMAN_v_MotorMaxCurrentB[E_Lift_State_Sz];
+// double VaMAN_v_MotorMaxCurrentA[E_Man_State_Sz];
+// double VaMAN_v_MotorMaxCurrentB[E_Man_State_Sz];
 
 // bool   VeMAN_b_WaitingForDriverINS = false;  // Instrumentation only, but indication that we are waiting for the driver to press button for next step.
 // bool   VeLFT_b_Paused = false;
 // double VeMAN_b_PausedMoterPositionA = 0;
 // double VeMAN_b_PausedMoterPositionB = 0;
 
-// double VaMAN_InS_RampRateMoterA[E_Lift_State_Sz][E_LiftIterationSz];
-// double VaMAN_InS_RampRateMoterB[E_Lift_State_Sz][E_LiftIterationSz];
+// double VaMAN_InS_RampRateMoterA[E_Man_State_Sz][E_LiftIterationSz];
+// double VaMAN_InS_RampRateMoterB[E_Man_State_Sz][E_LiftIterationSz];
 
 // #ifdef LiftXY_Test
 // bool   VeMAN_b_MoterTestA = false; // temporary, we don't want to use the manual overrides
@@ -137,12 +137,12 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
   // frc::SmartDashboard::PutNumber("Set Position Y", 0);
   // frc::SmartDashboard::PutNumber("Set Position X", 0);
 
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S0_BEGONE][VeLFT_Cnt_LiftIteration1]",            K_LiftRampRateXD[E_S0_BEGONE][VeLFT_Cnt_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]",      K_LiftRampRateXD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateXD[E_S3_move_forward_XD][VeLFT_Cnt_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]",     K_LiftRampRateXD[E_S4_stretch_up_YD][VeLFT_Cnt_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateXD[E_S5_more_forward_XD][VeLFT_Cnt_LiftIteration1]);
-  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateXD[E_S6_lift_up_more_YD][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S0_Rest][VeLFT_Cnt_LiftIteration1]",            K_LiftRampRateXD[E_S0_Rest][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S1_Intake][VeLFT_Cnt_LiftIteration1]",      K_LiftRampRateXD[E_S1_Intake][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S2_TradeOff][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateXD[E_S2_TradeOff][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S3_Swiper][VeLFT_Cnt_LiftIteration1]",     K_LiftRampRateXD[E_S3_Swiper][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S4_DrivingState][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateXD[E_S4_DrivingState][VeLFT_Cnt_LiftIteration1]);
+  frc::SmartDashboard::PutNumber("K_LiftRampRateXD[E_S5_Positioning][VeLFT_Cnt_LiftIteration1]",   K_LiftRampRateXD[E_S5_Positioning][VeLFT_Cnt_LiftIteration1]);
   #endif
   }
 
@@ -179,8 +179,8 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 //   // if((L_ff != V_LiftPID_Gx[E_kFF])) { m_liftpidYD.SetFF(L_ff); m_liftpidXD.SetFF(L_ff); V_LiftPID_Gx[E_kFF] = L_ff; }
 //   // if((L_max != V_LiftPID_Gx[E_kMaxOutput]) || (L_min != V_LiftPID_Gx[E_kMinOutput])) { m_liftpidYD.SetOutputRange(L_min, L_max); m_liftpidXD.SetOutputRange(L_min, L_max); V_LiftPID_Gx[E_kMinOutput] = L_min; V_LiftPID_Gx[E_kMaxOutput] = L_max; }
   
-//   VaMAN_InS_RampRateMoterB[E_S0_BEGONE][VeLFT_Cnt_LiftIteration1]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S0_BEGONE][VeLFT_Cnt_LiftIteration1]",            VaMAN_InS_RampRateMoterB[E_S0_BEGONE][VeLFT_Cnt_LiftIteration1]);
-//   VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]",      VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][VeLFT_Cnt_LiftIteration1]);
+//   VaMAN_InS_RampRateMoterB[E_S0_Rest][VeLFT_Cnt_LiftIteration1]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S0_Rest][VeLFT_Cnt_LiftIteration1]",            VaMAN_InS_RampRateMoterB[E_S0_Rest][VeLFT_Cnt_LiftIteration1]);
+//   VaMAN_InS_RampRateMoterB[E_S1_Intake][VeLFT_Cnt_LiftIteration1]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_S1_Intake][VeLFT_Cnt_LiftIteration1]",      VaMAN_InS_RampRateMoterB[E_S1_Intake][VeLFT_Cnt_LiftIteration1]);
 //   #endif
 //   }
 
@@ -209,29 +209,29 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 //   {
 //   double LeMAN_v_MoterPowerA= 0;
 //   double LeMAN_v_MoterPowerB= 0;
-//   T_Lift_State LeMAN_Cnt_CurrentState = E_S0_BEGONE; // Not really the lift state, but allows us record the max currents
+//   T_Lift_State LeMAN_Cnt_CurrentState = E_S0_Rest; // Not really the lift state, but allows us record the max currents
 
 //     if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndUp)
 //       {
 //       LeMAN_v_MoterPowerA= K_Manipulator_Driver_manual_MoterA;
-//       LeMAN_Cnt_CurrentState = E_S0_BEGONE;
+//       LeMAN_Cnt_CurrentState = E_S0_Rest;
 //       }
 //     else if ((LeMAN_Cmd_DriverMANDirection == E_LiftCmndDown) &&
 //              (LeMAN_b_LimitDetectedA == false))
 //       {
 //       LeMAN_v_MoterPowerA= K_Manipulator_Driver_manual_MoterB;
-//       LeMAN_Cnt_CurrentState = E_S2_lift_down_YD;
+//       LeMAN_Cnt_CurrentState = E_S1_Intake;
 //       }
 //     else if ((LeMAN_Cmd_DriverMANDirection == E_LiftCmndBack) &&
 //              (LeMAN_b_LimitDetectedB == false))
 //       {
 //       LeMAN_v_MoterPowerB= K_lift_driver_manual_back_XD;
-//       LeMAN_Cnt_CurrentState = E_S7_move_back_XD;
+//       LeMAN_Cnt_CurrentState = E_S6_DroppingTheLoot;
 //       }
 //     else if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndForward)
 //       {
 //       LeMAN_v_MoterPowerB= K_lift_driver_manual_forward_XD;
-//       LeMAN_Cnt_CurrentState = E_S3_move_forward_XD;
+//       LeMAN_Cnt_CurrentState = E_S2_TradeOff;
 //       }
 
 //   *LeMAN_Cmd_CommandA = LeMAN_v_MoterPowerA;
@@ -259,9 +259,9 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 
 //   *LeMAN_Cmd_CommandB = K_lift_min_XD;
 
-//   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S2_lift_down_YD][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S1_Intake][LeLFT_Cmd_LiftIteration];
 
-//   *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S2_lift_down_YD][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S1_Intake][LeLFT_Cmd_LiftIteration];
 
 //   if (LeLFT_In_MeasuredPositionYD <= (K_lift_S2_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S2_YD - K_lift_deadband_YD)) {
 //     LeLFT_b_CriteriaMet = true;
@@ -465,9 +465,9 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 
 //   *LeMAN_Cmd_CommandB = K_lift_S4_XD;
 
-//   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S4_stretch_up_YD][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S3_Swiper][LeLFT_Cmd_LiftIteration];
 
-//   *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S4_stretch_up_YD][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S3_Swiper][LeLFT_Cmd_LiftIteration];
 
 //   if (LeLFT_In_MeasuredPositionYD <= (K_lift_S4_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S4_YD - K_lift_deadband_YD)) {
 //     VeMAN_Cnt_LayoverTimer += C_ExeTime;
@@ -591,8 +591,8 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 //   T_Lift_State LeLFT_e_CommandedState = LeMAN_Cnt_CurrentState;
 //   double LeMAN_Cmd_CommandA_Temp = 0;
 //   double LeMAN_Cmd_CommandB_Temp = 0;
-//   double LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S0_BEGONE][VeLFT_Cnt_LiftIteration1];
-//   double LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S0_BEGONE][VeLFT_Cnt_LiftIteration1];;
+//   double LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S0_Rest][VeLFT_Cnt_LiftIteration1];
+//   double LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S0_Rest][VeLFT_Cnt_LiftIteration1];;
 //   double LeMAN_v_MoterPowerA= 0;
 //   double LeMAN_v_MoterPowerB= 0;
 
@@ -675,7 +675,7 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 
 //     switch (LeMAN_Cnt_CurrentState)
 //       {
-//         case E_S0_BEGONE:
+//         case E_S0_Rest:
 //             if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndUp)
 //               {
 //               LeMAN_Cmd_CommandA_Temp = *LeMAN_Cmd_CommandA + K_lift_driver_up_rate_YD;
@@ -690,21 +690,21 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 //               }
 //             /* The driver should only initiate the state machine once the robot has become suspended. */
 //             if (LeLFT_b_AutoClimbButton == true && LeLFT_In_MeasuredPositionYD >= K_lift_enable_auto_YD) {
-//                 LeLFT_e_CommandedState = E_S2_lift_down_YD;
+//                 LeLFT_e_CommandedState = E_S1_Intake;
 //             }
 //         break;
 
-//         case E_S2_lift_down_YD:
+//         case E_S1_Intake:
 //             VeMAN_b_CriteriaMet = S2_lift_down_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeLFT_Cnt_LiftIteration);
 //             if(VeMAN_b_CriteriaMet == true){
-//               LeLFT_e_CommandedState =   E_S3_move_forward_XD;
+//               LeLFT_e_CommandedState =   E_S2_TradeOff;
 //             }
 //         break;
 
 //         case E_S11_final_OWO:
 //             VeMAN_b_CriteriaMet = S11_final_OWO(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeLFT_Cnt_LiftIteration);
 //             if(VeMAN_b_CriteriaMet == true &&VeLFT_Cnt_LiftIteration < E_LiftIteration2){
-//               LeLFT_e_CommandedState = E_S2_lift_down_YD;
+//               LeLFT_e_CommandedState = E_S1_Intake;
 //              VeLFT_Cnt_LiftIteration = E_LiftIteration2;
 //             }
 //             else if(VeMAN_b_CriteriaMet == true &&VeLFT_Cnt_LiftIteration >= E_LiftIteration2){
