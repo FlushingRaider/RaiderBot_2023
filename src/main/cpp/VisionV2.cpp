@@ -39,8 +39,7 @@ bool VeVIS_b_VisionDriverRequestedModeCmndPrev;    // Requested driver mode over
 bool VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
 
 #ifdef TestVision
-bool V_HasTarget;
-double V_CamYaw;
+bool VeVIS_b_TagHasTarget;
 double V_Tagx;
 double V_Tagy;
 double V_Tagz;
@@ -49,7 +48,7 @@ double V_TagPitch;
 double V_TagYaw;
 int V_TagID;
 
-photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1");
+photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1");  // the string is the name of the cam from photon, the name in photon must match this one to assign properly
 fs::path aprilTagsjsonPath = frc::filesystem::GetDeployDirectory();
 std::string aprilTagsjson = aprilTagsjsonPath / "2023_chargedUp.json";
 
@@ -93,38 +92,32 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
   //   VnVIS_e_VisionCamNumber[E_CamBottom] = E_Cam1;
   //   }
 
-#ifdef TestVision
-// fs::path aprilTagsjson = frc::filesystem::GetDeployDirectory();
-// aprilTagsjson = aprilTagsjson / "2023_chargedUp.json";
+  /******************************************************************************
+   *  VERY IMPORTANT COMMENTS!!!
+   *
+   *  photonPoseEstimator has no c++ example code on the photon docs and I had to find this
+   *   in the unit tests of photonvision
+   ******************************************************************************
 
-// frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
+     frc::AprilTagFieldLayout aprilTags(aprilTagsJson);
 
-// estimator = new photonlib::PhotonPoseEstimator (aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
-#endif
-  /*this set of comments is VERY IMPORTANT
-      photonPoseEstimator has no c++ example code on the photon docs and I had to find this
-      in the unit tests of photonvision
-      */
+      photonlib::PhotonPoseEstimator estimator(
+        aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
+    auto estimatedPose = estimator.Update();
+    frc::Pose3d pose = estimatedPose.value().estimatedPose;
 
-  // frc::AprilTagFieldLayout aprilTags(aprilTagsJson);
+  static std::vector<frc::AprilTag> tags = {
+      {0, frc::Pose3d(units::meter_t(3), units::meter_t(3), units::meter_t(3),
+                      frc::Rotation3d())},
+      {1, frc::Pose3d(units::meter_t(5), units::meter_t(5), units::meter_t(5),
+                      frc::Rotation3d())}};
 
-  //     photonlib::PhotonPoseEstimator estimator(
-  //       aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
-  //   auto estimatedPose = estimator.Update();
-  //   frc::Pose3d pose = estimatedPose.value().estimatedPose;
+  static frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
 
-  // static std::vector<frc::AprilTag> tags = {
-  //     {0, frc::Pose3d(units::meter_t(3), units::meter_t(3), units::meter_t(3),
-  //                     frc::Rotation3d())},
-  //     {1, frc::Pose3d(units::meter_t(5), units::meter_t(5), units::meter_t(5),
-  //                     frc::Rotation3d())}};
+   photonlib::PhotonPoseEstimator estimator(
+        aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
 
-  // static frc::AprilTagFieldLayout aprilTags{aprilTagsjson.string()};
-
-  //  photonlib::PhotonPoseEstimator estimator(
-  //       aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
-
-  /****************************************/
+  ****************************************/
 
 #ifdef OldVision
   VnVIS_e_VisionCamNumber[E_CamTop] = E_Cam1;
@@ -153,7 +146,7 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
  * Function:     VisionRun
  *
  * Description:  Contains the necessary code relative to processing the
- *               vision output.
+ *               vision output periodically.
  ******************************************************************************/
 #ifdef OldVision
 void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
@@ -243,11 +236,11 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 void TestVisionRun()
 {
   // wpi::PortForwarder::GetInstance().Add(5800, "10.55.61.11", 5800);
-  photonlib::PhotonPipelineResult CamResult = estimator.GetCamera().GetLatestResult();
+  photonlib::PhotonPipelineResult CamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
 
-  V_HasTarget = CamResult.HasTargets();
+  VeVIS_b_TagHasTarget = CamResult.HasTargets();
 
-  if (V_HasTarget)
+  if (VeVIS_b_TagHasTarget)
   {
 
     auto estimatedPose = estimator.Update();
