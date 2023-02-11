@@ -154,10 +154,10 @@ const double K_LiftRampRateYD[E_Man_State_Sz][E_LiftIterationSz] =
     {1.25, 1.25},  // E_S4_DrivingState
     {1.25, 1.25},  // E_S5_Positioning
     {1.25, 1.25},  // E_S6_DroppingTheLoot
-    {1.25, 1.25},  // E_S8_more_down_some_YD
-    {1.25, 1.25},  // E_S9_back_rest_XD
-    {1.00, 1.00},  // E_S10_final_YD
-    {1.25, 1.25}   // E_S11_final_OWO
+    // {1.25, 1.25},  // E_S8_more_down_some_YD
+    // {1.25, 1.25},  // E_S9_back_rest_XD
+    // {1.00, 1.00},  // E_S10_final_YD
+    // {1.25, 1.25}   // E_S11_final_OWO
   };
 
 /* K_LiftRampRateXD: Per loop revolutions of the motor allowed for the XD position. */
@@ -170,10 +170,10 @@ const double K_LiftRampRateXD[E_Man_State_Sz][E_LiftIterationSz] =
     {1.05, 1.05},  // E_S4_DrivingState
     {1.05, 1.05},  // E_S5_Positioning
     {1.15, 0.50},  // E_S6_DroppingTheLoot
-    {1.05, 1.05},  // E_S8_more_down_some_YD
-    {1.05, 1.05},  // E_S9_back_rest_XD
-    {1.05, 1.05},  // E_S10_final_YD
-    {1.05, 1.05}   // E_S11_final_OWO
+    // {1.05, 1.05},  // E_S8_more_down_some_YD
+    // {1.05, 1.05},  // E_S9_back_rest_XD
+    // {1.05, 1.05},  // E_S10_final_YD
+    // {1.05, 1.05}   // E_S11_final_OWO
   };
 
 const double K_lift_S2_YD = 8; //initial lift of the robot
