@@ -142,20 +142,20 @@ void Read_Encoders(double                       LeENC_Cnt_EncoderWheelAngleFront
                    double                       LeENC_Cnt_EncoderWheelAngleFrontRightRawPracticeBot,
                    double                       LeENC_Cnt_EncoderWheelAngleRearLeftRawPracticeBot,
                    double                       LeENC_Cnt_EncoderWheelAngleRearRightRawPracticeBot,
-                   rev::SparkMaxRelativeEncoder m_encoderFrontLeftDrive,
+                   rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                    rev::SparkMaxRelativeEncoder m_encoderFrontRightDrive,
                    rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
                    rev::SparkMaxRelativeEncoder m_encoderRearRightDrive,
-                   rev::SparkMaxRelativeEncoder m_encoderrightShooter,
-                   rev::SparkMaxRelativeEncoder m_encoderleftShooter,
-                   rev::SparkMaxRelativeEncoder m_encoderLiftYD,
-                   rev::SparkMaxRelativeEncoder m_encoderLiftXD,
+                   rev::SparkMaxRelativeEncoder m_IntakeArmEncoder,
+                   rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
+                   rev::SparkMaxRelativeEncoder m_GripperEncoder,
+                   rev::SparkMaxRelativeEncoder m_WristEncoder,
                    double                       LeENC_Cnt_EncoderTurretAngle)
   {
   T_RobotCorner LeENC_e_Index;
 
-  VeENC_In_LiftPostitionYD = m_encoderLiftYD.GetPosition();
-  VeENC_In_LiftPostitionXD = m_encoderLiftXD.GetPosition();
+  // VeENC_In_LiftPostitionYD = m_encoderLiftYD.GetPosition();
+  // VeENC_In_LiftPostitionXD = m_encoderLiftXD.GetPosition();
 
 #ifdef CompBot
   VaENC_Deg_WheelAngleConverted[E_FrontLeft]  = std::fmod((LeENC_Cnt_EncoderWheelAngleFrontLeftRaw  * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_FrontLeft];

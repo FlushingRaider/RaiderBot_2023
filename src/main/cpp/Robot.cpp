@@ -414,11 +414,11 @@ CarsonDebugRun();
 
 
   #ifdef CompBot2
-  VeMAN_Cnt_Man_state = Lift_Control_Dictator(VsCONT_s_DriverInput.b_LiftControl,
+  VeMAN_CnT_Man_DoesStuffMaybe = ManipulatorControlDictator(VsCONT_s_DriverInput.b_LiftControl,
                                        VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro,
                                        VsCONT_s_DriverInput.e_LiftCmndDirection,
                                        V_MatchTimeRemaining,
-                                       VeMAN_Cnt_Man_state,
+                                       VeMAN_CnT_Man_DoesStuffMaybe,
                                        VeENC_In_LiftPostitionYD,
                                        VeENC_In_LiftPostitionXD,
                                        &VeMan_Cnt_MoterCommandA,

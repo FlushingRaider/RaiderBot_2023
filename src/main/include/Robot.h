@@ -121,8 +121,9 @@ class Robot : public frc::TimedRobot {
   rev::SparkMaxRelativeEncoder               m_IntakeRollersEncoder   = m_IntakeRollers.GetEncoder();
 
 
-  WPI_TalonSRX                               m_turret{C_turretID};
-  WPI_TalonSRX
+  WPI_TalonSRX                               m_TurretRotate{KeMAN_i_TurretRotate};
+  WPI_TalonSRX                               m_LinearSlide {KeMAN_i_LinearSlide};
+  
   // Driver Inputs
   frc::Joystick c_joyStick{0};
 #ifdef CompBot
