@@ -447,20 +447,46 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
   *LeMAN_Cmd_CommandB = LeMAN_v_MoterPowerB;
   }
 
-/******************************************************************************
- * Function:     S2_lift_down_YD
+  /******************************************************************************
+ * Function:     S0_Rest
  *
  * Description:  State 2: moving robert up by moving y-lift down
  ******************************************************************************/
+ bool          S0_Rest(double         LeLFT_b_AutoClimbButton,
+                      double         LeLFT_In_MeasuredPositionYD,
+                      double         LeLFT_In_MeasuredPositionXD,
+                      double        *LeMAN_Cmd_CommandA,
+                      double        *LeMAN_Cmd_CommandB,
+                      double        *LeLFT_InS_CommandRateYD,
+                      double        *LeLFT_InS_CommandRateXD,
+                      T_Man_Iteration LeLFT_Cmd_LiftIteration)
+  {
 
-
+  }
 
 /******************************************************************************
- * Function:     S2_lift_down_YD
+ * Function:     S1_Intake
  *
  * Description:  State 2: moving robert up by moving y-lift down
  ******************************************************************************/
- bool S2_lift_down_YD(double         LeLFT_b_AutoClimbButton,
+ bool       S1_Intake(double         LeLFT_b_AutoClimbButton,
+                      double         LeLFT_In_MeasuredPositionYD,
+                      double         LeLFT_In_MeasuredPositionXD,
+                      double        *LeMAN_Cmd_CommandA,
+                      double        *LeMAN_Cmd_CommandB,
+                      double        *LeLFT_InS_CommandRateYD,
+                      double        *LeLFT_InS_CommandRateXD,
+                      T_Man_Iteration LeLFT_Cmd_LiftIteration)
+{
+
+}
+
+/******************************************************************************
+ * Function:     S2_TradeOff
+ *
+ * Description:  State 2: moving robert up by moving y-lift down
+ ******************************************************************************/
+ bool     S2_TradeOff(double         LeLFT_b_AutoClimbButton,
                       double         LeLFT_In_MeasuredPositionYD,
                       double         LeLFT_In_MeasuredPositionXD,
                       double        *LeMAN_Cmd_CommandA,
@@ -487,11 +513,11 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 }
 
 /******************************************************************************
- * Function:       S3_move_forward_XD,
+ * Function:       S3_Swiper
  *
  * Description:  State 3: moving x lift haha it has to do its job
  ******************************************************************************/
- bool S3_move_forward_XD(double         LeLFT_b_AutoClimbButton,
+ bool          S3_Swiper(double         LeLFT_b_AutoClimbButton,
                          double         LeLFT_In_MeasuredPositionYD,
                          double         LeLFT_In_MeasuredPositionXD,
                          double        *LeMAN_Cmd_CommandA,
@@ -525,11 +551,11 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 }
 
 /******************************************************************************
- * Function:       S4_stretch_up_YD,
+ * Function:       S4_DrivingState
  *
  * Description:  State 4: x lift no move, y lift go
  ******************************************************************************/
- bool S4_stretch_up_YD(double         LeLFT_b_AutoClimbButton,
+ bool   S4_DrivingState(double         LeLFT_b_AutoClimbButton,
                        double         LeLFT_In_MeasuredPositionYD,
                        double         LeLFT_In_MeasuredPositionXD,
                        double        *LeMAN_Cmd_CommandA,
@@ -568,11 +594,11 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 }
 
 /******************************************************************************
- * Function:       S5_more_forward_XD,
+ * Function:       S5_Positioning,
  *
  * Description:  State 5: y lift no move, x lift go
  ******************************************************************************/
- bool S5_more_forward_XD(double         LeLFT_b_AutoClimbButton,
+ bool   S5_Positioning(double         LeLFT_b_AutoClimbButton,
                          double         LeLFT_In_MeasuredPositionYD,
                          double         LeLFT_In_MeasuredPositionXD,
                          double        *LeMAN_Cmd_CommandA,
@@ -606,18 +632,18 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 }
 
 /******************************************************************************
- * Function:       S6_lift_up_more_YD,
+ * Function:       S6_DroppingTheLoot,
  *
  * Description:  State 6: y lift go down, x lift bad stop what's in your mouth no get back here doN'T EAT IT
  ******************************************************************************/
- bool S6_lift_up_more_YD(double         LeLFT_b_AutoClimbButton,
-                         double         LeLFT_In_MeasuredPositionYD,
-                         double         LeLFT_In_MeasuredPositionXD,
-                         double        *LeMAN_Cmd_CommandA,
-                         double        *LeMAN_Cmd_CommandB,
-                         double        *LeLFT_InS_CommandRateYD,
-                         double        *LeLFT_InS_CommandRateXD,
-                         T_Man_Iteration LeLFT_Cmd_LiftIteration)  
+ bool S6_DroppingTheLoot(double         LeLFT_b_AutoClimbButton,
+                          double         LeLFT_In_MeasuredPositionYD,
+                          double         LeLFT_In_MeasuredPositionXD,
+                          double        *LeMAN_Cmd_CommandA,
+                          double        *LeMAN_Cmd_CommandB,
+                          double        *LeLFT_InS_CommandRateYD,
+                          double        *LeLFT_InS_CommandRateXD,
+                          T_Man_Iteration LeLFT_Cmd_LiftIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
 
@@ -625,9 +651,9 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 
   *LeMAN_Cmd_CommandB = K_lift_S6_XD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S5_Positioning][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S6_DroppingTheLoot][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S5_Positioning][LeLFT_Cmd_LiftIteration];
+  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S6_DroppingTheLoot][LeLFT_Cmd_LiftIteration];
 
   if (LeLFT_In_MeasuredPositionYD <= (K_lift_S6_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S6_YD - K_lift_deadband_YD)) {
     VeMAN_Cnt_LayoverTimer += C_ExeTime;
@@ -958,42 +984,42 @@ T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeLFT_b_Auto
         break;
 
         case E_S1_Intake:
-            VeMAN_b_CriteriaMet = S2_lift_down_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S1_Intake(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S2_TradeOff;
             }
         break;
 
         case E_S2_TradeOff:
-            VeMAN_b_CriteriaMet = S3_move_forward_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S2_TradeOff(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S3_Swiper;
             }
         break;
 
         case E_S3_Swiper:
-            VeMAN_b_CriteriaMet = S4_stretch_up_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S3_Swiper(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S4_DrivingState;
             }
         break;
 
         case E_S4_DrivingState:
-            VeMAN_b_CriteriaMet = S5_more_forward_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S4_DrivingState(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S5_Positioning;
             }
         break;
 
         case E_S5_Positioning:
-            VeMAN_b_CriteriaMet = S6_lift_up_more_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S5_Positioning(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S6_DroppingTheLoot;
             }
         break;
 
         case E_S6_DroppingTheLoot:
-            VeMAN_b_CriteriaMet = S7_move_back_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, LeLEFT_Deg_GyroAngleYaws, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+            VeMAN_b_CriteriaMet = S6_DroppingTheLoot(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD, VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S0_Rest;
             }

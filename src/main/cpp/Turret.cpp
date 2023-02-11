@@ -240,11 +240,11 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 
 
 // /******************************************************************************
-//  * Function:     S2_lift_down_YD
+//  * Function:     S2_TradeOff
 //  *
 //  * Description:  State 2: moving robert up by moving y-lift down
 //  ******************************************************************************/
-//  bool S2_lift_down_YD(double         LeLFT_b_AutoClimbButton,
+//  bool S2_TradeOff(double         LeLFT_b_AutoClimbButton,
 //                       double         LeLFT_In_MeasuredPositionYD,
 //                       double         LeLFT_In_MeasuredPositionXD,
 //                       double        *LeMAN_Cmd_CommandA,
@@ -446,11 +446,11 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 
 
 // /******************************************************************************
-//  * Function:       S4_stretch_up_YD,
+//  * Function:       S4_DrivingState,
 //  *
 //  * Description:  State 4: x lift no move, y lift go
 //  ******************************************************************************/
-//  bool S4_stretch_up_YD(double         LeLFT_b_AutoClimbButton,
+//  bool S4_DrivingState(double         LeLFT_b_AutoClimbButton,
 //                        double         LeLFT_In_MeasuredPositionYD,
 //                        double         LeLFT_In_MeasuredPositionXD,
 //                        double        *LeMAN_Cmd_CommandA,
@@ -695,7 +695,7 @@ void TurretMotorConfigsInit(WPI_TalonSRX m_turretMotor)
 //         break;
 
 //         case E_S1_Intake:
-//             VeMAN_b_CriteriaMet = S2_lift_down_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeLFT_Cnt_LiftIteration);
+//             VeMAN_b_CriteriaMet = S2_TradeOff(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeLFT_Cnt_LiftIteration);
 //             if(VeMAN_b_CriteriaMet == true){
 //               LeLFT_e_CommandedState =   E_S2_TradeOff;
 //             }
