@@ -138,7 +138,7 @@ typedef enum T_Man_DoesStuffMaybe
  E_S6_DroppingTheLoot,
  E_Man_State_Sz
 } T_Man_DoesStuffMaybe;
-
+ 
 
 typedef enum T_Man_Iteration
 {
