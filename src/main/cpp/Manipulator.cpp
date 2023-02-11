@@ -46,11 +46,21 @@ double VeMAN_Cnt_MoterTestPowerCmndD = 0; //power to motor (Claw wrist)
 double VeMAN_Cnt_MoterTestPowerCmndE = 0; //power to motor (Claw open)
 double VeMAN_Cnt_MoterTestPowerCmndF = 0; //power to motor (Intake)
 
-double VaMAN_v_MotorMaxCurrentA[E_Man_State_Sz]; //max current(temp)
-double VaMAN_v_MotorMaxCurrentB[E_Man_State_Sz]; //max current(temp)
+double VaMAN_v_MotorMaxCurrentA[E_Man_State_Sz]; //max current(Turret)
+double VaMAN_v_MotorMaxCurrentB[E_Man_State_Sz]; //max current(Joint shoulder)
+double VaMAN_v_MotorMaxCurrentC[E_Man_State_Sz]; //max current(Joint Elevator)
+double VaMAN_v_MotorMaxCurrentD[E_Man_State_Sz]; //max current(Claw wrist)
+double VaMAN_v_MotorMaxCurrentE[E_Man_State_Sz]; //max current(Claw open)
+double VaMAN_v_MotorMaxCurrentF[E_Man_State_Sz]; //max current(Intake)
 
 bool   VeMAN_b_WaitingForDriverINS = false;  // Instrumentation only, but indication that we are waiting for the driver to press button for next step.
 bool   VeMAN_b_Paused = false; //Checks to see if paused (for testing)
+bool   VeMAN_b_PausedMoterPositionA = 0; //(Turret)
+bool   VeMAN_b_PausedMoterPositionB = 0; //(Joint_Shoulder)
+bool   VeMAN_b_PausedMoterPositionC = 0; //(Joint_elevator)
+bool   VeMAN_b_PausedMoterPositionD = 0; //(claw_wrist)
+bool   VeMAN_b_PausedMoterPositionE = 0; //(claw_open)
+bool   VeMAN_b_PausedMoterPositionF = 0; //(Intake)
 
 double VaMAN_InS_RampRateMoterA[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (Turret)
 double VaMAN_InS_RampRateMoterB[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (Joint_shoulder)
@@ -437,6 +447,13 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
   *LeMAN_Cmd_CommandB = LeMAN_v_MoterPowerB;
   }
 
+/******************************************************************************
+ * Function:     S2_lift_down_YD
+ *
+ * Description:  State 2: moving robert up by moving y-lift down
+ ******************************************************************************/
+
+
 
 /******************************************************************************
  * Function:     S2_lift_down_YD
@@ -674,167 +691,167 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
  *
  * Description:  State 8: me when the lift go down more
  ******************************************************************************/
- bool S8_more_down_some_YD(double         LeLFT_b_AutoClimbButton,
-                           double         LeLFT_In_MeasuredPositionYD,
-                           double         LeLFT_In_MeasuredPositionXD,
-                           double        *LeMAN_Cmd_CommandA,
-                           double        *LeMAN_Cmd_CommandB,
-                           double        *LeLFT_InS_CommandRateYD,
-                           double        *LeLFT_InS_CommandRateXD,
-                           T_Man_Iteration LeLFT_Cmd_LiftIteration)  
-{
-  bool LeLFT_b_CriteriaMet = false;
+//  bool S8_more_down_some_YD(double         LeLFT_b_AutoClimbButton,
+//                            double         LeLFT_In_MeasuredPositionYD,
+//                            double         LeLFT_In_MeasuredPositionXD,
+//                            double        *LeMAN_Cmd_CommandA,
+//                            double        *LeMAN_Cmd_CommandB,
+//                            double        *LeLFT_InS_CommandRateYD,
+//                            double        *LeLFT_InS_CommandRateXD,
+//                            T_Man_Iteration LeLFT_Cmd_LiftIteration)  
+// {
+//   bool LeLFT_b_CriteriaMet = false;
   
-  *LeMAN_Cmd_CommandA = K_lift_S8_YD;
+//   *LeMAN_Cmd_CommandA = K_lift_S8_YD;
 
-  *LeMAN_Cmd_CommandB = K_lift_S8_XD;
+//   *LeMAN_Cmd_CommandB = K_lift_S8_XD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S8_more_down_some_YD][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S8_more_down_some_YD][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S8_more_down_some_YD][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S8_more_down_some_YD][LeLFT_Cmd_LiftIteration];
 
-  if (LeLFT_In_MeasuredPositionYD <= (K_lift_S8_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S8_YD - K_lift_deadband_YD)) {
-    VeMAN_Cnt_LayoverTimer += C_ExeTime;
-    if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
-      VeMAN_b_WaitingForDriverINS = true;
-      if (LeLFT_b_AutoClimbButton == true){
-         /* Let the driver determine when we are not swinging and can proceed */
-         LeLFT_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-         VeMAN_b_WaitingForDriverINS = false;
-      }
-    }
-  }
-  else {
-    VeMAN_Cnt_LayoverTimer = 0;
-  }
+//   if (LeLFT_In_MeasuredPositionYD <= (K_lift_S8_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S8_YD - K_lift_deadband_YD)) {
+//     VeMAN_Cnt_LayoverTimer += C_ExeTime;
+//     if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
+//       VeMAN_b_WaitingForDriverINS = true;
+//       if (LeLFT_b_AutoClimbButton == true){
+//          /* Let the driver determine when we are not swinging and can proceed */
+//          LeLFT_b_CriteriaMet = true;
+//          VeMAN_Cnt_LayoverTimer = 0;
+//          VeMAN_b_WaitingForDriverINS = false;
+//       }
+//     }
+//   }
+//   else {
+//     VeMAN_Cnt_LayoverTimer = 0;
+//   }
   
-  return(LeLFT_b_CriteriaMet);
-}
+//   return(LeLFT_b_CriteriaMet);
+// }
 
 /******************************************************************************
  * Function:       S9_back_rest_XD
  *
  * Description:  State 9: reset it to initial x position (we aren't fixing my back  :(  )
  ******************************************************************************/
- bool S9_back_rest_XD(double         LeLFT_b_AutoClimbButton,
-                      double         LeLFT_In_MeasuredPositionYD,
-                      double         LeLFT_In_MeasuredPositionXD,
-                      double        *LeMAN_Cmd_CommandA,
-                      double        *LeMAN_Cmd_CommandB,
-                      double        *LeLFT_InS_CommandRateYD,
-                      double        *LeLFT_InS_CommandRateXD,
-                      T_Man_Iteration LeLFT_Cmd_LiftIteration)  
-{
-  bool LeLFT_b_CriteriaMet = false;
+//  bool S9_back_rest_XD(double         LeLFT_b_AutoClimbButton,
+//                       double         LeLFT_In_MeasuredPositionYD,
+//                       double         LeLFT_In_MeasuredPositionXD,
+//                       double        *LeMAN_Cmd_CommandA,
+//                       double        *LeMAN_Cmd_CommandB,
+//                       double        *LeLFT_InS_CommandRateYD,
+//                       double        *LeLFT_InS_CommandRateXD,
+//                       T_Man_Iteration LeLFT_Cmd_LiftIteration)  
+// {
+//   bool LeLFT_b_CriteriaMet = false;
   
-  *LeMAN_Cmd_CommandB = K_lift_S9_XD;
+//   *LeMAN_Cmd_CommandB = K_lift_S9_XD;
 
-  *LeMAN_Cmd_CommandA = K_lift_S9_YD;
+//   *LeMAN_Cmd_CommandA = K_lift_S9_YD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S9_back_rest_XD][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S9_back_rest_XD][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S9_back_rest_XD][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S9_back_rest_XD][LeLFT_Cmd_LiftIteration];
 
-  if (LeLFT_In_MeasuredPositionXD <= (K_lift_S9_XD + K_lift_deadband_XD) && LeLFT_In_MeasuredPositionXD >= (K_lift_S9_XD - K_lift_deadband_XD)) {
-    VeMAN_Cnt_LayoverTimer += C_ExeTime;
-    if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
-      VeMAN_b_WaitingForDriverINS = true;
-      if (LeLFT_b_AutoClimbButton == true){
-         /* Let the driver determine when we are not swinging and can proceed */
-         LeLFT_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-         VeMAN_b_WaitingForDriverINS = false;
-      }
-    }
-  }
-  else {
-    VeMAN_Cnt_LayoverTimer = 0;
-  }
+//   if (LeLFT_In_MeasuredPositionXD <= (K_lift_S9_XD + K_lift_deadband_XD) && LeLFT_In_MeasuredPositionXD >= (K_lift_S9_XD - K_lift_deadband_XD)) {
+//     VeMAN_Cnt_LayoverTimer += C_ExeTime;
+//     if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
+//       VeMAN_b_WaitingForDriverINS = true;
+//       if (LeLFT_b_AutoClimbButton == true){
+//          /* Let the driver determine when we are not swinging and can proceed */
+//          LeLFT_b_CriteriaMet = true;
+//          VeMAN_Cnt_LayoverTimer = 0;
+//          VeMAN_b_WaitingForDriverINS = false;
+//       }
+//     }
+//   }
+//   else {
+//     VeMAN_Cnt_LayoverTimer = 0;
+//   }
   
-  return(LeLFT_b_CriteriaMet);
-}
+//   return(LeLFT_b_CriteriaMet);
+// }
 
 /******************************************************************************
  * Function:       S10_final_YD
  *
  * Description:  State 10: y move down, robert move up (what a chad)
  ******************************************************************************/
- bool S10_final_YD(double         LeLFT_b_AutoClimbButton,
-                   double         LeLFT_In_MeasuredPositionYD,
-                   double         LeLFT_In_MeasuredPositionXD,
-                   double        *LeMAN_Cmd_CommandA,
-                   double        *LeMAN_Cmd_CommandB,
-                   double        *LeLFT_InS_CommandRateYD,
-                   double        *LeLFT_InS_CommandRateXD,
-                   T_Man_Iteration LeLFT_Cmd_LiftIteration)  
-{
-  bool LeLFT_b_CriteriaMet = false;
+//  bool S10_final_YD(double         LeLFT_b_AutoClimbButton,
+//                    double         LeLFT_In_MeasuredPositionYD,
+//                    double         LeLFT_In_MeasuredPositionXD,
+//                    double        *LeMAN_Cmd_CommandA,
+//                    double        *LeMAN_Cmd_CommandB,
+//                    double        *LeLFT_InS_CommandRateYD,
+//                    double        *LeLFT_InS_CommandRateXD,
+//                    T_Man_Iteration LeLFT_Cmd_LiftIteration)  
+// {
+//   bool LeLFT_b_CriteriaMet = false;
   
-  *LeMAN_Cmd_CommandA = K_lift_S10_YD;
+//   *LeMAN_Cmd_CommandA = K_lift_S10_YD;
 
-  *LeMAN_Cmd_CommandB = K_lift_S10_XD;
+//   *LeMAN_Cmd_CommandB = K_lift_S10_XD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S10_final_YD][LeLFT_Cmd_LiftIteration]; // Slow down, don't yank too hard
+//   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S10_final_YD][LeLFT_Cmd_LiftIteration]; // Slow down, don't yank too hard
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S10_final_YD][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S10_final_YD][LeLFT_Cmd_LiftIteration];
 
-  if (LeLFT_In_MeasuredPositionYD <= (K_lift_S10_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S10_YD - K_lift_deadband_YD)) {
-    VeMAN_Cnt_LayoverTimer += C_ExeTime;
-    if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
-         LeLFT_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-    }
-  }
-  else {
-    VeMAN_Cnt_LayoverTimer = 0;
-  }
+//   if (LeLFT_In_MeasuredPositionYD <= (K_lift_S10_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S10_YD - K_lift_deadband_YD)) {
+//     VeMAN_Cnt_LayoverTimer += C_ExeTime;
+//     if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
+//          LeLFT_b_CriteriaMet = true;
+//          VeMAN_Cnt_LayoverTimer = 0;
+//     }
+//   }
+//   else {
+//     VeMAN_Cnt_LayoverTimer = 0;
+//   }
   
-  return(LeLFT_b_CriteriaMet);
-}
+//   return(LeLFT_b_CriteriaMet);
+// }
 
 /******************************************************************************
  * Function:       S11_final_OWO
  *
  * Description:  State 11: uwu
  ******************************************************************************/
- bool S11_final_OWO(double         LeLFT_b_AutoClimbButton,
-                    double         LeLFT_In_MeasuredPositionYD,
-                    double         LeLFT_In_MeasuredPositionXD,
-                    double        *LeMAN_Cmd_CommandA,
-                    double        *LeMAN_Cmd_CommandB,
-                    double        *LeLFT_InS_CommandRateYD,
-                    double        *LeLFT_InS_CommandRateXD,
-                    T_Man_Iteration LeLFT_Cmd_LiftIteration)  
-{
-  bool LeLFT_b_CriteriaMet = false;
+//  bool S11_final_OWO(double         LeLFT_b_AutoClimbButton,
+//                     double         LeLFT_In_MeasuredPositionYD,
+//                     double         LeLFT_In_MeasuredPositionXD,
+//                     double        *LeMAN_Cmd_CommandA,
+//                     double        *LeMAN_Cmd_CommandB,
+//                     double        *LeLFT_InS_CommandRateYD,
+//                     double        *LeLFT_InS_CommandRateXD,
+//                     T_Man_Iteration LeLFT_Cmd_LiftIteration)  
+// {
+//   bool LeLFT_b_CriteriaMet = false;
   
-  *LeMAN_Cmd_CommandA = K_lift_S11_YD;
+//   *LeMAN_Cmd_CommandA = K_lift_S11_YD;
 
-  *LeMAN_Cmd_CommandB = K_lift_S11_XD;
+//   *LeMAN_Cmd_CommandB = K_lift_S11_XD;
 
-  *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S11_final_OWO][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateYD = VaMAN_InS_RampRateMoterA[E_S11_final_OWO][LeLFT_Cmd_LiftIteration];
 
-  *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S11_final_OWO][LeLFT_Cmd_LiftIteration];
+//   *LeLFT_InS_CommandRateXD = VaMAN_InS_RampRateMoterB[E_S11_final_OWO][LeLFT_Cmd_LiftIteration];
 
-  if (LeLFT_In_MeasuredPositionYD <= (K_lift_S11_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S11_YD - K_lift_deadband_YD)) {
-    VeMAN_Cnt_LayoverTimer += C_ExeTime;
-    if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
-      VeMAN_b_WaitingForDriverINS = true;
-      if (LeLFT_b_AutoClimbButton == true){
-         /* Let the driver determine when we are not swinging and can proceed */
-         LeLFT_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-         VeMAN_b_WaitingForDriverINS = false;
-      }
-    }
-  }
-  else {
-    VeMAN_Cnt_LayoverTimer = 0;
-  }
+//   if (LeLFT_In_MeasuredPositionYD <= (K_lift_S11_YD + K_lift_deadband_YD) && LeLFT_In_MeasuredPositionYD >= (K_lift_S11_YD - K_lift_deadband_YD)) {
+//     VeMAN_Cnt_LayoverTimer += C_ExeTime;
+//     if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
+//       VeMAN_b_WaitingForDriverINS = true;
+//       if (LeLFT_b_AutoClimbButton == true){
+//          /* Let the driver determine when we are not swinging and can proceed */
+//          LeLFT_b_CriteriaMet = true;
+//          VeMAN_Cnt_LayoverTimer = 0;
+//          VeMAN_b_WaitingForDriverINS = false;
+//       }
+//     }
+//   }
+//   else {
+//     VeMAN_Cnt_LayoverTimer = 0;
+//   }
   
-  return(LeLFT_b_CriteriaMet);
-}
+//   return(LeLFT_b_CriteriaMet);
+// }
 
 
 /******************************************************************************
@@ -978,41 +995,41 @@ T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeLFT_b_Auto
         case E_S6_DroppingTheLoot:
             VeMAN_b_CriteriaMet = S7_move_back_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, LeLEFT_Deg_GyroAngleYaws, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState =   E_S8_more_down_some_YD;
+              LeLFT_e_CommandedState =   E_S0_Rest;
             }
         break;
 
-        case E_S8_more_down_some_YD:
-            VeMAN_b_CriteriaMet = S8_more_down_some_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState =   E_S9_back_rest_XD;
-            }
-        break;
+        // case E_S8_more_down_some_YD:
+        //     VeMAN_b_CriteriaMet = S8_more_down_some_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+        //     if(VeMAN_b_CriteriaMet == true){
+        //       LeLFT_e_CommandedState =   E_S9_back_rest_XD;
+        //     }
+        // break;
 
-        case E_S9_back_rest_XD:
-            VeMAN_b_CriteriaMet = S9_back_rest_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState =   E_S10_final_YD;
-            }
-        break;
+        // case E_S9_back_rest_XD:
+        //     VeMAN_b_CriteriaMet = S9_back_rest_XD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+        //     if(VeMAN_b_CriteriaMet == true){
+        //       LeLFT_e_CommandedState =   E_S10_final_YD;
+        //     }
+        // break;
 
-        case E_S10_final_YD:
-            VeMAN_b_CriteriaMet = S10_final_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState = E_S11_final_OWO;
-            }
-        break;
+        // case E_S10_final_YD:
+        //     VeMAN_b_CriteriaMet = S10_final_YD(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+        //     if(VeMAN_b_CriteriaMet == true){
+        //       LeLFT_e_CommandedState = E_S11_final_OWO;
+        //     }
+        // break;
 
-        case E_S11_final_OWO:
-            VeMAN_b_CriteriaMet = S11_final_OWO(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true &&VeMAN_Cnt_ManIteration < E_LiftIteration2){
-              LeLFT_e_CommandedState = E_S1_Intake;
-             VeMAN_Cnt_ManIteration = E_LiftIteration2;
-            }
-            else if(VeMAN_b_CriteriaMet == true &&VeMAN_Cnt_ManIteration >= E_LiftIteration2){
-              LeLFT_e_CommandedState = E_S11_final_OWO;
-            }
-        break;
+        // case E_S11_final_OWO:
+        //     VeMAN_b_CriteriaMet = S11_final_OWO(LeLFT_b_AutoClimbButton, LeLFT_In_MeasuredPositionYD, LeLFT_In_MeasuredPositionXD, &LeMAN_Cmd_CommandA_Temp, &LeMAN_Cmd_CommandB_Temp, &LeLFT_InS_CommandRateYD, &LeLFT_InS_CommandRateXD,VeMAN_Cnt_ManIteration);
+        //     if(VeMAN_b_CriteriaMet == true &&VeMAN_Cnt_ManIteration < E_LiftIteration2){
+        //       LeLFT_e_CommandedState = E_S1_Intake;
+        //      VeMAN_Cnt_ManIteration = E_LiftIteration2;
+        //     }
+        //     else if(VeMAN_b_CriteriaMet == true &&VeMAN_Cnt_ManIteration >= E_LiftIteration2){
+        //       LeLFT_e_CommandedState = E_S11_final_OWO;
+        //     }
+        // break;
       }
     }
   else
