@@ -67,12 +67,12 @@ static const int C_VanityLight_ID = 0;
 // Vision Cals:
 // cals for top target cam
 /* K_VisionHeight: Height of the camera relative to ground. */
-const units::meter_t K_VisionHeight[E_CamLocSz] = {0.795_m,  // 795 mm to camera lense  -> top
-                                                   0.367_m}; //                         -> bottom
+//const units::meter_t K_VisionHeight[E_CamLocSz] = {0.795_m,  // 795 mm to camera lense  -> top
+                                                  // 0.367_m}; //                         -> bottom
 
 /* K_VisionTargetHeight: Height of the target relative to ground. */
-const units::meter_t K_VisionTargetHeight[E_CamLocSz] = {2.58_m,  // bottom of tape to carpet  -> top
-                                                         0.12_m};  // radius of the ball in cm -> bottom
+//const units::meter_t K_VisionTargetHeight[E_CamLocSz] = {2.58_m,  // bottom of tape to carpet  -> top
+                                                        // 0.12_m};  // radius of the ball in cm -> bottom
 
 /* K_VisionCameraPitch: Pitch of the camera relative to the ground. */
 // const units::radian_t K_VisionCameraPitch[E_CamLocSz] = {15_deg,  // camera on a 75 degree tilt  -> top
