@@ -81,7 +81,7 @@ bool VeMAN_b_MoterTestA = false;
  * Function:     ManipulatorMotorConfigsInit
  *
  * Description:  Contains the motor configurations for the Arm and intake motors.
- *               - A through G
+ *               - A through F
  ******************************************************************************/
 void ManipulatorMoterConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
                           rev::SparkMaxPIDController m_liftpidXD)
@@ -196,7 +196,7 @@ void ManipulatorMoterConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
 /******************************************************************************
  * Function:     ManipulatorMotorConfigsCal
  *
- * Description:  Contains the motor configurations for the lift motors.  This 
+ * Description:  Contains the motor configurations for the manipulator motors.  This 
  *               allows for rapid calibration, but must not be used for comp.
  ******************************************************************************/
 void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
@@ -450,7 +450,7 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
   /******************************************************************************
  * Function:     S0_Rest
  *
- * Description:  State 2: moving robert up by moving y-lift down
+ * Description:  State 0: Everything in default positions
  ******************************************************************************/
  bool          S0_Rest(double         LeLFT_b_AutoClimbButton,
                       double         LeLFT_In_MeasuredPositionYD,
@@ -467,7 +467,7 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 /******************************************************************************
  * Function:     S1_Intake
  *
- * Description:  State 2: moving robert up by moving y-lift down
+ * Description:  State 2: robert intake or somthin
  ******************************************************************************/
  bool       S1_Intake(double         LeLFT_b_AutoClimbButton,
                       double         LeLFT_In_MeasuredPositionYD,
@@ -484,7 +484,7 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 /******************************************************************************
  * Function:     S2_TradeOff
  *
- * Description:  State 2: moving robert up by moving y-lift down
+ * Description:  State 2: moving ball from intake to manipulator?
  ******************************************************************************/
  bool     S2_TradeOff(double         LeLFT_b_AutoClimbButton,
                       double         LeLFT_In_MeasuredPositionYD,
@@ -515,7 +515,7 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandA,
 /******************************************************************************
  * Function:       S3_Swiper
  *
- * Description:  State 3: moving x lift haha it has to do its job
+ * Description:  State 3: swiper no swiping
  ******************************************************************************/
  bool          S3_Swiper(double         LeLFT_b_AutoClimbButton,
                          double         LeLFT_In_MeasuredPositionYD,

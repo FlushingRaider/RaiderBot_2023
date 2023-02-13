@@ -98,11 +98,15 @@ void Robot::RobotMotorCommands()
   m_intake.Set(ControlMode::PercentOutput, V_IntakePowerCmnd); //must be positive (don't be a fool)
   m_elevator.Set(ControlMode::PercentOutput, V_ElevatorPowerCmnd);
 
-  // XY XD lift motors
-  if (VeMAN_b_ArmInitialized == false)
+ // XY XD lift motors
+  if (VeMAN_b_ ArmInitialized == false)
     {
-    m_liftMotorYD.Set(VeMAN_Cnt_MoterTestPowerCmndA);
-    m_liftMotorXD.Set(VeMAN_Cnt_MoterTestPowerCmndB);
+    m_ManTurretMotorA.Set(VeMAN_Cnt_MoterTestPowerCmndA); // Turret motor
+    m_ManShoulderMotorB.Set(VeMAN_Cnt_MoterTestPowerCmndB); // Joint shoulder motor
+    m_ManElevatorMotorC.Set(VeMAN_Cnt_MoterTestPowerCmndC); // Joint elevator motor
+    m_ManRotateMotorD.Set(VeMAN_Cnt_MoterTestPowerCmndD); // Claw rotate motor
+    m_ManClawMotorE.Set(VeMAN_Cnt_MoterTestPowerCmndE); // Claw open and close motor
+    m_ManIntakeMotorF.Set(VeMAN_Cnt_MoterTestPowerCmndF); // Intake roller motor
     }
   else
     {
@@ -112,7 +116,7 @@ void Robot::RobotMotorCommands()
   #endif
   }
 
-
+// m_liftMotorYD
 
 /******************************************************************************
  * Function:     RobotInit
@@ -170,8 +174,12 @@ void Robot::RobotInit()
   // m_turret.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
 
   #ifdef CompBot2
-  m_liftMotorYD.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_liftMotorXD.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_ManTurretMotorA.SetIdleMode(rev::CanSparkMax::IdleMode::kBrake);
+  m_ManShoulderMotorB.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_ManElevatorMotorC.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_ManRotateMotorD.SetIdleMode(rev::SparkMaxRelativeEncoder::IdleMode::kBrake);
+  m_ManClawMotorE.SetIdleMode(rev::SparkMaxRelativeEncoder::IdleMode::kBrake);
+  m_ManIntakeMotorF.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
   m_rightShooterMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_leftShooterMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
@@ -428,8 +436,12 @@ CarsonDebugRun();
                                        VsRobotSensors.b_XY_LimitDetected,
                                        VsRobotSensors.b_XD_LimitDetected,
                                        VeGRY_Deg_GyroYawAngleDegrees,
-                                       m_liftMotorYD.GetOutputCurrent(),
-                                       m_liftMotorXD.GetOutputCurrent(),
+                                       m_ManTurretMotorA.GetOutputCurrent(),
+                                       m_ManShoulderMotorB.GetOutputCurrent(),
+                                       m_ManElevatorMotorC.GetOutputCurrent(),
+                                       m_ManRotateMotorD.GetOutputCurrent(),
+                                       m_ManClawMotorE.GetOutputCurrent(),
+                                       m_ManIntakeMotorF.GetOutputCurrent(),
                                        m_encoderLiftYD,
                                        m_encoderLiftXD);
   #endif
