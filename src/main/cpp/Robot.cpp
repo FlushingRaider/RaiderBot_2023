@@ -456,7 +456,9 @@ void Robot::AutonomousInit()
   GyroInit();
   DriveControlInit();
   BallHandlerInit();
+  #ifdef BrokenMain
   LiftControlInit();
+  #endif
   ADAS_Main_Reset();
   OdometryInit();
 
@@ -488,7 +490,9 @@ void Robot::TeleopInit()
   ADAS_Main_Reset();
   DriveControlInit();
   BallHandlerInit();
+  #ifdef BrokenMain
   LiftControlInit();
+  #endif
   OdometryInit();
   VisionInit(V_AllianceColor);
 #ifdef CompBot2

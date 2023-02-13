@@ -16,7 +16,7 @@
 #include "Lookup.hpp"
 #include "Driver_inputs.hpp"
 #include "Encoders.hpp"
-
+#ifdef BrokenMain
 T_Man_DoesStuffMaybe VeMAN_CnT_Man_DoesStuffMaybe = E_S0_Rest; 
 T_Man_Iteration VeMAN_Cnt_ManIteration = VeMAN_Cnt_ManIterationNew;
 T_Lift_State VeLFT_Cnt_Lift_state = E_S0_BEGONE; 
@@ -970,3 +970,5 @@ T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeLFT_b_Auto
 
   return(LeLFT_e_CommandedState);
 }
+
+#endif

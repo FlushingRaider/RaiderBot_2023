@@ -9,6 +9,10 @@
 #define CompBot
 
 #define TestVision // TestVision or OldVision
+//#define BrokenMain
+
+
+
 
 // RoboRio controller execution time
 const double C_ExeTime = 0.02; // Set to match the the default controller loop time of 20 ms
@@ -74,9 +78,6 @@ const units::meter_t K_VisionHeight[E_CamLocSz] = {0.795_m,  // 795 mm to camera
 const units::meter_t K_VisionTargetHeight[E_CamLocSz] = {2.58_m,  // bottom of tape to carpet  -> top
                                                          0.12_m};  // radius of the ball in cm -> bottom
 
-/* K_VisionCameraPitch: Pitch of the camera relative to the ground. */
-const units::radian_t K_VisionCameraPitch[E_CamLocSz] = {15_deg,  // camera on a 75 degree tilt  -> top
-                                                         50_deg}; //                             -> bottom
 
 /* K_VisionCalculationDelayTime: Delay time before allowing calculations to occur */
 const double K_VisionCalculationDelayTime = 0.1;
@@ -142,7 +143,7 @@ const double K_t_TurretDebounceTimeout = 0.5;
 /* K_t_TurretOL_Timeout: Max allowed time to be in OL state.  If this is reached, for the turret to be disabled. */
 const double K_t_TurretOL_Timeout = 5.0;
 
-
+#ifdef BrokenMain
 // Lift related cals
 /* K_LiftRampRateYD: Per loop revolutions of the motor allowed for the YD position. */
 const double K_LiftRampRateYD[E_Man_State_Sz][E_LiftIterationSz] = 
@@ -159,7 +160,6 @@ const double K_LiftRampRateYD[E_Man_State_Sz][E_LiftIterationSz] =
     {1.00, 1.00},  // E_S10_final_YD
     {1.25, 1.25}   // E_S11_final_OWO
   };
-
 /* K_LiftRampRateXD: Per loop revolutions of the motor allowed for the XD position. */
 const double K_LiftRampRateXD[E_Man_State_Sz][E_LiftIterationSz] = 
   {
@@ -175,6 +175,7 @@ const double K_LiftRampRateXD[E_Man_State_Sz][E_LiftIterationSz] =
     {1.05, 1.05},  // E_S10_final_YD
     {1.05, 1.05}   // E_S11_final_OWO
   };
+#endif
 
 const double K_lift_S2_YD = 8; //initial lift of the robot
 const double K_lift_S3_YD = 8; //stays the same
