@@ -37,6 +37,14 @@ static const int C_liftXD_ID = 12;
 static const int C_elevatorID = 13;
 static const int C_intakeID = 14;
 static const int C_turretID = 15;
+//  KeMAN_i_TurretRotate and KeMAN_i_LinearSlide are talonSRX's
+static const int KeMAN_i_TurretRotate = 9; 
+static const int KeMAN_i_LinearSlide = 10;
+static const int KeMAN_i_ArmPivot = 11;
+static const int KeMAN_i_Wrist = 12;
+static const int KeMAN_i_Gripper = 13;
+static const int KeINT_i_IntakeRollers = 14;
+static const int KeINT_i_IntakeArm = 15;
 static const int KeGRY_i_Gyro = 16;
 static const int KeEnc_i_WheelAngleFL = 17;
 static const int KeEnc_i_WheelAngleFR = 18;
@@ -137,15 +145,15 @@ const double K_t_TurretOL_Timeout = 5.0;
 
 // Lift related cals
 /* K_LiftRampRateYD: Per loop revolutions of the motor allowed for the YD position. */
-const double K_LiftRampRateYD[E_Lift_State_Sz][E_LiftIterationSz] = 
+const double K_LiftRampRateYD[E_Man_State_Sz][E_LiftIterationSz] = 
   {
-    {1.25, 1.25},  // E_S0_BEGONE
-    {1.35, 1.25},  // E_S2_lift_down_YD
-    {1.25, 1.25},  // E_S3_move_forward_XD
-    {1.15, 1.15},  // E_S4_stretch_up_YD
-    {1.25, 1.25},  // E_S5_more_forward_XD
-    {1.25, 1.25},  // E_S6_lift_up_more_YD
-    {1.25, 1.25},  // E_S7_move_back_XD
+    {1.25, 1.25},  // E_S0_Rest
+    {1.35, 1.25},  // E_S1_Intake
+    {1.25, 1.25},  // E_S2_TradeOff
+    {1.15, 1.15},  // E_S3_Swiper
+    {1.25, 1.25},  // E_S4_DrivingState
+    {1.25, 1.25},  // E_S5_Positioning
+    {1.25, 1.25},  // E_S6_DroppingTheLoot
     {1.25, 1.25},  // E_S8_more_down_some_YD
     {1.25, 1.25},  // E_S9_back_rest_XD
     {1.00, 1.00},  // E_S10_final_YD
@@ -153,15 +161,15 @@ const double K_LiftRampRateYD[E_Lift_State_Sz][E_LiftIterationSz] =
   };
 
 /* K_LiftRampRateXD: Per loop revolutions of the motor allowed for the XD position. */
-const double K_LiftRampRateXD[E_Lift_State_Sz][E_LiftIterationSz] = 
+const double K_LiftRampRateXD[E_Man_State_Sz][E_LiftIterationSz] = 
   {
-    {1.05, 1.05},  // E_S0_BEGONE
-    {1.05, 1.05},  // E_S2_lift_down_YD
-    {1.05, 1.05},  // E_S3_move_forward_XD
-    {1.05, 1.05},  // E_S4_stretch_up_YD
-    {1.05, 1.05},  // E_S5_more_forward_XD
-    {1.05, 1.05},  // E_S6_lift_up_more_YD
-    {1.15, 0.50},  // E_S7_move_back_XD
+    {1.05, 1.05},  // E_S0_Rest
+    {1.05, 1.05},  // E_S1_Intake
+    {1.05, 1.05},  // E_S2_TradeOff
+    {1.05, 1.05},  // E_S3_Swiper
+    {1.05, 1.05},  // E_S4_DrivingState
+    {1.05, 1.05},  // E_S5_Positioning
+    {1.15, 0.50},  // E_S6_DroppingTheLoot
     {1.05, 1.05},  // E_S8_more_down_some_YD
     {1.05, 1.05},  // E_S9_back_rest_XD
     {1.05, 1.05},  // E_S10_final_YD

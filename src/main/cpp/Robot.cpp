@@ -395,26 +395,26 @@ void Robot::RobotPeriodic()
 
 #endif
 
-#ifdef CompBot2
-  VeLFT_Cnt_Lift_state = Lift_Control_Dictator(VsCONT_s_DriverInput.b_LiftControl,
-                                               VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro,
-                                               VsCONT_s_DriverInput.e_LiftCmndDirection,
-                                               V_MatchTimeRemaining,
-                                               VeLFT_Cnt_Lift_state,
-                                               VeENC_In_LiftPostitionYD,
-                                               VeENC_In_LiftPostitionXD,
-                                               &VeLFT_Cnt_CommandYD,
-                                               &VeLFT_Cnt_CommandXD,
-                                               &VeLFT_Cnt_LiftYDTestPowerCmnd,
-                                               &VeLFT_Cnt_LiftXDTestPowerCmnd,
-                                               VsRobotSensors.b_XY_LimitDetected,
-                                               VsRobotSensors.b_XD_LimitDetected,
-                                               VeGRY_Deg_GyroYawAngleDegrees,
-                                               m_liftMotorYD.GetOutputCurrent(),
-                                               m_liftMotorXD.GetOutputCurrent(),
-                                               m_encoderLiftYD,
-                                               m_encoderLiftXD);
-#endif
+  #ifdef CompBot2
+  VeMAN_CnT_Man_DoesStuffMaybe = ManipulatorControlDictator(VsCONT_s_DriverInput.b_LiftControl,
+                                       VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro,
+                                       VsCONT_s_DriverInput.e_LiftCmndDirection,
+                                       V_MatchTimeRemaining,
+                                       VeMAN_CnT_Man_DoesStuffMaybe,
+                                       VeENC_In_LiftPostitionYD,
+                                       VeENC_In_LiftPostitionXD,
+                                       &VeMan_Cnt_MoterCommandA,
+                                       &VeMAN_Cnt_MoterCommandB,
+                                       &VeMAN_Cnt_MoterTestPowerCmndA,
+                                       &VeMAN_Cnt_MoterTestPowerCmndB,
+                                       VsRobotSensors.b_XY_LimitDetected,
+                                       VsRobotSensors.b_XD_LimitDetected,
+                                       VeGRY_Deg_GyroYawAngleDegrees,
+                                       m_liftMotorYD.GetOutputCurrent(),
+                                       m_liftMotorXD.GetOutputCurrent(),
+                                       m_encoderLiftYD,
+                                       m_encoderLiftXD);
+  #endif
 
   /* These function calls are for test mode calibration. */
   SwerveDriveMotorConfigsCal(m_frontLeftDrivePID,
