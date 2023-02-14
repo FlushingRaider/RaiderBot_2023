@@ -248,23 +248,19 @@ void Robot::RobotPeriodic()
                   di_XY_LimitSwitch.Get(), // XY Limit - di_XY_LimitSwitch.Get()
                   false); //di_TurrentLimitSwitch.Get());
   
-  Read_Encoders(m_encoderWheelAngleCAN_FL.GetAbsolutePosition(),
-                m_encoderWheelAngleCAN_FR.GetAbsolutePosition(),
-                m_encoderWheelAngleCAN_RL.GetAbsolutePosition(),
-                m_encoderWheelAngleCAN_RR.GetAbsolutePosition(),
-                a_encoderFrontLeftSteer.GetVoltage(),
-                a_encoderFrontRightSteer.GetVoltage(),
-                a_encoderRearLeftSteer.GetVoltage(),
-                a_encoderRearRightSteer.GetVoltage(),
-                m_encoderFrontLeftDrive,
-                m_encoderFrontRightDrive,
-                m_encoderRearLeftDrive,
-                m_encoderRearRightDrive,
-                m_encoderRearRightDrive, // m_encoderrightShooter
-                m_encoderRearRightDrive, // m_encoderleftShooter
-                m_encoderRearRightDrive, //m_encoderLiftYD
-                m_encoderRearRightDrive, //m_encoderLiftXD
-                0);  //m_turret.GetSelectedSensorPosition()
+  Encoders_Drive_CompBot(m_encoderWheelAngleCAN_FL.GetAbsolutePosition(),
+                         m_encoderWheelAngleCAN_FR.GetAbsolutePosition(),
+                         m_encoderWheelAngleCAN_RL.GetAbsolutePosition(),
+                         m_encoderWheelAngleCAN_RR.GetAbsolutePosition(),
+                         m_encoderFrontLeftDrive,
+                         m_encoderFrontRightDrive,
+                         m_encoderRearLeftDrive,
+                         m_encoderRearRightDrive,
+                         m_encoderRearRightDrive, // m_encoderrightShooter
+                         m_encoderRearRightDrive, // m_encoderleftShooter
+                         m_encoderRearRightDrive, //m_encoderLiftYD
+                         m_encoderRearRightDrive, //m_encoderLiftXD
+                         0);  //m_turret.GetSelectedSensorPosition()
 
   Joystick2_robot_mapping(c_joyStick2.GetRawButton(1),
                           c_joyStick2.GetRawButton(2),
@@ -278,7 +274,7 @@ void Robot::RobotPeriodic()
                           c_joyStick2.GetPOV(),
                           c_joyStick2.GetRawButton(7));
 #else
-  Read_Encoders2(a_encoderFrontLeftSteer.GetVoltage(),
+  Encoders_Drive_PracticeBot(a_encoderFrontLeftSteer.GetVoltage(),
                  a_encoderFrontRightSteer.GetVoltage(),
                  a_encoderRearLeftSteer.GetVoltage(),
                  a_encoderRearRightSteer.GetVoltage(),

@@ -31,25 +31,19 @@ static const double KeENC_k_VoltageToAngle = 72.0; // Gain that converts the mea
 static const int C_PDP_ID = 21;
 static const int frontLeftSteerDeviceID = 1, frontLeftDriveDeviceID = 2, frontRightSteerDeviceID = 4, frontRightDriveDeviceID = 3;
 static const int rearLeftSteerDeviceID  = 5, rearLeftDriveDeviceID  = 6, rearRightSteerDeviceID  = 7, rearRightDriveDeviceID  = 8;
-static const int rightShooterID = 10, leftShooterID = 9;
-static const int C_liftYD_ID = 11;
-static const int C_liftXD_ID = 12;
-static const int C_elevatorID = 13;
-static const int C_intakeID = 14;
-static const int C_turretID = 15;
-//  KeMAN_i_TurretRotate and KeMAN_i_LinearSlide are talonSRX's
 static const int KeMAN_i_TurretRotate = 9; 
 static const int KeMAN_i_LinearSlide = 10;
 static const int KeMAN_i_ArmPivot = 11;
 static const int KeMAN_i_Wrist = 12;
 static const int KeMAN_i_Gripper = 13;
 static const int KeINT_i_IntakeRollers = 14;
-static const int KeINT_i_IntakeArm = 15;
+static const int KeINT_i_IntakeArm = 22;
 static const int KeGRY_i_Gyro = 16;
 static const int KeEnc_i_WheelAngleFL = 17;
 static const int KeEnc_i_WheelAngleFR = 18;
 static const int KeEnc_i_WheelAngleRL = 19;
 static const int KeEnc_i_WheelAngleRR = 20;
+
 
 // Analog IDs:
 static const int C_MagEncoderFL_ID = 2, C_MagEncoderFR_ID = 1, C_MagEncoderRL_ID = 3, C_MagEncoderRR_ID = 0;
@@ -142,6 +136,17 @@ const double K_t_TurretDebounceTimeout = 0.5;
 /* K_t_TurretOL_Timeout: Max allowed time to be in OL state.  If this is reached, for the turret to be disabled. */
 const double K_t_TurretOL_Timeout = 5.0;
 
+/* KeENC_k_ArmPivot: Scalar multiplied against the encoder. */
+const double KeENC_k_Armpivot = 1.0;
+
+/* KeENC_RPM_IntakeROllers: Finds the speed of the intake rollers. */
+const double KeENC_RPM_IntakeRollers = 1.0;
+
+/* KeENC_Deg_Gripper: Finds the posistion of the gripper. */
+const double KeENC_Deg_Gripper = 1.0;
+
+/* KeENC_Deg_Wrist: Actual position of the wrist, how much we've rotated. */
+const double KeENC_Deg_Wrist = 1.0;
 
 // Lift related cals
 /* K_LiftRampRateYD: Per loop revolutions of the motor allowed for the YD position. */
