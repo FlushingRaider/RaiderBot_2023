@@ -9,25 +9,25 @@
    lift STATE machine? another government scam smh -chloe
  */
 
-extern double       VeMan_Cnt_MoterCommandA;
-extern double       VeMAN_Cnt_MoterCommandB;
-extern double       VeMan_Cnt_MoterCommandC;
-extern double       VeMAN_Cnt_MoterCommandD;
-extern double       VeMan_Cnt_MoterCommandE;
-extern double       VeMan_Cnt_MoterCommandF;
+extern double       VeMan_Cnt_MoterCommandTurret;
+extern double       VeMan_Cnt_MoterCommandArmPivot;
+extern double       VeMAN_Cnt_MoterCommandLinearSlide;
+extern double       VeMAN_Cnt_MoterCommandWrist;
+extern double       VeMAN_Cnt_MoterCommandClaw;
+extern double       VeMAN_Cnt_MoterCommandIntake;
 extern T_Man_DoesStuffMaybe VeMAN_Cnt_Man_state;
-extern double VeMAN_Cnt_MoterTestPowerCmndA;
-extern double VeMAN_Cnt_MoterTestPowerCmndB;
-extern double VeMAN_Cnt_MoterTestPowerCmndC;
-extern double VeMAN_Cnt_MoterTestPowerCmndD;
-extern double VeMAN_Cnt_MoterTestPowerCmndE;
-extern double VeMAN_Cnt_MoterTestPowerCmndF;
-extern double VaMAN_v_MotorMaxCurrentA[E_Man_State_Sz];
-extern double VaMAN_v_MotorMaxCurrentB[E_Man_State_Sz];
-extern double VaMAN_v_MotorMaxCurrentC[E_Man_State_Sz];
-extern double VaMAN_v_MotorMaxCurrentD[E_Man_State_Sz];
-extern double VaMAN_v_MotorMaxCurrentE[E_Man_State_Sz];
-extern double VaMAN_v_MotorMaxCurrentF[E_Man_State_Sz];
+extern double VeMAN_Cnt_MoterTestPowerCmndTurret;
+extern double VeMAN_Cnt_MoterTestPowerCmndArmPivot;
+extern double VeMAN_Cnt_MoterTestPowerCmndClawlevator;
+extern double VeMAN_Cnt_MoterTestPowerCmndWrist;
+extern double VeMAN_Cnt_MoterTestPowerCmndClaw;
+extern double VeMAN_Cnt_MoterTestPowerCmndIntake;
+extern double VaMAN_v_MotorMaxCurrentTurret[E_Man_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentArmPivot[E_Man_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentLinearSlide[E_Man_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentWrist[E_Man_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentClaw[E_Man_State_Sz];
+extern double VaMAN_v_MotorMaxCurrentIntake[E_Man_State_Sz];
 extern bool   VeMAN_b_WaitingForDriverINS;
 extern bool   VeMAN_b_ArmInitialized;
 
@@ -39,37 +39,37 @@ void ManipulatorMoterConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
 
 void ManipulatorControlInit();
 
-void Manipulator_Control_ManualOverride(double              *LeMAN_Cmd_CommandA,
-                                 double              *LeMAN_Cmd_CommandB,
-                                 double               LeMAN_v_MotorCurrentOutA,
-                                 double               LeMAN_v_MotorCurrentOutB,
-                                 double       LeMAN_v_MotorCurrentOutC,
-                                 double       LeMAN_v_MotorCurrentOutD,
-                                 double       LeMAN_v_MotorCurrentOutE,
-                                 double       LeMAN_v_MotorCurrentOutF,
+void Manipulator_Control_ManualOverride(double              *LeMAN_Cmd_CommandTurret,
+                                 double              *LeMAN_Cmd_CommandArmPivot,
+                                 double               LeMAN_v_MotorCurrentOutTurret,
+                                 double               LeMAN_v_MotorCurrentOutArmPivot,
+                                 double       LeMAN_v_MotorCurrentOutLinearSlide,
+                                 double       LeMAN_v_MotorCurrentOutWrist,
+                                 double       LeMAN_v_MotorCurrentOutClaw,
+                                 double       LeMAN_v_MotorCurrentOutIntake,
                                  T_Manipulator_CmndDirection  LeMAN_Cmd_DriverMANDirection,
-                                 bool                 LeMAN_b_LimitDetectedA,
-                                 bool                 LeMAN_b_LimitDetectedB);
+                                 bool                 LeMAN_b_LimitDetectedTurret,
+                                 bool                 LeMAN_b_LimitDetectedArmPivot);
 
-T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeLFT_b_AutoClimbButton,
+T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeMAN_b_AutoManipulateButton,
                                    bool                L_driver_auto_climb_pause,
                                    T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
                                    double              L_game_time,
                                    T_Man_DoesStuffMaybe        LeMAN_Cnt_CurrentState,
-                                   double              LeLFT_In_MeasuredPositionYD,
-                                   double              LeLFT_In_MeasuredPositionXD,
-                                   double             *LeMAN_Cmd_CommandA,
-                                   double             *LeMAN_Cmd_CommandB,
+                                   double              LeMAN_Deg_MeasuredAngleTurret,
+                                   double              LeMAN_Deg_MeasuredAngleArmPivot,
+                                   double             *LeMAN_Cmd_CommandTurret,
+                                   double             *LeMAN_Cmd_CommandArmPivot,
                                    double             *LeLFT_Pct_CommandPwrYD,
                                    double             *LeLFT_Pct_CommandPwrXD,
-                                   bool                LeMAN_b_LimitDetectedA,
-                                   bool                LeMAN_b_LimitDetectedB,
+                                   bool                LeMAN_b_LimitDetectedTurret,
+                                   bool                LeMAN_b_LimitDetectedArmPivot,
                                    double              LeLEFT_Deg_GyroAngleYaws,
-                                   double              LeMAN_v_MotorCurrentOutA,
-                                   double              LeMAN_v_MotorCurrentOutB,
-                                   double              LeMAN_v_MotorCurrentOutC,
-                                   double              LeMAN_v_MotorCurrentOutD,
-                                   double              LeMAN_v_MotorCurrentOutE,
-                                   double              LeMAN_v_MotorCurrentOutF,
+                                   double              LeMAN_v_MotorCurrentOutTurret,
+                                   double              LeMAN_v_MotorCurrentOutArmPivot,
+                                   double              LeMAN_v_MotorCurrentOutLinearSlide,
+                                   double              LeMAN_v_MotorCurrentOutWrist,
+                                   double              LeMAN_v_MotorCurrentOutClaw,
+                                   double              LeMAN_v_MotorCurrentOutIntake,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftXD);

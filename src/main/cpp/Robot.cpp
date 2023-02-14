@@ -101,17 +101,17 @@ void Robot::RobotMotorCommands()
  // XY XD lift motors
   if (VeMAN_b_ ArmInitialized == false)
     {
-    m_ManTurretMotorA.Set(VeMAN_Cnt_MoterTestPowerCmndA); // Turret motor
-    m_ManShoulderMotorB.Set(VeMAN_Cnt_MoterTestPowerCmndB); // Joint shoulder motor
-    m_ManElevatorMotorC.Set(VeMAN_Cnt_MoterTestPowerCmndC); // Joint elevator motor
-    m_ManRotateMotorD.Set(VeMAN_Cnt_MoterTestPowerCmndD); // Claw rotate motor
-    m_ManClawMotorE.Set(VeMAN_Cnt_MoterTestPowerCmndE); // Claw open and close motor
-    m_ManIntakeMotorF.Set(VeMAN_Cnt_MoterTestPowerCmndF); // Intake roller motor
+    m_ManTurretMotorA.Set(VeMAN_Cnt_MoterTestPowerCmndTurret); // Turret motor
+    m_ManShoulderMotorB.Set(VeMAN_Cnt_MoterTestPowerCmndArmPivot); // Joint shoulder motor
+    m_ManElevatorMotorC.Set(VeMAN_Cnt_MoterTestPowerCmndClawlevator); // Joint elevator motor
+    m_ManRotateMotorD.Set(VeMAN_Cnt_MoterTestPowerCmndWrist); // Claw rotate motor
+    m_ManClawMotorE.Set(VeMAN_Cnt_MoterTestPowerCmndClaw); // Claw open and close motor
+    m_ManIntakeMotorF.Set(VeMAN_Cnt_MoterTestPowerCmndIntake); // Intake roller motor
     }
   else
     {
-    m_liftpidYD.SetReference(VeMan_Cnt_MoterCommandA, rev::ControlType::kPosition); // positive is up
-    m_liftpidXD.SetReference(VeMAN_Cnt_MoterCommandB, rev::ControlType::kPosition); // This is temporary.  We actually want to use position, but need to force this off temporarily
+    m_liftpidYD.SetReference(VeMan_Cnt_MoterCommandTurret, rev::ControlType::kPosition); // positive is up
+    m_liftpidXD.SetReference(VeMan_Cnt_MoterCommandArmPivot, rev::ControlType::kPosition); // This is temporary.  We actually want to use position, but need to force this off temporarily
     }
   #endif
   }
@@ -429,10 +429,10 @@ CarsonDebugRun();
                                        VeMAN_CnT_Man_DoesStuffMaybe,
                                        VeENC_In_LiftPostitionYD,
                                        VeENC_In_LiftPostitionXD,
-                                       &VeMan_Cnt_MoterCommandA,
-                                       &VeMAN_Cnt_MoterCommandB,
-                                       &VeMAN_Cnt_MoterTestPowerCmndA,
-                                       &VeMAN_Cnt_MoterTestPowerCmndB,
+                                       &VeMan_Cnt_MoterCommandTurret,
+                                       &VeMan_Cnt_MoterCommandArmPivot,
+                                       &VeMAN_Cnt_MoterTestPowerCmndTurret,
+                                       &VeMAN_Cnt_MoterTestPowerCmndArmPivot,
                                        VsRobotSensors.b_XY_LimitDetected,
                                        VsRobotSensors.b_XD_LimitDetected,
                                        VeGRY_Deg_GyroYawAngleDegrees,
@@ -553,8 +553,8 @@ void Robot::TeleopPeriodic()
 void Robot::TestPeriodic()
   {
   #ifdef CompBot2
-  Manipulator_Control_ManualOverride(&VeMAN_Cnt_MoterTestPowerCmndA,
-                              &VeMAN_Cnt_MoterTestPowerCmndB,
+  Manipulator_Control_ManualOverride(&VeMAN_Cnt_MoterTestPowerCmndTurret,
+                              &VeMAN_Cnt_MoterTestPowerCmndArmPivot,
                                m_liftMotorYD.GetOutputCurrent(),
                                m_liftMotorXD.GetOutputCurrent(),
                                VsCONT_s_DriverInput.e_LiftCmndDirection,
@@ -591,8 +591,8 @@ void Robot::TestPeriodic()
   m_rearRightSteerMotor.Set(0);
 
   #ifdef CompBot2
-  m_liftMotorYD.Set(VeMAN_Cnt_MoterTestPowerCmndA);
-  m_liftMotorXD.Set(VeMAN_Cnt_MoterTestPowerCmndB);
+  m_liftMotorYD.Set(VeMAN_Cnt_MoterTestPowerCmndTurret);
+  m_liftMotorXD.Set(VeMAN_Cnt_MoterTestPowerCmndArmPivot);
 
   m_rightShooterMotor.Set(0);
   m_leftShooterMotor.Set(0);
