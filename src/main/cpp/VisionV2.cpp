@@ -22,6 +22,7 @@
 #include <frc/Filesystem.h>
 #include <wpi/fs.h>
 #include <wpinet/PortForwarder.h>
+#include "Odometry.hpp"
 
 // all our favorite variables
 // double         V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
@@ -48,7 +49,7 @@ double V_TagPitch;
 double V_TagYaw;
 int V_TagID;
 
-photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1");  // the string is the name of the cam from photon, the name in photon must match this one to assign properly
+photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1"); // the string is the name of the cam from photon, the name in photon must match this one to assign properly
 fs::path aprilTagsjsonPath = frc::filesystem::GetDeployDirectory();
 std::string aprilTagsjson = aprilTagsjsonPath / "2023_chargedUp.json";
 
@@ -253,6 +254,8 @@ void TestVisionRun()
     V_TagRoll = pose.Rotation().X().value();
     V_TagPitch = pose.Rotation().Y().value();
     V_TagYaw = pose.Rotation().Z().value();
+
+    OdometryInitToArgs(V_Tagx, V_Tagy);
   }
   else
   {
