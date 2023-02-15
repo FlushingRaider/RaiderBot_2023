@@ -233,6 +233,16 @@ const double K_LiftPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
                                                    0.0};     // kAllErr
 
 
+//Manipulator Array table thingy boooo
+const double KaMAN_e_ControllingTable[KaMAN_e_Scheduled][KaMAN_e_Attained] =
+  {
+    {S3_Swiper, S3_Swiper, S0_Rest, S0_Rest, S2_TradeOff, S2_TradeOff},
+    {S3_Swiper, S3_Swiper, S0_Rest, S0_Rest, S3_Swiper, S3_Swiper},
+    {S4_DrivingState, S5_Positioning, S6_DroppingTheLoot, S6_DroppingTheLoot, S2_TradeOff, S4_DrivingState},
+    {S4_DrivingState, S5_Positioning, S5_Positioning, S0_Rest, S2_TradeOff, S4_DrivingState},
+    {S4_DrivingState, S4_DrivingState, S4_DrivingState, S0_Rest, S2_TradeOff, S4_DrivingState},
+    {S0_Rest, S0_Rest, S0_Rest, S0_Rest, S0_Rest, S0_Rest}
+  };
 
 /* Ball handler (BH) cals: */
 /* K_BH_IntakePower: Amount of power to apply to intake wheels.  Must be 0 to 1. */
