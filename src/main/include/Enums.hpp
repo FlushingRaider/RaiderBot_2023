@@ -182,7 +182,9 @@ typedef enum T_ADAS_UT_UpperTarget
   E_ADAS_UT_CameraLightOn,
   E_ADAS_UT_AutoCenter,
   E_ADAS_UT_LauncherSpeed,
-  E_ADAS_UT_ElevatorControl
+  E_ADAS_UT_ElevatorControl,
+
+  E_ADAS_UT_MoveToTag
 } T_ADAS_UT_UpperTarget;
 
 typedef enum T_ADAS_ActiveFeature

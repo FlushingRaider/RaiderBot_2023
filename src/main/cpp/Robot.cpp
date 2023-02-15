@@ -316,7 +316,8 @@ void Robot::RobotPeriodic()
                                           VsCONT_s_DriverInput.b_ElevatorUp,
                                           VsCONT_s_DriverInput.b_ElevatorDown,
                                           VsCONT_s_DriverInput.b_IntakeIn,
-                                          V_ADAS_ActiveFeature);
+                                          V_ADAS_ActiveFeature,
+                                          );
 
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
                    VsCONT_s_DriverInput.pct_SwerveStrafe,      // swerve control strafe
