@@ -1025,7 +1025,7 @@ T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeMAN_b_Auto
 
     switch (LeMAN_Cnt_CurrentState)
       {
-        case E_S0_Rest:
+        case :
             if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndUp)
               {
               LeMAN_Cmd_CommandTurret_Temp = *LeMAN_Cmd_CommandTurret + K_lift_driver_up_rate_YD;
@@ -1040,18 +1040,18 @@ T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeMAN_b_Auto
               }
             /* The driver should only initiate the state machine once the robot has become suspended. */
             if (LeMAN_b_AutoManipulateButton == true && LeMAN_Deg_MeasuredAngleTurret >= K_lift_enable_auto_YD) {
-                LeLFT_e_CommandedState = E_S1_Intake;
+                LeLFT_e_CommandedState = E_S0_Rest;
+            }
+        break;
+
+        case E_S0_Rest:
+            VeMAN_b_CriteriaMet = S0_Rest(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
+            if(VeMAN_b_CriteriaMet == true){
+              LeLFT_e_CommandedState =   E_S1_Intake;
             }
         break;
 
         case E_S1_Intake:
-            VeMAN_b_CriteriaMet = S1_Intake(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeLFT_e_CommandedState =   E_S2_TradeOff;
-            }
-        break;
-
-        case E_S2_TradeOff:
             VeMAN_b_CriteriaMet = S2_TradeOff(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
             if(VeMAN_b_CriteriaMet == true){
               LeLFT_e_CommandedState =   E_S3_Swiper;
