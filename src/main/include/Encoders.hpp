@@ -13,7 +13,6 @@
  extern double VaENC_Rad_WheelAngleFwd[E_RobotCornerSz]; 
  extern double VaENC_Deg_WheelAngleRev[E_RobotCornerSz];
  extern double VaENC_In_WheelDeltaDistance[E_RobotCornerSz];
- extern double VeENC_RPM_ShooterSpeedCurr;
  extern double VeENC_In_LiftPostitionYD; // Position of the YD lift, in revolutions of the motor
  extern double VeENC_In_LiftPostitionXD; // Position of the XD lift, in revolutions of the motor
  extern double VeENC_Deg_TurretPosition;

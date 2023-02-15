@@ -20,7 +20,6 @@ double VaENC_InS_WheelVelocity[E_RobotCornerSz]; // Velocity of drive wheels, in
 double VaENC_In_WheelDeltaDistance[E_RobotCornerSz]; // Distance wheel moved, loop to loop, in inches
 double VaENC_Cnt_WheelDeltaDistanceCurr[E_RobotCornerSz]; // Current distance wheel moved, loop to loop, in Counts
 double VaENC_Cnt_WheelDeltaDistancePrev[E_RobotCornerSz]; // Prev distance wheel moved, loop to loop, in Counts
-double VeENC_RPM_ShooterSpeedCurr; //TODO: not currently used, need to remove later
 
 double VeENC_In_LiftPostitionYD; // Position of the Y Direction lift
 double VeENC_In_LiftPostitionXD; // Position of the X Direction lift
@@ -70,7 +69,6 @@ void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
     m_encoderRearRightDrive.SetPosition(0);
     m_encoderRearLeftDrive.SetPosition(0);
 
-    VeENC_RPM_ShooterSpeedCurr = 0;
   }
 
 /******************************************************************************
@@ -202,8 +200,6 @@ void Encoders_Drive_CompBot(double                       LeENC_Cnt_EncoderWheelA
   VaENC_InS_WheelVelocity[E_RearRight]  = ((m_encoderRearRightDrive.GetVelocity()  / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearLeft]   = ((m_encoderRearLeftDrive.GetVelocity()   / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
 
- VeENC_RPM_ShooterSpeedCurr = m_encoderrightShooter.GetVelocity(); // We use the right shooter as the reference as this is rotating in the positive direction
-
   VeENC_Deg_TurretPosition = LeENC_Cnt_EncoderTurretAngle * (-KeENC_k_TurretEncoderScaler); // Negative to rotate the output.  Positive is clockwise when viewed from top.
   }
 
@@ -229,8 +225,6 @@ VeENC_RPM_IntakeRollers = m_IntakeRollersEncoder.GetVelocity() * KeENC_RPM_Intak
 VeENC_Deg_Gripper = m_GripperEncoder.GetPosition() * KeENC_Deg_Gripper;
 
 VeENC_Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
-
- VeENC_RPM_ShooterSpeedCurr = m_encoderrightShooter.GetVelocity(); // We use the right shooter as the reference as this is rotating in the positive direction
 
   VeENC_Deg_TurretPosition = LeENC_Deg_EncoderTurretRotate * (-KeENC_k_TurretEncoderScaler); // Negative to rotate the output.  Positive is clockwise when viewed from top.
   }
