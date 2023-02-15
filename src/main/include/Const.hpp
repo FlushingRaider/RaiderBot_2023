@@ -234,14 +234,14 @@ const double K_LiftPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
 
 
 //Manipulator Array table thingy boooo
-const double KaMAN_e_ControllingTable[KaMAN_e_Scheduled][KaMAN_e_Attained] =
+const double KaMAN_e_ControllingTable[E_Man_State_Sz][E_Man_State_Sz] =
   {
-    {S3_Swiper, S3_Swiper, S0_Rest, S0_Rest, S2_TradeOff, S2_TradeOff},
-    {S3_Swiper, S3_Swiper, S0_Rest, S0_Rest, S3_Swiper, S3_Swiper},
-    {S4_DrivingState, S5_Positioning, S6_DroppingTheLoot, S6_DroppingTheLoot, S2_TradeOff, S4_DrivingState},
-    {S4_DrivingState, S5_Positioning, S5_Positioning, S0_Rest, S2_TradeOff, S4_DrivingState},
-    {S4_DrivingState, S4_DrivingState, S4_DrivingState, S0_Rest, S2_TradeOff, S4_DrivingState},
-    {S0_Rest, S0_Rest, S0_Rest, S0_Rest, S0_Rest, S0_Rest}
+    {E_S3_Swiper, E_S3_Swiper, E_S0_Rest, E_S0_Rest, E_S2_TradeOff, E_S2_TradeOff},
+    {E_S3_Swiper, E_S3_Swiper, E_S0_Rest, E_S0_Rest, E_S3_Swiper, E_S3_Swiper},
+    {E_S4_DrivingState, E_S5_Positioning, E_S6_DroppingTheLoot, E_S6_DroppingTheLoot, E_S2_TradeOff, E_S4_DrivingState},
+    {E_S4_DrivingState, E_S5_Positioning, E_S5_Positioning, E_S0_Rest, E_S2_TradeOff, E_S4_DrivingState},
+    {E_S4_DrivingState, E_S4_DrivingState, E_S4_DrivingState, E_S0_Rest, E_S2_TradeOff, E_S4_DrivingState},
+    {E_S0_Rest, E_S0_Rest, E_S0_Rest, E_S0_Rest, E_S0_Rest, E_S0_Rest}
   };
 
 /* Ball handler (BH) cals: */
