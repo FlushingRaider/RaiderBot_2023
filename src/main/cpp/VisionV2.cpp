@@ -39,7 +39,7 @@ bool VeVIS_b_VisionDriverRequestedModeCmndPrev;    // Requested driver mode over
 
 bool VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
 
-#ifdef TestVision
+#ifdef NewVision
 bool VeVIS_b_TagHasTarget;
 double V_Tagx;
 double V_Tagy;
@@ -138,7 +138,7 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
   }
 #endif
 
-#ifdef TestVision
+#ifdef NewVision
 
 #endif
 }
@@ -233,8 +233,8 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 }
 #endif
 
-#ifdef TestVision
-void TestVisionRun()
+#ifdef NewVision
+void VisionRun()
 {
   // wpi::PortForwarder::GetInstance().Add(5800, "10.55.61.11", 5800);
   photonlib::PhotonPipelineResult CamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value

@@ -36,6 +36,6 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
                bool *L_VisionDriverModeCmndFinal);
 #endif
 void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor);
-#ifdef TestVision
-void TestVisionRun();
+#ifdef NewVision
+void VisionRun();
 #endif

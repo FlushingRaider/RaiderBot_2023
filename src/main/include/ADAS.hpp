@@ -12,21 +12,20 @@
 
 extern T_ADAS_ActiveFeature V_ADAS_ActiveFeature;
 
-extern double               V_ADAS_Pct_SD_FwdRev;
-extern double               V_ADAS_Pct_SD_Strafe;
-extern double               V_ADAS_Pct_SD_Rotate;
-extern double               V_ADAS_RPM_BH_Launcher;
-extern double               V_ADAS_Pct_BH_Intake;
-extern double               V_ADAS_Pct_BH_Elevator;
-extern bool                 V_ADAS_CameraUpperLightCmndOn;
-extern bool                 V_ADAS_CameraLowerLightCmndOn;
-extern bool                 V_ADAS_SD_RobotOriented;
-extern bool                 V_ADAS_Vision_RequestedTargeting;
+extern double V_ADAS_Pct_SD_FwdRev;
+extern double V_ADAS_Pct_SD_Strafe;
+extern double V_ADAS_Pct_SD_Rotate;
+extern double V_ADAS_RPM_BH_Launcher;
+extern double V_ADAS_Pct_BH_Intake;
+extern double V_ADAS_Pct_BH_Elevator;
+extern bool V_ADAS_CameraUpperLightCmndOn;
+extern bool V_ADAS_CameraLowerLightCmndOn;
+extern bool V_ADAS_SD_RobotOriented;
+extern bool V_ADAS_Vision_RequestedTargeting;
 
 void ADAS_Main_Reset(void);
 void ADAS_Main_Init(void);
 void ADAS_DetermineMode(void);
-
 
 T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Strafe,
@@ -61,4 +60,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
                                       double L_VisTagX,
                                       double L_VisTagY,
+                                      int L_TagID,
+                                      double L_TagYawDegrees,
                                       frc::DriverStation::Alliance LeLC_e_AllianceColor);

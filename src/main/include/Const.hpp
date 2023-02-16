@@ -8,7 +8,7 @@
 // Define the bot type: CompBot, PracticeBot
 #define CompBot
 
-#define TestVision // TestVision or OldVision
+#define NewVision // NewVision or OldVision
 //#define BrokenMain
 
 

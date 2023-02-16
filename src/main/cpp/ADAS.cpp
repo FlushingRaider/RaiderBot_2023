@@ -26,7 +26,6 @@
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/DriverStation.h>
 
-
 #include "Const.hpp"
 #include "ADAS_UT.hpp"
 #include "ADAS_BT.hpp"
@@ -154,6 +153,8 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
                                       double L_VisTagX,
                                       double L_VisTagY,
+                                      int L_TagID,
+                                      double L_TagYawDegrees,
                                       frc::DriverStation::Alliance LeLC_e_AllianceColor)
 {
 
@@ -369,6 +370,10 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                         L_DriverRequestIntake,
                                         L_VisTagX,
                                         L_VisTagY,
+                                        L_TagID,
+                                        L_L_X_FieldPos,
+                                        L_L_Y_FieldPos,
+                                        L_TagYawDegrees,
                                         LeLC_e_AllianceColor);
     break;
   case E_ADAS_BT_AutoBallTarget:

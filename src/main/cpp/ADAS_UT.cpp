@@ -393,7 +393,7 @@ T_ADAS_UT_UpperTarget ADAS_UT_ElevatorControl(double *L_Pct_FwdRev,
 
   return (L_ADAS_UT_State);
 }
-#ifdef TestVision
+#ifdef NewVision
 /******************************************************************************
  * Function:     ADAS_UT_MoveToTag
  * Author: Carson
@@ -404,25 +404,32 @@ T_ADAS_UT_UpperTarget ADAS_UT_MoveToTag(double *L_Pct_FwdRev,
                                         double *L_Pct_Rotate,
                                         double L_VisTagX,
                                         double L_VisTagY,
+                                        int L_TagID,
+                                        double L_OdometryX,
+                                        double L_OdometryY,
                                         bool *L_VisionTargetingRequest,
                                         double L_VisionTopTargetAquired,
-                                        double L_TopTargetYawDegrees,
+                                        double L_TagYawDegrees,
                                         frc::DriverStation::Alliance LeLC_e_AllianceColor)
 {
 
   T_ADAS_UT_UpperTarget L_ADAS_UT_State = E_ADAS_UT_MoveToTag;
   /* Next, let's set all the other items we aren't trying to control to off: */
-  double L_ErrorCalcX = 0;
-  double L_ErrorCalcY = 0;
-
+  double L_ChosenX = 0;
+  double L_ChosenY = 0;
+  double L_ErrorCalcYaw = 0;
   int L_ClosestTag;
 
-  double L_Tag1X;
-  double L_Tag1Y;
-  double L_Tag2X;
-  double L_Tag2Y;
-  double L_Tag3X;
-  double L_Tag3Y;
+  // all 3 tags are directly across from each other
+
+  // coord of tag ID 1 and 8
+  double L_Tag1Y = 1.071626;
+  // coord of tag ID 2 and 7
+  double L_Tag2Y = 2.748026;
+  // coord of tag ID 3 and 6
+  double L_Tag3Y = 4.424426;
+  double L_TagXred = 15.513558;
+  double L_TagXblue = 1.02743;
 
   double L_Tag1YError;
   double L_Tag2YError;
@@ -432,69 +439,89 @@ T_ADAS_UT_UpperTarget ADAS_UT_MoveToTag(double *L_Pct_FwdRev,
   *L_Pct_Strafe = 0;
   *L_Pct_Rotate = 0;
 
-  // find the closest tag
+  V_ADAS_UT_DebounceTime += C_ExeTime;
+
+  // pick the ride side of tags to look at for our alliance
   if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
   {
-    // coords of tag ID 1 (meters)
-    L_Tag1X = 15.513558;
-    L_Tag1Y = 1.071626;
-    // coords of tag ID 2
-    L_Tag2X = 15.513558;
-    L_Tag2Y = 2.748026;
-    // coords of tag ID 3
-    L_Tag3X = 15.513558;
-    L_Tag3Y = 4.424426;
-
-    L_Tag1YError = fabs(L_VisTagY - L_Tag1Y);
-    L_Tag2YError = fabs(L_VisTagY - L_Tag2Y);
-    L_Tag3YError = fabs(L_VisTagY - L_Tag3Y);
-
-    // check if Error 1 is the largest
-    if (L_Tag1YError >= L_Tag2YError && L_Tag1YError >= L_Tag3YError)
-    {
-      L_ErrorCalcY = L_Tag1YError;
+    L_ChosenX = L_TagXred; // all 3 tags on the red alliance have the same X
+    if (L_TagID == 1){
+      L_ChosenY = L_Tag1Y;
     }
-    // check if Error 2 is the largest number
-    else if (L_Tag2YError >= L_Tag1YError && L_Tag2YError >= L_Tag3YError)
-    {
-      L_ErrorCalcY = L_Tag2YError;
+    else if (L_TagID == 2){
+      L_ChosenY = L_Tag2Y;
     }
-    // if neither n1 nor n2 are the largest, Error 3 is the largest
-    else
-    {
-      L_ErrorCalcY = L_Tag3YError;
+    else if (L_TagID == 3){
+      L_ChosenY = L_Tag3Y;
     }
   }
   else
   {
-    // coords of tag ID 8 (meters)
-    L_Tag1X = 1.02743;
-    L_Tag1Y = 1.071626;
-    // coords of tag ID 7
-    L_Tag2X = 1.02743;
-    L_Tag2Y = 2.748026;
-    // coords of tag ID 6
-    L_Tag3X = 1.02743;
-    L_Tag3Y = 4.424426;
-
-    L_Tag1YError = fabs(L_VisTagY - L_Tag1Y);
-    L_Tag2YError = fabs(L_VisTagY - L_Tag2Y);
-    L_Tag3YError = fabs(L_VisTagY - L_Tag3Y);
-
-    // check if Error 1 is the largest
-    if (L_Tag1YError >= L_Tag2YError && L_Tag1YError >= L_Tag3YError)
-    {
-      L_ErrorCalcY = L_Tag1YError;
+    L_ChosenX = L_TagXblue; // x coord of all blue tags
+    if (L_TagID == 8){
+      L_ChosenY = L_Tag1Y;
     }
-    // check if Error 2 is the largest number
-    else if (L_Tag2YError >= L_Tag1YError && L_Tag2YError >= L_Tag3YError)
-    {
-      L_ErrorCalcY = L_Tag2YError;
+    else if (L_TagID ==7){
+      L_ChosenY = L_Tag2Y;
     }
-    // if neither n1 nor n2 are the largest, Error 3 is the largest
+    else if (L_TagID == 6){
+      L_ChosenY = L_Tag3Y;
+    }
+  }
+
+  // find the closest tag and our error to it:
+  if (L_VisionTopTargetAquired)
+  {
+
+    // // check if Error 1 is the largest
+    // if (L_Tag1YError >= L_Tag2YError && L_Tag1YError >= L_Tag3YError)
+    // {
+    //   L_ChosenY = L_Tag1Y;
+    // }
+    // // check if Error 2 is the largest number
+    // else if (L_Tag2YError >= L_Tag1YError && L_Tag2YError >= L_Tag3YError)
+    // {
+    //   L_ChosenY = L_Tag2Y;
+    // }
+    // // if neither n1 nor n2 are the largest, Error 3 is the largest
+    // else
+    // {
+    //   L_ChosenY = L_Tag3Y;
+    // }
+
+
+
+    L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
+  }
+  if (V_ADAS_UT_DebounceTime <= KV_ADAS_UT_DebounceTime) // make sure we're still in the time we've given ourselves
+  {
+    // if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
+    // {
+    //   *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
+    // }
+    if (L_OdometryX < L_ChosenX) // TODO: add deadband
+    {
+      *L_Pct_FwdRev = 0.2;
+    }
+    else if (L_OdometryX > L_ChosenX)
+    {
+      *L_Pct_FwdRev = -0.2;
+    }
     else
     {
-      L_ErrorCalcY = L_Tag3YError;
+      *L_Pct_FwdRev = 0.0;
+    }
+    if (L_OdometryY < L_ChosenY) // TODO: add deadband
+    {
+      *L_Pct_Strafe = 0.2;
+    }
+    else if (L_OdometryY > L_ChosenY)
+    {
+      *L_Pct_Strafe = -0.2;
+    }
+    else
+    {
+      *L_Pct_Strafe = 0.0;
     }
   }
 
@@ -529,6 +556,10 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
                   bool L_DriverRequestIntake,
                   double L_VisTagX,
                   double L_VisTagY,
+                  int L_TagID,
+                  double L_OdometryX,
+                  double L_OdometryY,
+                  double L_TagYawDegrees,
                   frc::DriverStation::Alliance LeLC_e_AllianceColor)
 {
   bool L_ADAS_UT_Complete = false;
@@ -600,9 +631,12 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
                                         L_Pct_Rotate,
                                         L_VisTagX,
                                         L_VisTagY,
+                                        L_TagID,
+                                        L_OdometryX,
+                                        L_OdometryY,
                                         L_VisionTargetingRequest,
                                         L_VisionTopTargetAquired,
-                                        L_TopTargetYawDegrees,
+                                        L_TagYawDegrees,
                                         LeLC_e_AllianceColor);
     break;
   }
@@ -615,4 +649,3 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
 
   return (L_ADAS_UT_Complete);
 }
-

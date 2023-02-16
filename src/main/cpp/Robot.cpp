@@ -317,6 +317,11 @@ void Robot::RobotPeriodic()
                                           VsCONT_s_DriverInput.b_ElevatorDown,
                                           VsCONT_s_DriverInput.b_IntakeIn,
                                           V_ADAS_ActiveFeature,
+                                          V_Tagx,
+                                          V_Tagy,
+                                          V_TagID,
+                                          V_TagYaw,
+                                          V_AllianceColor
                                           );
 
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
@@ -382,9 +387,9 @@ void Robot::RobotPeriodic()
   }
 #endif
 
-#ifdef TestVision
+#ifdef NewVision
 
-  TestVisionRun();
+  VisionRun();
   frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
   frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
   frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
