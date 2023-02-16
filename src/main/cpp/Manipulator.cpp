@@ -441,76 +441,60 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandTurret,
   }
 
   /******************************************************************************
- * Function:     S0_Rest
+ * Function:     Rest_State,
  *
  * Description:  State 0: Everything in default positions
  ******************************************************************************/
- bool          S0_Rest(double         LeMAN_b_AutoManipulateButton,
-                      double         LeMAN_Deg_MeasuredAngleTurret,
-                      double         LeMAN_Deg_MeasuredAngleArmPivot,
-                      double         LeMAN_In_MeasuredPositionLinearSlide,
-                      double         LeMAN_Deg_MeasuredAngleWrist,
-                      double         LeMAN_Deg_MeasuredAngleClaw,
-                      double         LeMAN_RPM_MeasuredSpeedIntake,
-                      double        *LeMAN_Cmd_CommandTurret,
-                      double        *LeMAN_Cmd_CommandArmPivot,
-                      double        *LeMAN_Cmd_MeasuredPositionLinearSlide,
-                      double        *LeMAN_Cmd_MeasuredAngleWrist,
-                      double        *LeMAN_Cmd_MeasuredAngleClaw,
-                      double        *LeMAN_Cmd_MeasuredSpeedIntake,
-                      double        *LeMAN_InS_CommandRateTurret,
-                      double        *LeMAN_InS_CommandRateArmPivot,
-                      T_Man_Iteration LeMAN_CmdStateIteration)
+ bool          Rest_State(
+                      double        *LeMAN_Deg_CmdTurret,
+                      double        *LeMAN_Deg_CmdArmPivot,
+                      double        *LeMAN_In_CmdPositionLinearSlide,
+                      double        *LeMAN_Deg_CmdAngleWrist,
+                      double        *LeMAN_Deg_CmdAngleClaw,
+                      double        *LeMAN_RPM_CmdSpeedIntake,
+                      double        *LeMAN_K_CmdRateTurret,
+                      double        *LeMAN_K_CmdRateArmPivot,
+                      double        *LeMAN_K_CmdRateLinearSlide,
+                      double        *LeMAN_K_CmdRateWrist,
+                      double        *LeMAN_K_CmdRateClaw,
+                      double        *LeMAN_K_CmdRateIntake)
   {
+  bool LeLFT_b_CriteriaMet = false;
 
+  *LeMAN_Cmd_CommandTurret = K_lift_S2_YD;
+
+  *LeMAN_Cmd_CommandArmPivot = K_lift_min_XD;
+
+  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_S1_Intake][LeMAN_CmdStateIteration];
+
+  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_S1_Intake][LeMAN_CmdStateIteration];
+
+  if (LeMAN_Deg_MeasuredAngleTurret <= (K_lift_S2_YD + K_lift_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_lift_S2_YD - K_lift_deadband_YD)) {
+    LeLFT_b_CriteriaMet = true;
   }
 
-/******************************************************************************
- * Function:     S1_Intake
- *
- * Description:  State 2: robert intake or somthin
- ******************************************************************************/
- bool       S1_Intake(double         LeMAN_b_AutoManipulateButton,
-                      double         LeMAN_Deg_MeasuredAngleTurret,
-                      double         LeMAN_Deg_MeasuredAngleArmPivot,
-                      double         LeMAN_In_MeasuredPositionLinearSlide,
-                      double         LeMAN_Deg_MeasuredAngleWrist,
-                      double         LeMAN_Deg_MeasuredAngleClaw,
-                      double         LeMAN_RPM_MeasuredSpeedIntake,
-                      double        *LeMAN_Cmd_CommandTurret,
-                      double        *LeMAN_Cmd_CommandArmPivot,
-                      double        *LeMAN_Cmd_MeasuredPositionLinearSlide,
-                      double        *LeMAN_Cmd_MeasuredAngleWrist,
-                      double        *LeMAN_Cmd_MeasuredAngleClaw,
-                      double        *LeMAN_Cmd_MeasuredSpeedIntake,
-                      double        *LeMAN_InS_CommandRateTurret,
-                      double        *LeMAN_InS_CommandRateArmPivot,
-                      T_Man_Iteration LeMAN_CmdStateIteration)
-{
-
+  return(LeLFT_b_CriteriaMet);
 }
 
 /******************************************************************************
- * Function:     S2_TradeOff
+ * Function:     Intake_State,
  *
- * Description:  State 2: moving ball from intake to manipulator?
+ * Description:  State 2: robert intake or somthin
  ******************************************************************************/
- bool     S2_TradeOff(double         LeMAN_b_AutoManipulateButton,
-                      double         LeMAN_Deg_MeasuredAngleTurret,
-                      double         LeMAN_Deg_MeasuredAngleArmPivot,
-                      double         LeMAN_In_MeasuredPositionLinearSlide,
-                      double         LeMAN_Deg_MeasuredAngleWrist,
-                      double         LeMAN_Deg_MeasuredAngleClaw,
-                      double         LeMAN_RPM_MeasuredSpeedIntake,
-                      double        *LeMAN_Cmd_CommandTurret,
-                      double        *LeMAN_Cmd_CommandArmPivot,
-                      double        *LeMAN_Cmd_MeasuredPositionLinearSlide,
-                      double        *LeMAN_Cmd_MeasuredAngleWrist,
-                      double        *LeMAN_Cmd_MeasuredAngleClaw,
-                      double        *LeMAN_Cmd_MeasuredSpeedIntake,
-                      double        *LeMAN_InS_CommandRateTurret,
-                      double        *LeMAN_InS_CommandRateArmPivot,
-                      T_Man_Iteration LeMAN_CmdStateIteration)
+ bool       Intake_State(
+                      double        *LeMAN_Deg_CmdTurret,
+                      double        *LeMAN_Deg_CmdArmPivot,
+                      double        *LeMAN_In_CmdPositionLinearSlide,
+                      double        *LeMAN_Deg_CmdAngleWrist,
+                      double        *LeMAN_Deg_CmdAngleClaw,
+                      double        *LeMAN_RPM_CmdSpeedIntake,
+                      double        *LeMAN_K_CmdRateTurret,
+                      double        *LeMAN_K_CmdRateArmPivot,
+                      double        *LeMAN_K_CmdRateLinearSlide,
+                      double        *LeMAN_K_CmdRateWrist,
+                      double        *LeMAN_K_CmdRateClaw,
+                      double        *LeMAN_K_CmdRateIntake
+                      )
 {
   bool LeLFT_b_CriteriaMet = false;
 
@@ -530,26 +514,57 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandTurret,
 }
 
 /******************************************************************************
- * Function:       S3_Swiper
+ * Function:     TradeOff_State,
+ *
+ * Description:  State 2: moving ball from intake to manipulator?
+ ******************************************************************************/
+ bool     TradeOff_State(double        *LeMAN_Deg_CmdTurret,
+                      double        *LeMAN_Deg_CmdArmPivot,
+                      double        *LeMAN_In_CmdPositionLinearSlide,
+                      double        *LeMAN_Deg_CmdAngleWrist,
+                      double        *LeMAN_Deg_CmdAngleClaw,
+                      double        *LeMAN_RPM_CmdSpeedIntake,
+                      double        *LeMAN_K_CmdRateTurret,
+                      double        *LeMAN_K_CmdRateArmPivot,
+                      double        *LeMAN_K_CmdRateLinearSlide,
+                      double        *LeMAN_K_CmdRateWrist,
+                      double        *LeMAN_K_CmdRateClaw,
+                      double        *LeMAN_K_CmdRateIntake)
+{
+  bool LeLFT_b_CriteriaMet = false;
+
+  *LeMAN_Cmd_CommandTurret = K_lift_S2_YD;
+
+  *LeMAN_Cmd_CommandArmPivot = K_lift_min_XD;
+
+  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_S1_Intake][LeMAN_CmdStateIteration];
+
+  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_S1_Intake][LeMAN_CmdStateIteration];
+
+  if (LeMAN_Deg_MeasuredAngleTurret <= (K_lift_S2_YD + K_lift_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_lift_S2_YD - K_lift_deadband_YD)) {
+    LeLFT_b_CriteriaMet = true;
+  }
+
+  return(LeLFT_b_CriteriaMet);
+}
+
+/******************************************************************************
+ * Function:      Swipe_State,
  *
  * Description:  State 3: swiper no swiping
  ******************************************************************************/
- bool          S3_Swiper(double         LeMAN_b_AutoManipulateButton,
-                         double         LeMAN_Deg_MeasuredAngleTurret,
-                         double         LeMAN_Deg_MeasuredAngleArmPivot,
-                         double         LeMAN_In_MeasuredPositionLinearSlide,
-                         double         LeMAN_Deg_MeasuredAngleWrist,
-                         double         LeMAN_Deg_MeasuredAngleClaw,
-                         double         LeMAN_RPM_MeasuredSpeedIntake,
-                         double        *LeMAN_Cmd_CommandTurret,
-                         double        *LeMAN_Cmd_CommandArmPivot,
-                         double        *LeMAN_Cmd_MeasuredPositionLinearSlide,
-                         double        *LeMAN_Cmd_MeasuredAngleWrist,
-                         double        *LeMAN_Cmd_MeasuredAngleClaw,
-                         double        *LeMAN_Cmd_MeasuredSpeedIntake,
-                         double        *LeMAN_InS_CommandRateTurret,
-                         double        *LeMAN_InS_CommandRateArmPivot,
-                         T_Man_Iteration LeMAN_CmdStateIteration)  
+ bool          Swipe_State(double        *LeMAN_Deg_CmdTurret,
+                      double        *LeMAN_Deg_CmdArmPivot,
+                      double        *LeMAN_In_CmdPositionLinearSlide,
+                      double        *LeMAN_Deg_CmdAngleWrist,
+                      double        *LeMAN_Deg_CmdAngleClaw,
+                      double        *LeMAN_RPM_CmdSpeedIntake,
+                      double        *LeMAN_K_CmdRateTurret,
+                      double        *LeMAN_K_CmdRateArmPivot,
+                      double        *LeMAN_K_CmdRateLinearSlide,
+                      double        *LeMAN_K_CmdRateWrist,
+                      double        *LeMAN_K_CmdRateClaw,
+                      double        *LeMAN_K_CmdRateIntake)  
 {
   bool LeLFT_b_CriteriaMet = false;
   
@@ -576,22 +591,22 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandTurret,
 }
 
 /******************************************************************************
- * Function:       S4_DrivingState
+ * Function:       Driving_State,
  *
  * Description:  State 4: x lift no move, y lift go
  ******************************************************************************/
- bool   S4_DrivingState(double         LeMAN_b_AutoManipulateButton,
-                       double         LeMAN_Deg_MeasuredAngleTurret,
-                       double         LeMAN_Deg_MeasuredAngleArmPivot,
-                       double         LeMAN_In_MeasuredPositionLinearSlide,
-                       double         LeMAN_Deg_MeasuredAngleWrist,
-                       double         LeMAN_Deg_MeasuredAngleClaw,
-                       double         LeMAN_RPM_MeasuredSpeedIntake,
-                       double        *LeMAN_Cmd_CommandTurret,
-                       double        *LeMAN_Cmd_CommandArmPivot,
-                       double        *LeMAN_InS_CommandRateTurret,
-                       double        *LeMAN_InS_CommandRateArmPivot,
-                       T_Man_Iteration LeMAN_CmdStateIteration)  
+ bool   Driving_State(double        *LeMAN_Deg_CmdTurret,
+                      double        *LeMAN_Deg_CmdArmPivot,
+                      double        *LeMAN_In_CmdPositionLinearSlide,
+                      double        *LeMAN_Deg_CmdAngleWrist,
+                      double        *LeMAN_Deg_CmdAngleClaw,
+                      double        *LeMAN_RPM_CmdSpeedIntake,
+                      double        *LeMAN_K_CmdRateTurret,
+                      double        *LeMAN_K_CmdRateArmPivot,
+                      double        *LeMAN_K_CmdRateLinearSlide,
+                      double        *LeMAN_K_CmdRateWrist,
+                      double        *LeMAN_K_CmdRateClaw,
+                      double        *LeMAN_K_CmdRateIntake)  
 {
    bool LeLFT_b_CriteriaMet = false;
   
@@ -623,22 +638,22 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandTurret,
 }
 
 /******************************************************************************
- * Function:       S5_Positioning,
+ * Function:       Out_State,
  *
  * Description:  State 5: y lift no move, x lift go
  ******************************************************************************/
- bool   S5_Positioning(double         LeMAN_b_AutoManipulateButton,
-                         double         LeMAN_Deg_MeasuredAngleTurret,
-                         double         LeMAN_Deg_MeasuredAngleArmPivot,
-                         double         LeMAN_In_MeasuredPositionLinearSlide,
-                         double         LeMAN_Deg_MeasuredAngleWrist,
-                         double         LeMAN_Deg_MeasuredAngleClaw,
-                         double         LeMAN_RPM_MeasuredSpeedIntake,
-                         double        *LeMAN_Cmd_CommandTurret,
-                         double        *LeMAN_Cmd_CommandArmPivot,
-                         double        *LeMAN_InS_CommandRateTurret,
-                         double        *LeMAN_InS_CommandRateArmPivot,
-                         T_Man_Iteration LeMAN_CmdStateIteration)  
+ bool   Positioning_State(double        *LeMAN_Deg_CmdTurret,
+                      double        *LeMAN_Deg_CmdArmPivot,
+                      double        *LeMAN_In_CmdPositionLinearSlide,
+                      double        *LeMAN_Deg_CmdAngleWrist,
+                      double        *LeMAN_Deg_CmdAngleClaw,
+                      double        *LeMAN_RPM_CmdSpeedIntake,
+                      double        *LeMAN_K_CmdRateTurret,
+                      double        *LeMAN_K_CmdRateArmPivot,
+                      double        *LeMAN_K_CmdRateLinearSlide,
+                      double        *LeMAN_K_CmdRateWrist,
+                      double        *LeMAN_K_CmdRateClaw,
+                      double        *LeMAN_K_CmdRateIntake)  
 {
   bool LeLFT_b_CriteriaMet = false;
 
@@ -665,22 +680,22 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandTurret,
 }
 
 /******************************************************************************
- * Function:       S6_DroppingTheLoot,
+ * Function:       DroppingTheLoot_State,
  *
  * Description:  State 6: y lift go down, x lift bad stop what's in your mouth no get back here doN'T EAT IT
  ******************************************************************************/
- bool S6_DroppingTheLoot(double         LeMAN_b_AutoManipulateButton,
-                          double         LeMAN_Deg_MeasuredAngleTurret,
-                          double         LeMAN_Deg_MeasuredAngleArmPivot,
-                          double         LeMAN_In_MeasuredPositionLinearSlide,
-                          double         LeMAN_Deg_MeasuredAngleWrist,
-                          double         LeMAN_Deg_MeasuredAngleClaw,
-                          double         LeMAN_RPM_MeasuredSpeedIntake,
-                          double        *LeMAN_Cmd_CommandTurret,
-                          double        *LeMAN_Cmd_CommandArmPivot,
-                          double        *LeMAN_InS_CommandRateTurret,
-                          double        *LeMAN_InS_CommandRateArmPivot,
-                          T_Man_Iteration LeMAN_CmdStateIteration)  
+ bool DroppingTheLoot_State(double        *LeMAN_Deg_CmdTurret,
+                      double        *LeMAN_Deg_CmdArmPivot,
+                      double        *LeMAN_In_CmdPositionLinearSlide,
+                      double        *LeMAN_Deg_CmdAngleWrist,
+                      double        *LeMAN_Deg_CmdAngleClaw,
+                      double        *LeMAN_RPM_CmdSpeedIntake,
+                      double        *LeMAN_K_CmdRateTurret,
+                      double        *LeMAN_K_CmdRateArmPivot,
+                      double        *LeMAN_K_CmdRateLinearSlide,
+                      double        *LeMAN_K_CmdRateWrist,
+                      double        *LeMAN_K_CmdRateClaw,
+                      double        *LeMAN_K_CmdRateIntake)  
 {
   bool LeLFT_b_CriteriaMet = false;
 
@@ -711,19 +726,23 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandTurret,
  *
  * Description:  State 7: X go back-aroni, we look at gyro to make sure we aren't tilted too much
  ******************************************************************************/
- bool S7_move_back_XD(double         LeMAN_b_AutoManipulateButton,
-                      double         LeMAN_Deg_MeasuredAngleTurret,
-                      double         LeMAN_Deg_MeasuredAngleArmPivot,
-                      double         LeMAN_In_MeasuredPositionLinearSlide,
-                      double         LeMAN_Deg_MeasuredAngleWrist,
-                      double         LeMAN_Deg_MeasuredAngleClaw,
-                      double         LeMAN_RPM_MeasuredSpeedIntake,
-                      double         LeLEFT_Deg_GyroAngleYaws,
-                      double        *LeMAN_Cmd_CommandTurret,
-                      double        *LeMAN_Cmd_CommandArmPivot,
-                      double        *LeMAN_InS_CommandRateTurret,
-                      double        *LeMAN_InS_CommandRateArmPivot,
-                      T_Man_Iteration LeMAN_CmdStateIteration)  
+//  bool S7_move_back_XD(double         LeMAN_b_AutoManipulateButton,
+//                       double         LeMAN_Deg_MeasuredAngleTurret,
+//                       double         LeMAN_Deg_MeasuredAngleArmPivot,
+//                       double         LeMAN_In_MeasuredPositionLinearSlide,
+//                       double         LeMAN_Deg_MeasuredAngleWrist,
+//                       double         LeMAN_Deg_MeasuredAngleClaw,
+//                       double         LeMAN_RPM_MeasuredSpeedIntake,
+//                       double         LeLEFT_Deg_GyroAngleYaws,
+//                       double        *LeMAN_Cmd_CommandTurret,
+//                       double        *LeMAN_Cmd_CommandArmPivot,
+//                       double        *LeMAN_Cmd_MeasuredPositionLinearSlide,
+//                       double        *LeMAN_Cmd_MeasuredAngleWrist,
+//                       double        *LeMAN_Cmd_MeasuredAngleClaw,
+//                       double        *LeMAN_Cmd_MeasuredSpeedIntake,
+//                       double        *LeMAN_InS_CommandRateTurret,
+//                       double        *LeMAN_InS_CommandRateArmPivot,
+//                       T_Man_Iteration LeMAN_CmdStateIteration)  
 {
   bool LeLFT_b_CriteriaMet = false;
 
