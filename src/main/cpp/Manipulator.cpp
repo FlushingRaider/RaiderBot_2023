@@ -321,11 +321,11 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
 
 #ifdef InProcess
 /******************************************************************************
- * Function:     Rest_State,
+ * Function:     Rest_State
  *
- * Description:  State 0: Everything in default positions
+ * Description:  Everything in default positions.
  ******************************************************************************/
- bool          Rest_State(
+ bool Rest_State(TsMAN_Sensor *LsMAN_s_Sensors
                       double        *LeMAN_Deg_CmdTurret,
                       double        *LeMAN_Deg_CmdArmPivot,
                       double        *LeMAN_In_CmdPositionLinearSlide,

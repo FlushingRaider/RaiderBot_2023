@@ -123,9 +123,6 @@ void Encoders_Drive_CompBot(double                       LeENC_Cnt_EncoderWheelA
   {
   T_RobotCorner LeENC_e_Index;
 
-  // VeENC_In_LiftPostitionYD = m_encoderLiftYD.GetPosition();
-  // VeENC_In_LiftPostitionXD = m_encoderLiftXD.GetPosition();
-
   VaENC_Deg_WheelAngleConverted[E_FrontLeft]  = std::fmod((LeENC_Cnt_EncoderWheelAngleFrontLeftRaw  * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_FrontLeft];
   VaENC_Deg_WheelAngleConverted[E_FrontRight] = std::fmod((LeENC_Cnt_EncoderWheelAngleFrontRightRaw * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_FrontRight];
   VaENC_Deg_WheelAngleConverted[E_RearLeft]   = std::fmod((LeENC_Cnt_EncoderWheelAngleRearLeftRaw   * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_RearLeft];
@@ -175,31 +172,6 @@ void Encoders_Drive_CompBot(double                       LeENC_Cnt_EncoderWheelA
 
 
 /******************************************************************************
- * Function:     Encoders_MAN_INT
- *
- * Description:  Read the encoders from the Manipulator and Intake
- ******************************************************************************/
-void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
-                       rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
-                       rev::SparkMaxRelativeEncoder m_GripperEncoder,
-                       rev::SparkMaxRelativeEncoder m_WristEncoder,
-                       double LeENC_Deg_LinearSlide,
-                       double LeENC_Deg_EncoderTurretRotate)
-  {
-  VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_Armpivot;
-
-  VsMAN_s_Sensors.RPM_IntakeRollers = m_IntakeRollersEncoder.GetVelocity() * KeENC_RPM_IntakeRollers;
-
-  VsMAN_s_Sensors.Deg_Gripper = m_GripperEncoder.GetPosition() * KeENC_Deg_Gripper;
-
-  VsMAN_s_Sensors.Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
-
-  VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_EncoderTurretRotate * (-KeENC_k_TurretEncoderScaler); // Negative to rotate the output.  Positive is clockwise when viewed from top.
-  }
-
-
-
-/******************************************************************************
  * Function:     Encoders_Drive_PracticeBot
  *
  * Description:  Run all of the encoder decoding logic, for practice bot.
@@ -225,16 +197,6 @@ void Encoders_Drive_PracticeBot(double                       LeENC_Cnt_EncoderWh
   VaENC_Cnt_WheelDeltaDistanceCurr[E_RearRight]  = m_encoderRearRightDrive.GetPosition();
   VaENC_Cnt_WheelDeltaDistanceCurr[E_RearLeft]   = m_encoderRearLeftDrive.GetPosition();
   
-   frc::SmartDashboard::PutNumber("DeltaWheel_FL",  VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontLeft]);
-   frc::SmartDashboard::PutNumber("DeltaWheel_FR",  VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontRight]);
-   frc::SmartDashboard::PutNumber("DeltaWheel_RR",  VaENC_Cnt_WheelDeltaDistanceCurr[E_RearRight]);
-   frc::SmartDashboard::PutNumber("DeltaWheel_RL",  VaENC_Cnt_WheelDeltaDistanceCurr[E_RearLeft]);
-
-   frc::SmartDashboard::PutNumber("WheelAng_FL",  VaENC_Deg_WheelAngleConverted[E_FrontLeft]);
-   frc::SmartDashboard::PutNumber("WheelAng_FR",  VaENC_Deg_WheelAngleConverted[E_FrontRight]);
-   frc::SmartDashboard::PutNumber("WheelAng_RR",  VaENC_Deg_WheelAngleConverted[E_RearRight]);
-   frc::SmartDashboard::PutNumber("WheelAng_RL",  VaENC_Deg_WheelAngleConverted[E_RearLeft]);
-
   for (LeENC_e_Index = E_FrontLeft;
        LeENC_e_Index < E_RobotCornerSz;
        LeENC_e_Index = T_RobotCorner(int(LeENC_e_Index) + 1))
@@ -272,4 +234,37 @@ void Encoders_Drive_PracticeBot(double                       LeENC_Cnt_EncoderWh
   VaENC_InS_WheelVelocity[E_FrontRight] = ((m_encoderFrontRightDrive.GetVelocity() / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearRight]  = ((m_encoderRearRightDrive.GetVelocity()  / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearLeft]   = ((m_encoderRearLeftDrive.GetVelocity()   / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
+  }
+
+
+/******************************************************************************
+ * Function:     Encoders_MAN_INT
+ *
+ * Description:  Read the encoders from the Manipulator and Intake
+ ******************************************************************************/
+void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
+                       rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
+                       rev::SparkMaxRelativeEncoder m_GripperEncoder,
+                       rev::SparkMaxRelativeEncoder m_WristEncoder,
+                       double LeENC_Deg_LinearSlide,
+                       double LeENC_Deg_EncoderTurretRotate)
+  {
+  VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_Armpivot;
+
+  VsMAN_s_Sensors.RPM_IntakeRollers = m_IntakeRollersEncoder.GetVelocity() * KeENC_RPM_IntakeRollers;
+
+  VsMAN_s_Sensors.Deg_Gripper = m_GripperEncoder.GetPosition() * KeENC_Deg_Gripper;
+
+  VsMAN_s_Sensors.Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
+
+  VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_EncoderTurretRotate * KeENC_k_TurretEncoderScaler;
+
+  VsMAN_s_Sensors.In_LinearSlide = LeENC_Deg_LinearSlide * KeENC_k_LinearSlideEncoderScaler;
+
+  frc::SmartDashboard::PutNumber("ArmPivot",      VsMAN_s_Sensors.Deg_ArmPivot);
+  frc::SmartDashboard::PutNumber("IntakeRollers", VsMAN_s_Sensors.RPM_IntakeRollers);
+  frc::SmartDashboard::PutNumber("Gripper",       VsMAN_s_Sensors.Deg_Gripper);
+  frc::SmartDashboard::PutNumber("Wrist",         VsMAN_s_Sensors.Deg_Wrist);
+  frc::SmartDashboard::PutNumber("Turret",        VsMAN_s_Sensors.Deg_Turret);
+  frc::SmartDashboard::PutNumber("LinearSlide",   VsMAN_s_Sensors.In_LinearSlide);
   }

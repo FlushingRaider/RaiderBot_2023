@@ -238,6 +238,7 @@ struct TsMAN_Sensor
   double Deg_Turret; // Position of the turret rotation
   double Deg_ArmPivot; // Posistion of the Arm Angle
   double RPM_IntakeRollers; // Speed of the intake rollers
+  double In_LinearSlide;
   bool   b_IntakeArmExtended;
   double Deg_Gripper; // Position of the gripper
   double Deg_Wrist;  // Actual position of the wrist.

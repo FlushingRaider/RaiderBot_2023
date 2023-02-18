@@ -125,7 +125,10 @@ const double K_t_TurretTimeoutMs = 30;
 const double K_Pct_TurretOpenLoopCmnd = 0.1;
 
 /* KeENC_k_TurretEncoderScaler: Scalar multiplied against the encoder read to translate to degrees relative to turret. */
-const double KeENC_k_TurretEncoderScaler = 0.025947816048; //Scalar multiplied against the encoder read to translate to degrees relative to turret.
+const double KeENC_k_TurretEncoderScaler = 1.0;  //0.025947816048
+
+/* KeENC_k_LinearSlideEncoderScaler: Scalar multiplied against the encoder read to translate to degrees relative to inches traveled for the linear slide. */
+const double KeENC_k_LinearSlideEncoderScaler = 1.0;
 
 /* K_deg_TurretMinDeltaOL: Minimum delta position change value expected when in OL control.  If this isn't met for a specific amount of time, it will advance to the next state. */
 const double K_deg_TurretMinDeltaOL = 0.05;
