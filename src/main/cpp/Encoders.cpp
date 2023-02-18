@@ -10,6 +10,7 @@
 #include "ctre/Phoenix.h"
 
 #include "Const.hpp"
+#include "Manipulator.hpp"
 
 double VaENC_Deg_WheelAngleConverted[E_RobotCornerSz]; // This is the wheel angle coming from the angle Encoder and processed to only be from 0 - 180
 double VaENC_Deg_WheelAngleFwd[E_RobotCornerSz]; // This is the wheel angle as if the wheel were going to be driven in a forward direction, in degrees
@@ -20,15 +21,6 @@ double VaENC_InS_WheelVelocity[E_RobotCornerSz]; // Velocity of drive wheels, in
 double VaENC_In_WheelDeltaDistance[E_RobotCornerSz]; // Distance wheel moved, loop to loop, in inches
 double VaENC_Cnt_WheelDeltaDistanceCurr[E_RobotCornerSz]; // Current distance wheel moved, loop to loop, in Counts
 double VaENC_Cnt_WheelDeltaDistancePrev[E_RobotCornerSz]; // Prev distance wheel moved, loop to loop, in Counts
-
-double VeENC_In_LiftPostitionYD; // Position of the Y Direction lift
-double VeENC_In_LiftPostitionXD; // Position of the X Direction lift
-
-double VeENC_Deg_TurretPosition; // Position of the turrent rotation
-double VeENC_Deg_ArmPivot; // Posistion of the Arm Angle
-double VeENC_RPM_IntakeRollers; // Speed of the intake rollers
-double VeENC_Deg_Gripper; // Position of the gripper
-double VeENC_Deg_Wrist; // Actual position of the wrist.
 
 /******************************************************************************
  * Function:     EncodersInitCommon
@@ -72,36 +64,21 @@ void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
   }
 
 /******************************************************************************
- * Function:     EncodersInit
+ * Function:     EncodersInitComp
  *
  * Description:  Initialize all of the applicable encoder variables that are 
  *               unique to the comp bot.
  ******************************************************************************/
-void EncodersInitComp(rev::SparkMaxRelativeEncoder m_encoderLiftYD,
-                      rev::SparkMaxRelativeEncoder m_encoderLiftXD,
-                      rev::SparkMaxRelativeEncoder m_encoderrightShooter,
-                      rev::SparkMaxRelativeEncoder m_encoderleftShooter)
+void EncodersInitComp(rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
+                      rev::SparkMaxRelativeEncoder m_WristEncoder,
+                      rev::SparkMaxRelativeEncoder m_GripperEncoder,
+                      rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder)
   {
-    m_encoderLiftYD.SetPosition(0);
-    m_encoderLiftXD.SetPosition(0);
-
-    m_encoderrightShooter.SetPosition(0);
-    m_encoderleftShooter.SetPosition(0);
+    m_ArmPivotEncoder.SetPosition(0);
+    m_WristEncoder.SetPosition(0);
+    m_GripperEncoder.SetPosition(0);
+    m_IntakeRollersEncoder.SetPosition(0);
   }
-
-/******************************************************************************
- * Function:     EncodersLiftInit
- *
- * Description:  Initialize all of the applicable encoder variables.
- ******************************************************************************/
-void EncodersLiftInit(rev::SparkMaxRelativeEncoder m_encoderLiftYD,
-                      rev::SparkMaxRelativeEncoder m_encoderLiftXD)
-  {
-    m_encoderLiftYD.SetPosition(0);
-    m_encoderLiftXD.SetPosition(0);
-  }
-
-
 
 /******************************************************************************
  * Function:     EncoderAngleLimit
@@ -142,12 +119,7 @@ void Encoders_Drive_CompBot(double                       LeENC_Cnt_EncoderWheelA
                             rev::SparkMaxRelativeEncoder m_encoderFrontLeftDrive,
                             rev::SparkMaxRelativeEncoder m_encoderFrontRightDrive,
                             rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
-                            rev::SparkMaxRelativeEncoder m_encoderRearRightDrive,
-                            rev::SparkMaxRelativeEncoder m_IntakeArmEncoder,
-                            rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
-                            rev::SparkMaxRelativeEncoder m_GripperEncoder,
-                            rev::SparkMaxRelativeEncoder m_WristEncoder,
-                            double                       LeENC_Cnt_EncoderTurretAngle)
+                            rev::SparkMaxRelativeEncoder m_encoderRearRightDrive)
   {
   T_RobotCorner LeENC_e_Index;
 
@@ -199,12 +171,10 @@ void Encoders_Drive_CompBot(double                       LeENC_Cnt_EncoderWheelA
   VaENC_InS_WheelVelocity[E_FrontRight] = ((m_encoderFrontRightDrive.GetVelocity() / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearRight]  = ((m_encoderRearRightDrive.GetVelocity()  / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearLeft]   = ((m_encoderRearLeftDrive.GetVelocity()   / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
-
-  VeENC_Deg_TurretPosition = LeENC_Cnt_EncoderTurretAngle * (-KeENC_k_TurretEncoderScaler); // Negative to rotate the output.  Positive is clockwise when viewed from top.
   }
 
 
-  /******************************************************************************
+/******************************************************************************
  * Function:     Encoders_MAN_INT
  *
  * Description:  Read the encoders from the Manipulator and Intake
@@ -216,17 +186,15 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        double LeENC_Deg_LinearSlide,
                        double LeENC_Deg_EncoderTurretRotate)
   {
-  T_RobotCorner LeENC_e_Index;
+  VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_Armpivot;
 
-VeENC_Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_Armpivot;
+  VsMAN_s_Sensors.RPM_IntakeRollers = m_IntakeRollersEncoder.GetVelocity() * KeENC_RPM_IntakeRollers;
 
-VeENC_RPM_IntakeRollers = m_IntakeRollersEncoder.GetVelocity() * KeENC_RPM_IntakeRollers;
+  VsMAN_s_Sensors.Deg_Gripper = m_GripperEncoder.GetPosition() * KeENC_Deg_Gripper;
 
-VeENC_Deg_Gripper = m_GripperEncoder.GetPosition() * KeENC_Deg_Gripper;
+  VsMAN_s_Sensors.Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
 
-VeENC_Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
-
-  VeENC_Deg_TurretPosition = LeENC_Deg_EncoderTurretRotate * (-KeENC_k_TurretEncoderScaler); // Negative to rotate the output.  Positive is clockwise when viewed from top.
+  VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_EncoderTurretRotate * (-KeENC_k_TurretEncoderScaler); // Negative to rotate the output.  Positive is clockwise when viewed from top.
   }
 
 
@@ -243,8 +211,7 @@ void Encoders_Drive_PracticeBot(double                       LeENC_Cnt_EncoderWh
                                 rev::SparkMaxRelativeEncoder m_encoderFrontLeftDrive,
                                 rev::SparkMaxRelativeEncoder m_encoderFrontRightDrive,
                                 rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
-                                rev::SparkMaxRelativeEncoder m_encoderRearRightDrive,
-                                double                       LeENC_Cnt_EncoderTurretAngle)
+                                rev::SparkMaxRelativeEncoder m_encoderRearRightDrive)
   {
   T_RobotCorner LeENC_e_Index;
 
@@ -305,6 +272,4 @@ void Encoders_Drive_PracticeBot(double                       LeENC_Cnt_EncoderWh
   VaENC_InS_WheelVelocity[E_FrontRight] = ((m_encoderFrontRightDrive.GetVelocity() / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearRight]  = ((m_encoderRearRightDrive.GetVelocity()  / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearLeft]   = ((m_encoderRearLeftDrive.GetVelocity()   / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
-
-  VeENC_Deg_TurretPosition = LeENC_Cnt_EncoderTurretAngle * (-KeENC_k_TurretEncoderScaler); // Negative to rotate the output.  Positive is clockwise when viewed from top.
   }

@@ -30,7 +30,9 @@ void Joystick2_robot_mapping(bool    LeCont_b_Driver2ButtonA,
                              bool    LeCont_b_Driver2ButtonStart,
                              bool    LeCont_b_Driver2ButtonX,
                              bool    LeCont_b_Driver2ButtonY,
-                             double  LeCont_Cmd_Driver2LeftAxisY,
-                             double  LeCont_Cmd_Driver2RightAxisY,
+                             double  LeCont_Pct_Driver2LeftAxisY,
+                             double  LeCont_Pct_Driver2RightAxisX,
                              int     LeCont_Deg_Driver2POV,
-                             bool    LeCont_b_Driver2ButtonBack);
+                             bool    LeCont_b_Driver2ButtonBack,
+                             double  LeCont_Pct_Driver2AxisRB,
+                             double  LeCont_Pct_Driver2AxisLB);

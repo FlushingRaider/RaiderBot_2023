@@ -33,7 +33,6 @@ frc::DriverStation::Alliance V_AllianceColor     = frc::DriverStation::Alliance:
 double                       V_MatchTimeRemaining = 0;
 TsRobotMotorCmnd             VsRobotMotorCmnd;
 
-
 /******************************************************************************
  * Function:     RobotMotorCommands
  *
@@ -116,8 +115,6 @@ void Robot::RobotMotorCommands()
   #endif
   }
 
-// m_liftMotorYD
-
 /******************************************************************************
  * Function:     RobotInit
  *
@@ -139,11 +136,11 @@ void Robot::RobotInit()
                      m_encoderFrontLeftDrive,
                      m_encoderRearRightDrive,
                      m_encoderRearLeftDrive);
-  #ifdef CompBot2
-  EncodersInitComp(m_encoderLiftYD,
-                   m_encoderLiftXD,
-                   m_encoderrightShooter,
-                   m_encoderleftShooter);
+  #ifdef CompBot
+  EncodersInitComp(m_ArmPivotEncoder,
+                   m_WristEncoder,
+                   m_GripperEncoder,
+                   m_IntakeRollersEncoder);
   #endif
 
   GyroInit();
@@ -164,41 +161,40 @@ void Robot::RobotInit()
   m_rearRightSteerMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_rearRightDriveMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
-  // m_turret.ConfigFactoryDefault();
-  // m_turret.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
-  // m_turret.SetSensorPhase(true);
-  // m_turret.SetSelectedSensorPosition(0);
-  // m_turret.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
-  // m_turret.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
-  // m_turret.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
-  // m_turret.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
+  #ifdef CompBot
+  m_ArmPivot.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_Wrist.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_Gripper.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_IntakeRollers.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
-  #ifdef CompBot2
-  m_ManTurretMotorA.SetIdleMode(rev::CanSparkMax::IdleMode::kBrake);
-  m_ManShoulderMotorB.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_ManElevatorMotorC.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_ManRotateMotorD.SetIdleMode(rev::SparkMaxRelativeEncoder::IdleMode::kBrake);
-  m_ManClawMotorE.SetIdleMode(rev::SparkMaxRelativeEncoder::IdleMode::kBrake);
-  m_ManIntakeMotorF.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_TurretRotate.ConfigFactoryDefault();
+  m_TurretRotate.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
+  m_TurretRotate.SetSensorPhase(true);
+  m_TurretRotate.SetSelectedSensorPosition(0);
+  m_TurretRotate.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
+  m_TurretRotate.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
+  m_TurretRotate.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
+  m_TurretRotate.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
 
-  m_rightShooterMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
-  m_leftShooterMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  m_LinearSlide.ConfigFactoryDefault();
+  m_LinearSlide.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
+  m_LinearSlide.SetSensorPhase(true);
+  m_LinearSlide.SetSelectedSensorPosition(0);
+  m_LinearSlide.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
+  m_LinearSlide.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
+  m_LinearSlide.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
+  m_LinearSlide.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
+
+  ManipulatorMotorConfigsInit(m_ArmPivotPID,
+                              m_WristPID,
+                              m_GripperPID,
+                              m_IntakeRollersPID);
   #endif
-
-
 
   SwerveDriveMotorConfigsInit(m_frontLeftDrivePID,
                               m_frontRightDrivePID,
                               m_rearLeftDrivePID,
                               m_rearRightDrivePID);
-
-  #ifdef CompBot2
-  BallHandlerMotorConfigsInit(m_rightShooterpid,
-                              m_leftShooterpid);
-
-  ManipulatorMoterConfigsInit(m_liftpidYD,
-                       m_liftpidXD);
-  #endif
 
   ADAS_Main_Init();
   ADAS_Main_Reset();
@@ -207,12 +203,10 @@ void Robot::RobotInit()
   ADAS_UT_ConfigsInit();
   ADAS_BT_ConfigsInit();
 
-
   #ifdef OldVision
   VisionRobotInit();
 
   VisionInit(V_AllianceColor);
-
   #endif
   }
 
@@ -242,26 +236,6 @@ void Robot::RobotPeriodic()
                           c_joyStick.GetPOV());
 
 #ifdef CompBot
-  Read_IO_Sensors(di_IR_Sensor.Get(), // ball sensor upper - di_IR_Sensor.Get()
-                  di_BallSensorLower.Get(), // ball sensor lower - di_BallSensorLower.Get()
-                  di_XD_LimitSwitch.Get(), // XD Limit - di_XD_LimitSwitch.Get()
-                  di_XY_LimitSwitch.Get(), // XY Limit - di_XY_LimitSwitch.Get()
-                  false); //di_TurrentLimitSwitch.Get());
-  
-  Encoders_Drive_CompBot(m_encoderWheelAngleCAN_FL.GetAbsolutePosition(),
-                         m_encoderWheelAngleCAN_FR.GetAbsolutePosition(),
-                         m_encoderWheelAngleCAN_RL.GetAbsolutePosition(),
-                         m_encoderWheelAngleCAN_RR.GetAbsolutePosition(),
-                         m_encoderFrontLeftDrive,
-                         m_encoderFrontRightDrive,
-                         m_encoderRearLeftDrive,
-                         m_encoderRearRightDrive,
-                         m_encoderRearRightDrive, // m_encoderrightShooter
-                         m_encoderRearRightDrive, // m_encoderleftShooter
-                         m_encoderRearRightDrive, //m_encoderLiftYD
-                         m_encoderRearRightDrive, //m_encoderLiftXD
-                         0);  //m_turret.GetSelectedSensorPosition()
-
   Joystick2_robot_mapping(c_joyStick2.GetRawButton(1),
                           c_joyStick2.GetRawButton(2),
                           c_joyStick2.GetRawButton(6), 
@@ -270,9 +244,32 @@ void Robot::RobotPeriodic()
                           c_joyStick2.GetRawButton(3),
                           c_joyStick2.GetRawButton(4),
                           c_joyStick2.GetRawAxis(1),
-                          c_joyStick2.GetRawAxis(5),
+                          c_joyStick2.GetRawAxis(4),
                           c_joyStick2.GetPOV(),
-                          c_joyStick2.GetRawButton(7));
+                          c_joyStick2.GetRawButton(7),
+                          c_joyStick2.GetRawAxis(2),
+                          c_joyStick2.GetRawAxis(3));
+  // Read_IO_Sensors(di_IR_Sensor.Get(), // ball sensor upper - di_IR_Sensor.Get()
+  //                 di_BallSensorLower.Get(), // ball sensor lower - di_BallSensorLower.Get()
+  //                 di_XD_LimitSwitch.Get(), // XD Limit - di_XD_LimitSwitch.Get()
+  //                 di_XY_LimitSwitch.Get(), // XY Limit - di_XY_LimitSwitch.Get()
+  //                 false); //di_TurrentLimitSwitch.Get());
+  
+  Encoders_Drive_CompBot(m_encoderWheelAngleCAN_FL.GetAbsolutePosition(),
+                         m_encoderWheelAngleCAN_FR.GetAbsolutePosition(),
+                         m_encoderWheelAngleCAN_RL.GetAbsolutePosition(),
+                         m_encoderWheelAngleCAN_RR.GetAbsolutePosition(),
+                         m_encoderFrontLeftDrive,
+                         m_encoderFrontRightDrive,
+                         m_encoderRearLeftDrive,
+                         m_encoderRearRightDrive);
+
+  Encoders_MAN_INT(m_IntakeRollersEncoder,
+                   m_ArmPivotEncoder,
+                   m_GripperEncoder,
+                   m_WristEncoder,
+                   m_LinearSlide.GetSelectedSensorPosition(),
+                   m_TurretRotate.GetSelectedSensorPosition());
 #else
   Encoders_Drive_PracticeBot(a_encoderFrontLeftSteer.GetVoltage(),
                  a_encoderFrontRightSteer.GetVoltage(),
@@ -281,14 +278,13 @@ void Robot::RobotPeriodic()
                  m_encoderFrontLeftDrive,
                  m_encoderFrontRightDrive,
                  m_encoderRearLeftDrive,
-                 m_encoderRearRightDrive,
-                 0); 
+                 m_encoderRearRightDrive); 
 
-  Read_IO_Sensors(false, // ball sensor upper - di_IR_Sensor.Get()
-                  false, // ball sensor lower - di_BallSensorLower.Get()
-                  false, // XD Limit - di_XD_LimitSwitch.Get()
-                  false, // XY Limit - di_XY_LimitSwitch.Get()
-                  di_TurrentLimitSwitch.Get()); //di_TurrentLimitSwitch.Get());
+  // Read_IO_Sensors(false, // ball sensor upper - di_IR_Sensor.Get()
+  //                 false, // ball sensor lower - di_BallSensorLower.Get()
+  //                 false, // XD Limit - di_XD_LimitSwitch.Get()
+  //                 false, // XY Limit - di_XY_LimitSwitch.Get()
+  //                 di_TurrentLimitSwitch.Get()); //di_TurrentLimitSwitch.Get());
 #endif
 
   ReadGyro2(VsCONT_s_DriverInput.b_ZeroGyro);
@@ -311,7 +307,7 @@ void Robot::RobotPeriodic()
                                           &V_ADAS_SD_RobotOriented,
                                           &V_ADAS_Vision_RequestedTargeting,
                                            VsCONT_s_DriverInput.b_JoystickActive,
-                                           VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro,
+                                           false,
                                            VsCONT_s_DriverInput.b_SwerveGoalAutoCenter,
                                            VsCONT_s_DriverInput.b_AutoIntake,
                                            VeGRY_Deg_GyroYawAngleDegrees,
@@ -326,8 +322,8 @@ void Robot::RobotPeriodic()
                                            V_RobotState,
                                            VsRobotSensors.b_BallDetectedUpper,
                                            VsRobotSensors.b_BallDetectedLower,
-                                           VsCONT_s_DriverInput.b_ElevatorUp,
-                                           VsCONT_s_DriverInput.b_ElevatorDown,
+                                           VsCONT_s_DriverInput.b_IntakeArmIn,
+                                           VsCONT_s_DriverInput.b_IntakeArmOut,
                                            VsCONT_s_DriverInput.b_IntakeIn,
                                            V_ADAS_ActiveFeature);
 #endif
@@ -337,7 +333,7 @@ void Robot::RobotPeriodic()
                     VsCONT_s_DriverInput.v_SwerveSpeed,   // extra speed trigger
                     VsCONT_s_DriverInput.b_SwerveRotateTo0, // auto rotate to 0 degrees
                     VsCONT_s_DriverInput.b_ZeroGyro, // auto rotate to 90 degrees
-                    VsCONT_s_DriverInput.b_RobotFieldOrientedReq,
+                    VsCONT_s_DriverInput.b_RobotFieldOrientedReq,  // ToDo: Remove, do not want to allow switching
                     V_ADAS_ActiveFeature,
                     V_ADAS_Pct_SD_FwdRev,
                     V_ADAS_Pct_SD_Strafe,
@@ -350,22 +346,22 @@ void Robot::RobotPeriodic()
                    &VaDRC_RPM_WheelSpeedCmnd[0],
                    &VaDRC_Pct_WheelAngleCmnd[0]);
 
-  BallHandlerControlMain( VsCONT_s_DriverInput.b_IntakeIn,
-                          VsCONT_s_DriverInput.b_IntakeOut,
-                          VsRobotSensors.b_BallDetectedUpper,
-                          VsRobotSensors.b_BallDetectedLower,
-                          VsCONT_s_DriverInput.b_ElevatorUp,
-                          VsCONT_s_DriverInput.b_ElevatorDown,
-                          VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro,
-                          VsCONT_s_DriverInput.b_AutoSetSpeedShooter,
-                          VsCONT_s_DriverInput.pct_ManualShooterDesiredSpeed,
-                          V_ADAS_ActiveFeature,
-                          V_ADAS_RPM_BH_Launcher,
-                          V_ADAS_Pct_BH_Intake,
-                          V_ADAS_Pct_BH_Elevator,
-                         &V_IntakePowerCmnd,
-                         &V_ElevatorPowerCmnd,
-                         &V_ShooterRPM_Cmnd);
+  // BallHandlerControlMain( VsCONT_s_DriverInput.b_IntakeIn,
+  //                         VsCONT_s_DriverInput.b_IntakeOut,
+  //                         VsRobotSensors.b_BallDetectedUpper,
+  //                         VsRobotSensors.b_BallDetectedLower,
+  //                         VsCONT_s_DriverInput.b_IntakeArmIn,
+  //                         VsCONT_s_DriverInput.b_IntakeArmOut,
+  //                         false,
+  //                         false,
+  //                         0.0,
+  //                         V_ADAS_ActiveFeature,
+  //                         V_ADAS_RPM_BH_Launcher,
+  //                         V_ADAS_Pct_BH_Intake,
+  //                         V_ADAS_Pct_BH_Elevator,
+  //                        &V_IntakePowerCmnd,
+  //                        &V_ElevatorPowerCmnd,
+  //                        &V_ShooterRPM_Cmnd);
 
   LightControlMain(V_MatchTimeRemaining,
                    V_AllianceColor,
@@ -417,12 +413,12 @@ CarsonDebugRun();
 
   #ifdef CompBot2
   VeMAN_CnT_Man_DoesStuffMaybe = ManipulatorControlDictator(VsCONT_s_DriverInput.b_LiftControl,
-                                       VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro,
+                                       false,
                                        VsCONT_s_DriverInput.e_LiftCmndDirection,
                                        V_MatchTimeRemaining,
                                        VeMAN_CnT_Man_DoesStuffMaybe,
-                                       VeENC_In_LiftPostitionYD,
-                                       VeENC_In_LiftPostitionXD,
+                                       0,
+                                       0,
                                        &VeMan_Cnt_MoterCommandTurret,
                                        &VeMan_Cnt_MoterCommandArmPivot,
                                        &VeMAN_Cnt_MoterTestPowerCmndTurret,
@@ -546,31 +542,25 @@ void Robot::TeleopPeriodic()
  ******************************************************************************/
 void Robot::TestPeriodic()
   {
-  #ifdef CompBot2
-  Manipulator_Control_ManualOverride(&VeMAN_Cnt_MoterTestPowerCmndTurret,
-                              &VeMAN_Cnt_MoterTestPowerCmndArmPivot,
-                               m_liftMotorYD.GetOutputCurrent(),
-                               m_liftMotorXD.GetOutputCurrent(),
-                               VsCONT_s_DriverInput.e_LiftCmndDirection,
-                               VsRobotSensors.b_XY_LimitDetected,
-                               VsRobotSensors.b_XD_LimitDetected);
+  #ifdef CompBot
+  ManipulatorControlManualOverride(&VsCONT_s_DriverInput);
   #endif
  
-  if (VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro == true)
+  if (VsCONT_s_DriverInput.b_ResetManipulatorEnocders == true)
     {
     EncodersInitCommon(m_encoderFrontRightSteer,
-                 m_encoderFrontLeftSteer,
-                 m_encoderRearRightSteer,
-                 m_encoderRearLeftSteer,
-                 m_encoderFrontRightDrive,
-                 m_encoderFrontLeftDrive,
-                 m_encoderRearRightDrive,
-                 m_encoderRearLeftDrive);
-    #ifdef CompBot2
-    EncodersInitComp(m_encoderLiftYD,
-                     m_encoderLiftXD,
-                     m_encoderrightShooter,
-                     m_encoderleftShooter);
+                       m_encoderFrontLeftSteer,
+                       m_encoderRearRightSteer,
+                       m_encoderRearLeftSteer,
+                       m_encoderFrontRightDrive,
+                       m_encoderFrontLeftDrive,
+                       m_encoderRearRightDrive,
+                       m_encoderRearLeftDrive);
+    #ifdef CompBot
+    EncodersInitComp(m_ArmPivotEncoder,
+                     m_WristEncoder,
+                     m_GripperEncoder,
+                     m_IntakeRollersEncoder);
     #endif
     }
 
@@ -584,18 +574,15 @@ void Robot::TestPeriodic()
   m_rearLeftSteerMotor.Set(0);
   m_rearRightSteerMotor.Set(0);
 
-  #ifdef CompBot2
-  m_liftMotorYD.Set(VeMAN_Cnt_MoterTestPowerCmndTurret);
-  m_liftMotorXD.Set(VeMAN_Cnt_MoterTestPowerCmndArmPivot);
+  #ifdef CompBot
+  m_ArmPivot.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_ArmPivot]);
+  m_Wrist.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_Wrist]);      
+  m_Gripper.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_Gripper]);
+  m_IntakeRollers.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeRollers]);
 
-  m_rightShooterMotor.Set(0);
-  m_leftShooterMotor.Set(0);
-
-  m_intake.Set(ControlMode::PercentOutput, 0);
-  m_elevator.Set(ControlMode::PercentOutput, 0);
+  m_TurretRotate.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorTestPower[E_MAN_Turret]);
+  m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide]);
   #endif
-  
-  // m_turret.SetSelectedSensorPosition(0);
   }
 
 

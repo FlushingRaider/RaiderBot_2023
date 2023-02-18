@@ -149,38 +149,6 @@ const double KeENC_Deg_Gripper = 1.0;
 const double KeENC_Deg_Wrist = 1.0;
 
 // Lift related cals
-/* K_LiftRampRateYD: Per loop revolutions of the motor allowed for the YD position. */
-const double K_LiftRampRateYD[E_Man_State_Sz][E_LiftIterationSz] = 
-  {
-    {1.25, 1.25},  // E_S0_Rest
-    {1.35, 1.25},  // E_S1_Intake
-    {1.25, 1.25},  // E_S2_TradeOff
-    {1.15, 1.15},  // E_S3_Swiper
-    {1.25, 1.25},  // E_S4_DrivingState
-    {1.25, 1.25},  // E_S5_Positioning
-    {1.25, 1.25},  // E_S6_DroppingTheLoot
-    // {1.25, 1.25},  // E_S8_more_down_some_YD
-    // {1.25, 1.25},  // E_S9_back_rest_XD
-    // {1.00, 1.00},  // E_S10_final_YD
-    // {1.25, 1.25}   // E_S11_final_OWO
-  };
-
-/* K_LiftRampRateXD: Per loop revolutions of the motor allowed for the XD position. */
-const double K_LiftRampRateXD[E_Man_State_Sz][E_LiftIterationSz] = 
-  {
-    {1.05, 1.05},  // E_S0_Rest
-    {1.05, 1.05},  // E_S1_Intake
-    {1.05, 1.05},  // E_S2_TradeOff
-    {1.05, 1.05},  // E_S3_Swiper
-    {1.05, 1.05},  // E_S4_DrivingState
-    {1.05, 1.05},  // E_S5_Positioning
-    {1.15, 0.50},  // E_S6_DroppingTheLoot
-    // {1.05, 1.05},  // E_S8_more_down_some_YD
-    // {1.05, 1.05},  // E_S9_back_rest_XD
-    // {1.05, 1.05},  // E_S10_final_YD
-    // {1.05, 1.05}   // E_S11_final_OWO
-  };
-
 const double K_lift_S2_YD = 8; //initial lift of the robot
 const double K_lift_S3_YD = 8; //stays the same
 const double K_lift_S4_YD = 26; //Move YD off of hooks
@@ -232,16 +200,86 @@ const double K_LiftPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
                                                    0.0,      // kMaxAcc
                                                    0.0};     // kAllErr
 
+/* KaMAN_k_ManipulatorTestPower: Test power output for the manipulator controls. ONLY used in test mode!! */
+const double KaMAN_k_ManipulatorTestPower[E_MAN_Sz] = {0.5,  // E_MAN_Turret
+                                                       0.5,  // E_MAN_ArmPivot
+                                                       0.5,  // E_MAN_LinearSlide
+                                                       0.5,  // E_MAN_Wrist
+                                                       0.5,  // E_MAN_Gripper
+                                                       0.5,  // E_MAN_IntakeRollers
+                                                       1.0}; // E_MAN_IntakeArm
 
-//Manipulator Array table thingy boooo
-const double KaMAN_e_ControllingTable[E_Man_State_Sz][E_Man_State_Sz] =
+
+/* KaMAN_k_ManipulatorRate: Rate of movement for each portion of the manipulator. */
+const double KaMAN_k_ManipulatorRate[E_MAN_Sz] = {0.5,  // E_MAN_Turret
+                                                  0.5,  // E_MAN_ArmPivot
+                                                  0.5,  // E_MAN_LinearSlide
+                                                  0.5,  // E_MAN_Wrist
+                                                  0.5,  // E_MAN_Gripper
+                                                  0.5,  // E_MAN_IntakeRollers
+                                                  0.5}; // E_MAN_IntakeArm
+
+/* KaMAN_k_ArmPivotPID_Gx: PID gains for the Arm Pivot control. */
+const double KaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
+                                                             0.000001, // kI
+                                                             0.002000, // kD
+                                                             0.0,      // kIz
+                                                             0.0,      // kFF
+                                                             1.0,      // kMaxOut
+                                                            -1.0,      // kMinOut
+                                                             1.05,     // kMaxVel
+                                                             0.5,      // kMinVel
+                                                             0.0,      // kMaxAcc
+                                                             0.0};     // kAllErr
+
+/* KaMAN_k_WristPID_Gx: PID gains for the Wrist control. */
+const double KaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
+                                                          0.000001, // kI
+                                                          0.002000, // kD
+                                                          0.0,      // kIz
+                                                          0.0,      // kFF
+                                                          1.0,      // kMaxOut
+                                                         -1.0,      // kMinOut
+                                                          1.05,     // kMaxVel
+                                                          0.5,      // kMinVel
+                                                          0.0,      // kMaxAcc
+                                                          0.0};     // kAllErr
+
+/* KaMAN_k_GripperPID_Gx: PID gains for the Gripper control. */
+const double KaMAN_k_GripperPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
+                                                            0.000001, // kI
+                                                            0.002000, // kD
+                                                            0.0,      // kIz
+                                                            0.0,      // kFF
+                                                            1.0,      // kMaxOut
+                                                           -1.0,      // kMinOut
+                                                            1.05,     // kMaxVel
+                                                            0.5,      // kMinVel
+                                                            0.0,      // kMaxAcc
+                                                            0.0};     // kAllErr
+
+/* KaMAN_k_IntakeRollersPID_Gx: PID gains for the Intake Rollers control. */
+const double KaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz] = { 0.00055,  // kP
+                                                                  0.000001, // kI
+                                                                  0.0,      // kD
+                                                                  0.0,      // kIz
+                                                                  0.0,      // kFF
+                                                                  1.0,      // kMaxOut
+                                                                 -1.0,      // kMinOut
+                                                                  0.0,      // kMaxVel
+                                                                  0.0,      // kMinVel
+                                                                 55.0,      // kMaxAcc
+                                                                  0.0};     // kAllErr
+
+/* KaMAN_e_ControllingTable: Table that contains the commanded state of the manipulator and intake based on the current attained state and schedueld state. */
+const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_Man_State_Sz][E_Man_State_Sz] =
   {
-    {E_S3_Swiper, E_S3_Swiper, E_S0_Rest, E_S0_Rest, E_S2_TradeOff, E_S2_TradeOff},
-    {E_S3_Swiper, E_S3_Swiper, E_S0_Rest, E_S0_Rest, E_S3_Swiper, E_S3_Swiper},
-    {E_S4_DrivingState, E_S5_Positioning, E_S6_DroppingTheLoot, E_S6_DroppingTheLoot, E_S2_TradeOff, E_S4_DrivingState},
-    {E_S4_DrivingState, E_S5_Positioning, E_S5_Positioning, E_S0_Rest, E_S2_TradeOff, E_S4_DrivingState},
-    {E_S4_DrivingState, E_S4_DrivingState, E_S4_DrivingState, E_S0_Rest, E_S2_TradeOff, E_S4_DrivingState},
-    {E_S0_Rest, E_S0_Rest, E_S0_Rest, E_S0_Rest, E_S0_Rest, E_S0_Rest}
+    {E_S3_Swiper,       E_S3_Swiper,       E_S0_Rest,            E_S0_Rest,            E_S2_TradeOff, E_S2_TradeOff},
+    {E_S3_Swiper,       E_S3_Swiper,       E_S0_Rest,            E_S0_Rest,            E_S3_Swiper,   E_S3_Swiper},
+    {E_S4_DrivingState, E_S5_Positioning,  E_S6_DroppingTheLoot, E_S6_DroppingTheLoot, E_S2_TradeOff, E_S4_DrivingState},
+    {E_S4_DrivingState, E_S5_Positioning,  E_S5_Positioning,     E_S0_Rest,            E_S2_TradeOff, E_S4_DrivingState},
+    {E_S4_DrivingState, E_S4_DrivingState, E_S4_DrivingState,    E_S0_Rest,            E_S2_TradeOff, E_S4_DrivingState},
+    {E_S0_Rest,         E_S0_Rest,         E_S0_Rest,            E_S0_Rest,            E_S0_Rest,     E_S0_Rest}
   };
 
 /* Ball handler (BH) cals: */

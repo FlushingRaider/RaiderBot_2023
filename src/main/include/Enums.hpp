@@ -110,25 +110,7 @@ typedef enum T_LED_LightCmnd
   E_LED_Orange
 } T_LED_LightCmnd;
 
-/*
-typedef enum T_Man_DoesStuffMaybe
-{
-  E_S0_Rest,
-  E_S1_Intake,
-  E_S2_TradeOff,
-  E_S3_Swiper,
-  E_S4_DrivingState,
-  E_S5_Positioning,
-  E_S6_DroppingTheLoot,
-  E_S8_more_down_some_YD,
-  E_S9_back_rest_XD,
-  E_S10_final_YD,
-  E_S11_final_OWO,
-  E_Man_State_Sz
-} T_Man_DoesStuffMaybe;
-*/
-
-typedef enum T_Man_DoesStuffMaybe
+typedef enum TeMAN_ManipulatorStates
 {E_S0_Rest,
  E_S1_Intake,
  E_S2_TradeOff,
@@ -137,15 +119,15 @@ typedef enum T_Man_DoesStuffMaybe
  E_S5_Positioning,
  E_S6_DroppingTheLoot,
  E_Man_State_Sz
-} T_Man_DoesStuffMaybe;
+} TeMAN_ManipulatorStates;
  
 
-typedef enum T_Man_Iteration
-{
-  VeMAN_Cnt_ManIterationNew,
-  E_LiftIteration2,
-  E_LiftIterationSz
-} T_Man_Iteration;
+// typedef enum T_Man_Iteration
+// {
+//   VeMAN_Cnt_ManIterationNew,
+//   E_LiftIteration2,
+//   E_LiftIterationSz
+// } T_Man_Iteration;
 
 typedef enum T_RobotState
 {
@@ -227,35 +209,39 @@ typedef enum T_ADAS_ActiveAutonFeature
 
 } T_ADAS_ActiveAutonFeature;
 
+
+typedef enum TeMAN_e_ManipulatorActuator
+{
+  E_MAN_Turret,
+  E_MAN_ArmPivot,
+  E_MAN_LinearSlide,
+  E_MAN_Wrist,
+  E_MAN_Gripper,
+  E_MAN_IntakeRollers,
+  E_MAN_IntakeArm,
+  E_MAN_Sz
+} TeMAN_e_ManipulatorActuator;
+
 typedef enum T_MotorControlType
 {
   E_MotorControlDisabled,
   E_MotorControlPctCmnd,
   E_MotorControlPosition,
-  E_MotorControlSpeed
+  E_MotorControlSpeed,
+  E_MotorFwd,
+  E_MotorRev
 } T_MotorControlType;
 
-typedef enum TeTurretInitialization
+struct TsMAN_Sensor 
 {
-  E_TurretInitDisabled,
-  E_TurretInitOL_Right,
-  E_TurretInitOL_Left,
-  E_TurretInitLimitSwitch,
-  E_TurretInitRotateToZeroPosition,
-  E_TurretInitComplete,
-  E_TurretInitFaultDetected
-} TeTurretInitialization;
-
-typedef enum TeTurretState
-{
-  E_TurretDisabled,
-  E_TurretInitialization,
-  E_TurretCameraControl
-} TeTurretState;
-
-
-
-
+  bool   b_TurretZero;
+  double Deg_Turret; // Position of the turret rotation
+  double Deg_ArmPivot; // Posistion of the Arm Angle
+  double RPM_IntakeRollers; // Speed of the intake rollers
+  bool   b_IntakeArmExtended;
+  double Deg_Gripper; // Position of the gripper
+  double Deg_Wrist;  // Actual position of the wrist.
+};
 
 struct TsRobotSensor 
 {
@@ -268,15 +254,7 @@ struct TsRobotSensor
 
 struct RobotUserInput
 {
-  bool                  b_LiftControl;
   bool                  b_ZeroGyro;
-  bool                  b_StopShooterAutoClimbResetGyro;
-  bool                  b_AutoSetSpeedShooter;
-  bool                  b_ElevatorUp;
-  bool                  b_ElevatorDown;
-  double                pct_ManualShooterDesiredSpeed;
-  bool                  b_IntakeIn;
-  bool                  b_IntakeOut;
   double                pct_SwerveForwardBack;
   double                pct_SwerveStrafe;
   double                deg_SwerveRotate;
@@ -284,15 +262,32 @@ struct RobotUserInput
   bool                  b_SwerveGoalAutoCenter;
   bool                  b_SwerveRotateTo0;
   bool                  b_SwerveRotateTo90;
-  bool                  b_LiftYD_Up;
-  bool                  b_LiftYD_Down;
-  T_Manipulator_CmndDirection   e_LiftCmndDirection;
   bool                  b_CameraLight;
   bool                  b_AutoIntake;
   bool                  b_JoystickActive;
   bool                  b_VisionDriverModeOverride;
-  bool                  b_RobotFieldOrientedReq;
-  T_TurretCmndDirection e_TurretCmndDirection;
+  bool                  b_RobotFieldOrientedReq;  // ToDo: Remove
+  T_TurretCmndDirection e_TurretCmndDirection;  // ToDo: Remove
+  bool                  b_IntakeRollers; //21
+  bool                  b_ResetManipulatorEnocders; // 21
+  bool                  b_IntakeArmIn;  // 21
+  bool                  b_IntakeArmOut; // 21
+  double                pct_Turret; // 21
+  double                pct_Wrist; // 21
+  double                pct_ArmPivot; // 21
+  double                pct_LinearSlide; // 21
+  double                pct_Claw; // 21
+};
+
+
+
+struct TeMAN_MotorControl
+{
+  T_MotorControlType    e_MotorControlType[E_MAN_Sz];
+  double                k_MotorCmnd[E_MAN_Sz];
+  double                k_MotorRampRate[E_MAN_Sz];
+  double                k_MotorTestValue[E_MAN_Sz];
+  double                k_MotorTestPower[E_MAN_Sz];
 };
 
 struct TsRobotMotorCmnd

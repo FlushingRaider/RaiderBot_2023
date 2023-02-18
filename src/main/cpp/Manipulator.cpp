@@ -18,56 +18,18 @@
 #include "Driver_inputs.hpp"
 #include "Encoders.hpp"
 
-T_Man_DoesStuffMaybe VeMAN_CnT_Man_DoesStuffMaybe = E_S0_Rest; 
-T_Man_Iteration VeMAN_Cnt_ManIteration = VeMAN_Cnt_ManIterationNew;
+TeMAN_ManipulatorStates VeMAN_e_SchedState = E_S0_Rest; // Where do we want to end up?
+TeMAN_ManipulatorStates VeMAN_e_CmndState  = E_S0_Rest; // What is our next/current step?
+TeMAN_ManipulatorStates VeMAN_e_AttndState = E_S0_Rest; // What is our current state?
+
+TeMAN_MotorControl VsMAN_s_Motors; // All of the motor commands for the manipulator/intake motors
+TsMAN_Sensor       VsMAN_s_Sensors; // All of the sensor values for the manipulator/intake motors
 
 double VeMAN_Cnt_LayoverTimer = 0; // owo, because Chloe
 bool   VeMAN_b_CriteriaMet = false;
 bool   VeMAN_b_ArmInitialized = false;
-
-double VeMan_Cnt_MoterCommandTurret = 0; //temp motor variable (Turret)
-double VeMan_Cnt_MoterCommandArmPivot = 0; //temp motor variable (Joint shoulder)
-double VeMAN_Cnt_MoterCommandLinearSlide = 0; //temp motor variable (Joint Elevator)
-double VeMAN_Cnt_MoterCommandWrist = 0; //temp motor variable (Claw wrist)
-double VeMAN_Cnt_MoterCommandClaw = 0; //temp motor variable (claw open)
-double VeMAN_Cnt_MoterCommandIntake = 0; //temp motor variable (Intake)
-
-double VeMAN_Cnt_MoterTestLocationTurret = 0; //location it want go (Turret)
-double VeMAN_Cnt_MoterTestLocationArmPivot = 0; //location it want go (Joint shoulder)
-double VeMAN_Cnt_MoterTestLocationLinearSlide = 0; //location it want go (Joint Elevator)
-double VeMAN_Cnt_MoterTestLocationWrist = 0; //location it want go (Claw wrist)
-double VeMAN_Cnt_MoterTestLocationClaw = 0; //location it want go (Claw open)
-double VeMAN_Cnt_MoterTestLocationIntake = 0; //location it want go (Intake)
-
-double VeMAN_Cnt_MoterTestPowerCmndTurret = 0; //power to motor (Turret)
-double VeMAN_Cnt_MoterTestPowerCmndArmPivot = 0; //power to motor (Joint shoulder)
-double VeMAN_Cnt_MoterTestPowerCmndClawlevator = 0; //power to motor (Joint Elevator)
-double VeMAN_Cnt_MoterTestPowerCmndWrist = 0; //power to motor (Claw wrist)
-double VeMAN_Cnt_MoterTestPowerCmndClaw = 0; //power to motor (Claw open)
-double VeMAN_Cnt_MoterTestPowerCmndIntake = 0; //power to motor (Intake)
-
-double VaMAN_v_MotorMaxCurrentTurret[E_Man_State_Sz]; //max current(Turret)
-double VaMAN_v_MotorMaxCurrentArmPivot[E_Man_State_Sz]; //max current(Joint shoulder)
-double VaMAN_v_MotorMaxCurrentLinearSlide[E_Man_State_Sz]; //max current(Joint Elevator)
-double VaMAN_v_MotorMaxCurrentWrist[E_Man_State_Sz]; //max current(Claw wrist)
-double VaMAN_v_MotorMaxCurrentClaw[E_Man_State_Sz]; //max current(Claw open)
-double VaMAN_v_MotorMaxCurrentIntake[E_Man_State_Sz]; //max current(Intake)
-
 bool   VeMAN_b_WaitingForDriverINS = false;  // Instrumentation only, but indication that we are waiting for the driver to press button for next step.
 bool   VeMAN_b_Paused = false; //Checks to see if paused (for testing)
-bool   VeMAN_Cnt_MoterTestPowerCmndTurret = 0; //(Turret)
-bool   VeMAN_Cnt_MoterTestPowerCmndArmPivot = 0; //(Joint_Shoulder)
-bool   VeMAN_Cnt_MoterTestPowerCmndLinearSlide = 0; //(Joint_elevator)
-bool   VeMAN_Cnt_MoterTestPowerCmndWrist = 0; //(claw_wrist)
-bool   VeMAN_Cnt_MoterTestPowerCmndClaw = 0; //(claw_open)
-bool   VeMAN_Cnt_MoterTestPowerCmndIntake = 0; //(Intake)
-
-double VaMAN_InS_RampRateMoterTurret[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (Turret)
-double VaMAN_InS_RampRateMoterShoulder[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (Joint_shoulder)
-double VaMAN_InS_RampRateMoterClawlevator[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (Joint_Elevator)
-double VaMAN_InS_RampRateMoterWrist[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (Claw_wrist)
-double VaMAN_InS_RampRateMoterClaw[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (Claw_open)
-double VaMAN_InS_RampRateMoterIntake[E_Man_State_Sz][E_LiftIterationSz]; //motor ramp rate (Intake)
 
 #ifdef LiftXY_Test
 bool   VeMAN_b_MoterTestTurret = false; // temporary, we don't want to use the manual overrides
@@ -83,43 +45,49 @@ bool VeMAN_b_MoterTestTurret = false;
  * Description:  Contains the motor configurations for the Arm and intake motors.
  *               - A through F
  ******************************************************************************/
-void ManipulatorMoterConfigsInit(rev::SparkMaxPIDController m_liftpidYD,
-                          rev::SparkMaxPIDController m_liftpidXD)
+void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
+                                 rev::SparkMaxPIDController m_WristPID,
+                                 rev::SparkMaxPIDController m_GripperPID,
+                                 rev::SparkMaxPIDController m_IntakeRollersPID)
   {
-  T_Man_DoesStuffMaybe     LeMAN_Cnt_Index1;
-  T_Man_Iteration LeMAN_Cnt_Index2;
+  TeMAN_e_ManipulatorActuator LeMAN_i_Index;
+  TeMAN_ManipulatorStates  LeMAN_Cnt_Index1;
 
   // set PID coefficients
-  m_liftpidYD.SetP(K_LiftPID_Gx[E_kP]);
-  m_liftpidYD.SetI(K_LiftPID_Gx[E_kI]);
-  m_liftpidYD.SetD(K_LiftPID_Gx[E_kD]);
-  m_liftpidYD.SetIZone(K_LiftPID_Gx[E_kIz]);
-  m_liftpidYD.SetFF(K_LiftPID_Gx[E_kFF]);
-  m_liftpidYD.SetOutputRange(K_LiftPID_Gx[E_kMinOutput], K_LiftPID_Gx[E_kMaxOutput]);
+  m_ArmPivotPID.SetP(KaMAN_k_ArmPivotPID_Gx[E_kP]);
+  m_ArmPivotPID.SetI(KaMAN_k_ArmPivotPID_Gx[E_kI]);
+  m_ArmPivotPID.SetD(KaMAN_k_ArmPivotPID_Gx[E_kD]);
+  m_ArmPivotPID.SetIZone(KaMAN_k_ArmPivotPID_Gx[E_kIz]);
+  m_ArmPivotPID.SetFF(KaMAN_k_ArmPivotPID_Gx[E_kFF]);
+  m_ArmPivotPID.SetOutputRange(KaMAN_k_ArmPivotPID_Gx[E_kMinOutput], KaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]);
 
-  m_liftpidXD.SetP(K_LiftPID_Gx[E_kP]);
-  m_liftpidXD.SetI(K_LiftPID_Gx[E_kI]);
-  m_liftpidXD.SetD(K_LiftPID_Gx[E_kD]);
-  m_liftpidXD.SetIZone(K_LiftPID_Gx[E_kIz]);
-  m_liftpidXD.SetFF(K_LiftPID_Gx[E_kFF]);
-  m_liftpidXD.SetOutputRange(K_LiftPID_Gx[E_kMinOutput], K_LiftPID_Gx[E_kMaxOutput]);
+  m_WristPID.SetP(KaMAN_k_WristPID_Gx[E_kP]);
+  m_WristPID.SetI(KaMAN_k_WristPID_Gx[E_kI]);
+  m_WristPID.SetD(KaMAN_k_WristPID_Gx[E_kD]);
+  m_WristPID.SetIZone(KaMAN_k_WristPID_Gx[E_kIz]);
+  m_WristPID.SetFF(KaMAN_k_WristPID_Gx[E_kFF]);
+  m_WristPID.SetOutputRange(KaMAN_k_WristPID_Gx[E_kMinOutput], KaMAN_k_WristPID_Gx[E_kMaxOutput]);
 
-  for (LeMAN_Cnt_Index2 = VeMAN_Cnt_ManIterationNew;
-       LeMAN_Cnt_Index2 < E_LiftIterationSz;
-       LeMAN_Cnt_Index2 = T_Man_Iteration(int(LeMAN_Cnt_Index2) + 1))
-      {
-      for (LeMAN_Cnt_Index1 = E_S0_Rest;
-           LeMAN_Cnt_Index1 < E_Man_State_Sz;
-           LeMAN_Cnt_Index1 = T_Man_DoesStuffMaybe(int(LeMAN_Cnt_Index1) + 1))
-          {
-          VaMAN_InS_RampRateMoterTurret[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateYD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
-          VaMAN_InS_RampRateMoterShoulder[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateXD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
-          VaMAN_InS_RampRateMoterClawlevator[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateYD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
-          VaMAN_InS_RampRateMoterWrist[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateXD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
-          VaMAN_InS_RampRateMoterClaw[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateYD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
-          VaMAN_InS_RampRateMoterIntake[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2] = K_LiftRampRateXD[LeMAN_Cnt_Index1][LeMAN_Cnt_Index2];
-          }
-      }
+  m_GripperPID.SetP(KaMAN_k_GripperPID_Gx[E_kP]);
+  m_GripperPID.SetI(KaMAN_k_GripperPID_Gx[E_kI]);
+  m_GripperPID.SetD(KaMAN_k_GripperPID_Gx[E_kD]);
+  m_GripperPID.SetIZone(KaMAN_k_GripperPID_Gx[E_kIz]);
+  m_GripperPID.SetFF(KaMAN_k_GripperPID_Gx[E_kFF]);
+  m_GripperPID.SetOutputRange(KaMAN_k_GripperPID_Gx[E_kMinOutput], KaMAN_k_GripperPID_Gx[E_kMaxOutput]);
+
+  m_IntakeRollersPID.SetP(KaMAN_k_IntakeRollersPID_Gx[E_kP]);
+  m_IntakeRollersPID.SetI(KaMAN_k_IntakeRollersPID_Gx[E_kI]);
+  m_IntakeRollersPID.SetD(KaMAN_k_IntakeRollersPID_Gx[E_kD]);
+  m_IntakeRollersPID.SetIZone(KaMAN_k_IntakeRollersPID_Gx[E_kIz]);
+  m_IntakeRollersPID.SetFF(KaMAN_k_IntakeRollersPID_Gx[E_kFF]);
+  m_IntakeRollersPID.SetOutputRange(KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput], KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
+
+  for (LeMAN_i_Index = E_MAN_Turret;
+       LeMAN_i_Index < E_MAN_Sz;
+       LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
+    {
+      VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = KaMAN_k_ManipulatorRate[LeMAN_i_Index];
+    }
   
   #ifdef LiftXY_Test
   T_PID_SparkMaxCal LeMAN_e_Index = E_kP;
@@ -281,166 +249,78 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
  ******************************************************************************/
 void ManipulatorControlInit()
   {
-  T_Man_DoesStuffMaybe LeMAN_e_Index;
+  TeMAN_e_ManipulatorActuator LeMAN_i_Index;
 
-  VeMAN_CnT_Man_DoesStuffMaybe = E_S0_Rest;
-  VeMAN_Cnt_ManIteration = VeMAN_Cnt_ManIterationNew;
+  VeMAN_e_SchedState = E_S0_Rest;
+  VeMAN_e_CmndState  = E_S0_Rest;
+  VeMAN_e_AttndState = E_S0_Rest;
+
   VeMAN_Cnt_LayoverTimer = 0;
   VeMAN_b_CriteriaMet = false;
-
-  VeMan_Cnt_MoterCommandTurret = 0; // (Turret)
-  VeMan_Cnt_MoterCommandArmPivot = 0; // (Joint_Shoulder)
-  VeMAN_Cnt_MoterCommandLinearSlide = 0; // (Joint_elevator)
-  VeMAN_Cnt_MoterCommandWrist = 0; // (claw_wrist)
-  VeMAN_Cnt_MoterCommandClaw = 0; // (claw_open)
-  VeMAN_Cnt_MoterCommandIntake = 0; // (Intake)
-
-  VeMAN_Cnt_MoterTestLocationTurret = 0; //(Turret)
-  VeMAN_Cnt_MoterTestLocationArmPivot = 0; //(Joint_Shoulder)
-  VeMAN_Cnt_MoterTestLocationLinearSlide = 0; //(Joint_elevator)
-  VeMAN_Cnt_MoterTestLocationWrist = 0; //(claw_wrist)
-  VeMAN_Cnt_MoterTestLocationClaw = 0; //(claw_open)
-  VeMAN_Cnt_MoterTestLocationIntake = 0; //(Intake)
-
   VeMAN_b_Paused = false;
-  VeMAN_Cnt_MoterTestPowerCmndTurret = 0; //(Turret)
-  VeMAN_Cnt_MoterTestPowerCmndArmPivot = 0; //(Joint_Shoulder)
-  VeMAN_Cnt_MoterTestPowerCmndLinearSlide = 0; //(Joint_elevator)
-  VeMAN_Cnt_MoterTestPowerCmndWrist = 0; //(claw_wrist)
-  VeMAN_Cnt_MoterTestPowerCmndClaw = 0; //(claw_open)
-  VeMAN_Cnt_MoterTestPowerCmndIntake = 0; //(Intake)
-
   VeMAN_b_WaitingForDriverINS = false;
-
   VeMAN_b_ArmInitialized = false;
 
-  for (LeMAN_e_Index = E_S0_Rest;
-       LeMAN_e_Index < E_Man_State_Sz;
-       LeMAN_e_Index = T_Man_DoesStuffMaybe(int(LeMAN_e_Index) + 1))
-      {
-      VaMAN_v_MotorMaxCurrentTurret[LeMAN_e_Index] = 0;
-      VaMAN_v_MotorMaxCurrentArmPivot[LeMAN_e_Index] = 0;
-      VaMAN_v_MotorMaxCurrentLinearSlide[LeMAN_e_Index] = 0;
-      VaMAN_v_MotorMaxCurrentWrist[LeMAN_e_Index] = 0;
-      VaMAN_v_MotorMaxCurrentClaw[LeMAN_e_Index] = 0;
-      VaMAN_v_MotorMaxCurrentIntake[LeMAN_e_Index] = 0;
-      }
+  for (LeMAN_i_Index = E_MAN_Turret;
+       LeMAN_i_Index < E_MAN_Sz;
+       LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
+    {
+      VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = 0.0;
+      VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = KaMAN_k_ManipulatorRate[LeMAN_i_Index];
+      VsMAN_s_Motors.k_MotorTestPower[LeMAN_i_Index] = 0.0;
+      VsMAN_s_Motors.k_MotorTestValue[LeMAN_i_Index] = 0.0;
+    }
+
   }
 
-/******************************************************************************
- * Function:     RecordManipulatorMotorMaxCurrent
- *
- * Description:  Record the max observed current.  
- *               This is for instrumentation only.
- ******************************************************************************/
-void RecordManipulatorMotorMaxCurrent(T_Man_DoesStuffMaybe LeMAN_Cnt_CurrentState,                                
-                               double       LeMAN_v_MotorCurrentOutTurret,
-                               double       LeMAN_v_MotorCurrentOutArmPivot,
-                               double       LeMAN_v_MotorCurrentOutLinearSlide,
-                               double       LeMAN_v_MotorCurrentOutWrist,
-                               double       LeMAN_v_MotorCurrentOutClaw,
-                               double       LeMAN_v_MotorCurrentOutIntake)
-  {
-  if (fabs(LeMAN_v_MotorCurrentOutTurret) > fabs(VaMAN_v_MotorMaxCurrentTurret[LeMAN_Cnt_CurrentState]))
-    {
-    VaMAN_v_MotorMaxCurrentTurret[LeMAN_Cnt_CurrentState] = LeMAN_v_MotorCurrentOutTurret;
-    }
-  
-    if (fabs(LeMAN_v_MotorCurrentOutArmPivot) > fabs(VaMAN_v_MotorMaxCurrentArmPivot[LeMAN_Cnt_CurrentState]))
-    {
-    VaMAN_v_MotorMaxCurrentArmPivot[LeMAN_Cnt_CurrentState] = LeMAN_v_MotorCurrentOutArmPivot;
-    }
-  
-  if (fabs(LeMAN_v_MotorCurrentOutLinearSlide) > fabs(VaMAN_v_MotorMaxCurrentLinearSlide[LeMAN_Cnt_CurrentState]))
-    {
-    VaMAN_v_MotorMaxCurrentLinearSlide[LeMAN_Cnt_CurrentState] = LeMAN_v_MotorCurrentOutLinearSlide;
-    }
-
-  if (fabs(LeMAN_v_MotorCurrentOutWrist) > fabs(VaMAN_v_MotorMaxCurrentWrist[LeMAN_Cnt_CurrentState]))
-    {
-    VaMAN_v_MotorMaxCurrentWrist[LeMAN_Cnt_CurrentState] = LeMAN_v_MotorCurrentOutWrist;
-    }
-  
-  if (fabs(LeMAN_v_MotorCurrentOutClaw) > fabs(VaMAN_v_MotorMaxCurrentClaw[LeMAN_Cnt_CurrentState]))
-    {
-    VaMAN_v_MotorMaxCurrentClaw[LeMAN_Cnt_CurrentState] = LeMAN_v_MotorCurrentOutClaw;
-    }
-  
-  if (fabs(LeMAN_v_MotorCurrentOutIntake) > fabs(VaMAN_v_MotorMaxCurrentIntake[LeMAN_Cnt_CurrentState]))
-    {
-    VaMAN_v_MotorMaxCurrentIntake[LeMAN_Cnt_CurrentState] = LeMAN_v_MotorCurrentOutIntake;
-    }
-  
-  }
 
 /******************************************************************************
- * Function:     Manipulator_Control_ManualOverride
+ * Function:     ManipulatorControlManualOverride
  *
  * Description:  Manual override control used during the FRC test section.
  ******************************************************************************/
-void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandTurret,
-                                 double *LeMAN_Cmd_CommandArmPivot,
-                                 double  LeMAN_v_MotorCurrentOutTurret,
-                                 double  LeMAN_v_MotorCurrentOutArmPivot,
-                                 double  LeMAN_v_MotorCurrentOutLinearSlide,
-                                 double  LeMAN_v_MotorCurrentOutWrist,
-                                 double  LeMAN_v_MotorCurrentOutClaw,
-                                 double  LeMAN_v_MotorCurrentOutIntake,
-                                 T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
-                                 bool    LeMAN_b_LimitDetectedTurret,
-                                 bool    LeMAN_b_LimitDetectedArmPivot,
-                                 bool    LeMAN_b_LimitDetectedLinearSlide,
-                                 bool    LeMAN_b_LimitDetectedWrist,
-                                 bool    LeMAN_b_LimitDetectedClaw,
-                                 bool    LeMAN_b_LimitDetectedIntake)
-                                 
-
+void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
   {
-  double LeMAN_v_MoterPowerTurret= 0;
-  double LeMAN_v_MoterPowerArmPivot= 0;
-  double LeMAN_v_MoterPowerLinearSlide= 0;
-  double LeMAN_v_MoterPowerWrist= 0;
-  double LeMAN_v_MoterPowerClaw= 0;
-  double LeMAN_v_MoterPowerIntake= 0;
-  
-  T_Man_DoesStuffMaybe LeMAN_Cnt_CurrentState = E_S0_Rest; // Not really the lift state, but allows us record the max currents
+  TeMAN_e_ManipulatorActuator LeMAN_i_Index;
 
-    if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndUp)
-      {
-      LeMAN_v_MoterPowerTurret= K_Manipulator_Driver_manual_MoterTurret;
-      LeMAN_Cnt_CurrentState = E_S0_Rest;
-      }
-    else if ((LeMAN_Cmd_DriverMANDirection == E_LiftCmndDown) &&
-             (LeMAN_b_LimitDetectedTurret == false))
-      {
-      LeMAN_v_MoterPowerTurret= K_Manipulator_Driver_manual_MoterArmPivot;
-      LeMAN_Cnt_CurrentState = E_S1_Intake;
-      }
-    else if ((LeMAN_Cmd_DriverMANDirection == E_LiftCmndBack) &&
-             (LeMAN_b_LimitDetectedArmPivot == false))
-      {
-      LeMAN_v_MoterPowerArmPivot= K_lift_driver_manual_back_XD;
-      LeMAN_Cnt_CurrentState = E_S6_DroppingTheLoot;
-      }
-    else if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndForward)
-      {
-      LeMAN_v_MoterPowerArmPivot= K_lift_driver_manual_forward_XD;
-      LeMAN_Cnt_CurrentState = E_S2_TradeOff;
-      }
+  for (LeMAN_i_Index = E_MAN_Turret;
+       LeMAN_i_Index < E_MAN_Sz;
+       LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
+    {
+      VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = KaMAN_k_ManipulatorRate[LeMAN_i_Index];
+      VsMAN_s_Motors.k_MotorTestPower[LeMAN_i_Index] = 0.0;
+    }
 
-  RecordManipulatorMotorMaxCurrent(LeMAN_Cnt_CurrentState,                                
-                            LeMAN_v_MotorCurrentOutTurret,
-                            LeMAN_v_MotorCurrentOutArmPivot,
-                            LeMAN_v_MotorCurrentOutLinearSlide,
-                            LeMAN_v_MotorCurrentOutWrist,
-                            LeMAN_v_MotorCurrentOutClaw,
-                            LeMAN_v_MotorCurrentOutIntake);
+  if (LsCONT_s_DriverInput->b_IntakeArmIn == true)
+    {
+    VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeArm] = KaMAN_k_ManipulatorTestPower[E_MAN_IntakeArm];
+    }
 
-  *LeMAN_Cmd_CommandTurret = LeMAN_v_MoterPowerTurret;
-  *LeMAN_Cmd_CommandArmPivot = LeMAN_v_MoterPowerArmPivot;
+  if (LsCONT_s_DriverInput->b_IntakeArmOut == true)
+    {
+    VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeArm] = -KaMAN_k_ManipulatorTestPower[E_MAN_IntakeArm];
+    }
+
+  if (LsCONT_s_DriverInput->b_IntakeRollers == true)
+    {
+    VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeRollers] = KaMAN_k_ManipulatorTestPower[E_MAN_IntakeRollers];
+    }
+
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_ArmPivot] = LsCONT_s_DriverInput->pct_ArmPivot * KaMAN_k_ManipulatorTestPower[E_MAN_ArmPivot];
+
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide] = LsCONT_s_DriverInput->pct_ArmPivot * KaMAN_k_ManipulatorTestPower[E_MAN_LinearSlide];
+
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Turret] = LsCONT_s_DriverInput->pct_Turret * KaMAN_k_ManipulatorTestPower[E_MAN_Turret];
+
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Gripper] = LsCONT_s_DriverInput->pct_Claw * KaMAN_k_ManipulatorTestPower[E_MAN_Gripper];
   }
 
-  /******************************************************************************
+
+
+
+
+#ifdef InProcess
+/******************************************************************************
  * Function:     Rest_State,
  *
  * Description:  State 0: Everything in default positions
@@ -961,11 +841,11 @@ void Manipulator_Control_ManualOverride(double *LeMAN_Cmd_CommandTurret,
  *
  * Description:  Main calling function for lift control.
  ******************************************************************************/
-T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeMAN_b_AutoManipulateButton,
+TeMAN_ManipulatorStates ManipulatorControlDictator(bool                LeMAN_b_AutoManipulateButton,
                                    bool                LeLFT_b_DriverAutoClimbPause,
                                    T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
                                    double              LeLFT_SEC_GameTime,
-                                   T_Man_DoesStuffMaybe        LeMAN_Cnt_CurrentState,                                
+                                   TeMAN_ManipulatorStates        LeMAN_Cnt_CurrentState,                                
                                    double              LeMAN_Deg_MeasuredAngleTurret,
                                    double              LeMAN_Deg_MeasuredAngleArmPivot,
                                    double              LeMAN_In_MeasuredPositionLinearSlide,
@@ -988,7 +868,7 @@ T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeMAN_b_Auto
                                    rev::SparkMaxRelativeEncoder m_encoderLiftYD,
                                    rev::SparkMaxRelativeEncoder m_encoderLiftXD)
   {
-  T_Man_DoesStuffMaybe LeLFT_e_CommandedState = LeMAN_Cnt_CurrentState;
+  TeMAN_ManipulatorStates LeLFT_e_CommandedState = LeMAN_Cnt_CurrentState;
   double LeMAN_Cmd_CommandTurret_Temp = 0;
   double LeMAN_Cmd_CommandArmPivot_Temp = 0;
   double LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_S0_Rest][VeMAN_Cnt_ManIterationNew];
@@ -1172,13 +1052,6 @@ T_Man_DoesStuffMaybe ManipulatorControlDictator(bool                LeMAN_b_Auto
   
   *LeLFT_Pct_CommandPwrXD = LeMAN_v_MoterPowerArmPivot;
 
-  RecordManipulatorMotorMaxCurrent(LeMAN_Cnt_CurrentState,
-                            LeMAN_v_MotorCurrentOutTurret,
-                            LeMAN_v_MotorCurrentOutArmPivot,
-                            LeMAN_v_MotorCurrentOutLinearSlide,
-                            LeMAN_v_MotorCurrentOutWrist,
-                            LeMAN_v_MotorCurrentOutClaw,
-                            LeMAN_v_MotorCurrentOutIntake);
-
   return(LeLFT_e_CommandedState);
 }
+#endif

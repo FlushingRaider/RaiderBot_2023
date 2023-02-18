@@ -85,42 +85,65 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
                              bool    LeCONT_b_Driver2ButtonStart,
                              bool    LeCONT_b_Driver2ButtonX,
                              bool    LeCONT_b_Driver2ButtonY,
-                             double  LeCONT_Cmd_Driver2LeftAxisY,
-                             double  LeCONT_Cmd_Driver2RightAxisY,
+                             double  LeCONT_Pct_Driver2LeftAxisY,
+                             double  LeCONT_Pct_Driver2RightAxisX,
                              int     LeCONT_Deg_Driver2POV,
-                             bool    LeCONT_b_Driver2ButtonBack)
+                             bool    LeCONT_b_Driver2ButtonBack,
+                             double  LeCont_Pct_Driver2AxisRB,
+                             double  LeCont_Pct_Driver2AxisLB)
   {
-  T_Manipulator_CmndDirection   LeCONT_e_LiftCmndDirection     = E_LiftCmndNone;
+  double LeCONT_Pct_TurretCmnd = 0.0;
+  double LeCONT_Pct_ClawCmnd = 0.0;
 
-  VsCONT_s_DriverInput.b_ElevatorUp                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) Elevator goes up
-  VsCONT_s_DriverInput.b_ElevatorDown                  = LeCONT_b_Driver2ButtonB;      //Controller 2, B button (2), (robot.cpp) Elevator goes down
-  VsCONT_s_DriverInput.b_StopShooterAutoClimbResetGyro = LeCONT_b_Driver2ButtonLB;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
-  VsCONT_s_DriverInput.b_AutoSetSpeedShooter           = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
-  VsCONT_s_DriverInput.pct_ManualShooterDesiredSpeed   = LeCONT_Cmd_Driver2LeftAxisY;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
-  VsCONT_s_DriverInput.b_LiftControl                   = LeCONT_b_Driver2ButtonRB;     //Controller 2, X button (3), (Manipulator.cpp) starts automated states machine
-  VsCONT_s_DriverInput.b_IntakeIn                      = LeCONT_b_Driver2ButtonX;      //Controller 2 (3), controlls the intake in on trigger pressed
-  VsCONT_s_DriverInput.b_IntakeOut                     = LeCONT_b_Driver2ButtonY;      //Controller 2 (4), controlls the intake out on trigger pressed
+  VsCONT_s_DriverInput.b_IntakeArmIn                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) Elevator goes up
+  VsCONT_s_DriverInput.b_IntakeArmOut                   = LeCONT_b_Driver2ButtonY;      //Controller 2, B button (2), (robot.cpp) Elevator goes down
+  VsCONT_s_DriverInput.b_IntakeRollers                  = LeCONT_b_Driver2ButtonX;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
+  VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
+  VsCONT_s_DriverInput.pct_Wrist                        = LeCONT_Pct_Driver2RightAxisX;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
+  VsCONT_s_DriverInput.pct_Turret                       = LeCONT_b_Driver2ButtonRB;     //Controller 2, X button (3), (Manipulator.cpp) starts automated states machine
+
+  if (LeCONT_b_Driver2ButtonRB == true)
+    {
+    LeCONT_Pct_TurretCmnd += 1.0;
+    }
+
+  if (LeCONT_b_Driver2ButtonLB == true)
+    {
+    LeCONT_Pct_TurretCmnd += -1.0;
+    }
+
+  VsCONT_s_DriverInput.pct_Turret = LeCONT_Pct_TurretCmnd;
+
+  if (LeCont_Pct_Driver2AxisRB > 0.1) // Deadband
+    {
+    LeCONT_Pct_ClawCmnd += -LeCont_Pct_Driver2AxisRB;
+    }
+
+  if (LeCont_Pct_Driver2AxisLB > 0.1) // Deadband
+    {
+    LeCONT_Pct_ClawCmnd += LeCont_Pct_Driver2AxisLB;
+    }
+
+  VsCONT_s_DriverInput.pct_Claw = LeCONT_Pct_ClawCmnd;
+
+
+  VsCONT_s_DriverInput.pct_ArmPivot = 0.0;
+  VsCONT_s_DriverInput.pct_LinearSlide = 0.0;
 
   if (LeCONT_Deg_Driver2POV == 0)
     {
-    LeCONT_e_LiftCmndDirection = E_LiftCmndUp;
+    VsCONT_s_DriverInput.pct_ArmPivot = 1.0;
     }
   else if (LeCONT_Deg_Driver2POV == 180)
     {
-    LeCONT_e_LiftCmndDirection = E_LiftCmndDown;
+    VsCONT_s_DriverInput.pct_ArmPivot = -1.0;
     }
   else if (LeCONT_Deg_Driver2POV == 90)
     {
-    LeCONT_e_LiftCmndDirection = E_LiftCmndForward;
+    VsCONT_s_DriverInput.pct_LinearSlide = 1.0;
     }
   else if (LeCONT_Deg_Driver2POV == 270)
     {
-    LeCONT_e_LiftCmndDirection = E_LiftCmndBack;
+    VsCONT_s_DriverInput.pct_LinearSlide = -1.0;
     }
-  else
-    {
-    LeCONT_e_LiftCmndDirection = E_LiftCmndNone;
-    }
-
-  VsCONT_s_DriverInput.e_LiftCmndDirection = LeCONT_e_LiftCmndDirection;
   }
