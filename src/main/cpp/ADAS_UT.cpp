@@ -495,10 +495,10 @@ T_ADAS_UT_UpperTarget ADAS_UT_MoveToTag(double *L_Pct_FwdRev,
   }
   if (V_ADAS_UT_DebounceTime <= KV_ADAS_UT_DebounceTime) // make sure we're still in the time we've given ourselves
   {
-    // if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
-    // {
-    //   *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
-    // }
+    if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
+    {
+      *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
+    }
     if (L_OdometryX < L_ChosenX) // TODO: add deadband
     {
       *L_Pct_FwdRev = 0.2;
