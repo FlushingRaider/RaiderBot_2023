@@ -16,16 +16,15 @@ void ADAS_UT_ConfigsCal(void);
 void ADAS_UT_ConfigsInit(void);
 
 T_ADAS_ActiveFeature ADAS_UT_Main(double *L_Pct_FwdRev,
-                  double *L_Pct_Strafe,
-                  double *L_Pct_Rotate,
-                  double *L_Pct_Intake,
-                  bool *L_VisionTargetingRequest,
-                  bool L_VisionTopTargetAquired,
-                  T_RobotState L_RobotState,
-                  double L_VisTagX,
-                  double L_VisTagY,
-                  int L_TagID,
-                  double L_OdometryX,
-                  double L_OdometryY,
-                  double L_TagYawDegrees,
-                  frc::DriverStation::Alliance LeLC_e_AllianceColor);
+                                  double *L_Pct_Strafe,
+                                  double *L_Pct_Rotate,
+                                  double *L_Pct_Intake,
+                                  bool *L_VisionTargetingRequest,
+                                  bool L_VisionTopTargetAquired,
+                                  T_RobotState L_RobotState,
+                                  int L_TagID,
+                                  bool L_OdomCentered,
+                                  double L_OdometryX,
+                                  double L_OdometryY,
+                                  double L_TagYawDegrees,
+                                  frc::DriverStation::Alliance LeLC_e_AllianceColor);

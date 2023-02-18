@@ -398,7 +398,6 @@ T_ADAS_UT_UpperTarget ADAS_UT_ElevatorControl(double *L_Pct_FwdRev,
 }
 #endif
 
-
 #ifdef NewVision
 /******************************************************************************
  * Function:     ADAS_UT_MoveToTag
@@ -408,8 +407,7 @@ T_ADAS_UT_UpperTarget ADAS_UT_ElevatorControl(double *L_Pct_FwdRev,
 T_ADAS_UT_UpperTarget ADAS_UT_MoveToTag(double *L_Pct_FwdRev,
                                         double *L_Pct_Strafe,
                                         double *L_Pct_Rotate,
-                                        double L_VisTagX,
-                                        double L_VisTagY,
+                                        bool L_OdomCentered,
                                         int L_TagID,
                                         double L_OdometryX,
                                         double L_OdometryY,
@@ -420,6 +418,9 @@ T_ADAS_UT_UpperTarget ADAS_UT_MoveToTag(double *L_Pct_FwdRev,
 {
 
   T_ADAS_UT_UpperTarget L_ADAS_UT_State = E_ADAS_UT_MoveToTag;
+
+  *L_Pct_FwdRev = 0;
+  *L_Pct_Strafe = 0;
   /* Next, let's set all the other items we aren't trying to control to off: */
   double L_ChosenX = 0;
   double L_ChosenY = 0;
@@ -446,92 +447,98 @@ T_ADAS_UT_UpperTarget ADAS_UT_MoveToTag(double *L_Pct_FwdRev,
   *L_Pct_Rotate = 0;
 
   V_ADAS_UT_DebounceTime += C_ExeTime;
-
-  // pick the ride side of tags to look at for our alliance
-  if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
+  if (L_OdomCentered) // don't do any of this if we haven't centered our Odometry based on the tag
   {
-    L_ChosenX = L_TagXred; // all 3 tags on the red alliance have the same X
-    if (L_TagID == 1){
-      L_ChosenY = L_Tag1Y;
-    }
-    else if (L_TagID == 2){
-      L_ChosenY = L_Tag2Y;
-    }
-    else if (L_TagID == 3){
-      L_ChosenY = L_Tag3Y;
-    }
-  }
-  else
-  {
-    L_ChosenX = L_TagXblue; // x coord of all blue tags
-    if (L_TagID == 8){
-      L_ChosenY = L_Tag1Y;
-    }
-    else if (L_TagID ==7){
-      L_ChosenY = L_Tag2Y;
-    }
-    else if (L_TagID == 6){
-      L_ChosenY = L_Tag3Y;
-    }
-  }
-
-  // find the closest tag and our error to it:
-  if (L_VisionTopTargetAquired)
-  {
-
-    // // check if Error 1 is the largest
-    // if (L_Tag1YError >= L_Tag2YError && L_Tag1YError >= L_Tag3YError)
-    // {
-    //   L_ChosenY = L_Tag1Y;
-    // }
-    // // check if Error 2 is the largest number
-    // else if (L_Tag2YError >= L_Tag1YError && L_Tag2YError >= L_Tag3YError)
-    // {
-    //   L_ChosenY = L_Tag2Y;
-    // }
-    // // if neither n1 nor n2 are the largest, Error 3 is the largest
-    // else
-    // {
-    //   L_ChosenY = L_Tag3Y;
-    // }
-
-
-
-    L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
-  }
-  if (V_ADAS_UT_DebounceTime <= KV_ADAS_UT_DebounceTime) // make sure we're still in the time we've given ourselves
-  {
-    if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
+    // pick the right side of tags to look at for our alliance
+    if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
     {
-      *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
-    }
-    if (L_OdometryX < L_ChosenX) // TODO: add deadband
-    {
-      *L_Pct_FwdRev = 0.2;
-    }
-    else if (L_OdometryX > L_ChosenX)
-    {
-      *L_Pct_FwdRev = -0.2;
+      L_ChosenX = L_TagXred; // all 3 tags on the red alliance have the same X
+      if (L_TagID == 1)
+      {
+        L_ChosenY = L_Tag1Y;
+      }
+      else if (L_TagID == 2)
+      {
+        L_ChosenY = L_Tag2Y;
+      }
+      else if (L_TagID == 3)
+      {
+        L_ChosenY = L_Tag3Y;
+      }
     }
     else
     {
-      *L_Pct_FwdRev = 0.0;
+      L_ChosenX = L_TagXblue; // x coord of all blue tags
+      if (L_TagID == 8)
+      {
+        L_ChosenY = L_Tag1Y;
+      }
+      else if (L_TagID == 7)
+      {
+        L_ChosenY = L_Tag2Y;
+      }
+      else if (L_TagID == 6)
+      {
+        L_ChosenY = L_Tag3Y;
+      }
     }
-    if (L_OdometryY < L_ChosenY) // TODO: add deadband
-    {
-      *L_Pct_Strafe = 0.2;
-    }
-    else if (L_OdometryY > L_ChosenY)
-    {
-      *L_Pct_Strafe = -0.2;
-    }
-    else
-    {
-      *L_Pct_Strafe = 0.0;
-    }
-  }
 
-  return (L_ADAS_UT_State);
+    // find the closest tag and our error to it:
+    if (L_VisionTopTargetAquired)
+    {
+
+      // // check if Error 1 is the largest
+      // if (L_Tag1YError >= L_Tag2YError && L_Tag1YError >= L_Tag3YError)
+      // {
+      //   L_ChosenY = L_Tag1Y;
+      // }
+      // // check if Error 2 is the largest number
+      // else if (L_Tag2YError >= L_Tag1YError && L_Tag2YError >= L_Tag3YError)
+      // {
+      //   L_ChosenY = L_Tag2Y;
+      // }
+      // // if neither n1 nor n2 are the largest, Error 3 is the largest
+      // else
+      // {
+      //   L_ChosenY = L_Tag3Y;
+      // }
+
+      L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
+    }
+    if (V_ADAS_UT_DebounceTime <= KV_ADAS_UT_DebounceTime) // make sure we're still in the time we've given ourselves
+    {
+      if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
+      {
+        *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
+      }
+      if (L_OdometryX < L_ChosenX) // TODO: add deadband
+      {
+        *L_Pct_FwdRev = 0.2;
+      }
+      else if (L_OdometryX > L_ChosenX)
+      {
+        *L_Pct_FwdRev = -0.2;
+      }
+      else
+      {
+        *L_Pct_FwdRev = 0.0;
+      }
+      if (L_OdometryY < L_ChosenY) // TODO: add deadband
+      {
+        *L_Pct_Strafe = 0.2;
+      }
+      else if (L_OdometryY > L_ChosenY)
+      {
+        *L_Pct_Strafe = -0.2;
+      }
+      else
+      {
+        *L_Pct_Strafe = 0.0;
+      }
+    }
+
+    return (L_ADAS_UT_State);
+  }
 }
 
 #endif
@@ -548,9 +555,8 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
                   bool *L_VisionTargetingRequest,
                   bool L_VisionTopTargetAquired,
                   T_RobotState L_RobotState,
-                  double L_VisTagX,
-                  double L_VisTagY,
                   int L_TagID,
+                  bool L_OdomCentered,
                   double L_OdometryX,
                   double L_OdometryY,
                   double L_TagYawDegrees,
@@ -631,8 +637,7 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
     V_ADAS_UT_State = ADAS_UT_MoveToTag(L_Pct_FwdRev,
                                         L_Pct_Strafe,
                                         L_Pct_Rotate,
-                                        L_VisTagX,
-                                        L_VisTagY,
+                                        L_OdomCentered,
                                         L_TagID,
                                         L_OdometryX,
                                         L_OdometryY,

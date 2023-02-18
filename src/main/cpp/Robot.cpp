@@ -32,6 +32,8 @@ frc::DriverStation::Alliance V_AllianceColor = frc::DriverStation::Alliance::kIn
 double V_MatchTimeRemaining = 0;
 TsRobotMotorCmnd VsRobotMotorCmnd;
 
+bool FakeButton;
+
 /******************************************************************************
  * Function:     RobotMotorCommands
  *
@@ -203,8 +205,9 @@ void Robot::RobotInit()
 #ifdef unused
   ADAS_BT_ConfigsInit();
 #endif
-
+#ifdef OldVision
   VisionInit(V_AllianceColor);
+  #endif
 }
 
 /******************************************************************************
@@ -306,11 +309,11 @@ void Robot::RobotPeriodic()
                                           VeVIS_b_TagHasTarget,
                                           V_RobotState,
                                           V_ADAS_ActiveFeature,
-                                          V_Tagx,
-                                          V_Tagy,
+                                          V_TagCentered, // comes from Vision
                                           V_TagID,
                                           V_TagYaw,
-                                          V_AllianceColor);
+                                          V_AllianceColor
+                                          );
 
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
                    VsCONT_s_DriverInput.pct_SwerveStrafe,      // swerve control strafe
@@ -375,16 +378,16 @@ void Robot::RobotPeriodic()
 #endif
 
 #ifdef NewVision
-
-  VisionRun();
-  frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
-  frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
-  frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
-  frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
-  frc::SmartDashboard::PutNumber("TagID ", V_TagID);
-  frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
-  frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
-  frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
+ FakeButton =frc::SmartDashboard::GetBoolean("Fake auto target buton", false);
+  VisionRun(FakeButton);
+  // frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
+  // frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
+  // frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
+  // frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
+  // frc::SmartDashboard::PutNumber("TagID ", V_TagID);
+  // frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
+  // frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
+  // frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
 
 #endif
 
@@ -456,8 +459,9 @@ void Robot::AutonomousInit()
     ManipulatorControlInit();
   ADAS_Main_Reset();
   OdometryInit();
-
+  #ifdef OldVision
   VisionInit(V_AllianceColor);
+  #endif
 }
 
 /******************************************************************************
@@ -487,7 +491,9 @@ void Robot::TeleopInit()
   BallHandlerInit();
   ManipulatorControlInit();
   OdometryInit();
+  #ifdef OldVision
   VisionInit(V_AllianceColor);
+  #endif
 #ifdef unused
   m_encoderrightShooter.SetPosition(0);
   m_encoderleftShooter.SetPosition(0);
