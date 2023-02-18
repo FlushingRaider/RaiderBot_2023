@@ -277,12 +277,12 @@ const double KaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz] = { 0.00055,  // k
 /* KaMAN_e_ControllingTable: Table that contains the commanded state of the manipulator and intake based on the current attained state and schedueld state. */
 const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_Man_State_Sz][E_Man_State_Sz] =
   {
-    {E_S3_Swiper,       E_S3_Swiper,       E_S0_Rest,            E_S0_Rest,            E_S2_TradeOff, E_S2_TradeOff},
-    {E_S3_Swiper,       E_S3_Swiper,       E_S0_Rest,            E_S0_Rest,            E_S3_Swiper,   E_S3_Swiper},
-    {E_S4_DrivingState, E_S5_Positioning,  E_S6_DroppingTheLoot, E_S6_DroppingTheLoot, E_S2_TradeOff, E_S4_DrivingState},
-    {E_S4_DrivingState, E_S5_Positioning,  E_S5_Positioning,     E_S0_Rest,            E_S2_TradeOff, E_S4_DrivingState},
-    {E_S4_DrivingState, E_S4_DrivingState, E_S4_DrivingState,    E_S0_Rest,            E_S2_TradeOff, E_S4_DrivingState},
-    {E_S0_Rest,         E_S0_Rest,         E_S0_Rest,            E_S0_Rest,            E_S0_Rest,     E_S0_Rest}
+    {E_Swiper,       E_Swiper,       E_Rest,            E_Rest,            E_TradeOff, E_TradeOff},
+    {E_Swiper,       E_Swiper,       E_Rest,            E_Rest,            E_Swiper,   E_Swiper},
+    {E_DrivingState, E_PositioningState,  E_DroppingTheLoot, E_DroppingTheLoot, E_TradeOff, E_DrivingState},
+    {E_DrivingState, E_PositioningState,  E_PositioningState,     E_Rest,            E_TradeOff, E_DrivingState},
+    {E_DrivingState, E_DrivingState, E_DrivingState,    E_Rest,            E_TradeOff, E_DrivingState},
+    {E_Rest,         E_Rest,         E_Rest,            E_Rest,            E_Rest,     E_Rest}
   };
 
 /* Ball handler (BH) cals: */

@@ -111,13 +111,12 @@ typedef enum T_LED_LightCmnd
 } T_LED_LightCmnd;
 
 typedef enum TeMAN_ManipulatorStates
-{E_S0_Rest,
- E_S1_Intake,
- E_S2_TradeOff,
- E_S3_Swiper,
- E_S4_DrivingState,
- E_S5_Positioning,
- E_S6_DroppingTheLoot,
+{E_Rest,
+ E_TradeOff,
+ E_Swiper,
+ E_DrivingState,
+ E_PositioningState,
+ E_DroppingTheLoot,
  E_Man_State_Sz
 } TeMAN_ManipulatorStates;
  
