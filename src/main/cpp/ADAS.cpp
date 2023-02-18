@@ -30,6 +30,7 @@
 #include "ADAS_UT.hpp"
 #include "ADAS_BT.hpp"
 #include "ADAS_DM.hpp"
+#include "ADAS_ARM.hpp"
 
 /* ADAS control state variables */
 T_ADAS_ActiveFeature V_ADAS_ActiveFeature = E_ADAS_Disabled;
@@ -112,7 +113,7 @@ void ADAS_Main_Reset(void)
   ADAS_BT_Reset();
   ADAS_DM_Reset();
 }
-
+#ifdef CompBot2
 /******************************************************************************
  * Function:     ADAS_ControlMain
  *
@@ -131,6 +132,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       bool *L_SD_RobotOriented,
                                       bool *L_VisionTargetingRequest,
                                       bool L_Driver1_JoystickActive,
+                                      bool L_Driver_stops_shooter,
                                       bool L_Driver_SwerveGoalAutoCenter,
                                       bool L_Driver_AutoIntake,
                                       double L_Deg_GyroAngleDeg,
@@ -143,8 +145,12 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double L_VisionBottomYaw,
                                       double L_VisionBottomTargetDistanceMeters,
                                       T_RobotState L_RobotState,
+                                      double L_LauncherRPM_Measured,
                                       bool L_BallDetectedUpper,
                                       bool L_BallDetectedLower,
+                                      bool L_DriverRequestElevatorUp,
+                                      bool L_DriverRequestElevatorDwn,
+                                      bool L_DriverRequestIntake,
                                       T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
                                       double L_VisTagX,
                                       double L_VisTagY,
@@ -167,7 +173,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     }
 
     /* Abort criteria goes here: */
-    if ((L_Driver1_JoystickActive == true) || (V_ADAS_StateComplete == true))
+    if ((L_Driver1_JoystickActive == true) || (L_Driver_stops_shooter == true) || (V_ADAS_StateComplete == true))
     {
       /* Abort criteria goes here. */
       LeLC_e_ADASActiveFeature = E_ADAS_Disabled;
@@ -321,6 +327,40 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         V_ADAS_AutonOncePerTrigger = true;
       }
     }
+    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDeployCone) //Auton code for deplying Cones
+    {
+      //Step 1 - Place Cone
+      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false)) 
+      {
+        LeLC_e_ADASActiveFeature = E_ADAS_AutonDeployCone;
+      }
+      //Step 2
+      else if ((LeLC_e_ADASActiveFeature == E_ADAS_AutonDeployCone) && (V_ADAS_StateComplete == true))
+      {
+        //LeLC_e_ADASActiveFeature = AUTONCOMMAND;
+      }
+    }
+    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDeployCube) //Auton code for deplying Cubes
+    {
+      //Step 1 - Place Cube
+      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false)) 
+      {
+        LeLC_e_ADASActiveFeature = E_ADAS_AutonDeployCube;
+      }
+      //Step 2
+      else if ((LeLC_e_ADASActiveFeature == E_ADAS_AutonDeployCube) && (V_ADAS_StateComplete == true))
+      {
+        //LeLC_e_ADASActiveFeature = AUTONCOMMAND;
+      }
+    }
+    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDrive)
+    {
+      
+    }
+    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonRotate)
+    {
+      
+    }
     else
     {
       /* No auton requested. */
@@ -459,6 +499,10 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                 L_Deg_GyroAngleDeg,
                                                 V_ADAS_PathNum);
     break;
+  case E_ADAS_AutonDeployCone:
+    V_ADAS_StateComplete = ADAS_ARM_DeployCone();
+  case E_ADAS_AutonDeployCube:
+    V_ADAS_StateComplete = ADAS_ARM_DeployCube();
   case E_ADAS_Disabled:
   default:
     *L_Pct_FwdRev = 0;
@@ -475,3 +519,4 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
 
   return (LeLC_e_ADASActiveFeature);
 }
+#endif

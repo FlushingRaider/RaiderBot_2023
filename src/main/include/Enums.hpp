@@ -86,14 +86,14 @@ typedef enum T_CameraLightStatus
   E_LightForcedOffDueToOvertime
 } T_CameraLightStatus;
 
-typedef enum TeLFT_e_LiftCmndDirection
+typedef enum T_Manipulator_CmndDirection
 {
   E_LiftCmndNone,
   E_LiftCmndUp,
   E_LiftCmndDown,
   E_LiftCmndForward,
   E_LiftCmndBack
-} TeLFT_e_LiftCmndDirection;
+} T_Manipulator_CmndDirection;
 
 typedef enum T_TurretCmndDirection
 {
@@ -178,7 +178,12 @@ typedef enum T_ADAS_ActiveFeature
   E_ADAS_DM_ReverseAndIntake,
   E_ADAS_DM_Rotate180,
   E_ADAS_DM_RotateFieldOriented,
-  E_ADAS_DM_PathFollower
+  E_ADAS_DM_PathFollower,
+  //Added for 2023
+  E_ADAS_AutonDeployCube,
+  E_ADAS_AutonDeployCone,
+  E_ADAS_AutonDrive,
+  E_ADAS_AutonRotate,
 } T_ADAS_ActiveFeature;
 
 typedef enum T_ADAS_Auton1

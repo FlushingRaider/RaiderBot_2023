@@ -27,6 +27,7 @@ void ADAS_Main_Reset(void);
 void ADAS_Main_Init(void);
 void ADAS_DetermineMode(void);
 
+#ifdef CompBot2
 T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Strafe,
                                       double *L_Pct_Rotate,
@@ -58,3 +59,4 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       int L_TagID,
                                       double L_TagYawDegrees,
                                       frc::DriverStation::Alliance LeLC_e_AllianceColor);
+#endif

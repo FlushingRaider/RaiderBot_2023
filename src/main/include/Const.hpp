@@ -9,7 +9,6 @@
 #define CompBot
 
 #define NewVision // NewVision or OldVision
-//#define BrokenMain
 
 
 
@@ -32,7 +31,7 @@ static const double KeENC_k_VoltageToAngle = 72.0; // Gain that converts the mea
 
 
 // CAN Device IDs:
-static const int C_PDP_ID = 0;
+static const int C_PDP_ID = 21;
 static const int frontLeftSteerDeviceID = 1, frontLeftDriveDeviceID = 2, frontRightSteerDeviceID = 4, frontRightDriveDeviceID = 3;
 static const int rearLeftSteerDeviceID  = 5, rearLeftDriveDeviceID  = 6, rearRightSteerDeviceID  = 7, rearRightDriveDeviceID  = 8;
 static const int KeMAN_i_TurretRotate = 9; 
@@ -64,14 +63,6 @@ static const int C_VanityLight_ID = 0;
 
 // Vision Cals:
 // cals for top target cam
-/* K_VisionHeight: Height of the camera relative to ground. */
-//const units::meter_t K_VisionHeight[E_CamLocSz] = {0.795_m,  // 795 mm to camera lense  -> top
-                                                  // 0.367_m}; //                         -> bottom
-
-/* K_VisionTargetHeight: Height of the target relative to ground. */
-//const units::meter_t K_VisionTargetHeight[E_CamLocSz] = {2.58_m,  // bottom of tape to carpet  -> top
-                                                        // 0.12_m};  // radius of the ball in cm -> bottom
-
 
 /* K_VisionCalculationDelayTime: Delay time before allowing calculations to occur */
 const double K_VisionCalculationDelayTime = 0.1;

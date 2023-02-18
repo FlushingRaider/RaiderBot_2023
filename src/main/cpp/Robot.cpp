@@ -194,14 +194,6 @@ void Robot::RobotInit()
                               m_rearLeftDrivePID,
                               m_rearRightDrivePID);
 
-#ifdef CompBot2
-  BallHandlerMotorConfigsInit(m_rightShooterpid,
-                              m_leftShooterpid);
-
-  ManipulatorMoterConfigsInit(m_liftpidYD,
-                              m_liftpidXD);
-#endif
-
   ADAS_Main_Init();
   ADAS_Main_Reset();
 
@@ -209,14 +201,7 @@ void Robot::RobotInit()
   ADAS_UT_ConfigsInit();
   ADAS_BT_ConfigsInit();
 
-#ifdef OldVision
-
-#ifdef OldVision
-  VisionRobotInit();
-
-#endif
   VisionInit(V_AllianceColor);
-#endif
 }
 
 /******************************************************************************
@@ -303,7 +288,7 @@ void Robot::RobotPeriodic()
                          VsCONT_s_DriverInput.b_ZeroGyro);
 
   ADAS_DetermineMode();
-
+#ifdef CompBot2
   V_ADAS_ActiveFeature = ADAS_ControlMain(&V_ADAS_Pct_SD_FwdRev,
                                           &V_ADAS_Pct_SD_Strafe,
                                           &V_ADAS_Pct_SD_Rotate,
@@ -335,6 +320,7 @@ void Robot::RobotPeriodic()
                                           V_TagID,
                                           V_TagYaw,
                                           V_AllianceColor);
+#endif
 
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
                    VsCONT_s_DriverInput.pct_SwerveStrafe,      // swerve control strafe
@@ -446,7 +432,7 @@ void Robot::RobotPeriodic()
   BallHandlerMotorConfigsCal(m_rightShooterpid,
                              m_leftShooterpid);
 
-  LiftMotorConfigsCal(m_liftpidYD,
+  ManipulatorMotorConfigsCal(m_liftpidYD,
                       m_liftpidXD);
 #endif
   ADAS_UT_ConfigsCal();
@@ -476,10 +462,8 @@ void Robot::AutonomousInit()
   V_AllianceColor = frc::DriverStation::GetAlliance();
   GyroInit();
   DriveControlInit();
-  BallHandlerInit();
-#ifdef BrokenMain
-  LiftControlInit();
-#endif
+    BallHandlerInit();
+    ManipulatorControlInit();
   ADAS_Main_Reset();
   OdometryInit();
 
@@ -511,9 +495,7 @@ void Robot::TeleopInit()
   ADAS_Main_Reset();
   DriveControlInit();
   BallHandlerInit();
-#ifdef BrokenMain
-  LiftControlInit();
-#endif
+  ManipulatorControlInit();
   OdometryInit();
   VisionInit(V_AllianceColor);
 #ifdef CompBot2

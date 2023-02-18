@@ -22,13 +22,13 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
                                  rev::SparkMaxPIDController m_GripperPID,
                                  rev::SparkMaxPIDController m_IntakeRollersPID);
 
-void LiftControlInit();
+void ManipulatorControlInit();
 
 void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput);
 
 TeMAN_ManipulatorStates ManipulatorControlDictator(bool                LeMAN_b_AutoManipulateButton,
                                    bool                L_driver_auto_climb_pause,
-                                   TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
+                                   T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
                                    double              L_game_time,
                                    TeMAN_ManipulatorStates        LeMAN_Cnt_CurrentState,
                                    double              LeMAN_Deg_MeasuredAngleTurret,
