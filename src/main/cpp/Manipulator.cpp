@@ -1,13 +1,12 @@
 /*
   Manipulator.cpp
 
-   Created on: Feb 04, 2023
+   Created on: Feb 01, 2022
    Author: Lauren and Chloe
 
-   This will control the manipulator, aka arm, and its motors, in order to recieve, move, and score game pieces
+   The lift control state machine. This controls the robat to move the x and y hooks. It automously controls the robot to climb
 
    lift go brrrrrrrrrrrrrrrrrrr -chloe
-   gaslight gatekeep manipulate
  */
 
 #include "rev/CANSparkMax.h"
@@ -40,7 +39,7 @@ bool VeMAN_b_MoterTestTurret = false;
 
 
 /******************************************************************************
- * Function:     ManipulatorMotorConfigsInit
+ * Function:     LiftMotorConfigsInit
  *
  * Description:  Contains the motor configurations for the Arm and intake motors.
  *               - A through F
@@ -90,13 +89,13 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
     }
   
   #ifdef LiftXY_Test
-  T_PID_SparkMaxCal LeMAN_e_Index = E_kP;
+  T_PID_SparkMaxCal LeLFT_e_Index = E_kP;
 
-  for (LeMAN_e_Index = E_kP;
-       LeMAN_e_Index < E_PID_SparkMaxCalSz;
-       LeMAN_e_Index = T_PID_SparkMaxCal(int(LeMAN_e_Index) + 1))
+  for (LeLFT_e_Index = E_kP;
+       LeLFT_e_Index < E_PID_SparkMaxCalSz;
+       LeLFT_e_Index = T_PID_SparkMaxCal(int(LeLFT_e_Index) + 1))
       {
-      VMAN_PID_Gx[LeMAN_e_Index] = K_LiftPID_Gx[LeMAN_e_Index];
+      V_LiftPID_Gx[LeLFT_e_Index] = K_LiftPID_Gx[LeLFT_e_Index];
       }
   
   // display PID coefficients on SmartDashboard
@@ -162,12 +161,12 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
 
 
 /******************************************************************************
- * Function:     ManipulatorMotorConfigsCal
+ * Function:     LiftMotorConfigsCal
  *
  * Description:  Contains the motor configurations for the manipulator motors.  This 
  *               allows for rapid calibration, but must not be used for comp.
  ******************************************************************************/
-void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
+void LiftMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
                          rev::SparkMaxPIDController m_liftpidXD)
   {
   // read PID coefficients from SmartDashboard
@@ -187,12 +186,12 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
   // VeMAN_Cnt_MoterTestLocationTurret = frc::SmartDashboard::GetNumber("Set Position Y", 0);
   // VeMAN_Cnt_MoterTestLocationArmPivot = frc::SmartDashboard::GetNumber("Set Position X", 0);
 
-  // if((L_p != VMAN_PID_Gx[E_kP]))   { m_liftpidYD.SetP(L_p); m_liftpidXD.SetP(L_p); VMAN_PID_Gx[E_kP] = L_p; }
-  // if((L_i != VMAN_PID_Gx[E_kI]))   { m_liftpidYD.SetI(L_i); m_liftpidXD.SetI(L_i); VMAN_PID_Gx[E_kI] = L_i; }
-  // if((L_d != VMAN_PID_Gx[E_kD]))   { m_liftpidYD.SetD(L_d); m_liftpidXD.SetD(L_d); VMAN_PID_Gx[E_kD] = L_d; }
-  // if((L_iz != VMAN_PID_Gx[E_kIz])) { m_liftpidYD.SetIZone(L_iz); m_liftpidXD.SetIZone(L_iz); VMAN_PID_Gx[E_kIz] = L_iz; }
-  // if((L_ff != VMAN_PID_Gx[E_kFF])) { m_liftpidYD.SetFF(L_ff); m_liftpidXD.SetFF(L_ff); VMAN_PID_Gx[E_kFF] = L_ff; }
-  // if((L_max != VMAN_PID_Gx[E_kMaxOutput]) || (L_min != VMAN_PID_Gx[E_kMinOutput])) { m_liftpidYD.SetOutputRange(L_min, L_max); m_liftpidXD.SetOutputRange(L_min, L_max); VMAN_PID_Gx[E_kMinOutput] = L_min; VMAN_PID_Gx[E_kMaxOutput] = L_max; }
+  // if((L_p != V_LiftPID_Gx[E_kP]))   { m_liftpidYD.SetP(L_p); m_liftpidXD.SetP(L_p); V_LiftPID_Gx[E_kP] = L_p; }
+  // if((L_i != V_LiftPID_Gx[E_kI]))   { m_liftpidYD.SetI(L_i); m_liftpidXD.SetI(L_i); V_LiftPID_Gx[E_kI] = L_i; }
+  // if((L_d != V_LiftPID_Gx[E_kD]))   { m_liftpidYD.SetD(L_d); m_liftpidXD.SetD(L_d); V_LiftPID_Gx[E_kD] = L_d; }
+  // if((L_iz != V_LiftPID_Gx[E_kIz])) { m_liftpidYD.SetIZone(L_iz); m_liftpidXD.SetIZone(L_iz); V_LiftPID_Gx[E_kIz] = L_iz; }
+  // if((L_ff != V_LiftPID_Gx[E_kFF])) { m_liftpidYD.SetFF(L_ff); m_liftpidXD.SetFF(L_ff); V_LiftPID_Gx[E_kFF] = L_ff; }
+  // if((L_max != V_LiftPID_Gx[E_kMaxOutput]) || (L_min != V_LiftPID_Gx[E_kMinOutput])) { m_liftpidYD.SetOutputRange(L_min, L_max); m_liftpidXD.SetOutputRange(L_min, L_max); V_LiftPID_Gx[E_kMinOutput] = L_min; V_LiftPID_Gx[E_kMaxOutput] = L_max; }
   
   VaMAN_InS_RampRateMoterShoulder[E_Rest][VeMAN_Cnt_ManIterationNew]            = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_Rest][VeMAN_Cnt_ManIterationNew]",            VaMAN_InS_RampRateMoterShoulder[E_Rest][VeMAN_Cnt_ManIterationNew]);
   VaMAN_InS_RampRateMoterShoulder[E_TradeOff][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_LiftRampRateXD[E_TradeOff][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterShoulder[E_TradeOff][VeMAN_Cnt_ManIterationNew]);
@@ -243,11 +242,11 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
   }
 
 /******************************************************************************
- * Function:     ManipulatorControlInit
+ * Function:     LiftControlInit
  *
- * Description:  Initialization function for the Manipulator controls.
+ * Description:  Initialization function for the lift control.
  ******************************************************************************/
-void ManipulatorControlInit()
+void LiftControlInit()
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
 
@@ -437,11 +436,11 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
     VeMAN_Cnt_LayoverTimer += C_ExeTime;
     if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
          LeLFT_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
     }
   }
   else {
-    VeMAN_Cnt_LayoverTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
 
   return(LeLFT_b_CriteriaMet);
@@ -477,13 +476,13 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
       if (LeMAN_b_AutoManipulateButton == true){
          /* Let the driver determine when we are not swinging and can proceed */
          LeLFT_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-         VeMAN_b_WaitingForDriverINS = false;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
+         VeLFT_b_WaitingForDriverINS = false;
       }
     }
   }
   else {
-    VeMAN_Cnt_LayoverTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(LeLFT_b_CriteriaMet);
@@ -516,11 +515,11 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
     VeMAN_Cnt_LayoverTimer += C_ExeTime;
     if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
          LeLFT_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
     }
   }
   else {
-    VeMAN_Cnt_LayoverTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(LeLFT_b_CriteriaMet);
@@ -553,11 +552,11 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
     VeMAN_Cnt_LayoverTimer += C_ExeTime;
     if (VeMAN_Cnt_LayoverTimer >= K_Lift_deadband_timer){
          LeLFT_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
     }
   }
   else {
-    VeMAN_Cnt_LayoverTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   
   return(LeLFT_b_CriteriaMet);
@@ -603,13 +602,13 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
       if (LeMAN_b_AutoManipulateButton == true){
          /* Let the driver determine when we are not swinging and can proceed */
          LeLFT_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-         VeMAN_b_WaitingForDriverINS = false;
+         VeLFT_Cnt_LiftDebounceTimer = 0;
+         VeLFT_b_WaitingForDriverINS = false;
       }
     }
   }
   else {
-    VeMAN_Cnt_LayoverTimer = 0;
+    VeLFT_Cnt_LiftDebounceTimer = 0;
   }
   return(LeLFT_b_CriteriaMet);
 }
@@ -805,7 +804,7 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
  ******************************************************************************/
 TeMAN_ManipulatorStates ManipulatorControlDictator(bool                LeMAN_b_AutoManipulateButton,
                                    bool                LeLFT_b_DriverAutoClimbPause,
-                                   T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
+                                   TeLFT_e_LiftCmndDirection LeLFT_Cmd_DriverLiftDirection,
                                    double              LeLFT_SEC_GameTime,
                                    TeMAN_ManipulatorStates        LeMAN_Cnt_CurrentState,                                
                                    double              LeMAN_Deg_MeasuredAngleTurret,
@@ -844,7 +843,7 @@ TeMAN_ManipulatorStates ManipulatorControlDictator(bool                LeMAN_b_A
     LeMAN_Cmd_CommandTurret_Temp = VeMAN_Cnt_MoterTestLocationTurret;
     LeMAN_Cmd_CommandArmPivot_Temp = VeMAN_Cnt_MoterTestLocationArmPivot;
     }
-  else if (VeMAN_b_ArmInitialized == false)
+  else if (VeLFT_b_LiftInitialized == false)
     {
     if (LeMAN_b_LimitDetectedTurret == false)
       {
@@ -867,7 +866,7 @@ TeMAN_ManipulatorStates ManipulatorControlDictator(bool                LeMAN_b_A
       //                  m_encoderLiftXD);
       }
     }
-  else if ((LeLFT_b_DriverAutoClimbPause == true) && (VeMAN_b_Paused == false))
+  else if ((LeLFT_b_DriverAutoClimbPause == true) && (VeLFT_b_Paused == false))
     {
     /* The driver pressed a button to puase the climb process.  Let's save the current locations and hold. */
     VeMAN_b_Paused = true;
@@ -884,14 +883,14 @@ TeMAN_ManipulatorStates ManipulatorControlDictator(bool                LeMAN_b_A
     VeMAN_Cnt_MoterTestPowerCmndTurret = LeMAN_Deg_MeasuredAngleArmPivot;
     VeMAN_Cnt_MoterTestPowerCmndArmPivot = LeMAN_Deg_MeasuredAngleTurret;
 
-    switch (LeMAN_Cnt_CurrentState)
+    switch (LeLFT_Cnt_CurrentState)
       {
         case :
             if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndUp)
               {
               LeMAN_Cmd_CommandTurret_Temp = *LeMAN_Cmd_CommandTurret + K_lift_driver_up_rate_YD;
               }
-            else if (LeMAN_Cmd_DriverMANDirection == E_LiftCmndDown)
+            else if (LeLFT_Cmd_DriverLiftDirection == E_LiftCmndDown)
               {
               LeMAN_Cmd_CommandTurret_Temp = *LeMAN_Cmd_CommandTurret - K_lift_driver_down_rate_YD;
               }

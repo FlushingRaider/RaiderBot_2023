@@ -108,7 +108,10 @@ class Robot : public frc::TimedRobot {
   rev::SparkMaxRelativeEncoder               m_encoderRearLeftDrive   = m_rearLeftDriveMotor.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_encoderRearRightSteer  = m_rearRightSteerMotor.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_encoderRearRightDrive  = m_rearRightDriveMotor.GetEncoder();
-
+#ifdef CompBot2
+  rev::SparkMaxRelativeEncoder               m_encoderrightShooter    = m_rightShooterMotor.GetEncoder();
+  rev::SparkMaxRelativeEncoder               m_encoderleftShooter     = m_leftShooterMotor.GetEncoder();
+#endif
   rev::SparkMaxRelativeEncoder               m_ArmPivotEncoder        = m_ArmPivot.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_WristEncoder           = m_Wrist.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_GripperEncoder         = m_Gripper.GetEncoder();
@@ -126,7 +129,7 @@ class Robot : public frc::TimedRobot {
   photonlib::PhotonCamera pc_Camera2{"Bottom"};
 #endif
 
-#ifdef CarsonDebug
+#ifdef NewVision
 
 
 #endif
@@ -137,7 +140,7 @@ class Robot : public frc::TimedRobot {
   const std::string kAutoNameDefault = "Default";
   const std::string kAutoNameCustom = "My Auto";
   std::string m_autoSelected;
-  
+  #endif
 };
 
-#endif
+

@@ -24,12 +24,12 @@
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include <frc/DriverStation.h>
 
 #include "Const.hpp"
 #include "ADAS_UT.hpp"
 #include "ADAS_BT.hpp"
 #include "ADAS_DM.hpp"
-#include "ADAS_ARM.hpp"
 
 /* ADAS control state variables */
 T_ADAS_ActiveFeature V_ADAS_ActiveFeature = E_ADAS_Disabled;
@@ -131,7 +131,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       bool *L_SD_RobotOriented,
                                       bool *L_VisionTargetingRequest,
                                       bool L_Driver1_JoystickActive,
-                                      bool L_Driver_stops_shooter,
                                       bool L_Driver_SwerveGoalAutoCenter,
                                       bool L_Driver_AutoIntake,
                                       double L_Deg_GyroAngleDeg,
@@ -144,13 +143,14 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double L_VisionBottomYaw,
                                       double L_VisionBottomTargetDistanceMeters,
                                       T_RobotState L_RobotState,
-                                      double L_LauncherRPM_Measured,
                                       bool L_BallDetectedUpper,
                                       bool L_BallDetectedLower,
-                                      bool L_DriverRequestElevatorUp,
-                                      bool L_DriverRequestElevatorDwn,
-                                      bool L_DriverRequestIntake,
-                                      T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature)
+                                      T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
+                                      double L_VisTagX,
+                                      double L_VisTagY,
+                                      int L_TagID,
+                                      double L_TagYawDegrees,
+                                      frc::DriverStation::Alliance LeLC_e_AllianceColor)
 {
 
   /* First, let's determine what we are going to do: */
@@ -167,20 +167,20 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     }
 
     /* Abort criteria goes here: */
-    if ((L_Driver1_JoystickActive == true) || (L_Driver_stops_shooter == true) || (V_ADAS_StateComplete == true))
+    if ((L_Driver1_JoystickActive == true) || (V_ADAS_StateComplete == true))
     {
       /* Abort criteria goes here. */
       LeLC_e_ADASActiveFeature = E_ADAS_Disabled;
       V_ADAS_StateComplete = false;
     }
   }
-  else if (L_RobotState == E_Auton) //Are we in auton state?
+  else if (L_RobotState == E_Auton)
   {
-    if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDriveAndShootBlind1) //Check what auton feature we want
+    if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDriveAndShootBlind1)
     {
       if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) &&
           (V_ADAS_StateComplete == false) &&
-          (V_ADAS_AutonOncePerTrigger == false)) // Check if Auton is disabled, Auton State Complete must be false, Once Per trigger must be false
+          (V_ADAS_AutonOncePerTrigger == false))
       {
         LeLC_e_ADASActiveFeature = E_ADAS_DM_BlindLaunch;
       }
@@ -321,41 +321,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         V_ADAS_AutonOncePerTrigger = true;
       }
     }
-    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDeployCone) //Auton code for deplying Cones
-    {
-      //Step 1 - Place Cone
-      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false)) 
-      {
-        LeLC_e_ADASActiveFeature = E_ADAS_AutonDeployCone;
-      }
-      //Step 2
-      else if ((LeLC_e_ADASActiveFeature == E_ADAS_AutonDeployCone) && (V_ADAS_StateComplete == true))
-      {
-        //LeLC_e_ADASActiveFeature = AUTONCOMMAND;
-      }
-    }
-    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDeployCube) //Auton code for deplying Cubes
-    {
-      //Step 1 - Place Cube
-      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false)) 
-      {
-        LeLC_e_ADASActiveFeature = E_ADAS_AutonDeployCube;
-      }
-      //Step 2
-      else if ((LeLC_e_ADASActiveFeature == E_ADAS_AutonDeployCube) && (V_ADAS_StateComplete == true))
-      {
-        //LeLC_e_ADASActiveFeature = AUTONCOMMAND;
-      }
-    }
-    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDrive)
-    {
-      
-    }
-    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonRotate)
-    {
-      
-    }
-    else //No auton selected 
+    else
     {
       /* No auton requested. */
       LeLC_e_ADASActiveFeature = E_ADAS_Disabled;
@@ -392,11 +358,14 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                         L_TopTargetYawDegrees,
                                         L_VisionTopTargetDistanceMeters,
                                         L_RobotState,
-                                        L_LauncherRPM_Measured,
                                         L_BallDetectedUpper,
-                                        L_DriverRequestElevatorUp,
-                                        L_DriverRequestElevatorDwn,
-                                        L_DriverRequestIntake);
+                                        L_VisTagX,
+                                        L_VisTagY,
+                                        L_TagID,
+                                        L_L_X_FieldPos,
+                                        L_L_Y_FieldPos,
+                                        L_TagYawDegrees,
+                                        LeLC_e_AllianceColor);
     break;
   case E_ADAS_BT_AutoBallTarget:
     V_ADAS_StateComplete = ADAS_BT_Main(L_Pct_FwdRev,
@@ -490,10 +459,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                 L_Deg_GyroAngleDeg,
                                                 V_ADAS_PathNum);
     break;
-  case E_ADAS_AutonDeployCone:
-    V_ADAS_StateComplete = ADAS_ARM_DeployCone();
-  case E_ADAS_AutonDeployCube:
-    V_ADAS_StateComplete = ADAS_ARM_DeployCube();
   case E_ADAS_Disabled:
   default:
     *L_Pct_FwdRev = 0;
