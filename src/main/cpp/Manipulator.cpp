@@ -306,9 +306,12 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
     VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeRollers] = KaMAN_k_ManipulatorTestPower[E_MAN_IntakeRollers];
     }
 
+
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Wrist] = LsCONT_s_DriverInput->pct_Wrist * KaMAN_k_ManipulatorTestPower[E_MAN_Wrist];
+
   VsMAN_s_Motors.k_MotorTestPower[E_MAN_ArmPivot] = LsCONT_s_DriverInput->pct_ArmPivot * KaMAN_k_ManipulatorTestPower[E_MAN_ArmPivot];
 
-  VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide] = LsCONT_s_DriverInput->pct_ArmPivot * KaMAN_k_ManipulatorTestPower[E_MAN_LinearSlide];
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide] = LsCONT_s_DriverInput->pct_LinearSlide * KaMAN_k_ManipulatorTestPower[E_MAN_LinearSlide];
 
   VsMAN_s_Motors.k_MotorTestPower[E_MAN_Turret] = LsCONT_s_DriverInput->pct_Turret * KaMAN_k_ManipulatorTestPower[E_MAN_Turret];
 
