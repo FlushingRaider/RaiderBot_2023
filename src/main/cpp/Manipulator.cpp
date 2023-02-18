@@ -17,6 +17,7 @@
 #include "Driver_inputs.hpp"
 #include "Encoders.hpp"
 
+TeMAN_ManipulatorStates VeMAN_e_SchedStatePrev = E_Rest; // Where do we want to end up?
 TeMAN_ManipulatorStates VeMAN_e_SchedState = E_Rest; // Where do we want to end up?
 TeMAN_ManipulatorStates VeMAN_e_CmndState  = E_Rest; // What is our next/current step?
 TeMAN_ManipulatorStates VeMAN_e_AttndState = E_Rest; // What is our current state?
@@ -39,7 +40,7 @@ bool VeMAN_b_MoterTestTurret = false;
 
 
 /******************************************************************************
- * Function:     LiftMotorConfigsInit
+ * Function:     ManipulatorMotorConfigsInit
  *
  * Description:  Contains the motor configurations for the Arm and intake motors.
  *               - A through F
@@ -314,10 +315,34 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
   VsMAN_s_Motors.k_MotorTestPower[E_MAN_Gripper] = LsCONT_s_DriverInput->pct_Claw * KaMAN_k_ManipulatorTestPower[E_MAN_Gripper];
   }
 
+/******************************************************************************
+ * Function:     Update_Command_Attained_State
+ *
+ * Description:  Dictator
+ ******************************************************************************/
+void Update_Command_Atained_State(TeMAN_ManipulatorStates    LeMAN_e_SchedState,
+                      TeMAN_ManipulatorStates               *LeMAN_e_CmndState,
+                      TeMAN_ManipulatorStates               *LeMAN_e_AttndState,
+                      TeMAN_ManipulatorStates               *LeMAN_Deg_CmdAngleWrist,
+                      TeMAN_ManipulatorStates               *LeMAN_e_SchedStatePrev,
+                      bool                                  *LeLFT_b_CriteriaMet)
+{
+TeMAN_ManipulatorStates LeMAN_e_CMD = *LeMAN_e_CmndState;
+
+if(*LeLFT_b_CriteriaMet == true)
+{
+  *LeMAN_e_AttndState = LeMAN_e_CMD;
+}
+
+if(LeMAN_e_SchedState != *LeMAN_e_SchedStatePrev && *LeMAN_e_SchedStatePrev == *LeMAN_e_AttndState)
+{
+  LeMAN_e_CMD = KaMAN_e_ControllingTable[LeMAN_e_SchedState][*LeMAN_e_AttndState];
+}
+
+*LeMAN_e_CmndState = LeMAN_e_CMD;
+}
 
 
-
- 
 #ifdef InProcess
 /******************************************************************************
  * Function:     Rest_State
