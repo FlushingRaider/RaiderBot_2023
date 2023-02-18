@@ -29,7 +29,8 @@
 int VnVIS_int_VisionCameraIndex[E_CamSz]; //
 T_CameraNumber VnVIS_e_VisionCamNumber[E_CamLocSz];
 
-bool VeVIS_b_VisionTargetAquired[E_CamLocSz]; //
+// bool VeVIS_b_VisionTargetAquired[E_CamLocSz]; 
+bool VeVIS_b_VisionTargetAquired;
 double VeVIS_Deg_VisionYaw[E_CamLocSz];
 double VeVIS_m_VisionTargetDistance[E_CamLocSz];
 

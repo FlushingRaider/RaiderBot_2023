@@ -78,7 +78,7 @@ void Robot::RobotMotorCommands()
 
   // m_turret.Set(ControlMode::PercentOutput, L_Temp);
 
-#ifdef CompBot2
+#ifdef unused
   // Ball launcher motors
   if (V_BH_LauncherActive == true)
   {
@@ -199,7 +199,10 @@ void Robot::RobotInit()
 
   ADAS_DM_ConfigsInit();
   ADAS_UT_ConfigsInit();
+
+#ifdef unused
   ADAS_BT_ConfigsInit();
+#endif
 
   VisionInit(V_AllianceColor);
 }
@@ -288,39 +291,26 @@ void Robot::RobotPeriodic()
                          VsCONT_s_DriverInput.b_ZeroGyro);
 
   ADAS_DetermineMode();
-#ifdef CompBot2
+
   V_ADAS_ActiveFeature = ADAS_ControlMain(&V_ADAS_Pct_SD_FwdRev,
                                           &V_ADAS_Pct_SD_Strafe,
                                           &V_ADAS_Pct_SD_Rotate,
-                                          &V_ADAS_RPM_BH_Launcher,
                                           &V_ADAS_Pct_BH_Intake,
-                                          &V_ADAS_Pct_BH_Elevator,
-                                          &V_ADAS_CameraUpperLightCmndOn,
-                                          &V_ADAS_CameraLowerLightCmndOn,
                                           &V_ADAS_SD_RobotOriented,
                                           &V_ADAS_Vision_RequestedTargeting,
                                           VsCONT_s_DriverInput.b_JoystickActive,
                                           VsCONT_s_DriverInput.b_SwerveGoalAutoCenter,
-                                          VsCONT_s_DriverInput.b_AutoIntake,
                                           VeGRY_Deg_GyroYawAngleDegrees,
                                           VeODO_In_RobotDisplacementX,
                                           VeODO_In_RobotDisplacementY,
-                                          VeVIS_b_VisionTargetAquired[E_CamTop],
-                                          VeVIS_Deg_VisionYaw[E_CamTop],
-                                          VeVIS_m_VisionTargetDistance[E_CamTop],
-                                          VeVIS_b_VisionTargetAquired[E_CamBottom],
-                                          VeVIS_Deg_VisionYaw[E_CamBottom],
-                                          VeVIS_m_VisionTargetDistance[E_CamBottom],
+                                          VeVIS_b_TagHasTarget,
                                           V_RobotState,
-                                          VsRobotSensors.b_BallDetectedUpper,
-                                          VsRobotSensors.b_BallDetectedLower,
                                           V_ADAS_ActiveFeature,
                                           V_Tagx,
                                           V_Tagy,
                                           V_TagID,
                                           V_TagYaw,
                                           V_AllianceColor);
-#endif
 
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
                    VsCONT_s_DriverInput.pct_SwerveStrafe,      // swerve control strafe
@@ -398,7 +388,7 @@ void Robot::RobotPeriodic()
 
 #endif
 
-#ifdef CompBot2
+#ifdef unused
   VeMAN_CnT_Man_DoesStuffMaybe = ManipulatorControlDictator(VsCONT_s_DriverInput.b_LiftControl,
                                                             false,
                                                             VsCONT_s_DriverInput.e_LiftCmndDirection,
@@ -428,7 +418,7 @@ void Robot::RobotPeriodic()
                              m_frontRightDrivePID,
                              m_rearLeftDrivePID,
                              m_rearRightDrivePID);
-#ifdef CompBot2
+#ifdef unused
   BallHandlerMotorConfigsCal(m_rightShooterpid,
                              m_leftShooterpid);
 
@@ -436,9 +426,9 @@ void Robot::RobotPeriodic()
                       m_liftpidXD);
 #endif
   ADAS_UT_ConfigsCal();
-
+#ifdef unused
   ADAS_BT_ConfigsCal();
-
+#endif
   /* Output all of the content to the dashboard here: */
   frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
   frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
@@ -498,7 +488,7 @@ void Robot::TeleopInit()
   ManipulatorControlInit();
   OdometryInit();
   VisionInit(V_AllianceColor);
-#ifdef CompBot2
+#ifdef unused
   m_encoderrightShooter.SetPosition(0);
   m_encoderleftShooter.SetPosition(0);
 #endif

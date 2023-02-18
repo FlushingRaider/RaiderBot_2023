@@ -9,7 +9,7 @@
 
 #include <Enums.hpp>
 
-extern bool VeVIS_b_VisionTargetAquired[E_CamLocSz];
+// extern bool VeVIS_b_VisionTargetAquired[E_CamLocSz];
 extern double VeVIS_Deg_VisionYaw[E_CamLocSz];
 extern double VeVIS_m_VisionTargetDistance[E_CamLocSz];
 extern int VnVIS_int_VisionCameraIndex[E_CamSz];

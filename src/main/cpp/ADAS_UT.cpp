@@ -100,7 +100,7 @@ void ADAS_UT_Reset(void)
   V_ADAS_UT_LauncherSpeedPrev = 0;
   V_ADAS_UT_TargetAquiredPrev = false;
 }
-
+#ifdef unused
 /******************************************************************************
  * Function:     ADAS_UT_CameraLightOn
  *
@@ -144,7 +144,8 @@ T_ADAS_UT_UpperTarget ADAS_UT_CameraLightOn(double *L_Pct_FwdRev,
 
   return (L_ADAS_UT_State);
 }
-
+#endif
+#ifdef unused
 /******************************************************************************
  * Function:     ADAS_UT_AutoCenter
  *
@@ -232,7 +233,8 @@ T_ADAS_UT_UpperTarget ADAS_UT_AutoCenter(double *L_Pct_FwdRev,
 
   return (L_ADAS_UT_State);
 }
-
+#endif
+#ifdef unused
 /******************************************************************************
  * Function:     ADAS_UT_LauncherSpeed
  *
@@ -302,7 +304,8 @@ T_ADAS_UT_UpperTarget ADAS_UT_LauncherSpeed(double *L_Pct_FwdRev,
 
   return (L_ADAS_UT_State);
 }
-#ifdef CompBot2
+#endif
+#ifdef unused
 /******************************************************************************
  * Function:     ADAS_UT_ElevatorControl
  *
@@ -541,18 +544,10 @@ T_ADAS_UT_UpperTarget ADAS_UT_MoveToTag(double *L_Pct_FwdRev,
 bool ADAS_UT_Main(double *L_Pct_FwdRev,
                   double *L_Pct_Strafe,
                   double *L_Pct_Rotate,
-                  double *L_RPM_Launcher,
                   double *L_Pct_Intake,
-                  double *L_Pct_Elevator,
-                  bool *L_CameraUpperLightCmndOn,
-                  bool *L_CameraLowerLightCmndOn,
-                  bool *L_SD_RobotOriented,
                   bool *L_VisionTargetingRequest,
                   bool L_VisionTopTargetAquired,
-                  double L_TopTargetYawDegrees,
-                  double L_VisionTopTargetDistanceMeters,
                   T_RobotState L_RobotState,
-                  bool L_BallDetectedUpper,
                   double L_VisTagX,
                   double L_VisTagY,
                   int L_TagID,
@@ -567,6 +562,7 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
   {
   case E_ADAS_UT_Disabled:
   case E_ADAS_UT_CameraLightOn:
+#ifdef unused
     V_ADAS_UT_State = ADAS_UT_CameraLightOn(L_Pct_FwdRev,
                                             L_Pct_Strafe,
                                             L_Pct_Rotate,
@@ -578,7 +574,9 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
                                             L_SD_RobotOriented,
                                             L_VisionTargetingRequest);
     break;
+#endif
   case E_ADAS_UT_AutoCenter:
+#ifdef unused
     V_ADAS_UT_State = ADAS_UT_AutoCenter(L_Pct_FwdRev,
                                          L_Pct_Strafe,
                                          L_Pct_Rotate,
@@ -592,7 +590,9 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
                                          L_VisionTopTargetAquired,
                                          L_TopTargetYawDegrees);
     break;
+#endif
   case E_ADAS_UT_LauncherSpeed:
+#ifdef unused
     V_ADAS_UT_State = ADAS_UT_LauncherSpeed(L_Pct_FwdRev,
                                             L_Pct_Strafe,
                                             L_Pct_Rotate,
@@ -606,8 +606,9 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
                                             L_VisionTopTargetAquired,
                                             L_VisionTopTargetDistanceMeters);
     break;
+#endif
   case E_ADAS_UT_ElevatorControl:
-  #ifdef CompBot2
+#ifdef unused
     V_ADAS_UT_State = ADAS_UT_ElevatorControl(L_Pct_FwdRev,
                                               L_Pct_Strafe,
                                               L_Pct_Rotate,
@@ -625,7 +626,7 @@ bool ADAS_UT_Main(double *L_Pct_FwdRev,
                                               L_DriverRequestElevatorDwn,
                                               L_DriverRequestIntake);
     break;
-    #endif
+#endif
   case E_ADAS_UT_MoveToTag:
     V_ADAS_UT_State = ADAS_UT_MoveToTag(L_Pct_FwdRev,
                                         L_Pct_Strafe,
