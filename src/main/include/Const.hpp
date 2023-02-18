@@ -266,6 +266,63 @@ const double KaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz] = { 0.00055,  // k
                                                                  55.0,      // kMaxAcc
                                                                   0.0};     // kAllErr
 
+
+/* KaMAN_Deg_TurretAngle: sets turret final positons for each state */
+const double KaMAN_Deg_TurretAngle[E_Man_State_Sz] =              { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_Deg_ArmPivotAngle: sets Arm Pivot final positons for each state */
+const double KaMAN_Deg_ArmPivotAngle[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_InS_LinearSlidePosition: sets LInear Slide final positons for each state */
+const double KaMAN_InS_LinearSlidePosition[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_Deg_WristAngle: sets Wrist final angle for each state */
+const double KaMAN_Deg_WristAngle[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_Deg_ClawAngle: sets Claw final angle for each state */
+const double KaMAN_Deg_ClawAngle[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_RPM_IntakeSpeed: sets Intake speed final speed for each state */
+const double KaMAN_RPM_IntakeSpeed[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off  
+
+/* KaMAN_b_IntakePneumatics: sets the Pneumatics either 0 or 1 for each state */
+const bool KaMAN_b_IntakePneumatics[E_Man_State_Sz] = { false,  // Rest
+                                                                  false,      // Tradeoff
+                                                                  false,      // swiper
+                                                                  false,      // Driving
+                                                                  false,      // Postioning
+                                                                 false};      // Drop-off                                                                                                                                                                                             
+
 /* KaMAN_e_ControllingTable: Table that contains the commanded state of the manipulator and intake based on the current attained state and schedueld state. */
 const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_Man_State_Sz][E_Man_State_Sz] =
   {
