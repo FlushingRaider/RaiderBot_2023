@@ -50,7 +50,7 @@ void BallHandlerMotorConfigsInit(rev::SparkMaxPIDController m_rightShooterpid,
                                  rev::SparkMaxPIDController m_leftShooterpid)
   {
   // set PID coefficients
-  # ifdef CompBot
+  # ifdef CompBot2
   m_rightShooterpid.SetP(K_BH_LauncherPID_Gx[E_kP]);
   m_rightShooterpid.SetI(K_BH_LauncherPID_Gx[E_kI]);
   m_rightShooterpid.SetD(K_BH_LauncherPID_Gx[E_kD]);

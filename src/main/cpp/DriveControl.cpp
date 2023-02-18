@@ -568,6 +568,13 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
       }
     }
 
+  frc::SmartDashboard::PutNumber("AngleDesired[E_RearRight]",  L_Deg_SD_WA[E_RearRight]);
+  frc::SmartDashboard::PutNumber("AngleArb[E_RearRight]",  VaDRC_Deg_WheelAngleArb[E_RearRight]);
+  frc::SmartDashboard::PutNumber("AngleDesired[E_RearLeft]",  L_Deg_SD_WA[E_RearLeft]);
+  frc::SmartDashboard::PutNumber("AngleArb[E_RearLeft]",  VaDRC_Deg_WheelAngleArb[E_RearLeft]);
+  frc::SmartDashboard::PutNumber("WheelAngleCMD]", L_k_SD_WheelAngleCmnd[E_RearLeft]);
+  
+
   frc::SmartDashboard::PutNumber("Gyro Degrees",   L_Deg_GyroAngle);
   frc::SmartDashboard::PutNumber("SD Angle Error", L_Deg_SD_AngleError);
   frc::SmartDashboard::PutNumber("Desired Angle", VeDRC_Deg_AutoCorrectDesired);

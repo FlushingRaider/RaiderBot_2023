@@ -86,14 +86,14 @@ typedef enum T_CameraLightStatus
   E_LightForcedOffDueToOvertime
 } T_CameraLightStatus;
 
-typedef enum T_Manipulator_CmndDirection
+typedef enum TeLFT_e_LiftCmndDirection
 {
   E_LiftCmndNone,
   E_LiftCmndUp,
   E_LiftCmndDown,
   E_LiftCmndForward,
   E_LiftCmndBack
-} T_Manipulator_CmndDirection;
+} TeLFT_e_LiftCmndDirection;
 
 typedef enum T_TurretCmndDirection
 {
@@ -164,7 +164,9 @@ typedef enum T_ADAS_UT_UpperTarget
   E_ADAS_UT_CameraLightOn,
   E_ADAS_UT_AutoCenter,
   E_ADAS_UT_LauncherSpeed,
-  E_ADAS_UT_ElevatorControl
+  E_ADAS_UT_ElevatorControl,
+
+  E_ADAS_UT_MoveToTag
 } T_ADAS_UT_UpperTarget;
 
 typedef enum T_ADAS_ActiveFeature
@@ -177,13 +179,7 @@ typedef enum T_ADAS_ActiveFeature
   E_ADAS_DM_ReverseAndIntake,
   E_ADAS_DM_Rotate180,
   E_ADAS_DM_RotateFieldOriented,
-  E_ADAS_DM_PathFollower,
-  //Added for 2023
-  E_ADAS_AutonDeployCube,
-  E_ADAS_AutonDeployCone,
-  E_ADAS_AutonDrive,
-  E_ADAS_AutonRotate,
-
+  E_ADAS_DM_PathFollower
 } T_ADAS_ActiveFeature;
 
 typedef enum T_ADAS_Auton1
@@ -204,9 +200,7 @@ typedef enum T_ADAS_ActiveAutonFeature
   E_ADAS_AutonDriveAndShootBlind1,     // Shoot preloaded ball, drive straight, robot oriented
   E_ADAS_AutonDriveAndShootBlind2,     // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
   E_ADAS_AutonDriveAndShootAuto2,      // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
-  E_ADAS_AutonDriveAndShootAuto3,       // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
-    //Added for 2023
-
+  E_ADAS_AutonDriveAndShootAuto3       // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
 } T_ADAS_ActiveAutonFeature;
 
 
