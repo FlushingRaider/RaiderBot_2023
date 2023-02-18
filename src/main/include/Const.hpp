@@ -3,7 +3,7 @@
 #include <units/angle.h>
 #include <units/length.h>
 
-// Define the desired test state here: COMP (no test), BallHandlerTest, LiftXY_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
+// Define the desired test state here: COMP (no test), BallHandlerTest, ManipulatorXY_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
 #define COMP
 // Define the bot type: CompBot, PracticeBot
 #define CompBot
@@ -143,47 +143,47 @@ const double KeENC_Deg_Gripper = 1.0;
 /* KeENC_Deg_Wrist: Actual position of the wrist, how much we've rotated. */
 const double KeENC_Deg_Wrist = 1.0;
 
-// Lift related cals
-const double K_lift_S2_YD = 8; //initial lift of the robot
-const double K_lift_S3_YD = 8; //stays the same
-const double K_lift_S4_YD = 26; //Move YD off of hooks
-const double K_lift_S5_YD = 26; //stays the same
-const double K_lift_S6_YD = 38; //lower YD below the rung
-const double K_lift_S7_YD = 165; //
-const double K_lift_S8_YD = 210; //
-const double K_lift_S9_YD = 210; //stays the same
-const double K_lift_S10_YD = 170; //
-const double K_lift_S11_YD = 140; //
+// Manipulator related cals
+const double K_Manipulator_S2_YD = 8; //initial Manipulator of the robot
+const double K_Manipulator_S3_YD = 8; //stays the same
+const double K_Manipulator_S4_YD = 26; //Move YD off of hooks
+const double K_Manipulator_S5_YD = 26; //stays the same
+const double K_Manipulator_S6_YD = 38; //lower YD below the rung
+const double K_Manipulator_S7_YD = 165; //
+const double K_Manipulator_S8_YD = 210; //
+const double K_Manipulator_S9_YD = 210; //stays the same
+const double K_Manipulator_S10_YD = 170; //
+const double K_Manipulator_S11_YD = 140; //
 
-const double K_lift_max_YD = 210; //max allowed travel distance of YD
-const double K_lift_min_YD = 0; //it crunch
-const double K_lift_enable_auto_YD = 150; //distance the lift must be above to allow the driver to enable the auto climb
-const double K_lift_deadband_YD = 1.1; //it's a deadband for the y lift yeah
-const double K_lift_driver_up_rate_YD = 1.8; // This is the amount of traversal added per loop (0.02 sec)
-const double K_lift_driver_down_rate_YD = 0.3; // This is the amount of traversal added per loop (0.02 sec)
+const double K_Manipulator_max_YD = 210; //max allowed travel distance of YD
+const double K_Manipulator_min_YD = 0; //it crunch
+const double K_Manipulator_enable_auto_YD = 150; //distance the Manipulator must be above to allow the driver to enable the auto climb
+const double K_Manipulator_deadband_YD = 1.1; //it's a deadband for the y Manipulator yeah
+const double K_Manipulator_driver_up_rate_YD = 1.8; // This is the amount of traversal added per loop (0.02 sec)
+const double K_Manipulator_driver_down_rate_YD = 0.3; // This is the amount of traversal added per loop (0.02 sec)
 const double K_Manipulator_Driver_manual_MoterTurret = 0.25; // Manual override power
 const double K_Manipulator_Driver_manual_MoterArmPivot = -0.25; // Manual override power
-const double K_lift_autoResetDown_YD = -0.20; // Auto reset power
+const double K_Manipulator_autoResetDown_YD = -0.20; // Auto reset power
 
-const double K_lift_S3_XD = 30; //move XD onto the rungs
-const double K_lift_S4_XD = 30; //stays the same
-const double K_lift_S5_XD = 32; //tilt the robot
-const double K_lift_S6_XD = 34; //connect YD with the upper rungs
-const double K_lift_S7_XD = 133; //
-const double K_lift_S8_XD = 133; //stays the same
-const double K_lift_S9_XD = 122; //
-const double K_lift_S10_XD = 122; //stays the same
-const double K_lift_S11_XD = 0; //
+const double K_Manipulator_S3_XD = 30; //move XD onto the rungs
+const double K_Manipulator_S4_XD = 30; //stays the same
+const double K_Manipulator_S5_XD = 32; //tilt the robot
+const double K_Manipulator_S6_XD = 34; //connect YD with the upper rungs
+const double K_Manipulator_S7_XD = 133; //
+const double K_Manipulator_S8_XD = 133; //stays the same
+const double K_Manipulator_S9_XD = 122; //
+const double K_Manipulator_S10_XD = 122; //stays the same
+const double K_Manipulator_S11_XD = 0; //
 
-const double K_lift_max_XD = 133; //max allowed travel distance of XD
-const double K_lift_min_XD = 0; //we don't want XD to past this or it crunch
-const double K_lift_deadband_XD = 0.7; //it's a deadband for the x lift yeah
-const double K_lift_driver_manual_forward_XD = 0.15; // Manual override power
-const double K_lift_driver_manual_back_XD = -0.15; // Manual override power
+const double K_Manipulator_max_XD = 133; //max allowed travel distance of XD
+const double K_Manipulator_min_XD = 0; //we don't want XD to past this or it crunch
+const double K_Manipulator_deadband_XD = 0.7; //it's a deadband for the x Manipulator yeah
+const double K_Manipulator_driver_manual_forward_XD = 0.15; // Manual override power
+const double K_Manipulator_driver_manual_back_XD = -0.15; // Manual override power
 
-const double K_Lift_deadband_timer = 0.035; //keep the deadband for a certain amount of time [seconds]
+const double K_Manipulator_deadband_timer = 0.035; //keep the deadband for a certain amount of time [seconds]
 
-const double K_LiftPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
+const double K_ManipulatorPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
                                                    0.000001, // kI
                                                    0.002000, // kD
                                                    0.0,      // kIz

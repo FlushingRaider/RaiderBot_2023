@@ -41,8 +41,8 @@ void EncodersInit(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
                   rev::SparkMaxRelativeEncoder m_encoderFrontLeftDrive,
                   rev::SparkMaxRelativeEncoder m_encoderRearRightDrive,
                   rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
-                  rev::SparkMaxRelativeEncoder m_encoderLiftYD,
-                  rev::SparkMaxRelativeEncoder m_encoderLiftXD,
+                  rev::SparkMaxRelativeEncoder m_encoderManipulatorYD,
+                  rev::SparkMaxRelativeEncoder m_encoderManipulatorXD,
                   rev::SparkMaxRelativeEncoder m_encoderrightShooter,
                   rev::SparkMaxRelativeEncoder m_encoderleftShooter);
 
@@ -56,8 +56,8 @@ void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
                         rev::SparkMaxRelativeEncoder m_encoderRearRightDrive,
                         rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive);
 
-void EncodersInitComp(rev::SparkMaxRelativeEncoder m_encoderLiftYD,
-                      rev::SparkMaxRelativeEncoder m_encoderLiftXD,
+void EncodersInitComp(rev::SparkMaxRelativeEncoder m_encoderManipulatorYD,
+                      rev::SparkMaxRelativeEncoder m_encoderManipulatorXD,
                       rev::SparkMaxRelativeEncoder m_encoderrightShooter,
                       rev::SparkMaxRelativeEncoder m_encoderleftShooter);
 

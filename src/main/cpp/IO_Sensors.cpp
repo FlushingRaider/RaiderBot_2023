@@ -64,7 +64,7 @@ void BallDetectionSensor(bool L_IR_SensorDetect,
  * Function:     ReadLimitSwitchs
  *
  * Description:  Limit switches for the following indications:
- *               - end of travel for XD/YD lifts
+ *               - end of travel for XD/YD Manipulators
  *               - end of travel for turret
  *
  ******************************************************************************/

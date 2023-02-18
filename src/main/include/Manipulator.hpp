@@ -4,9 +4,9 @@
    Created on: Feb 01, 2022
    Author: 5561
 
-   The lift control state machine. This controls the robat to move the x and y hooks. It automously controls the robot to climb
+   The Manipulator control state machine. This controls the robat to move the x and y hooks. It automously controls the robot to climb
 
-   lift STATE machine? another government scam smh -chloe
+   Manipulator STATE machine? another government scam smh -chloe
  */
 
 extern bool   VeMAN_b_WaitingForDriverINS;
@@ -14,8 +14,8 @@ extern bool   VeMAN_b_ArmInitialized;
 extern TeMAN_MotorControl VsMAN_s_Motors;
 extern TsMAN_Sensor       VsMAN_s_Sensors;
 
-void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_liftpidYD,
-                         rev::SparkMaxPIDController m_liftpidXD);
+void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ManipulatorpidYD,
+                         rev::SparkMaxPIDController m_ManipulatorpidXD);
  
 void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
                                  rev::SparkMaxPIDController m_WristPID,
@@ -35,8 +35,8 @@ TeMAN_ManipulatorStates ManipulatorControlDictator(bool                LeMAN_b_A
                                    double              LeMAN_Deg_MeasuredAngleArmPivot,
                                    double             *LeMAN_Cmd_CommandTurret,
                                    double             *LeMAN_Cmd_CommandArmPivot,
-                                   double             *LeLFT_Pct_CommandPwrYD,
-                                   double             *LeLFT_Pct_CommandPwrXD,
+                                   double             *LeMAN_Pct_CommandPwrYD,
+                                   double             *LeMAN_Pct_CommandPwrXD,
                                    bool                LeMAN_b_LimitDetectedTurret,
                                    bool                LeMAN_b_LimitDetectedArmPivot,
                                    double              LeLEFT_Deg_GyroAngleYaws,
@@ -46,5 +46,5 @@ TeMAN_ManipulatorStates ManipulatorControlDictator(bool                LeMAN_b_A
                                    double              LeMAN_v_MotorCurrentOutWrist,
                                    double              LeMAN_v_MotorCurrentOutClaw,
                                    double              LeMAN_v_MotorCurrentOutIntake,
-                                   rev::SparkMaxRelativeEncoder m_encoderLiftYD,
-                                   rev::SparkMaxRelativeEncoder m_encoderLiftXD);
+                                   rev::SparkMaxRelativeEncoder m_encoderManipulatorYD,
+                                   rev::SparkMaxRelativeEncoder m_encoderManipulatorXD);

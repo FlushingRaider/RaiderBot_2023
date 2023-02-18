@@ -95,7 +95,7 @@ void Robot::RobotMotorCommands()
   m_intake.Set(ControlMode::PercentOutput, V_IntakePowerCmnd); // must be positive (don't be a fool)
   m_elevator.Set(ControlMode::PercentOutput, V_ElevatorPowerCmnd);
 
-  // XY XD lift motors
+  // XY XD Manipulator motors
   if (VeMAN_b_ ArmInitialized == false)
   {
     m_ManTurretMotorA.Set(VeMAN_Cnt_MoterTestPowerCmndTurret);        // Turret motor
@@ -107,8 +107,8 @@ void Robot::RobotMotorCommands()
   }
   else
   {
-    m_liftpidYD.SetReference(VeMan_Cnt_MoterCommandTurret, rev::ControlType::kPosition);   // positive is up
-    m_liftpidXD.SetReference(VeMan_Cnt_MoterCommandArmPivot, rev::ControlType::kPosition); // This is temporary.  We actually want to use position, but need to force this off temporarily
+    m_ManipulatorpidYD.SetReference(VeMan_Cnt_MoterCommandTurret, rev::ControlType::kPosition);   // positive is up
+    m_ManipulatorpidXD.SetReference(VeMan_Cnt_MoterCommandArmPivot, rev::ControlType::kPosition); // This is temporary.  We actually want to use position, but need to force this off temporarily
   }
 #endif
 }
@@ -399,9 +399,9 @@ void Robot::RobotPeriodic()
 #endif
 
 #ifdef CompBot2
-  VeMAN_CnT_Man_DoesStuffMaybe = ManipulatorControlDictator(VsCONT_s_DriverInput.b_LiftControl,
+  VeMAN_CnT_Man_DoesStuffMaybe = ManipulatorControlDictator(VsCONT_s_DriverInput.b_ManipulatorControl,
                                                             false,
-                                                            VsCONT_s_DriverInput.e_LiftCmndDirection,
+                                                            VsCONT_s_DriverInput.e_ManipulatorCmndDirection,
                                                             V_MatchTimeRemaining,
                                                             VeMAN_CnT_Man_DoesStuffMaybe,
                                                             0,
@@ -419,8 +419,8 @@ void Robot::RobotPeriodic()
                                                             m_ManRotateMotorD.GetOutputCurrent(),
                                                             m_ManClawMotorE.GetOutputCurrent(),
                                                             m_ManIntakeMotorF.GetOutputCurrent(),
-                                                            m_encoderLiftYD,
-                                                            m_encoderLiftXD);
+                                                            m_encoderManipulatorYD,
+                                                            m_encoderManipulatorXD);
 #endif
 
   /* These function calls are for test mode calibration. */
@@ -432,8 +432,8 @@ void Robot::RobotPeriodic()
   BallHandlerMotorConfigsCal(m_rightShooterpid,
                              m_leftShooterpid);
 
-  ManipulatorMotorConfigsCal(m_liftpidYD,
-                      m_liftpidXD);
+  ManipulatorMotorConfigsCal(m_ManipulatorpidYD,
+                      m_ManipulatorpidXD);
 #endif
   ADAS_UT_ConfigsCal();
 

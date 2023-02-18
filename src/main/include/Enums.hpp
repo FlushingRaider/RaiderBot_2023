@@ -88,11 +88,11 @@ typedef enum T_CameraLightStatus
 
 typedef enum T_Manipulator_CmndDirection
 {
-  E_LiftCmndNone,
-  E_LiftCmndUp,
-  E_LiftCmndDown,
-  E_LiftCmndForward,
-  E_LiftCmndBack
+  E_ManipulatorCmndNone,
+  E_ManipulatorCmndUp,
+  E_ManipulatorCmndDown,
+  E_ManipulatorCmndForward,
+  E_ManipulatorCmndBack
 } T_Manipulator_CmndDirection;
 
 typedef enum T_TurretCmndDirection
@@ -124,8 +124,8 @@ typedef enum TeMAN_ManipulatorStates
 // typedef enum T_Man_Iteration
 // {
 //   VeMAN_Cnt_ManIterationNew,
-//   E_LiftIteration2,
-//   E_LiftIterationSz
+//   E_ManipulatorIteration2,
+//   E_ManipulatorIterationSz
 // } T_Man_Iteration;
 
 typedef enum T_RobotState
