@@ -183,7 +183,7 @@ typedef enum T_ADAS_ActiveFeature
   E_ADAS_AutonDeployCube,
   E_ADAS_AutonDeployCone,
   E_ADAS_AutonDrive,
-  E_ADAS_AutonRotate,
+  E_ADAS_AutonRotate
 } T_ADAS_ActiveFeature;
 
 typedef enum T_ADAS_Auton1
