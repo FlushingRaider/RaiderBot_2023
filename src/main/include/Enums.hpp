@@ -111,13 +111,12 @@ typedef enum T_LED_LightCmnd
 } T_LED_LightCmnd;
 
 typedef enum TeMAN_ManipulatorStates
-{E_S0_Rest,
- E_S1_Intake,
- E_S2_TradeOff,
- E_S3_Swiper,
- E_S4_DrivingState,
- E_S5_Positioning,
- E_S6_DroppingTheLoot,
+{E_Rest,
+ E_TradeOff,
+ E_Swiper,
+ E_DrivingState,
+ E_PositioningState,
+ E_DroppingTheLoot,
  E_Man_State_Sz
 } TeMAN_ManipulatorStates;
  
@@ -164,7 +163,9 @@ typedef enum T_ADAS_UT_UpperTarget
   E_ADAS_UT_CameraLightOn,
   E_ADAS_UT_AutoCenter,
   E_ADAS_UT_LauncherSpeed,
-  E_ADAS_UT_ElevatorControl
+  E_ADAS_UT_ElevatorControl,
+
+  E_ADAS_UT_MoveToTag
 } T_ADAS_UT_UpperTarget;
 
 typedef enum T_ADAS_ActiveFeature
@@ -184,6 +185,8 @@ typedef enum T_ADAS_ActiveFeature
   E_ADAS_AutonDrivePath,
   E_ADAS_AutonRotate,
 
+  E_ADAS_AutonDrive,
+  E_ADAS_AutonRotate
 } T_ADAS_ActiveFeature;
 
 typedef enum T_ADAS_Auton1
@@ -204,9 +207,7 @@ typedef enum T_ADAS_ActiveAutonFeature
   E_ADAS_AutonDriveAndShootBlind1,     // Shoot preloaded ball, drive straight, robot oriented
   E_ADAS_AutonDriveAndShootBlind2,     // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
   E_ADAS_AutonDriveAndShootAuto2,      // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
-  E_ADAS_AutonDriveAndShootAuto3,       // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
-    //Added for 2023
-
+  E_ADAS_AutonDriveAndShootAuto3       // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
 } T_ADAS_ActiveAutonFeature;
 
 

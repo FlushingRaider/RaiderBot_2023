@@ -8,7 +8,10 @@
 // Define the bot type: CompBot, PracticeBot
 #define CompBot
 
-#define Testvision // or OldVision
+#define NewVision // NewVision or OldVision
+
+
+
 
 // RoboRio controller execution time
 const double C_ExeTime = 0.02; // Set to match the the default controller loop time of 20 ms
@@ -60,17 +63,6 @@ static const int C_VanityLight_ID = 0;
 
 // Vision Cals:
 // cals for top target cam
-/* K_VisionHeight: Height of the camera relative to ground. */
-//const units::meter_t K_VisionHeight[E_CamLocSz] = {0.795_m,  // 795 mm to camera lense  -> top
-                                                  // 0.367_m}; //                         -> bottom
-
-/* K_VisionTargetHeight: Height of the target relative to ground. */
-//const units::meter_t K_VisionTargetHeight[E_CamLocSz] = {2.58_m,  // bottom of tape to carpet  -> top
-                                                        // 0.12_m};  // radius of the ball in cm -> bottom
-
-/* K_VisionCameraPitch: Pitch of the camera relative to the ground. */
-// const units::radian_t K_VisionCameraPitch[E_CamLocSz] = {15_deg,  // camera on a 75 degree tilt  -> top
-//                                                          50_deg}; //                             -> bottom
 
 /* K_VisionCalculationDelayTime: Delay time before allowing calculations to occur */
 const double K_VisionCalculationDelayTime = 0.1;
@@ -204,12 +196,12 @@ const double K_LiftPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
                                                    0.0};     // kAllErr
 
 /* KaMAN_k_ManipulatorTestPower: Test power output for the manipulator controls. ONLY used in test mode!! */
-const double KaMAN_k_ManipulatorTestPower[E_MAN_Sz] = {0.5,  // E_MAN_Turret
-                                                       0.5,  // E_MAN_ArmPivot
-                                                       0.5,  // E_MAN_LinearSlide
-                                                       0.5,  // E_MAN_Wrist
-                                                       0.5,  // E_MAN_Gripper
-                                                       0.5,  // E_MAN_IntakeRollers
+const double KaMAN_k_ManipulatorTestPower[E_MAN_Sz] = {0.25,  // E_MAN_Turret
+                                                       0.08,  // E_MAN_ArmPivot
+                                                       0.25,  // E_MAN_LinearSlide
+                                                       0.05,  // E_MAN_Wrist
+                                                       -0.15,  // E_MAN_Gripper
+                                                       -0.25,  // E_MAN_IntakeRollers
                                                        1.0}; // E_MAN_IntakeArm
 
 
@@ -274,15 +266,72 @@ const double KaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz] = { 0.00055,  // k
                                                                  55.0,      // kMaxAcc
                                                                   0.0};     // kAllErr
 
+
+/* KaMAN_Deg_TurretAngle: sets turret final positons for each state */
+const double KaMAN_Deg_TurretAngle[E_Man_State_Sz] =              { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_Deg_ArmPivotAngle: sets Arm Pivot final positons for each state */
+const double KaMAN_Deg_ArmPivotAngle[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_InS_LinearSlidePosition: sets LInear Slide final positons for each state */
+const double KaMAN_InS_LinearSlidePosition[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_Deg_WristAngle: sets Wrist final angle for each state */
+const double KaMAN_Deg_WristAngle[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_Deg_ClawAngle: sets Claw final angle for each state */
+const double KaMAN_Deg_ClawAngle[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off
+
+/* KaMAN_RPM_IntakeSpeed: sets Intake speed final speed for each state */
+const double KaMAN_RPM_IntakeSpeed[E_Man_State_Sz] = { 0,  // Rest
+                                                                  0.0,      // Tradeoff
+                                                                  0.0,      // swiper
+                                                                  0.0,      // Driving
+                                                                  1.0,      // Postioning
+                                                                 -1.0};      // Drop-off  
+
+/* KaMAN_b_IntakePneumatics: sets the Pneumatics either 0 or 1 for each state */
+const bool KaMAN_b_IntakePneumatics[E_Man_State_Sz] = { false,  // Rest
+                                                                  false,      // Tradeoff
+                                                                  false,      // swiper
+                                                                  false,      // Driving
+                                                                  false,      // Postioning
+                                                                 false};      // Drop-off                                                                                                                                                                                             
+
 /* KaMAN_e_ControllingTable: Table that contains the commanded state of the manipulator and intake based on the current attained state and schedueld state. */
 const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_Man_State_Sz][E_Man_State_Sz] =
   {
-    {E_S3_Swiper,       E_S3_Swiper,       E_S0_Rest,            E_S0_Rest,            E_S2_TradeOff, E_S2_TradeOff},
-    {E_S3_Swiper,       E_S3_Swiper,       E_S0_Rest,            E_S0_Rest,            E_S3_Swiper,   E_S3_Swiper},
-    {E_S4_DrivingState, E_S5_Positioning,  E_S6_DroppingTheLoot, E_S6_DroppingTheLoot, E_S2_TradeOff, E_S4_DrivingState},
-    {E_S4_DrivingState, E_S5_Positioning,  E_S5_Positioning,     E_S0_Rest,            E_S2_TradeOff, E_S4_DrivingState},
-    {E_S4_DrivingState, E_S4_DrivingState, E_S4_DrivingState,    E_S0_Rest,            E_S2_TradeOff, E_S4_DrivingState},
-    {E_S0_Rest,         E_S0_Rest,         E_S0_Rest,            E_S0_Rest,            E_S0_Rest,     E_S0_Rest}
+    {E_Swiper,       E_Swiper,       E_Rest,            E_Rest,            E_TradeOff, E_TradeOff},
+    {E_Swiper,       E_Swiper,       E_Rest,            E_Rest,            E_Swiper,   E_Swiper},
+    {E_DrivingState, E_PositioningState,  E_DroppingTheLoot, E_DroppingTheLoot, E_TradeOff, E_DrivingState},
+    {E_DrivingState, E_PositioningState,  E_PositioningState,     E_Rest,            E_TradeOff, E_DrivingState},
+    {E_DrivingState, E_DrivingState, E_DrivingState,    E_Rest,            E_TradeOff, E_DrivingState},
+    {E_Rest,         E_Rest,         E_Rest,            E_Rest,            E_Rest,     E_Rest}
   };
 
 /* Ball handler (BH) cals: */

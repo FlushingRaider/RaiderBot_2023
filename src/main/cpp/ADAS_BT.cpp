@@ -11,7 +11,7 @@
   Changes:
   2022-02-25 -> Beta
  */
-
+#ifdef unused
 #include <math.h>
 
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -454,4 +454,6 @@ bool ADAS_BT_Main(double               *L_Pct_FwdRev,
     }
   
   return (L_ADAS_BT_Complete);
-  }
+}
+
+#endif
