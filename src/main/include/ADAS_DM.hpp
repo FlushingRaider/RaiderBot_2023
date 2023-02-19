@@ -83,7 +83,8 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
                           double  L_L_X_FieldPos,
                           double  L_L_Y_FieldPos,
                           double  L_Deg_GyroAngleDeg,
-                          int     L_i_PathNum);
+                          int     L_i_PathNum,
+                          std::string V_ADAS_Auto_PathName);
 
 bool ADAS_DM_FieldOrientRotate(double     *L_Pct_FwdRev,
                                double     *L_Pct_Strafe,

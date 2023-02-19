@@ -181,7 +181,7 @@ typedef enum T_ADAS_ActiveFeature
   //Added for 2023
   E_ADAS_AutonDeployCube,
   E_ADAS_AutonDeployCone,
-  E_ADAS_AutonDrive,
+  E_ADAS_AutonDrivePath,
   E_ADAS_AutonRotate,
 
 } T_ADAS_ActiveFeature;

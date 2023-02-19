@@ -39,6 +39,7 @@ bool V_ADAS_StateComplete = false;
 bool V_ADAS_AutonOncePerTrigger = false;
 T_ADAS_Auton1 V_ADAS_Auton1State;
 int V_ADAS_PathNum;
+std::string V_ADAS_Auto_PathName;
 
 /* ADAS output control variables */
 double V_ADAS_Pct_SD_FwdRev = 0;
@@ -174,9 +175,9 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
       V_ADAS_StateComplete = false;
     }
   }
-  else if (L_RobotState == E_Auton) //Are we in auton state?
+  else if (L_RobotState == E_Auton) // Are we in auton state?
   {
-    if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDriveAndShootBlind1) //Check what auton feature we want
+    if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDriveAndShootBlind1) // Check what auton feature we want
     {
       if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) &&
           (V_ADAS_StateComplete == false) &&
@@ -321,41 +322,45 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         V_ADAS_AutonOncePerTrigger = true;
       }
     }
-    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDeployCone) //Auton code for deplying Cones
+    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDeployCone) // Auton code for deplying Cones
     {
-      //Step 1 - Place Cone
-      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false)) 
+      // Step 1 - Place Cone
+      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false))
       {
         LeLC_e_ADASActiveFeature = E_ADAS_AutonDeployCone;
       }
-      //Step 2
+      // Step 2
       else if ((LeLC_e_ADASActiveFeature == E_ADAS_AutonDeployCone) && (V_ADAS_StateComplete == true))
       {
-        //LeLC_e_ADASActiveFeature = AUTONCOMMAND;
+        // LeLC_e_ADASActiveFeature = AUTONCOMMAND;
       }
     }
-    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDeployCube) //Auton code for deplying Cubes
+    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDeployCube) // Auton code for deplying Cubes
     {
-      //Step 1 - Place Cube
-      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false)) 
+      // Step 1 - Place Cube
+      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false))
       {
         LeLC_e_ADASActiveFeature = E_ADAS_AutonDeployCube;
       }
-      //Step 2
+      // Step 2
       else if ((LeLC_e_ADASActiveFeature == E_ADAS_AutonDeployCube) && (V_ADAS_StateComplete == true))
       {
-        //LeLC_e_ADASActiveFeature = AUTONCOMMAND;
+        // LeLC_e_ADASActiveFeature = AUTONCOMMAND;
       }
     }
-    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDrive)
+    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDrivePath) // Path driver
     {
-      
+      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false))
+      {
+        LeLC_e_ADASActiveFeature = E_ADAS_DM_PathFollower;
+        V_ADAS_PathNum = 0; //Zero to use path auto load
+        V_ADAS_Auto_PathName = "test1"; //load test1.wpilib.json in deploy/paths/
+      }
     }
     else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonRotate)
     {
-      
     }
-    else //No auton selected 
+    else // No auton selected
     {
       /* No auton requested. */
       LeLC_e_ADASActiveFeature = E_ADAS_Disabled;
@@ -488,7 +493,8 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                 L_L_X_FieldPos,
                                                 L_L_Y_FieldPos,
                                                 L_Deg_GyroAngleDeg,
-                                                V_ADAS_PathNum);
+                                                V_ADAS_PathNum,
+                                                V_ADAS_Auto_PathName);
     break;
   case E_ADAS_AutonDeployCone:
     V_ADAS_StateComplete = ADAS_ARM_DeployCone();

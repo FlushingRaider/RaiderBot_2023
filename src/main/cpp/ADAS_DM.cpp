@@ -614,7 +614,8 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
                           double  L_L_X_FieldPos,
                           double  L_L_Y_FieldPos,
                           double  L_Deg_GyroAngleDeg,
-                          int     L_i_PathNum)
+                          int     L_i_PathNum,
+                          std::string V_ADAS_Auto_PathName)
   {
   bool   L_ADAS_DM_StateComplete = false;
   double L_L_TargetPositionX = 0.0;
@@ -639,6 +640,7 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
   /* Look up the desired target location point: */
   L_timeEND = DesiredAutonLocation2(V_ADAS_DM_StateTimer,
                                     L_i_PathNum,
+                                    V_ADAS_Auto_PathName,
                                    &L_L_TargetPositionX,
                                    &L_L_TargetPositionY,
                                    &L_Rad_TargetAngle);
