@@ -249,7 +249,7 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        double LeENC_Deg_LinearSlide,
                        double LeENC_Deg_EncoderTurretRotate)
   {
-  VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_Armpivot;
+  VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_ArmPivot;
 
   VsMAN_s_Sensors.RPM_IntakeRollers = m_IntakeRollersEncoder.GetVelocity() * KeENC_RPM_IntakeRollers;
 

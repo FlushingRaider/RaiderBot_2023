@@ -167,15 +167,9 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
       V_ADAS_StateComplete = false;
     }
   }
-<<<<<<< HEAD
-  else if (L_RobotState == E_Auton) // Are we in auton state?
-  {
-    if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDriveAndShootBlind1) // Check what auton feature we want
-=======
   else if (L_RobotState == E_Auton)
   {
     if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDriveAndShootBlind1)
->>>>>>> 3a98709516d8b7b7691637cff08000236949ab06
     {
       if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) &&
           (V_ADAS_StateComplete == false) &&
@@ -348,24 +342,17 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     }
     else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDrivePath) // Path driver
     {
-<<<<<<< HEAD
       if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false))
       {
         LeLC_e_ADASActiveFeature = E_ADAS_DM_PathFollower;
         V_ADAS_PathNum = 0; //Zero to use path auto load
         V_ADAS_Auto_PathName = "test1"; //load test1.wpilib.json in deploy/paths/
       }
-=======
->>>>>>> 3a98709516d8b7b7691637cff08000236949ab06
     }
     else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonRotate)
     {
     }
-<<<<<<< HEAD
-    else // No auton selected
-=======
     else
->>>>>>> 3a98709516d8b7b7691637cff08000236949ab06
     {
       /* No auton requested. */
       LeLC_e_ADASActiveFeature = E_ADAS_Disabled;

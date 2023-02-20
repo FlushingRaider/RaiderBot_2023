@@ -111,12 +111,13 @@ typedef enum T_LED_LightCmnd
 } T_LED_LightCmnd;
 
 typedef enum TeMAN_ManipulatorStates
-{E_Rest,
- E_TradeOff,
- E_Swiper,
+{
+ E_Rest,
  E_DrivingState,
  E_PositioningState,
  E_DroppingTheLoot,
+ E_Swiper,
+ E_TradeOff,
  E_Man_State_Sz
 } TeMAN_ManipulatorStates;
  
@@ -184,9 +185,7 @@ typedef enum T_ADAS_ActiveFeature
   E_ADAS_AutonDeployCone,
   E_ADAS_AutonDrivePath,
   E_ADAS_AutonRotate,
-
-  E_ADAS_AutonDrive,
-  E_ADAS_AutonRotate
+  E_ADAS_AutonDrive
 } T_ADAS_ActiveFeature;
 
 typedef enum T_ADAS_Auton1
@@ -229,8 +228,8 @@ typedef enum T_MotorControlType
   E_MotorControlPctCmnd,
   E_MotorControlPosition,
   E_MotorControlSpeed,
-  E_MotorFwd,
-  E_MotorRev
+  E_MotorExtend,
+  E_MotorRetract
 } T_MotorControlType;
 
 struct TsMAN_Sensor 
