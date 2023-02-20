@@ -1,11 +1,13 @@
 #include "Pathloader.hpp"
 
+AutonPath lastpath;
+
 AutonPath PathLoader(std::string PathName)
 {
     AutonPath path;
     
     // Check if our path was recently loaded
-    if (lastpath.name != PathName)
+    if (lastpath.Name == PathName)  
     {
         // Get our path location
         fs::path deployDirectory = frc::filesystem::GetDeployDirectory();

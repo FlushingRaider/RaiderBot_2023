@@ -11,7 +11,6 @@
 
 #include "json.hpp"
 
-extern AutonPath lastpath;
 struct AutonPath
 {
   std::vector<double> time;
