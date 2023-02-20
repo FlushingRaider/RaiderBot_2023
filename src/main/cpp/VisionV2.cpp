@@ -59,6 +59,10 @@ frc::AprilTagFieldLayout aprilTags{aprilTagsjson};
 
 photonlib::PhotonPoseEstimator estimator(aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
 
+ photonlib::PhotonPipelineResult CamResult;
+std::optional<photonlib::EstimatedRobotPose> estimatedPose;
+frc::Pose3d pose;
+
 #endif
 #ifdef OldVision
 /******************************************************************************
@@ -233,15 +237,15 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 void VisionRun(bool L_ButtonCmd)
 {
   // wpi::PortForwarder::GetInstance().Add(5800, "10.55.61.11", 5800);
-  photonlib::PhotonPipelineResult CamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
+  CamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
 
   VeVIS_b_TagHasTarget = CamResult.HasTargets();
 
   if (VeVIS_b_TagHasTarget)
   {
 
-    auto estimatedPose = estimator.Update();
-    frc::Pose3d pose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
+    estimatedPose = estimator.Update();
+    pose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
     V_TagID = CamResult.GetBestTarget().GetFiducialId();
 
     V_Tagx = pose.X().value();

@@ -438,13 +438,9 @@ T_ADAS_UT_UpperTarget ADAS_UT_MoveToTag(double *L_Pct_FwdRev,
   double L_TagXred = 15.513558;
   double L_TagXblue = 1.02743;
 
-  double L_Tag1YError;
-  double L_Tag2YError;
-  double L_Tag3YError;
-
-  *L_Pct_FwdRev = 0;
-  *L_Pct_Strafe = 0;
-  *L_Pct_Rotate = 0;
+  // double L_Tag1YError;
+  // double L_Tag2YError;
+  // double L_Tag3YError;
 
   V_ADAS_UT_DebounceTime += C_ExeTime;
   if (L_OdomCentered) // don't do any of this if we haven't centered our Odometry based on the tag
@@ -536,9 +532,14 @@ T_ADAS_UT_UpperTarget ADAS_UT_MoveToTag(double *L_Pct_FwdRev,
         *L_Pct_Strafe = 0.0;
       }
     }
-
-    return (L_ADAS_UT_State);
+    else if (V_ADAS_UT_DebounceTime >= 0.3)
+    {
+      V_ADAS_UT_DebounceTime = 0;
+      *L_Pct_FwdRev = 0;
+      *L_Pct_Strafe = 0;
+    }
   }
+  return (L_ADAS_UT_State);
 }
 
 #endif
