@@ -11,12 +11,14 @@
 
 #include "json.hpp"
 
+extern AutonPath lastpath;
 struct AutonPath
 {
   std::vector<double> time;
   std::vector<double> rot;
   std::vector<double> x;
   std::vector<double> y;
+  std::string Name;
 };
 
 AutonPath PathLoader(std::string PathName);
