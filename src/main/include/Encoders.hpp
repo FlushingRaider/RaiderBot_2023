@@ -33,20 +33,6 @@ void Encoders_Drive_PracticeBot(double                       LeENC_Cnt_EncoderWh
                     rev::SparkMaxRelativeEncoder m_encoderFrontRightDrive,
                     rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
                     rev::SparkMaxRelativeEncoder m_encoderRearRightDrive);
-                      
-void EncodersInit(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
-                  rev::SparkMaxRelativeEncoder m_encoderFrontLeftSteer,
-                  rev::SparkMaxRelativeEncoder m_encoderRearRightSteer,
-                  rev::SparkMaxRelativeEncoder m_encoderRearLeftSteer,
-                  rev::SparkMaxRelativeEncoder m_encoderFrontRightDrive,
-                  rev::SparkMaxRelativeEncoder m_encoderFrontLeftDrive,
-                  rev::SparkMaxRelativeEncoder m_encoderRearRightDrive,
-                  rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
-                  rev::SparkMaxRelativeEncoder m_encoderManipulatorYD,
-                  rev::SparkMaxRelativeEncoder m_encoderManipulatorXD,
-                  rev::SparkMaxRelativeEncoder m_encoderrightShooter,
-                  rev::SparkMaxRelativeEncoder m_encoderleftShooter);
-
 
 void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
                         rev::SparkMaxRelativeEncoder m_encoderFrontLeftSteer,
