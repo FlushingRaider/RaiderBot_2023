@@ -493,7 +493,7 @@ const double KeENC_Deg_SD_WheelOffsetAngle[E_RobotCornerSz] = {152.578125,   // 
 
 /* KeENC_k_WheelOffsetAnglePractieBot: Offset angle for each respective corder of the swerve drive wheel.  This is the angle 
    reading from the absolute encoder that is indicated in order for the wheel to point straight.  For practice bot only. */
-const double KeENC_k_WheelOffsetAnglePractieBot[E_RobotCornerSz] = {-177.9,  // E_FrontLeft 1.3  -176
+const double KeENC_k_WheelOffsetAnglePractieBot[E_RobotCornerSz] = { -179.4,  // E_FrontLeft 1.3  -176
                                                                     -16.1,  // E_FrontRight 163.5
                                                                      52.9,   // E_RearLeft 230.8  -127.1
                                                                      96.9};  // E_RearRight 282.0
