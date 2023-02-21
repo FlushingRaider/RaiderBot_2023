@@ -97,7 +97,7 @@ void ADAS_BT_ConfigsInit()
 /******************************************************************************
  * Function:     ADAS_BT_ConfigsCal
  *
- * Description:  Contains the motor configurations for the lift motors.  This 
+ * Description:  Contains the motor configurations for the Manipulator motors.  This 
  *               allows for rapid calibration, but must not be used for comp.
  ******************************************************************************/
 void ADAS_BT_ConfigsCal()
