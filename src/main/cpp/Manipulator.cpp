@@ -4,12 +4,13 @@
    Created on: Feb 01, 2022
    Author: Lauren and Chloe
 
-   The Manipulator control state machine. This controls the robat to move the x and y hooks. It automously controls the robot to climb
+   The lift control state machine. This controls the robat to move the x and y hooks. It automously controls the robot to climb
 
-   Manipulator go brrrrrrrrrrrrrrrrrrr -chloe
+   lift go brrrrrrrrrrrrrrrrrrr -chloe
  */
 
 #include "rev/CANSparkMax.h"
+#include "ctre/Phoenix.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/DriverStation.h>
 #include "Const.hpp"
@@ -17,33 +18,37 @@
 #include "Driver_inputs.hpp"
 #include "Encoders.hpp"
 
-TeMAN_ManipulatorStates VeMAN_e_SchedStatePrev = E_Rest; // Where do we want to end up?
 TeMAN_ManipulatorStates VeMAN_e_SchedState = E_Rest; // Where do we want to end up?
 TeMAN_ManipulatorStates VeMAN_e_CmndState  = E_Rest; // What is our next/current step?
 TeMAN_ManipulatorStates VeMAN_e_AttndState = E_Rest; // What is our current state?
 
 TeMAN_MotorControl VsMAN_s_Motors; // All of the motor commands for the manipulator/intake motors
+TeMAN_MotorControl VsMAN_s_MotorsTemp; // Temporary commands for the motors, not the final output
+TeMAN_MotorControl VsMAN_s_MotorsTest; // Temporary commands for the motors, not the final output
 TsMAN_Sensor       VsMAN_s_Sensors; // All of the sensor values for the manipulator/intake motors
+double             VaMAN_k_PositionToEncoder[E_MAN_Sz]; // Conversion value to go from desired manipulator position to equivalent encoder position
 
-double VeMAN_Cnt_LayoverTimer = 0; // owo, because Chloe
+
+double VaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz];
+double VaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz];
+double VaMAN_k_GripperPID_Gx[E_PID_SparkMaxCalSz];
+double VaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz];
+double VaMAN_k_TurretPID_Gx[E_PID_SparkMaxCalSz];
+double VaMAN_k_LinearSlidePID_Gx[E_PID_SparkMaxCalSz];
+
 bool   VeMAN_b_CriteriaMet = false;
-bool   VeMAN_b_ArmInitialized = false;
-bool   VeMAN_b_WaitingForDriverINS = false;  // Instrumentation only, but indication that we are waiting for the driver to press button for next step.
 bool   VeMAN_b_Paused = false; //Checks to see if paused (for testing)
 
-#ifdef ManipulatorXY_Test
-bool   VeMAN_b_MoterTestTurret = false; // temporary, we don't want to use the manual overrides
-double VMAN_PID_Gx[E_PID_SparkMaxCalSz];
+#ifdef Manipulator_Test
+bool   VeMAN_b_TestState = true; // temporary, we don't want to use the manual overrides
 #else
-bool VeMAN_b_MoterTestTurret = false;
+bool VeMAN_b_TestState = false;
 #endif
-
 
 /******************************************************************************
  * Function:     ManipulatorMotorConfigsInit
  *
  * Description:  Contains the motor configurations for the Arm and intake motors.
- *               - A through F
  ******************************************************************************/
 void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
                                  rev::SparkMaxPIDController m_WristPID,
@@ -51,7 +56,6 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
                                  rev::SparkMaxPIDController m_IntakeRollersPID)
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
-  TeMAN_ManipulatorStates  LeMAN_Cnt_Index1;
 
   // set PID coefficients
   m_ArmPivotPID.SetP(KaMAN_k_ArmPivotPID_Gx[E_kP]);
@@ -86,77 +90,107 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
        LeMAN_i_Index < E_MAN_Sz;
        LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
     {
-      VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = KaMAN_k_ManipulatorRate[LeMAN_i_Index];
+      VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = 0.0;
+      VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = 0.0;
+      VsMAN_s_MotorsTest.k_MotorCmnd[LeMAN_i_Index] = 0.0;
     }
-  
-  #ifdef ManipulatorXY_Test
-  T_PID_SparkMaxCal LeMAN_e_Index = E_kP;
 
-  for (LeMAN_e_Index = E_kP;
-       LeMAN_e_Index < E_PID_SparkMaxCalSz;
-       LeMAN_e_Index = T_PID_SparkMaxCal(int(LeMAN_e_Index) + 1))
-      {
-      VMAN_PID_Gx[LeMAN_e_Index] = K_ManipulatorPID_Gx[LeMAN_e_Index];
-      }
-  
+  VaMAN_k_PositionToEncoder[E_MAN_Turret] = KeENC_k_TurretEncoderScaler;
+  VaMAN_k_PositionToEncoder[E_MAN_ArmPivot] = KeENC_k_ArmPivot;
+  VaMAN_k_PositionToEncoder[E_MAN_LinearSlide] = KeENC_k_LinearSlideEncoderScaler;
+  VaMAN_k_PositionToEncoder[E_MAN_Wrist] = KeENC_Deg_Wrist;
+  VaMAN_k_PositionToEncoder[E_MAN_Gripper] = KeENC_Deg_Gripper;
+  VaMAN_k_PositionToEncoder[E_MAN_IntakeRollers] = KeENC_RPM_IntakeRollers;
+  VaMAN_k_PositionToEncoder[E_MAN_IntakeArm] = 1.0;
+
+  VsMAN_s_Motors.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRate;
+  VsMAN_s_Motors.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
+  VsMAN_s_Motors.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
+  VsMAN_s_Motors.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
+  VsMAN_s_Motors.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
+  VsMAN_s_Motors.k_MotorRampRate[E_MAN_IntakeRollers] = KeMAN_RPMS_IntakeRate;
+
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRate;
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers] = KeMAN_RPMS_IntakeRate;
+
+  #ifdef Manipulator_Test
+  T_PID_SparkMaxCal LeMAN_i_Index2 = E_kP;
+
+  for (LeMAN_i_Index2 = E_kP;
+       LeMAN_i_Index2 < E_PID_SparkMaxCalSz;
+       LeMAN_i_Index2 = T_PID_SparkMaxCal(int(LeMAN_i_Index2) + 1))
+    {
+    VaMAN_k_ArmPivotPID_Gx[LeMAN_i_Index2] = KaMAN_k_ArmPivotPID_Gx[LeMAN_i_Index2];
+    VaMAN_k_WristPID_Gx[LeMAN_i_Index2] = KaMAN_k_WristPID_Gx[LeMAN_i_Index2];
+    VaMAN_k_GripperPID_Gx[LeMAN_i_Index2] = KaMAN_k_GripperPID_Gx[LeMAN_i_Index2];
+    VaMAN_k_IntakeRollersPID_Gx[LeMAN_i_Index2] = KaMAN_k_IntakeRollersPID_Gx[LeMAN_i_Index2];
+    VaMAN_k_TurretPID_Gx[LeMAN_i_Index2] = KaMAN_k_TurretPID_Gx[LeMAN_i_Index2];
+    VaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index2] = KaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index2];
+    }
+
   // display PID coefficients on SmartDashboard
-  // frc::SmartDashboard::PutNumber("P Gain", K_ManipulatorPID_Gx[E_kP]);
-  // frc::SmartDashboard::PutNumber("I Gain", K_ManipulatorPID_Gx[E_kI]);
-  // frc::SmartDashboard::PutNumber("D Gain", K_ManipulatorPID_Gx[E_kD]);
-  // frc::SmartDashboard::PutNumber("I Zone", K_ManipulatorPID_Gx[E_kIz]);
-  // frc::SmartDashboard::PutNumber("Feed Forward", K_ManipulatorPID_Gx[E_kFF]);
-  // frc::SmartDashboard::PutNumber("Max Output", K_ManipulatorPID_Gx[E_kMaxOutput]);
-  // frc::SmartDashboard::PutNumber("Min Output", K_ManipulatorPID_Gx[E_kMinOutput]);
+  frc::SmartDashboard::PutNumber("P Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kP]);
+  frc::SmartDashboard::PutNumber("I Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kI]);
+  frc::SmartDashboard::PutNumber("D Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kD]);
+  frc::SmartDashboard::PutNumber("I Zone - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kIz]);
+  frc::SmartDashboard::PutNumber("Max Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]);
+  frc::SmartDashboard::PutNumber("Min Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMinOutput]);
+
+  frc::SmartDashboard::PutNumber("P Gain - Wrist", KaMAN_k_WristPID_Gx[E_kP]);
+  frc::SmartDashboard::PutNumber("I Gain - Wrist", KaMAN_k_WristPID_Gx[E_kI]);
+  frc::SmartDashboard::PutNumber("D Gain - Wrist", KaMAN_k_WristPID_Gx[E_kD]);
+  frc::SmartDashboard::PutNumber("I Zone - Wrist", KaMAN_k_WristPID_Gx[E_kIz]);
+  frc::SmartDashboard::PutNumber("Max Output - Wrist", KaMAN_k_WristPID_Gx[E_kMaxOutput]);
+  frc::SmartDashboard::PutNumber("Min Output - Wrist", KaMAN_k_WristPID_Gx[E_kMinOutput]);
+
+  frc::SmartDashboard::PutNumber("P Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kP]);
+  frc::SmartDashboard::PutNumber("I Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kI]);
+  frc::SmartDashboard::PutNumber("D Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kD]);
+  frc::SmartDashboard::PutNumber("I Zone - Gripper", KaMAN_k_GripperPID_Gx[E_kIz]);
+  frc::SmartDashboard::PutNumber("Max Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMaxOutput]);
+  frc::SmartDashboard::PutNumber("Min Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMinOutput]);
+
+  frc::SmartDashboard::PutNumber("P Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kP]);
+  frc::SmartDashboard::PutNumber("I Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kI]);
+  frc::SmartDashboard::PutNumber("D Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kD]);
+  frc::SmartDashboard::PutNumber("I Zone - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kIz]);
+  frc::SmartDashboard::PutNumber("Max Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
+  frc::SmartDashboard::PutNumber("Min Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput]);
+
+  // frc::SmartDashboard::PutNumber("P Gain - Turret", KaMAN_k_TurretPID_Gx[E_kP]);
+  // frc::SmartDashboard::PutNumber("I Gain - Turret", KaMAN_k_TurretPID_Gx[E_kI]);
+  // frc::SmartDashboard::PutNumber("D Gain - Turret", KaMAN_k_TurretPID_Gx[E_kD]);
+  // frc::SmartDashboard::PutNumber("I Zone - Turret", KaMAN_k_TurretPID_Gx[E_kIz]);
+  // frc::SmartDashboard::PutNumber("Max Output - Turret", KaMAN_k_TurretPID_Gx[E_kMaxOutput]);
+  // frc::SmartDashboard::PutNumber("Min Output - Turret", KaMAN_k_TurretPID_Gx[E_kMinOutput]);
+
+  // frc::SmartDashboard::PutNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kP]);
+  // frc::SmartDashboard::PutNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kI]);
+  // frc::SmartDashboard::PutNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kD]);
+  // frc::SmartDashboard::PutNumber("I Zone - Linear", KaMAN_k_LinearSlidePID_Gx[E_kIz]);
+  // frc::SmartDashboard::PutNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_kMaxOutput]);
+  // frc::SmartDashboard::PutNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_kMinOutput]);
 
   // display secondary coefficients
-  // frc::SmartDashboard::PutNumber("Set Position Y", 0);
-  // frc::SmartDashboard::PutNumber("Set Position X", 0);
+  frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRate", KeMAN_DegS_TurretRate);
+  frc::SmartDashboard::PutNumber("KeMAN_DegS_ArmPivotRate", KeMAN_DegS_ArmPivotRate);
+  frc::SmartDashboard::PutNumber("KeMAN_InS_LinearSlideRate", KeMAN_InS_LinearSlideRate);
+  frc::SmartDashboard::PutNumber("KeMAN_DegS_WristRate", KeMAN_DegS_WristRate);
+  frc::SmartDashboard::PutNumber("KeMAN_DegS_GripperRate", KeMAN_DegS_GripperRate);
+  frc::SmartDashboard::PutNumber("KeMAN_RPMS_IntakeRate", KeMAN_RPMS_IntakeRate);
 
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_Rest][VeMAN_Cnt_ManIterationNew]",            K_ManipulatorRampRateXD[E_Rest][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_TradeOff][VeMAN_Cnt_ManIterationNew]",      K_ManipulatorRampRateXD[E_TradeOff][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_TradeOff][VeMAN_Cnt_ManIterationNew]",   K_ManipulatorRampRateXD[E_TradeOff][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_Swiper][VeMAN_Cnt_ManIterationNew]",     K_ManipulatorRampRateXD[E_Swiper][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_DrivingState][VeMAN_Cnt_ManIterationNew]",   K_ManipulatorRampRateXD[E_DrivingState][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_PositioningState][VeMAN_Cnt_ManIterationNew]",   K_ManipulatorRampRateXD[E_PositioningState][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]",      K_ManipulatorRampRateXD[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]", K_ManipulatorRampRateXD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]",      K_ManipulatorRampRateXD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]",         K_ManipulatorRampRateXD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]",        K_ManipulatorRampRateXD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_Rest][E_ManipulatorIteration2]",            K_ManipulatorRampRateXD[E_Rest][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_TradeOff][E_ManipulatorIteration2]",      K_ManipulatorRampRateXD[E_TradeOff][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_TradeOff][E_ManipulatorIteration2]",   K_ManipulatorRampRateXD[E_TradeOff][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_Swiper][E_ManipulatorIteration2]",     K_ManipulatorRampRateXD[E_Swiper][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_DrivingState][E_ManipulatorIteration2]",   K_ManipulatorRampRateXD[E_DrivingState][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_PositioningState][E_ManipulatorIteration2]",   K_ManipulatorRampRateXD[E_PositioningState][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_DroppingTheLoot][E_ManipulatorIteration2]",      K_ManipulatorRampRateXD[E_DroppingTheLoot][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_S8_more_down_some_YD][E_ManipulatorIteration2]", K_ManipulatorRampRateXD[E_S8_more_down_some_YD][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_S9_back_rest_XD][E_ManipulatorIteration2]",      K_ManipulatorRampRateXD[E_S9_back_rest_XD][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_S10_final_YD][E_ManipulatorIteration2]",         K_ManipulatorRampRateXD[E_S10_final_YD][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateXD[E_S11_final_OWO][E_ManipulatorIteration2]",        K_ManipulatorRampRateXD[E_S11_final_OWO][E_ManipulatorIteration2]);
-
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_Rest][VeMAN_Cnt_ManIterationNew]",            K_ManipulatorRampRateYD[E_Rest][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_TradeOff][VeMAN_Cnt_ManIterationNew]",      K_ManipulatorRampRateYD[E_TradeOff][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_TradeOff][VeMAN_Cnt_ManIterationNew]",   K_ManipulatorRampRateYD[E_TradeOff][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_Swiper][VeMAN_Cnt_ManIterationNew]",     K_ManipulatorRampRateYD[E_Swiper][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_DrivingState][VeMAN_Cnt_ManIterationNew]",   K_ManipulatorRampRateYD[E_DrivingState][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_PositioningState][VeMAN_Cnt_ManIterationNew]",   K_ManipulatorRampRateYD[E_PositioningState][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]",      K_ManipulatorRampRateYD[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]", K_ManipulatorRampRateYD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]",      K_ManipulatorRampRateYD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]",         K_ManipulatorRampRateYD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]",        K_ManipulatorRampRateYD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_Rest][E_ManipulatorIteration2]",            K_ManipulatorRampRateYD[E_Rest][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_TradeOff][E_ManipulatorIteration2]",      K_ManipulatorRampRateYD[E_TradeOff][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_TradeOff][E_ManipulatorIteration2]",   K_ManipulatorRampRateYD[E_TradeOff][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_Swiper][E_ManipulatorIteration2]",     K_ManipulatorRampRateYD[E_Swiper][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_DrivingState][E_ManipulatorIteration2]",   K_ManipulatorRampRateYD[E_DrivingState][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_PositioningState][E_ManipulatorIteration2]",   K_ManipulatorRampRateYD[E_PositioningState][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_DroppingTheLoot][E_ManipulatorIteration2]",      K_ManipulatorRampRateYD[E_DroppingTheLoot][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_S8_more_down_some_YD][E_ManipulatorIteration2]", K_ManipulatorRampRateYD[E_S8_more_down_some_YD][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_S9_back_rest_XD][E_ManipulatorIteration2]",      K_ManipulatorRampRateYD[E_S9_back_rest_XD][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_S10_final_YD][E_ManipulatorIteration2]",         K_ManipulatorRampRateYD[E_S10_final_YD][E_ManipulatorIteration2]);
-  frc::SmartDashboard::PutNumber("K_ManipulatorRampRateYD[E_S11_final_OWO][E_ManipulatorIteration2]",        K_ManipulatorRampRateYD[E_S11_final_OWO][E_ManipulatorIteration2]);
+  // display target positions/speeds
+  frc::SmartDashboard::PutNumber("Set Position Gripper", 0);
+  frc::SmartDashboard::PutNumber("Set Position Wrist", 0);
+  frc::SmartDashboard::PutNumber("Set Position Linear Slide", 0);
+  frc::SmartDashboard::PutNumber("Set Position Arm Pivot", 0);
+  frc::SmartDashboard::PutNumber("Set Position Turret", 0);
+  frc::SmartDashboard::PutNumber("Set Speed Intake Rollers ", 0);
+  frc::SmartDashboard::PutBoolean("Set Position Intake", false);
   #endif
   }
 
@@ -167,78 +201,102 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
  * Description:  Contains the motor configurations for the manipulator motors.  This 
  *               allows for rapid calibration, but must not be used for comp.
  ******************************************************************************/
-void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ManipulatorpidYD,
-                         rev::SparkMaxPIDController m_ManipulatorpidXD)
+void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
+                                rev::SparkMaxPIDController m_WristPID,
+                                rev::SparkMaxPIDController m_GripperPID,
+                                rev::SparkMaxPIDController m_IntakeRollersPID)
   {
   // read PID coefficients from SmartDashboard
-  #ifdef ManipulatorXY_Test
-  // double L_p = frc::SmartDashboard::GetNumber("P Gain", 0);
-  // double L_i = frc::SmartDashboard::GetNumber("I Gain", 0);
-  // double L_d = frc::SmartDashboard::GetNumber("D Gain", 0);
-  // double L_iz = frc::SmartDashboard::GetNumber("I Zone", 0);
-  // double L_ff = frc::SmartDashboard::GetNumber("Feed Forward", 0);
-  // double L_max = frc::SmartDashboard::GetNumber("Max Output", 0);
-  // double L_min = frc::SmartDashboard::GetNumber("Min Output", 0);
-  // double L_maxV = frc::SmartDashboard::GetNumber("Max Velocity", 0);
-  // double L_minV = frc::SmartDashboard::GetNumber("Min Velocity", 0);
-  // double L_maxA = frc::SmartDashboard::GetNumber("Max Acceleration", 0);
-  // double L_allE = frc::SmartDashboard::GetNumber("Allowed Closed Loop Error", 0);
+  #ifdef Manipulator_Test
+  bool LeMAN_b_IntakePosition = false;  // false is retracted, true extended
+  double L_p_Pivot   = frc::SmartDashboard::GetNumber("P Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kP]);
+  double L_i_Pivot   = frc::SmartDashboard::GetNumber("I Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kI]);
+  double L_d_Pivot   = frc::SmartDashboard::GetNumber("D Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kD]);
+  double L_iz_Pivot  = frc::SmartDashboard::GetNumber("I Zone - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kIz]);
+  double L_max_Pivot = frc::SmartDashboard::GetNumber("Max Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]);
+  double L_min_Pivot = frc::SmartDashboard::GetNumber("Min Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMinOutput]);
 
-  // VeMAN_Cnt_MoterTestLocationTurret = frc::SmartDashboard::GetNumber("Set Position Y", 0);
-  // VeMAN_Cnt_MoterTestLocationArmPivot = frc::SmartDashboard::GetNumber("Set Position X", 0);
+  double L_p_Wrist   = frc::SmartDashboard::GetNumber("P Gain - Wrist", KaMAN_k_WristPID_Gx[E_kP]);
+  double L_i_Wrist   = frc::SmartDashboard::GetNumber("I Gain - Wrist", KaMAN_k_WristPID_Gx[E_kI]);
+  double L_d_Wrist   = frc::SmartDashboard::GetNumber("D Gain - Wrist", KaMAN_k_WristPID_Gx[E_kD]);
+  double L_iz_Wrist  = frc::SmartDashboard::GetNumber("I Zone - Wrist", KaMAN_k_WristPID_Gx[E_kIz]);
+  double L_max_Wrist = frc::SmartDashboard::GetNumber("Max Output - Wrist", KaMAN_k_WristPID_Gx[E_kMaxOutput]);
+  double L_min_Wrist = frc::SmartDashboard::GetNumber("Min Output - Wrist", KaMAN_k_WristPID_Gx[E_kMinOutput]);
 
-  // if((L_p != VMAN_PID_Gx[E_kP]))   { m_ManipulatorpidYD.SetP(L_p); m_ManipulatorpidXD.SetP(L_p); VMAN_PID_Gx[E_kP] = L_p; }
-  // if((L_i != VMAN_PID_Gx[E_kI]))   { m_ManipulatorpidYD.SetI(L_i); m_ManipulatorpidXD.SetI(L_i); VMAN_PID_Gx[E_kI] = L_i; }
-  // if((L_d != VMAN_PID_Gx[E_kD]))   { m_ManipulatorpidYD.SetD(L_d); m_ManipulatorpidXD.SetD(L_d); VMAN_PID_Gx[E_kD] = L_d; }
-  // if((L_iz != VMAN_PID_Gx[E_kIz])) { m_ManipulatorpidYD.SetIZone(L_iz); m_ManipulatorpidXD.SetIZone(L_iz); VMAN_PID_Gx[E_kIz] = L_iz; }
-  // if((L_ff != VMAN_PID_Gx[E_kFF])) { m_ManipulatorpidYD.SetFF(L_ff); m_ManipulatorpidXD.SetFF(L_ff); VMAN_PID_Gx[E_kFF] = L_ff; }
-  // if((L_max != VMAN_PID_Gx[E_kMaxOutput]) || (L_min != VMAN_PID_Gx[E_kMinOutput])) { m_ManipulatorpidYD.SetOutputRange(L_min, L_max); m_ManipulatorpidXD.SetOutputRange(L_min, L_max); VMAN_PID_Gx[E_kMinOutput] = L_min; VMAN_PID_Gx[E_kMaxOutput] = L_max; }
+  double L_p_Gripper   = frc::SmartDashboard::GetNumber("P Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kP]);
+  double L_i_Gripper   = frc::SmartDashboard::GetNumber("I Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kI]);
+  double L_d_Gripper   = frc::SmartDashboard::GetNumber("D Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kD]);
+  double L_iz_Gripper  = frc::SmartDashboard::GetNumber("I Zone - Gripper", KaMAN_k_GripperPID_Gx[E_kIz]);
+  double L_max_Gripper = frc::SmartDashboard::GetNumber("Max Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMaxOutput]);
+  double L_min_Gripper = frc::SmartDashboard::GetNumber("Min Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMinOutput]);
+
+  double L_p_Intake   = frc::SmartDashboard::GetNumber("P Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kP]);
+  double L_i_Intake   = frc::SmartDashboard::GetNumber("I Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kI]);
+  double L_d_Intake   = frc::SmartDashboard::GetNumber("D Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kD]);
+  double L_iz_Intake  = frc::SmartDashboard::GetNumber("I Zone - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kIz]);
+  double L_max_Intake = frc::SmartDashboard::GetNumber("Max Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
+  double L_min_Intake = frc::SmartDashboard::GetNumber("Min Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput]);
+
+  // double L_p_Turret   = frc::SmartDashboard::GetNumber("P Gain - Turret", KaMAN_k_TurretPID_Gx[E_kP]);
+  // double L_i_Turret   = frc::SmartDashboard::GetNumber("I Gain - Turret", KaMAN_k_TurretPID_Gx[E_kI]);
+  // double L_d_Turret   = frc::SmartDashboard::GetNumber("D Gain - Turret", KaMAN_k_TurretPID_Gx[E_kD]);
+  // double L_iz_Turret  = frc::SmartDashboard::GetNumber("I Zone - Turret", KaMAN_k_TurretPID_Gx[E_kIz]);
+  // double L_max_Turret = frc::SmartDashboard::GetNumber("Max Output - Turret", KaMAN_k_TurretPID_Gx[E_kMaxOutput]);
+  // double L_min_Turret = frc::SmartDashboard::GetNumber("Min Output - Turret", KaMAN_k_TurretPID_Gx[E_kMinOutput]);
+
+  // double L_p_Linear   = frc::SmartDashboard::GetNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kP]);
+  // double L_i_Linear   = frc::SmartDashboard::GetNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kI]);
+  // double L_d_Linear   = frc::SmartDashboard::GetNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kD]);
+  // double L_iz_Linear  = frc::SmartDashboard::GetNumber("I Zone - Linear", KaMAN_k_LinearSlidePID_Gx[E_kIz]);
+  // double L_max_Linear = frc::SmartDashboard::GetNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_kMaxOutput]);
+  // double L_min_Linear = frc::SmartDashboard::GetNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_kMinOutput]);
+
+  VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Gripper] = frc::SmartDashboard::GetNumber("Set Position Gripper", 0);
+  VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("Set Position Wrist", 0);
+  VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("Set Position Linear Slide", 0);
+  VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("Set Position Arm Pivot", 0);
+  VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Turret] = frc::SmartDashboard::GetNumber("Set Position Turret", 0);
+  VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_IntakeRollers] = frc::SmartDashboard::GetNumber("Set Speed Intake Rollers ", 0);
+  LeMAN_b_IntakePosition = frc::SmartDashboard::GetBoolean("Set Position Intake", false);
+  if (LeMAN_b_IntakePosition == true)
+   {
+   VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm] = E_MotorExtend;
+   }
+  else
+   {
+   VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm] = E_MotorRetract;
+   }
   
-  VaMAN_InS_RampRateMoterShoulder[E_Rest][VeMAN_Cnt_ManIterationNew]            = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_Rest][VeMAN_Cnt_ManIterationNew]",            VaMAN_InS_RampRateMoterShoulder[E_Rest][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_TradeOff][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_TradeOff][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterShoulder[E_TradeOff][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_TradeOff][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_TradeOff][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterShoulder[E_TradeOff][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_Swiper][VeMAN_Cnt_ManIterationNew]     = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_Swiper][VeMAN_Cnt_ManIterationNew]",     VaMAN_InS_RampRateMoterShoulder[E_Swiper][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_DrivingState][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_DrivingState][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterShoulder[E_DrivingState][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_PositioningState][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_PositioningState][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterShoulder[E_PositioningState][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterShoulder[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew] = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]", VaMAN_InS_RampRateMoterShoulder[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterShoulder[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]         = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]",         VaMAN_InS_RampRateMoterShoulder[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]        = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]",        VaMAN_InS_RampRateMoterShoulder[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterShoulder[E_Rest][E_ManipulatorIteration2]            = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_Rest][E_ManipulatorIteration2]",            VaMAN_InS_RampRateMoterShoulder[E_Rest][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_TradeOff][E_ManipulatorIteration2]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_TradeOff][E_ManipulatorIteration2]",      VaMAN_InS_RampRateMoterShoulder[E_TradeOff][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_TradeOff][E_ManipulatorIteration2]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_TradeOff][E_ManipulatorIteration2]",   VaMAN_InS_RampRateMoterShoulder[E_TradeOff][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_Swiper][E_ManipulatorIteration2]     = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_Swiper][E_ManipulatorIteration2]",     VaMAN_InS_RampRateMoterShoulder[E_Swiper][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_DrivingState][E_ManipulatorIteration2]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_DrivingState][E_ManipulatorIteration2]",   VaMAN_InS_RampRateMoterShoulder[E_DrivingState][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_PositioningState][E_ManipulatorIteration2]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_PositioningState][E_ManipulatorIteration2]",   VaMAN_InS_RampRateMoterShoulder[E_PositioningState][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_DroppingTheLoot][E_ManipulatorIteration2]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_DroppingTheLoot][E_ManipulatorIteration2]",      VaMAN_InS_RampRateMoterShoulder[E_DroppingTheLoot][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_S8_more_down_some_YD][E_ManipulatorIteration2] = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_S8_more_down_some_YD][E_ManipulatorIteration2]", VaMAN_InS_RampRateMoterShoulder[E_S8_more_down_some_YD][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_S9_back_rest_XD][E_ManipulatorIteration2]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_S9_back_rest_XD][E_ManipulatorIteration2]",      VaMAN_InS_RampRateMoterShoulder[E_S9_back_rest_XD][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_S10_final_YD][E_ManipulatorIteration2]         = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_S10_final_YD][E_ManipulatorIteration2]",         VaMAN_InS_RampRateMoterShoulder[E_S10_final_YD][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterShoulder[E_S11_final_OWO][E_ManipulatorIteration2]        = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateXD[E_S11_final_OWO][E_ManipulatorIteration2]",        VaMAN_InS_RampRateMoterShoulder[E_S11_final_OWO][E_ManipulatorIteration2]);
+  if(L_p_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kP])   { m_ArmPivotPID.SetP(L_p_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kP] = L_p_Pivot; }
+  if(L_i_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kI])   { m_ArmPivotPID.SetI(L_i_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kI] = L_i_Pivot; }
+  if(L_d_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kD])   { m_ArmPivotPID.SetD(L_d_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kD] = L_d_Pivot; }
+  if(L_iz_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kIz]) { m_ArmPivotPID.SetIZone(L_iz_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kIz] = L_iz_Pivot; }
+  if((L_max_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]) || (L_min_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kMinOutput])) { m_ArmPivotPID.SetOutputRange(L_min_Pivot, L_max_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kMinOutput] = L_min_Pivot; VaMAN_k_ArmPivotPID_Gx[E_kMaxOutput] = L_max_Pivot; }
 
-  VaMAN_InS_RampRateMoterTurret[E_Rest][VeMAN_Cnt_ManIterationNew]            = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_Rest][VeMAN_Cnt_ManIterationNew]",            VaMAN_InS_RampRateMoterTurret[E_Rest][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_TradeOff][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_TradeOff][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterTurret[E_TradeOff][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_TradeOff][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_TradeOff][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterTurret[E_TradeOff][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_Swiper][VeMAN_Cnt_ManIterationNew]     = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_Swiper][VeMAN_Cnt_ManIterationNew]",     VaMAN_InS_RampRateMoterTurret[E_Swiper][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_DrivingState][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_DrivingState][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterTurret[E_DrivingState][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_PositioningState][VeMAN_Cnt_ManIterationNew]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_PositioningState][VeMAN_Cnt_ManIterationNew]",   VaMAN_InS_RampRateMoterTurret[E_PositioningState][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterTurret[E_DroppingTheLoot][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew] = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]", VaMAN_InS_RampRateMoterTurret[E_S8_more_down_some_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]",      VaMAN_InS_RampRateMoterTurret[E_S9_back_rest_XD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]         = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]",         VaMAN_InS_RampRateMoterTurret[E_S10_final_YD][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]        = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]",        VaMAN_InS_RampRateMoterTurret[E_S11_final_OWO][VeMAN_Cnt_ManIterationNew]);
-  VaMAN_InS_RampRateMoterTurret[E_Rest][E_ManipulatorIteration2]            = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_Rest][E_ManipulatorIteration2]",            VaMAN_InS_RampRateMoterTurret[E_Rest][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_TradeOff][E_ManipulatorIteration2]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_TradeOff][E_ManipulatorIteration2]",      VaMAN_InS_RampRateMoterTurret[E_TradeOff][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_TradeOff][E_ManipulatorIteration2]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_TradeOff][E_ManipulatorIteration2]",   VaMAN_InS_RampRateMoterTurret[E_TradeOff][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_Swiper][E_ManipulatorIteration2]     = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_Swiper][E_ManipulatorIteration2]",     VaMAN_InS_RampRateMoterTurret[E_Swiper][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_DrivingState][E_ManipulatorIteration2]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_DrivingState][E_ManipulatorIteration2]",   VaMAN_InS_RampRateMoterTurret[E_DrivingState][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_PositioningState][E_ManipulatorIteration2]   = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_PositioningState][E_ManipulatorIteration2]",   VaMAN_InS_RampRateMoterTurret[E_PositioningState][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_DroppingTheLoot][E_ManipulatorIteration2]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_DroppingTheLoot][E_ManipulatorIteration2]",      VaMAN_InS_RampRateMoterTurret[E_DroppingTheLoot][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_S8_more_down_some_YD][E_ManipulatorIteration2] = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_S8_more_down_some_YD][E_ManipulatorIteration2]", VaMAN_InS_RampRateMoterTurret[E_S8_more_down_some_YD][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_S9_back_rest_XD][E_ManipulatorIteration2]      = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_S9_back_rest_XD][E_ManipulatorIteration2]",      VaMAN_InS_RampRateMoterTurret[E_S9_back_rest_XD][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_S10_final_YD][E_ManipulatorIteration2]         = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_S10_final_YD][E_ManipulatorIteration2]",         VaMAN_InS_RampRateMoterTurret[E_S10_final_YD][E_ManipulatorIteration2]);
-  VaMAN_InS_RampRateMoterTurret[E_S11_final_OWO][E_ManipulatorIteration2]        = frc::SmartDashboard::GetNumber("K_ManipulatorRampRateYD[E_S11_final_OWO][E_ManipulatorIteration2]",        VaMAN_InS_RampRateMoterTurret[E_S11_final_OWO][E_ManipulatorIteration2]);
+  if(L_p_Wrist != VaMAN_k_WristPID_Gx[E_kP])   { m_WristPID.SetP(L_p_Wrist); VaMAN_k_WristPID_Gx[E_kP] = L_p_Wrist; }
+  if(L_i_Wrist != VaMAN_k_WristPID_Gx[E_kI])   { m_WristPID.SetI(L_i_Wrist); VaMAN_k_WristPID_Gx[E_kI] = L_i_Wrist; }
+  if(L_d_Wrist != VaMAN_k_WristPID_Gx[E_kD])   { m_WristPID.SetD(L_d_Wrist); VaMAN_k_WristPID_Gx[E_kD] = L_d_Wrist; }
+  if(L_iz_Wrist != VaMAN_k_WristPID_Gx[E_kIz]) { m_WristPID.SetIZone(L_iz_Wrist); VaMAN_k_WristPID_Gx[E_kIz] = L_iz_Wrist; }
+  if((L_max_Wrist != VaMAN_k_WristPID_Gx[E_kMaxOutput]) || (L_min_Wrist != VaMAN_k_WristPID_Gx[E_kMinOutput])) { m_WristPID.SetOutputRange(L_min_Wrist, L_max_Wrist); VaMAN_k_WristPID_Gx[E_kMinOutput] = L_min_Wrist; VaMAN_k_WristPID_Gx[E_kMaxOutput] = L_max_Wrist; }
+
+  if(L_p_Gripper != VaMAN_k_GripperPID_Gx[E_kP])   { m_GripperPID.SetP(L_p_Gripper); VaMAN_k_GripperPID_Gx[E_kP] = L_p_Gripper; }
+  if(L_i_Gripper != VaMAN_k_GripperPID_Gx[E_kI])   { m_GripperPID.SetI(L_i_Gripper); VaMAN_k_GripperPID_Gx[E_kI] = L_i_Gripper; }
+  if(L_d_Gripper != VaMAN_k_GripperPID_Gx[E_kD])   { m_GripperPID.SetD(L_d_Gripper); VaMAN_k_GripperPID_Gx[E_kD] = L_d_Gripper; }
+  if(L_iz_Gripper != VaMAN_k_GripperPID_Gx[E_kIz]) { m_GripperPID.SetIZone(L_iz_Gripper); VaMAN_k_GripperPID_Gx[E_kIz] = L_iz_Gripper; }
+  if((L_max_Gripper != VaMAN_k_GripperPID_Gx[E_kMaxOutput]) || (L_min_Gripper != VaMAN_k_GripperPID_Gx[E_kMinOutput])) { m_GripperPID.SetOutputRange(L_min_Gripper, L_max_Gripper); VaMAN_k_GripperPID_Gx[E_kMinOutput] = L_min_Gripper; VaMAN_k_GripperPID_Gx[E_kMaxOutput] = L_max_Gripper; }
+
+  if(L_p_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kP])   { m_IntakeRollersPID.SetP(L_p_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kP] = L_p_Intake; }
+  if(L_i_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kI])   { m_IntakeRollersPID.SetI(L_i_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kI] = L_i_Intake; }
+  if(L_d_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kD])   { m_IntakeRollersPID.SetD(L_d_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kD] = L_d_Intake; }
+  if(L_iz_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kIz]) { m_IntakeRollersPID.SetIZone(L_iz_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kIz] = L_iz_Intake; }
+  if((L_max_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]) || (L_min_Pivot != VaMAN_k_IntakeRollersPID_Gx[E_kMinOutput])) { m_IntakeRollersPID.SetOutputRange(L_min_Pivot, L_max_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kMinOutput] = L_min_Pivot; VaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput] = L_max_Intake; }
+
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = frc::SmartDashboard::GetNumber("KeMAN_DegS_TurretRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret]);
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("KeMAN_DegS_ArmPivotRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("KeMAN_InS_LinearSlideRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("KeMAN_DegS_WristRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = frc::SmartDashboard::GetNumber("KeMAN_DegS_GripperRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper]);
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers] = frc::SmartDashboard::GetNumber("KeMAN_RPMS_IntakeRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers]);
   #endif
   }
 
@@ -255,22 +313,22 @@ void ManipulatorControlInit()
   VeMAN_e_CmndState  = E_Rest;
   VeMAN_e_AttndState = E_Rest;
 
-  VeMAN_Cnt_LayoverTimer = 0;
   VeMAN_b_CriteriaMet = false;
   VeMAN_b_Paused = false;
-  VeMAN_b_WaitingForDriverINS = false;
-  VeMAN_b_ArmInitialized = false;
 
   for (LeMAN_i_Index = E_MAN_Turret;
        LeMAN_i_Index < E_MAN_Sz;
        LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
     {
       VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = 0.0;
-      VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = KaMAN_k_ManipulatorRate[LeMAN_i_Index];
+      VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = 0.0;
       VsMAN_s_Motors.k_MotorTestPower[LeMAN_i_Index] = 0.0;
       VsMAN_s_Motors.k_MotorTestValue[LeMAN_i_Index] = 0.0;
+      VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = 0.0;
+      VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index] = 0.0;
+      VsMAN_s_MotorsTemp.k_MotorTestPower[LeMAN_i_Index] = 0.0;
+      VsMAN_s_MotorsTemp.k_MotorTestValue[LeMAN_i_Index] = 0.0;
     }
-
   }
 
 
@@ -287,18 +345,18 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
        LeMAN_i_Index < E_MAN_Sz;
        LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
     {
-      VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = KaMAN_k_ManipulatorRate[LeMAN_i_Index];
       VsMAN_s_Motors.k_MotorTestPower[LeMAN_i_Index] = 0.0;
     }
+  VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = E_MotorControlDisabled;
 
   if (LsCONT_s_DriverInput->b_IntakeArmIn == true)
     {
-    VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeArm] = KaMAN_k_ManipulatorTestPower[E_MAN_IntakeArm];
+    VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = E_MotorRetract;
     }
 
   if (LsCONT_s_DriverInput->b_IntakeArmOut == true)
     {
-    VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeArm] = -KaMAN_k_ManipulatorTestPower[E_MAN_IntakeArm];
+    VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = E_MotorExtend;
     }
 
   if (LsCONT_s_DriverInput->b_IntakeRollers == true)
@@ -306,9 +364,12 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
     VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeRollers] = KaMAN_k_ManipulatorTestPower[E_MAN_IntakeRollers];
     }
 
+
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Wrist] = LsCONT_s_DriverInput->pct_Wrist * KaMAN_k_ManipulatorTestPower[E_MAN_Wrist];
+
   VsMAN_s_Motors.k_MotorTestPower[E_MAN_ArmPivot] = LsCONT_s_DriverInput->pct_ArmPivot * KaMAN_k_ManipulatorTestPower[E_MAN_ArmPivot];
 
-  VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide] = LsCONT_s_DriverInput->pct_ArmPivot * KaMAN_k_ManipulatorTestPower[E_MAN_LinearSlide];
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide] = LsCONT_s_DriverInput->pct_LinearSlide * KaMAN_k_ManipulatorTestPower[E_MAN_LinearSlide];
 
   VsMAN_s_Motors.k_MotorTestPower[E_MAN_Turret] = LsCONT_s_DriverInput->pct_Turret * KaMAN_k_ManipulatorTestPower[E_MAN_Turret];
 
@@ -318,726 +379,270 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
 /******************************************************************************
  * Function:     Update_Command_Attained_State
  *
- * Description:  Dictator
+ * Description:  Updates the commanded and attained states for the manipulator
  ******************************************************************************/
-void Update_Command_Atained_State(TeMAN_ManipulatorStates    LeMAN_e_SchedState,
-                      TeMAN_ManipulatorStates               *LeMAN_e_CmndState,
-                      TeMAN_ManipulatorStates               *LeMAN_e_AttndState,
-                      TeMAN_ManipulatorStates               *LeMAN_Deg_CmdAngleWrist,
-                      TeMAN_ManipulatorStates               *LeMAN_e_SchedStatePrev,
-                      bool                                  *LeMAN_b_CriteriaMet)
-{
-TeMAN_ManipulatorStates LeMAN_e_CMD = *LeMAN_e_CmndState;
+bool Update_Command_Atained_State(bool LeMAN_b_CriteriaMet,
+                                  TeMAN_ManipulatorStates LeMAN_e_SchedState)
+  {
+  TeMAN_ManipulatorStates LeMAN_e_CmndState = VeMAN_e_CmndState;
 
-if(*LeMAN_b_CriteriaMet == true)
-{
-  *LeMAN_e_AttndState = LeMAN_e_CMD;
-}
+  if(LeMAN_b_CriteriaMet == true)
+    {
+    VeMAN_e_AttndState = LeMAN_e_CmndState;
+    LeMAN_b_CriteriaMet = false;
+    }
 
-if(LeMAN_e_SchedState != *LeMAN_e_SchedStatePrev && *LeMAN_e_SchedStatePrev == *LeMAN_e_AttndState)
-{
-  LeMAN_e_CMD = KaMAN_e_ControllingTable[LeMAN_e_SchedState][*LeMAN_e_AttndState];
-}
+  if((LeMAN_e_SchedState != VeMAN_e_AttndState) &&
+     (VeMAN_e_CmndState  == VeMAN_e_AttndState))
+    {
+    LeMAN_e_CmndState = KaMAN_e_ControllingTable[LeMAN_e_SchedState][VeMAN_e_AttndState];
+    }
 
-*LeMAN_e_CmndState = LeMAN_e_CMD;
-}
+  VeMAN_e_CmndState = LeMAN_e_CmndState;
 
+  return(LeMAN_b_CriteriaMet);
+  }
 
-#ifdef InProcess
+/******************************************************************************
+ * Function:     CmndStateReached
+ *
+ * Description:  Checks to see if we have reached the desired commanded state
+ ******************************************************************************/
+bool CmndStateReached(TeMAN_ManipulatorStates LeMAN_e_CmndState)
+  {
+  bool LeMAN_b_CriteriaMet = false;
+
+  if((VsMAN_s_Sensors.Deg_Turret <= (KaMAN_Deg_TurretAngle[LeMAN_e_CmndState] + KaMAN_Deg_TurretDb[LeMAN_e_CmndState])) &&
+     (VsMAN_s_Sensors.Deg_Turret >= (KaMAN_Deg_TurretAngle[LeMAN_e_CmndState] - KaMAN_Deg_TurretDb[LeMAN_e_CmndState])) &&
+
+     (VsMAN_s_Sensors.Deg_ArmPivot <= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] + KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
+     (VsMAN_s_Sensors.Deg_ArmPivot >= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] - KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
+
+     (VsMAN_s_Sensors.In_LinearSlide <= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] + KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
+     (VsMAN_s_Sensors.In_LinearSlide >= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] - KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
+
+     (VsMAN_s_Sensors.Deg_Wrist <= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] + KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
+     (VsMAN_s_Sensors.Deg_Wrist >= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] - KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
+
+     (VsMAN_s_Sensors.Deg_Gripper <= (KaMAN_Deg_GripperAngle[LeMAN_e_CmndState] + KaMAN_Deg_GripperDb[LeMAN_e_CmndState])) &&
+     (VsMAN_s_Sensors.Deg_Gripper >= (KaMAN_Deg_GripperAngle[LeMAN_e_CmndState] - KaMAN_Deg_GripperDb[LeMAN_e_CmndState])) &&
+
+     (VsMAN_s_Sensors.RPM_IntakeRollers <= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] + KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
+     (VsMAN_s_Sensors.RPM_IntakeRollers >= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] - KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
+
+     ((VsMAN_s_Sensors.b_IntakeArmExtended == true && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorExtend) ||
+      (VsMAN_s_Sensors.b_IntakeArmExtended == false && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorRetract)))
+      {
+      LeMAN_b_CriteriaMet = true;
+      }
+
+  return(LeMAN_b_CriteriaMet);
+  }
+
+/******************************************************************************
+ * Function:     UpdateManipulatorActuators
+ *
+ * Description:  Updates the intermediate state of the actuartors for the 
+ *               manipulator
+ ******************************************************************************/
+void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
+  {
+   /* Ok, let's set the desired postions and rates: */
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret]     = KaMAN_Deg_TurretAngle[LeMAN_e_CmndState];
+   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRate;
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot]     = KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState];
+   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide]     = KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState];
+   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist]     = KaMAN_Deg_WristAngle[LeMAN_e_CmndState];
+   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper]     = KaMAN_Deg_GripperAngle[LeMAN_e_CmndState];
+   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers]     = KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState];
+   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_IntakeRollers] = KeMAN_RPMS_IntakeRate;
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeArm] = KaMAN_e_IntakePneumatics[LeMAN_e_CmndState];
+  }
+
 /******************************************************************************
  * Function:     Rest_State
  *
  * Description:  Everything in default positions.
  ******************************************************************************/
- bool Rest_State()
+bool Rest_State()
+   {
+   bool LeMAN_b_CriteriaMet = false;
+
+   /* Ok, let's set the desired postions and rates: */
+   UpdateManipulatorActuators(E_Rest);
+
+   /* Next, let's check each of the actuators to see if we are in the correct positions: */
+   LeMAN_b_CriteriaMet = CmndStateReached(E_Rest);
+  
+  return(LeMAN_b_CriteriaMet);
+  }
+
+/******************************************************************************
+ * Function:     Swiper_State
+ *
+ * Description:  Robot is in a position to intake object
+ ******************************************************************************/
+bool Swiper_State()
+   {
+   bool LeMAN_b_CriteriaMet = false;
+
+   /* Ok, let's set the desired postions and rates: */
+   UpdateManipulatorActuators(E_Swiper);
+
+   /* Next, let's check each of the actuators to see if we are in the correct positions: */
+   LeMAN_b_CriteriaMet = CmndStateReached(E_Swiper);
+  
+  return(LeMAN_b_CriteriaMet);
+  }
+
+/******************************************************************************
+ * Function:     TradeOff_State
+ *
+ * Description:  Moving object from intake to manipulator
+ ******************************************************************************/
+bool TradeOff_State()
   {
   bool LeMAN_b_CriteriaMet = false;
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Turret} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_ArmPivot} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_LinearSlide} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Wrist} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Claw} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Intake} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
 
-  *LeMAN_Cmd_CommandTurret = K_Manipulator_S2_YD;
+  /* Ok, let's set the desired postions and rates: */
+  UpdateManipulatorActuators(E_TradeOff);
 
-  *LeMAN_Cmd_CommandArmPivot = K_Manipulator_min_XD;
-
-  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_TradeOff][LeMAN_CmdStateIteration];
-
-  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_TradeOff][LeMAN_CmdStateIteration];
-
-  if (LeMAN_Deg_MeasuredAngleTurret <= (K_Manipulator_S2_YD + K_Manipulator_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_Manipulator_S2_YD - K_Manipulator_deadband_YD)) {
-    LeMAN_b_CriteriaMet = true;
-  }
-
-  return(LeMAN_b_CriteriaMet);
-}
-
-/******************************************************************************
- * Function:     Intake_State,
- *
- * Description:  State 2: robert intake or somthin
- ******************************************************************************/
- bool       Intake_State()
-{
-  bool LeMAN_b_CriteriaMet = false;
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Turret} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_ArmPivot} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_LinearSlide} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Wrist} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Claw} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Intake} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
-
-  *LeMAN_Cmd_CommandTurret = K_Manipulator_S2_YD;
-
-  *LeMAN_Cmd_CommandArmPivot = K_Manipulator_min_XD;
-
-  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_TradeOff][LeMAN_CmdStateIteration];
-
-  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_TradeOff][LeMAN_CmdStateIteration];
-
-  if (LeMAN_Deg_MeasuredAngleTurret <= (K_Manipulator_S2_YD + K_Manipulator_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_Manipulator_S2_YD - K_Manipulator_deadband_YD)) {
-    LeMAN_b_CriteriaMet = true;
-  }
-
-  return(LeMAN_b_CriteriaMet);
-}
-
-/******************************************************************************
- * Function:     TradeOff_State,
- *
- * Description:  State 2: moving ball from intake to manipulator?
- ******************************************************************************/
- bool     TradeOff_State()
-{
-  bool LeMAN_b_CriteriaMet = false;
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Turret} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_ArmPivot} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_LinearSlide} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Wrist} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Claw} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Intake} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
-
-  *LeMAN_Cmd_CommandTurret = K_Manipulator_S2_YD;
-
-  *LeMAN_Cmd_CommandArmPivot = K_Manipulator_min_XD;
-
-  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_TradeOff][LeMAN_CmdStateIteration];
-
-  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_TradeOff][LeMAN_CmdStateIteration];
-
-  if (LeMAN_Deg_MeasuredAngleTurret <= (K_Manipulator_S2_YD + K_Manipulator_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_Manipulator_S2_YD - K_Manipulator_deadband_YD)) {
-    LeMAN_b_CriteriaMet = true;
-  }
-
-  return(LeMAN_b_CriteriaMet);
-}
-
-/******************************************************************************
- * Function:      Swipe_State,
- *
- * Description:  State 3: swiper no swiping
- ******************************************************************************/
- bool          Swipe_State()  
-{
-  bool LeMAN_b_CriteriaMet = false;
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Turret} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_ArmPivot} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_LinearSlide} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Wrist} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Claw} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Intake} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
-
-  *LeMAN_Cmd_CommandArmPivot = K_Manipulator_S3_XD;
-
-  *LeMAN_Cmd_CommandTurret = K_Manipulator_S3_YD;
-
-  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_TradeOff][LeMAN_CmdStateIteration];
-
-  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_TradeOff][LeMAN_CmdStateIteration];
-
-  if (LeMAN_Deg_MeasuredAngleArmPivot <= (K_Manipulator_S3_XD + K_Manipulator_deadband_XD) && LeMAN_Deg_MeasuredAngleArmPivot >= (K_Manipulator_S3_XD - K_Manipulator_deadband_XD)) {
-    VeMAN_Cnt_LayoverTimer += C_ExeTime;
-    if (VeMAN_Cnt_LayoverTimer >= K_Manipulator_deadband_timer){
-         LeMAN_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-    }
-  }
-  else {
-    VeMAN_Cnt_LayoverTimer = 0;
-  }
-
-  return(LeMAN_b_CriteriaMet);
-}
-
-/******************************************************************************
- * Function:       Driving_State,
- *
- * Description:  State 4: x Manipulator no move, y Manipulator go
- ******************************************************************************/
- bool   Driving_State()  
-{
-   bool LeMAN_b_CriteriaMet = false;
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Turret} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_ArmPivot} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_LinearSlide} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Wrist} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Claw} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Intake} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
-
-  *LeMAN_Cmd_CommandTurret = K_Manipulator_S4_YD;
-
-  *LeMAN_Cmd_CommandArmPivot = K_Manipulator_S4_XD;
-
-  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_Swiper][LeMAN_CmdStateIteration];
-
-  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_Swiper][LeMAN_CmdStateIteration];
-
-  if (LeMAN_Deg_MeasuredAngleTurret <= (K_Manipulator_S4_YD + K_Manipulator_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_Manipulator_S4_YD - K_Manipulator_deadband_YD)) {
-    VeMAN_Cnt_LayoverTimer += C_ExeTime;
-    if (VeMAN_Cnt_LayoverTimer >= K_Manipulator_deadband_timer){
-      VeMAN_b_WaitingForDriverINS = true;
-      if (LeMAN_b_AutoManipulateButton == true){
-         /* Let the driver determine when we are not swinging and can proceed */
-         LeMAN_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-         VeMAN_b_WaitingForDriverINS = false;
-      }
-    }
-  }
-  else {
-    VeMAN_Cnt_LayoverTimer = 0;
-  }
+  /* Next, let's check each of the actuators to see if we are in the correct positions: */
+  LeMAN_b_CriteriaMet = CmndStateReached(E_TradeOff);
   
   return(LeMAN_b_CriteriaMet);
-}
+  }
 
 /******************************************************************************
- * Function:       Out_State,
+ * Function:     Driving_State
  *
- * Description:  State 5: y Manipulator no move, x Manipulator go
+ * Description:  Holding object in robot, intake in
  ******************************************************************************/
- bool   Positioning_State()  
-{
+ bool Driving_State()  
+  {
   bool LeMAN_b_CriteriaMet = false;
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Turret} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_ArmPivot} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_LinearSlide} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Wrist} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Claw} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Intake} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
 
-  *LeMAN_Cmd_CommandArmPivot = K_Manipulator_S5_XD;
+  /* Ok, let's set the desired postions and rates: */
+  UpdateManipulatorActuators(E_DrivingState);
 
-  *LeMAN_Cmd_CommandTurret = K_Manipulator_S5_YD;
-
-  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_DrivingState][LeMAN_CmdStateIteration];
-
-  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_DrivingState][LeMAN_CmdStateIteration];
-
-  if (LeMAN_Deg_MeasuredAngleArmPivot <= (K_Manipulator_S5_XD + K_Manipulator_deadband_XD) && LeMAN_Deg_MeasuredAngleArmPivot >= (K_Manipulator_S5_XD - K_Manipulator_deadband_XD)) {
-    VeMAN_Cnt_LayoverTimer += C_ExeTime;
-    if (VeMAN_Cnt_LayoverTimer >= K_Manipulator_deadband_timer){
-         LeMAN_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-    }
-  }
-  else {
-    VeMAN_Cnt_LayoverTimer = 0;
-  }
+  /* Next, let's check each of the actuators to see if we are in the correct positions: */
+  LeMAN_b_CriteriaMet = CmndStateReached(E_DrivingState);
   
   return(LeMAN_b_CriteriaMet);
-}
+  }
 
 /******************************************************************************
- * Function:       DroppingTheLoot_State,
+ * Function:     Positioning_State
  *
- * Description:  State 6: y Manipulator go down, x Manipulator bad stop what's in your mouth no get back here doN'T EAT IT
+ * Description:  Arm extended out to place object
+ ******************************************************************************/
+bool Positioning_State()  
+  {
+  bool LeMAN_b_CriteriaMet = false;
+
+  /* Ok, let's set the desired postions and rates: */
+  UpdateManipulatorActuators(E_PositioningState);
+
+  /* Next, let's check each of the actuators to see if we are in the correct positions: */
+  LeMAN_b_CriteriaMet = CmndStateReached(E_PositioningState);
+  
+  return(LeMAN_b_CriteriaMet);
+  }
+
+/******************************************************************************
+ * Function:     DroppingTheLoot_State
+ *
+ * Description:  Placing the object in the desired position
  ******************************************************************************/
  bool DroppingTheLoot_State()  
-{
-  bool LeMAN_b_CriteriaMet = false;
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Turret} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_ArmPivot} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_LinearSlide} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Wrist} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Claw} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
- VsMAN_s_Motors.k_MotorCmnd{E_MAN_Intake} = RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
-
-  *LeMAN_Cmd_CommandTurret = K_Manipulator_S6_YD;
-
-  *LeMAN_Cmd_CommandArmPivot = K_Manipulator_S6_XD;
-
-  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_DroppingTheLoot][LeMAN_CmdStateIteration];
-
-  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_DroppingTheLoot][LeMAN_CmdStateIteration];
-
-  if (LeMAN_Deg_MeasuredAngleTurret <= (K_Manipulator_S6_YD + K_Manipulator_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_Manipulator_S6_YD - K_Manipulator_deadband_YD)) {
-    VeMAN_Cnt_LayoverTimer += C_ExeTime;
-    if (VeMAN_Cnt_LayoverTimer >= K_Manipulator_deadband_timer){
-         LeMAN_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-    }
-  }
-  else {
-    VeMAN_Cnt_LayoverTimer = 0;
-  }
-  
-  return(LeMAN_b_CriteriaMet);
-}
-
-/******************************************************************************
- * Function:       S7_move_back_XD,
- *
- * Description:  State 7: X go back-aroni, we look at gyro to make sure we aren't tilted too much
- ******************************************************************************/
-//  bool S7_move_back_XD(double         LeMAN_b_AutoManipulateButton,
-//                       double         LeMAN_Deg_MeasuredAngleTurret,
-//                       double         LeMAN_Deg_MeasuredAngleArmPivot,
-//                       double         LeMAN_In_MeasuredPositionLinearSlide,
-//                       double         LeMAN_Deg_MeasuredAngleWrist,
-//                       double         LeMAN_Deg_MeasuredAngleClaw,
-//                       double         LeMAN_RPM_MeasuredSpeedIntake,
-//                       double         LeLEFT_Deg_GyroAngleYaws,
-//                       double        *LeMAN_Cmd_CommandTurret,
-//                       double        *LeMAN_Cmd_CommandArmPivot,
-//                       double        *LeMAN_Cmd_MeasuredPositionLinearSlide,
-//                       double        *LeMAN_Cmd_MeasuredAngleWrist,
-//                       double        *LeMAN_Cmd_MeasuredAngleClaw,
-//                       double        *LeMAN_Cmd_MeasuredSpeedIntake,
-//                       double        *LeMAN_InS_CommandRateTurret,
-//                       double        *LeMAN_InS_CommandRateArmPivot,
-//                       T_Man_Iteration LeMAN_CmdStateIteration)  
-{
-  bool LeMAN_b_CriteriaMet = false;
-
-  *LeMAN_Cmd_CommandArmPivot = K_Manipulator_S7_XD;
-
-  *LeMAN_Cmd_CommandTurret = K_Manipulator_S7_YD;
-
-  *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_DroppingTheLoot][LeMAN_CmdStateIteration];
-
-  *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_DroppingTheLoot][LeMAN_CmdStateIteration]; // Don't go too fast, going slower will help to reduce rocking
-
-  if (LeMAN_Deg_MeasuredAngleArmPivot <= (K_Manipulator_S7_XD + K_Manipulator_deadband_XD)  && LeMAN_Deg_MeasuredAngleArmPivot >= (K_Manipulator_S7_XD - K_Manipulator_deadband_XD)) {
-    VeMAN_Cnt_LayoverTimer += C_ExeTime;
-    if (VeMAN_Cnt_LayoverTimer >= K_Manipulator_deadband_timer){
-      VeMAN_b_WaitingForDriverINS = true;
-      if (LeMAN_b_AutoManipulateButton == true){
-         /* Let the driver determine when we are not swinging and can proceed */
-         LeMAN_b_CriteriaMet = true;
-         VeMAN_Cnt_LayoverTimer = 0;
-         VeMAN_b_WaitingForDriverINS = false;
-      }
-    }
-  }
-  else {
-    VeMAN_Cnt_LayoverTimer = 0;
-  }
-  return(LeMAN_b_CriteriaMet);
-}
-
-/******************************************************************************
- * Function:       S8_more_down_some_YD,
- *
- * Description:  State 8: me when the Manipulator go down more
- ******************************************************************************/
-//  bool S8_more_down_some_YD(double         LeMAN_b_AutoManipulateButton,
-//                            double         LeMAN_Deg_MeasuredAngleTurret,
-//                            double         LeMAN_Deg_MeasuredAngleArmPivot,
-//                            double         LeMAN_In_MeasuredPositionLinearSlide,
-//                            double              LeMAN_Deg_MeasuredAngleWrist,
-//                            double         LeMAN_Deg_MeasuredAngleClaw,
-//                             double              LeMAN_RPM_MeasuredSpeedIntake,
-//                            double        *LeMAN_Cmd_CommandTurret,
-//                            double        *LeMAN_Cmd_CommandArmPivot,
-//                            double        *LeMAN_InS_CommandRateTurret,
-//                            double        *LeMAN_InS_CommandRateArmPivot,
-//                            T_Man_Iteration LeMAN_CmdStateIteration)  
-// {
-//   bool LeMAN_b_CriteriaMet = false;
-  
-//   *LeMAN_Cmd_CommandTurret = K_Manipulator_S8_YD;
-
-//   *LeMAN_Cmd_CommandArmPivot = K_Manipulator_S8_XD;
-
-//   *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_S8_more_down_some_YD][LeMAN_CmdStateIteration];
-
-//   *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_S8_more_down_some_YD][LeMAN_CmdStateIteration];
-
-//   if (LeMAN_Deg_MeasuredAngleTurret <= (K_Manipulator_S8_YD + K_Manipulator_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_Manipulator_S8_YD - K_Manipulator_deadband_YD)) {
-//     VeMAN_Cnt_LayoverTimer += C_ExeTime;
-//     if (VeMAN_Cnt_LayoverTimer >= K_Manipulator_deadband_timer){
-//       VeMAN_b_WaitingForDriverINS = true;
-//       if (LeMAN_b_AutoManipulateButton == true){
-//          /* Let the driver determine when we are not swinging and can proceed */
-//          LeMAN_b_CriteriaMet = true;
-//          VeMAN_Cnt_LayoverTimer = 0;
-//          VeMAN_b_WaitingForDriverINS = false;
-//       }
-//     }
-//   }
-//   else {
-//     VeMAN_Cnt_LayoverTimer = 0;
-//   }
-  
-//   return(LeMAN_b_CriteriaMet);
-// }
-
-/******************************************************************************
- * Function:       S9_back_rest_XD
- *
- * Description:  State 9: reset it to initial x position (we aren't fixing my back  :(  )
- ******************************************************************************/
-//  bool S9_back_rest_XD(double         LeMAN_b_AutoManipulateButton,
-//                       double         LeMAN_Deg_MeasuredAngleTurret,
-//                       double         LeMAN_Deg_MeasuredAngleArmPivot,
-//                       double         LeMAN_In_MeasuredPositionLinearSlide,
-//                        double              LeMAN_Deg_MeasuredAngleWrist,
-//                        double         LeMAN_Deg_MeasuredAngleClaw,
-//                        double              LeMAN_RPM_MeasuredSpeedIntake,
-//                       double        *LeMAN_Cmd_CommandTurret,
-//                       double        *LeMAN_Cmd_CommandArmPivot,
-//                       double        *LeMAN_InS_CommandRateTurret,
-//                       double        *LeMAN_InS_CommandRateArmPivot,
-//                       T_Man_Iteration LeMAN_CmdStateIteration)  
-// {
-//   bool LeMAN_b_CriteriaMet = false;
-  
-//   *LeMAN_Cmd_CommandArmPivot = K_Manipulator_S9_XD;
-
-//   *LeMAN_Cmd_CommandTurret = K_Manipulator_S9_YD;
-
-//   *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_S9_back_rest_XD][LeMAN_CmdStateIteration];
-
-//   *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_S9_back_rest_XD][LeMAN_CmdStateIteration];
-
-//   if (LeMAN_Deg_MeasuredAngleArmPivot <= (K_Manipulator_S9_XD + K_Manipulator_deadband_XD) && LeMAN_Deg_MeasuredAngleArmPivot >= (K_Manipulator_S9_XD - K_Manipulator_deadband_XD)) {
-//     VeMAN_Cnt_LayoverTimer += C_ExeTime;
-//     if (VeMAN_Cnt_LayoverTimer >= K_Manipulator_deadband_timer){
-//       VeMAN_b_WaitingForDriverINS = true;
-//       if (LeMAN_b_AutoManipulateButton == true){
-//          /* Let the driver determine when we are not swinging and can proceed */
-//          LeMAN_b_CriteriaMet = true;
-//          VeMAN_Cnt_LayoverTimer = 0;
-//          VeMAN_b_WaitingForDriverINS = false;
-//       }
-//     }
-//   }
-//   else {
-//     VeMAN_Cnt_LayoverTimer = 0;
-//   }
-  
-//   return(LeMAN_b_CriteriaMet);
-// }
-
-/******************************************************************************
- * Function:       S10_final_YD
- *
- * Description:  State 10: y move down, robert move up (what a chad)
- ******************************************************************************/
-//  bool S10_final_YD(double         LeMAN_b_AutoManipulateButton,
-//                    double         LeMAN_Deg_MeasuredAngleTurret,
-//                    double         LeMAN_Deg_MeasuredAngleArmPivot,
-//                    double         LeMAN_In_MeasuredPositionLinearSlide,
-//                    double              LeMAN_Deg_MeasuredAngleWrist,
-//                    double         LeMAN_Deg_MeasuredAngleClaw,
-//                    double              LeMAN_RPM_MeasuredSpeedIntake,
-//                    double        *LeMAN_Cmd_CommandTurret,
-//                    double        *LeMAN_Cmd_CommandArmPivot,
-//                    double        *LeMAN_InS_CommandRateTurret,
-//                    double        *LeMAN_InS_CommandRateArmPivot,
-//                    T_Man_Iteration LeMAN_CmdStateIteration)  
-// {
-//   bool LeMAN_b_CriteriaMet = false;
-  
-//   *LeMAN_Cmd_CommandTurret = K_Manipulator_S10_YD;
-
-//   *LeMAN_Cmd_CommandArmPivot = K_Manipulator_S10_XD;
-
-//   *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_S10_final_YD][LeMAN_CmdStateIteration]; // Slow down, don't yank too hard
-
-//   *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_S10_final_YD][LeMAN_CmdStateIteration];
-
-//   if (LeMAN_Deg_MeasuredAngleTurret <= (K_Manipulator_S10_YD + K_Manipulator_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_Manipulator_S10_YD - K_Manipulator_deadband_YD)) {
-//     VeMAN_Cnt_LayoverTimer += C_ExeTime;
-//     if (VeMAN_Cnt_LayoverTimer >= K_Manipulator_deadband_timer){
-//          LeMAN_b_CriteriaMet = true;
-//          VeMAN_Cnt_LayoverTimer = 0;
-//     }
-//   }
-//   else {
-//     VeMAN_Cnt_LayoverTimer = 0;
-//   }
-  
-//   return(LeMAN_b_CriteriaMet);
-// }
-
-/******************************************************************************
- * Function:       S11_final_OWO
- *
- * Description:  State 11: uwu
- ******************************************************************************/
-//  bool S11_final_OWO(double         LeMAN_b_AutoManipulateButton,
-//                     double         LeMAN_Deg_MeasuredAngleTurret,
-//                     double         LeMAN_Deg_MeasuredAngleArmPivot,
-//                     double         LeMAN_In_MeasuredPositionLinearSlide,
-//                     double              LeMAN_Deg_MeasuredAngleWrist,
-//                     double         LeMAN_Deg_MeasuredAngleClaw,
-//                     double              LeMAN_RPM_MeasuredSpeedIntake,
-//                     double        *LeMAN_Cmd_CommandTurret,
-//                     double        *LeMAN_Cmd_CommandArmPivot,
-//                     double        *LeMAN_InS_CommandRateTurret,
-//                     double        *LeMAN_InS_CommandRateArmPivot,
-//                     T_Man_Iteration LeMAN_CmdStateIteration)  
-// {
-//   bool LeMAN_b_CriteriaMet = false;
-  
-//   *LeMAN_Cmd_CommandTurret = K_Manipulator_S11_YD;
-
-//   *LeMAN_Cmd_CommandArmPivot = K_Manipulator_S11_XD;
-
-//   *LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_S11_final_OWO][LeMAN_CmdStateIteration];
-
-//   *LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_S11_final_OWO][LeMAN_CmdStateIteration];
-
-//   if (LeMAN_Deg_MeasuredAngleTurret <= (K_Manipulator_S11_YD + K_Manipulator_deadband_YD) && LeMAN_Deg_MeasuredAngleTurret >= (K_Manipulator_S11_YD - K_Manipulator_deadband_YD)) {
-//     VeMAN_Cnt_LayoverTimer += C_ExeTime;
-//     if (VeMAN_Cnt_LayoverTimer >= K_Manipulator_deadband_timer){
-//       VeMAN_b_WaitingForDriverINS = true;
-//       if (LeMAN_b_AutoManipulateButton == true){
-//          /* Let the driver determine when we are not swinging and can proceed */
-//          LeMAN_b_CriteriaMet = true;
-//          VeMAN_Cnt_LayoverTimer = 0;
-//          VeMAN_b_WaitingForDriverINS = false;
-//       }
-//     }
-//   }
-//   else {
-//     VeMAN_Cnt_LayoverTimer = 0;
-//   }
-  
-//   return(LeMAN_b_CriteriaMet);
-// }
-
-
-/******************************************************************************
- * Function:     ManipulatorControlDictator
- *
- * Description:  Main calling function for Manipulator control.
- ******************************************************************************/
-TeMAN_ManipulatorStates ManipulatorControlDictator(bool                LeMAN_b_AutoManipulateButton,
-                                   bool                LeMAN_b_DriverAutoClimbPause,
-                                   T_Manipulator_CmndDirection LeMAN_Cmd_DriverMANDirection,
-                                   double              LeMAN_SEC_GameTime,
-                                   TeMAN_ManipulatorStates        LeMAN_Cnt_CurrentState,                                
-                                   double              LeMAN_Deg_MeasuredAngleTurret,
-                                   double              LeMAN_Deg_MeasuredAngleArmPivot,
-                                   double              LeMAN_In_MeasuredPositionLinearSlide,
-                                   double              LeMAN_Deg_MeasuredAngleWrist,
-                                   double              LeMAN_Deg_MeasuredAngleClaw,
-                                   double              LeMAN_RPM_MeasuredSpeedIntake,
-                                   double             *LeMAN_Cmd_CommandTurret,
-                                   double             *LeMAN_Cmd_CommandArmPivot,
-                                   double             *LeMAN_Pct_CommandPwrYD,
-                                   double             *LeMAN_Pct_CommandPwrXD,
-                                   bool                LeMAN_b_LimitDetectedTurret,
-                                   bool                LeMAN_b_LimitDetectedArmPivot,
-                                   double              LeLEFT_Deg_GyroAngleYaws,
-                                   double              LeMAN_v_MotorCurrentOutTurret,
-                                   double              LeMAN_v_MotorCurrentOutArmPivot,
-                                   double              LeMAN_v_MotorCurrentOutLinearSlide,
-                                   double              LeMAN_v_MotorCurrentOutWrist,
-                                   double              LeMAN_v_MotorCurrentOutClaw,
-                                   double              LeMAN_v_MotorCurrentOutIntake,
-                                   rev::SparkMaxRelativeEncoder m_encoderManipulatorYD,
-                                   rev::SparkMaxRelativeEncoder m_encoderManipulatorXD)
   {
-  TeMAN_ManipulatorStates LeMAN_e_CommandedState = LeMAN_Cnt_CurrentState;
-  double LeMAN_Cmd_CommandTurret_Temp = 0;
-  double LeMAN_Cmd_CommandArmPivot_Temp = 0;
-  double LeMAN_InS_CommandRateTurret = VaMAN_InS_RampRateMoterTurret[E_Rest][VeMAN_Cnt_ManIterationNew];
-  double LeMAN_InS_CommandRateArmPivot = VaMAN_InS_RampRateMoterShoulder[E_Rest][VeMAN_Cnt_ManIterationNew];
-  double LeMAN_v_MoterPowerTurret= 0;
-  double LeMAN_v_MoterPowerArmPivot= 0;
+  bool LeMAN_b_CriteriaMet = false;
 
-  if (VeMAN_b_MoterTestTurret == true)
+  /* Ok, let's set the desired postions and rates: */
+  UpdateManipulatorActuators(E_DroppingTheLoot);
+
+  /* Next, let's check each of the actuators to see if we are in the correct positions: */
+  LeMAN_b_CriteriaMet = CmndStateReached(E_DroppingTheLoot);
+  
+  return(LeMAN_b_CriteriaMet);
+  }
+
+// #ifdef TEST3
+/******************************************************************************
+ * Function:     ManipulatorControlMain
+ *
+ * Description:  Main calling function for manipulator control.
+ ******************************************************************************/
+void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
+                            bool                    LeMAN_b_TestPowerOverride)
+  {
+  TeMAN_e_ManipulatorActuator LeMAN_i_Index;
+
+  if (LeMAN_b_TestPowerOverride == true)
     {
-    /* Only used for testing. */
-    LeMAN_Cmd_CommandTurret_Temp = VeMAN_Cnt_MoterTestLocationTurret;
-    LeMAN_Cmd_CommandArmPivot_Temp = VeMAN_Cnt_MoterTestLocationArmPivot;
+    // Do nothing
     }
-  else if (VeMAN_b_ArmInitialized == false)
+  else if (VeMAN_b_TestState == true)
     {
-    if (LeMAN_b_LimitDetectedTurret == false)
+    /* Only used for testing/calibration. */
+    for (LeMAN_i_Index = E_MAN_Turret;
+         LeMAN_i_Index < E_MAN_Sz;
+         LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
       {
-      LeMAN_v_MoterPowerTurret= K_Manipulator_autoResetDown_YD;
+      VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = VsMAN_s_MotorsTest.k_MotorCmnd[LeMAN_i_Index] / VaMAN_k_PositionToEncoder[LeMAN_i_Index]; // back convert from engineering position to encoder position
+      VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index] = VsMAN_s_MotorsTest.k_MotorRampRate[LeMAN_i_Index];
       }
-
-    if (LeMAN_b_LimitDetectedArmPivot == false)
-      {
-      LeMAN_v_MoterPowerArmPivot= K_Manipulator_driver_manual_back_XD;
-      }
-    
-    if (LeMAN_b_LimitDetectedTurret == true && 
-        LeMAN_b_LimitDetectedArmPivot == true)
-      {
-      LeMAN_v_MoterPowerTurret= 0;
-      LeMAN_v_MoterPowerArmPivot= 0;
-      VeMAN_b_ArmInitialized = true;
-
-      // EncodersManipulatorInit(m_encoderManipulatorYD,
-      //                  m_encoderManipulatorXD);
-      }
-    }
-  else if ((LeMAN_b_DriverAutoClimbPause == true) && (VeMAN_b_Paused == false))
-    {
-    /* The driver pressed a button to puase the climb process.  Let's save the current locations and hold. */
-    VeMAN_b_Paused = true;
-    VeMAN_Cnt_MoterTestPowerCmndTurret = LeMAN_Deg_MeasuredAngleArmPivot;
-    VeMAN_Cnt_MoterTestPowerCmndArmPivot = LeMAN_Deg_MeasuredAngleTurret;
-    /* Set commanded location to current measured location for this loop. */
-    LeMAN_Cmd_CommandArmPivot_Temp = LeMAN_Deg_MeasuredAngleArmPivot;
-    LeMAN_Cmd_CommandTurret_Temp = LeMAN_Deg_MeasuredAngleTurret;
-    }
-  else if (((LeMAN_b_AutoManipulateButton == true) && (VeMAN_b_Paused == true)) || 
-            (VeMAN_b_Paused == false))
-    {
-    VeMAN_b_Paused = false;
-    VeMAN_Cnt_MoterTestPowerCmndTurret = LeMAN_Deg_MeasuredAngleArmPivot;
-    VeMAN_Cnt_MoterTestPowerCmndArmPivot = LeMAN_Deg_MeasuredAngleTurret;
-
-    switch (LeMAN_Cnt_CurrentState)
-      {
-        case :
-            if (LeMAN_Cmd_DriverMANDirection == E_ManipulatorCmndUp)
-              {
-              LeMAN_Cmd_CommandTurret_Temp = *LeMAN_Cmd_CommandTurret + K_Manipulator_driver_up_rate_YD;
-              }
-            else if (LeMAN_Cmd_DriverMANDirection == E_ManipulatorCmndDown)
-              {
-              LeMAN_Cmd_CommandTurret_Temp = *LeMAN_Cmd_CommandTurret - K_Manipulator_driver_down_rate_YD;
-              }
-              else 
-              {
-                LeMAN_Cmd_CommandTurret_Temp = *LeMAN_Cmd_CommandTurret;
-              }
-            /* The driver should only initiate the state machine once the robot has become suspended. */
-            if (LeMAN_b_AutoManipulateButton == true && LeMAN_Deg_MeasuredAngleTurret >= K_Manipulator_enable_auto_YD) {
-                LeMAN_e_CommandedState = E_Rest;
-            }
-        break;
-
-        case E_Rest:
-            VeMAN_b_CriteriaMet = S0_Rest(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeMAN_e_CommandedState =   E_TradeOff;
-            }
-        break;
-
-        case E_TradeOff:
-            VeMAN_b_CriteriaMet = S2_TradeOff(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeMAN_e_CommandedState =   E_Swiper;
-            }
-        break;
-
-        case E_Swiper:
-            VeMAN_b_CriteriaMet = S3_Swiper(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeMAN_e_CommandedState =   E_DrivingState;
-            }
-        break;
-
-        case E_DrivingState:
-            VeMAN_b_CriteriaMet = S4_DrivingState(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeMAN_e_CommandedState =   E_PositioningState;
-            }
-        break;
-
-        case E_PositioningState:
-            VeMAN_b_CriteriaMet = S5_Positioning(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeMAN_e_CommandedState =   E_DroppingTheLoot;
-            }
-        break;
-
-        case E_DroppingTheLoot:
-            VeMAN_b_CriteriaMet = S6_DroppingTheLoot(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot, VeMAN_Cnt_ManIteration);
-            if(VeMAN_b_CriteriaMet == true){
-              LeMAN_e_CommandedState =   E_Rest;
-            }
-        break;
-
-        // case E_S8_more_down_some_YD:
-        //     VeMAN_b_CriteriaMet = S8_more_down_some_YD(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-        //     if(VeMAN_b_CriteriaMet == true){
-        //       LeMAN_e_CommandedState =   E_S9_back_rest_XD;
-        //     }
-        // break;
-
-        // case E_S9_back_rest_XD:
-        //     VeMAN_b_CriteriaMet = S9_back_rest_XD(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-        //     if(VeMAN_b_CriteriaMet == true){
-        //       LeMAN_e_CommandedState =   E_S10_final_YD;
-        //     }
-        // break;
-
-        // case E_S10_final_YD:
-        //     VeMAN_b_CriteriaMet = S10_final_YD(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-        //     if(VeMAN_b_CriteriaMet == true){
-        //       LeMAN_e_CommandedState = E_S11_final_OWO;
-        //     }
-        // break;
-
-        // case E_S11_final_OWO:
-        //     VeMAN_b_CriteriaMet = S11_final_OWO(LeMAN_b_AutoManipulateButton, LeMAN_Deg_MeasuredAngleTurret, LeMAN_Deg_MeasuredAngleArmPivot, &LeMAN_Cmd_CommandTurret_Temp, &LeMAN_Cmd_CommandArmPivot_Temp, &LeMAN_InS_CommandRateTurret, &LeMAN_InS_CommandRateArmPivot,VeMAN_Cnt_ManIteration);
-        //     if(VeMAN_b_CriteriaMet == true &&VeMAN_Cnt_ManIteration < E_ManipulatorIteration2){
-        //       LeMAN_e_CommandedState = E_TradeOff;
-        //      VeMAN_Cnt_ManIteration = E_ManipulatorIteration2;
-        //     }
-        //     else if(VeMAN_b_CriteriaMet == true &&VeMAN_Cnt_ManIteration >= E_ManipulatorIteration2){
-        //       LeMAN_e_CommandedState = E_S11_final_OWO;
-        //     }
-        // break;
-      }
+     VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm];
     }
   else
     {
-    /* Manipulator is currently paused: */
-    LeMAN_Cmd_CommandArmPivot_Temp = VeMAN_Cnt_MoterTestPowerCmndTurret;
-    LeMAN_Cmd_CommandTurret_Temp = VeMAN_Cnt_MoterTestPowerCmndArmPivot;
+    VeMAN_b_CriteriaMet = Update_Command_Atained_State(VeMAN_b_CriteriaMet,
+                                                       LeMAN_e_SchedState);
+
+    switch (VeMAN_e_CmndState)
+      {
+        case E_Rest:
+            VeMAN_b_CriteriaMet = Rest_State();
+        break;
+
+        case E_TradeOff:
+            VeMAN_b_CriteriaMet = TradeOff_State();
+        break;
+
+        case E_Swiper:
+            VeMAN_b_CriteriaMet = Swiper_State();
+        break;
+
+        case E_DrivingState:
+            VeMAN_b_CriteriaMet = Driving_State();
+        break;
+
+        case E_PositioningState:
+            VeMAN_b_CriteriaMet = Positioning_State();
+        break;
+
+        case E_DroppingTheLoot:
+            VeMAN_b_CriteriaMet = DroppingTheLoot_State();
+        break;
+      }
     }
 
-  /* Place limits on the travel of XD and YD to prevent damage: */
-  if (LeMAN_Cmd_CommandTurret_Temp > K_Manipulator_max_YD)
+  for (LeMAN_i_Index = E_MAN_Turret;
+       LeMAN_i_Index < E_MAN_Sz;
+       LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
     {
-    LeMAN_Cmd_CommandTurret_Temp = K_Manipulator_max_YD;
-    }
-  else if (LeMAN_Cmd_CommandTurret_Temp < K_Manipulator_min_YD)
-    {
-    LeMAN_Cmd_CommandTurret_Temp = K_Manipulator_max_YD;
+    VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = RampTo(VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index]);
     }
 
-  if (LeMAN_Cmd_CommandArmPivot_Temp > K_Manipulator_max_XD)
-    {
-    LeMAN_Cmd_CommandArmPivot_Temp = K_Manipulator_max_XD;
-    }
-  else if (LeMAN_Cmd_CommandArmPivot_Temp < K_Manipulator_min_XD)
-    {
-    LeMAN_Cmd_CommandArmPivot_Temp = K_Manipulator_max_XD;
-    }
-
-  *LeMAN_Cmd_CommandTurret= RampTo(LeMAN_Cmd_CommandTurret_Temp, *LeMAN_Cmd_CommandTurret, LeMAN_InS_CommandRateTurret);
-
-  *LeMAN_Cmd_CommandArmPivot= RampTo(LeMAN_Cmd_CommandArmPivot_Temp, *LeMAN_Cmd_CommandArmPivot, LeMAN_InS_CommandRateArmPivot);
-
-  *LeMAN_Pct_CommandPwrYD = LeMAN_v_MoterPowerTurret;
-  
-  *LeMAN_Pct_CommandPwrXD = LeMAN_v_MoterPowerArmPivot;
-
-  return(LeMAN_e_CommandedState);
-}
-#endif
+  VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm];
+  }

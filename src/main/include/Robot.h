@@ -16,6 +16,8 @@
 #include "rev/CANSparkMax.h"
 #include <frc/motorcontrol/Spark.h>
 #include <frc/DutyCycleEncoder.h>
+#include <frc/Compressor.h>
+#include <frc/DoubleSolenoid.h>
 // #include <networktables/NetworkTable.h>
 #include <photonlib/PhotonCamera.h>
 // #include <photonlib/PhotonUtils.h>
@@ -51,16 +53,10 @@ class Robot : public frc::TimedRobot {
   WPI_CANCoder          m_encoderWheelAngleCAN_FR     {KeEnc_i_WheelAngleFR, "rio"};
   WPI_CANCoder          m_encoderWheelAngleCAN_RL     {KeEnc_i_WheelAngleRL, "rio"};
   WPI_CANCoder          m_encoderWheelAngleCAN_RR     {KeEnc_i_WheelAngleRR, "rio"};
-
-  frc::DigitalInput     di_XY_LimitSwitch     {C_XY_LimitSwitch_ID};
-  frc::DigitalInput     di_XD_LimitSwitch     {C_XD_LimitSwitch_ID};
-
-  frc::DigitalInput     di_IR_Sensor          {C_IR_Sensor_ID};
-  frc::DigitalInput     di_BallSensorLower    {C_LowerBallSensorID};
-  #endif
-
+  
   frc::DigitalInput     di_TurrentLimitSwitch {C_TurretSensorID};
   frc::DigitalOutput    do_CameraLightControl {C_CameraLightControl_ID};
+  #endif
 
   // PDP - Power Distribution Panel - CAN
   frc::PowerDistribution                     PDP                   {C_PDP_ID,               frc::PowerDistribution::ModuleType::kRev};
@@ -75,23 +71,28 @@ class Robot : public frc::TimedRobot {
   rev::CANSparkMax                           m_rearRightSteerMotor {rearRightSteerDeviceID,  rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax                           m_rearRightDriveMotor {rearRightDriveDeviceID,  rev::CANSparkMax::MotorType::kBrushless};
 
+  rev::SparkMaxPIDController                 m_frontLeftDrivePID    = m_frontLeftDriveMotor.GetPIDController();
+  rev::SparkMaxPIDController                 m_frontRightDrivePID   = m_frontRightDriveMotor.GetPIDController();
+  rev::SparkMaxPIDController                 m_rearLeftDrivePID     = m_rearLeftDriveMotor.GetPIDController();
+  rev::SparkMaxPIDController                 m_rearRightDrivePID    = m_rearRightDriveMotor.GetPIDController();
+  
+  #ifdef CompBot
   rev::CANSparkMax                           m_ArmPivot            {KeMAN_i_ArmPivot,        rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax                           m_Wrist               {KeMAN_i_Wrist,           rev::CANSparkMax::MotorType::kBrushless};        
   rev::CANSparkMax                           m_Gripper             {KeMAN_i_Gripper,         rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax                           m_IntakeRollers       {KeINT_i_IntakeRollers,   rev::CANSparkMax::MotorType::kBrushless};
 
-  WPI_TalonSRX                               m_TurretRotate         {KeMAN_i_TurretRotate};
-  WPI_TalonSRX                               m_LinearSlide          {KeMAN_i_LinearSlide};
-
-  rev::SparkMaxPIDController                 m_frontLeftDrivePID    = m_frontLeftDriveMotor.GetPIDController();
-  rev::SparkMaxPIDController                 m_frontRightDrivePID   = m_frontRightDriveMotor.GetPIDController();
-  rev::SparkMaxPIDController                 m_rearLeftDrivePID     = m_rearLeftDriveMotor.GetPIDController();
-  rev::SparkMaxPIDController                 m_rearRightDrivePID    = m_rearRightDriveMotor.GetPIDController();
-
   rev::SparkMaxPIDController                 m_ArmPivotPID         = m_ArmPivot.GetPIDController();
   rev::SparkMaxPIDController                 m_WristPID            = m_Wrist.GetPIDController();
   rev::SparkMaxPIDController                 m_GripperPID          = m_Gripper.GetPIDController();
   rev::SparkMaxPIDController                 m_IntakeRollersPID    = m_IntakeRollers.GetPIDController();
+
+  WPI_TalonSRX                               m_TurretRotate         {KeMAN_i_TurretRotate};
+  WPI_TalonSRX                               m_LinearSlide          {KeMAN_i_LinearSlide};
+
+  frc::Compressor                            m_pcmCompressor          {KeINT_i_PCM, frc::PneumaticsModuleType::CTREPCM};
+  frc::DoubleSolenoid                        m_DoublePCM_Valve        {KeINT_i_IntakeArm, frc::PneumaticsModuleType::CTREPCM, 1, 2};
+  #endif
 
   // PWM Motor / Light Controllers
   #ifdef CompBot
@@ -108,10 +109,13 @@ class Robot : public frc::TimedRobot {
   rev::SparkMaxRelativeEncoder               m_encoderRearLeftDrive   = m_rearLeftDriveMotor.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_encoderRearRightSteer  = m_rearRightSteerMotor.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_encoderRearRightDrive  = m_rearRightDriveMotor.GetEncoder();
+
+  #ifdef CompBot
   rev::SparkMaxRelativeEncoder               m_ArmPivotEncoder        = m_ArmPivot.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_WristEncoder           = m_Wrist.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_GripperEncoder         = m_Gripper.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_IntakeRollersEncoder   = m_IntakeRollers.GetEncoder();
+  #endif
 
   // Driver Inputs
   frc::Joystick c_joyStick{0};

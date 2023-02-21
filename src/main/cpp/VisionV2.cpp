@@ -24,12 +24,13 @@
 #include <wpinet/PortForwarder.h>
 #include "Odometry.hpp"
 
+#ifdef OldVision
 // all our favorite variables
-// double         V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
-int VnVIS_int_VisionCameraIndex[E_CamSz]; //
+double V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
+int VnVIS_int_VisionCameraIndex[E_CamSz];
 T_CameraNumber VnVIS_e_VisionCamNumber[E_CamLocSz];
 
-bool VeVIS_b_VisionTargetAquired[E_CamLocSz]; //
+bool VeVIS_b_VisionTargetAquired[E_CamLocSz];
 double VeVIS_Deg_VisionYaw[E_CamLocSz];
 double VeVIS_m_VisionTargetDistance[E_CamLocSz];
 
@@ -38,7 +39,7 @@ bool VeVIS_b_VisionDriverRequestedModeCmndLatched; // Latched state of the drive
 bool VeVIS_b_VisionDriverRequestedModeCmndPrev;    // Requested driver mode override previous
 
 bool VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
-
+#endif
 #ifdef NewVision
 bool VeVIS_b_TagHasTarget;
 double V_Tagx;
@@ -48,18 +49,22 @@ double V_TagRoll;
 double V_TagPitch;
 double V_TagYaw;
 int V_TagID;
+bool V_TagCentered;
 
 photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1"); // the string is the name of the cam from photon, the name in photon must match this one to assign properly
 fs::path aprilTagsjsonPath = frc::filesystem::GetDeployDirectory();
-std::string aprilTagsjson = aprilTagsjsonPath / "2023_chargedUp.json";
+std::string aprilTagsjson = aprilTagsjsonPath / "2023_chargedUp.json"; //
 
 frc::AprilTagFieldLayout aprilTags{aprilTagsjson};
 
-//  photonlib::PhotonPoseEstimator *estimator;;
 photonlib::PhotonPoseEstimator estimator(aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
 
-#endif
+ photonlib::PhotonPipelineResult CamResult;
+std::optional<photonlib::EstimatedRobotPose> estimatedPose;
+frc::Pose3d pose;
 
+#endif
+#ifdef OldVision
 /******************************************************************************
  * Function:     VisionRobotInit
  *
@@ -120,7 +125,6 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
 
   ****************************************/
 
-#ifdef OldVision
   VnVIS_e_VisionCamNumber[E_CamTop] = E_Cam1;
   VnVIS_e_VisionCamNumber[E_CamBottom] = E_Cam2;
 
@@ -136,12 +140,8 @@ void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor)
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamBottom]] = 1; // 2 is the index for a blue ball
     VnVIS_int_VisionCameraIndex[VnVIS_e_VisionCamNumber[E_CamTop]] = 1;    // 1 is the top camera targeting index
   }
-#endif
-
-#ifdef NewVision
-
-#endif
 }
+#endif
 
 /******************************************************************************
  * Function:     VisionRun
@@ -234,18 +234,18 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 #endif
 
 #ifdef NewVision
-void VisionRun()
+void VisionRun(bool L_ButtonCmd)
 {
   // wpi::PortForwarder::GetInstance().Add(5800, "10.55.61.11", 5800);
-  photonlib::PhotonPipelineResult CamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
+  CamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
 
   VeVIS_b_TagHasTarget = CamResult.HasTargets();
 
   if (VeVIS_b_TagHasTarget)
   {
 
-    auto estimatedPose = estimator.Update();
-    frc::Pose3d pose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
+    estimatedPose = estimator.Update();
+    pose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
     V_TagID = CamResult.GetBestTarget().GetFiducialId();
 
     V_Tagx = pose.X().value();
@@ -254,8 +254,11 @@ void VisionRun()
     V_TagRoll = pose.Rotation().X().value();
     V_TagPitch = pose.Rotation().Y().value();
     V_TagYaw = pose.Rotation().Z().value();
-
-    OdometryInitToArgs(V_Tagx, V_Tagy);
+    if (L_ButtonCmd)
+    {
+      OdometryInitToArgs(V_Tagx, V_Tagy);
+      V_TagCentered = true;
+    }
   }
   else
   {

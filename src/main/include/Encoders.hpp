@@ -12,6 +12,7 @@
  extern double VaENC_Deg_WheelAngleFwd[E_RobotCornerSz];
  extern double VaENC_Rad_WheelAngleFwd[E_RobotCornerSz]; 
  extern double VaENC_Deg_WheelAngleRev[E_RobotCornerSz];
+ extern double VaENC_Deg_WheelAngleConverted[E_RobotCornerSz];
  extern double VaENC_In_WheelDeltaDistance[E_RobotCornerSz];
  extern double VeENC_Deg_TurretPosition;
  

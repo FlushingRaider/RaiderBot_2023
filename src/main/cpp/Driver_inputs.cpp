@@ -138,11 +138,11 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
     {
     VsCONT_s_DriverInput.pct_ArmPivot = -1.0;
     }
-  else if (LeCONT_Deg_Driver2POV == 90)
+  else if (LeCONT_Deg_Driver2POV == 270)
     {
     VsCONT_s_DriverInput.pct_LinearSlide = 1.0;
     }
-  else if (LeCONT_Deg_Driver2POV == 270)
+  else if (LeCONT_Deg_Driver2POV == 90)
     {
     VsCONT_s_DriverInput.pct_LinearSlide = -1.0;
     }

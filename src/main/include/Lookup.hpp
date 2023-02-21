@@ -6,6 +6,9 @@
  */
 #ifndef SRC_ROBORIO2018_LOOKUP_HPP_
 #define SRC_ROBORIO2018_LOOKUP_HPP_
+
+#include <string>
+
 extern double ScaleJoystickAxis(double LeLU_Cmd_JoystickAxis);
 
 extern double RampTo(double  L_Final,
@@ -35,6 +38,7 @@ extern void DesiredAutonLocation(double  LeLU_s_AutonTime,
 
 bool DesiredAutonLocation2(double  LeLU_s_AutonTime,
                            int     LeLU_Int_AutonSelection,
+                           std::string V_ADAS_Auto_PathName,
                            double *LeLU_Cmd_L_X_Location,
                            double *LeLU_Cmd_L_Y_Location,
                            double *LeLU_Cmd_Deg_Angle);

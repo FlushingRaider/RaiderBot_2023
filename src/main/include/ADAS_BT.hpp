@@ -9,7 +9,7 @@
   Changes:
   2022-02-25 -> Beta
  */
-
+#ifdef unused
 extern T_ADAS_BT_BallTarget V_ADAS_BT_State;
 void ADAS_BT_Reset(void);
 void ADAS_BT_ConfigsCal(void);
@@ -31,3 +31,5 @@ bool ADAS_BT_Main(double               *L_Pct_FwdRev,
                   T_RobotState          L_RobotState,
                   bool                  L_BallDetectedUpper,
                   bool                  L_BallDetectedLower);
+
+#endif

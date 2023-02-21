@@ -111,12 +111,13 @@ typedef enum T_LED_LightCmnd
 } T_LED_LightCmnd;
 
 typedef enum TeMAN_ManipulatorStates
-{E_Rest,
- E_TradeOff,
- E_Swiper,
+{
+ E_Rest,
  E_DrivingState,
  E_PositioningState,
  E_DroppingTheLoot,
+ E_Swiper,
+ E_TradeOff,
  E_Man_State_Sz
 } TeMAN_ManipulatorStates;
  
@@ -182,8 +183,9 @@ typedef enum T_ADAS_ActiveFeature
   //Added for 2023
   E_ADAS_AutonDeployCube,
   E_ADAS_AutonDeployCone,
-  E_ADAS_AutonDrive,
-  E_ADAS_AutonRotate
+  E_ADAS_AutonDrivePath,
+  E_ADAS_AutonRotate,
+  E_ADAS_AutonDrive
 } T_ADAS_ActiveFeature;
 
 typedef enum T_ADAS_Auton1
@@ -204,7 +206,8 @@ typedef enum T_ADAS_ActiveAutonFeature
   E_ADAS_AutonDriveAndShootBlind1,     // Shoot preloaded ball, drive straight, robot oriented
   E_ADAS_AutonDriveAndShootBlind2,     // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
   E_ADAS_AutonDriveAndShootAuto2,      // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
-  E_ADAS_AutonDriveAndShootAuto3       // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
+  E_ADAS_AutonDriveAndShootAuto3,// Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
+  E_ADAS_AutonDrivePath1      
 } T_ADAS_ActiveAutonFeature;
 
 
@@ -226,8 +229,8 @@ typedef enum T_MotorControlType
   E_MotorControlPctCmnd,
   E_MotorControlPosition,
   E_MotorControlSpeed,
-  E_MotorFwd,
-  E_MotorRev
+  E_MotorExtend,
+  E_MotorRetract
 } T_MotorControlType;
 
 struct TsMAN_Sensor 
