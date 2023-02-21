@@ -206,7 +206,8 @@ typedef enum T_ADAS_ActiveAutonFeature
   E_ADAS_AutonDriveAndShootBlind1,     // Shoot preloaded ball, drive straight, robot oriented
   E_ADAS_AutonDriveAndShootBlind2,     // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
   E_ADAS_AutonDriveAndShootAuto2,      // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
-  E_ADAS_AutonDriveAndShootAuto3       // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
+  E_ADAS_AutonDriveAndShootAuto3,// Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
+  E_ADAS_AutonDrivePath1      
 } T_ADAS_ActiveAutonFeature;
 
 

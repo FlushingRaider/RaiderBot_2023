@@ -6,7 +6,7 @@
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
 #define COMP
 // Define the bot type: CompBot, PracticeBot
-#define CompBot
+#define PracticeBot
 
 #define NewVision // NewVision or OldVision
 

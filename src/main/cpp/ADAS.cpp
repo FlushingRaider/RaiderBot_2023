@@ -71,6 +71,7 @@ void ADAS_Main_Init(void)
   V_ADAS_AutonChooser.AddOption("Blind Shot 2", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootBlind2);
   V_ADAS_AutonChooser.AddOption("Auto Shot 2", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootAuto2);
   V_ADAS_AutonChooser.AddOption("Auto Shot 3", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootAuto3);
+  V_ADAS_AutonChooser.AddOption("Auto Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
   V_ADAS_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
   frc::SmartDashboard::PutData(L_AutonSelectorName, &V_ADAS_AutonChooser);
 }
@@ -340,13 +341,13 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         // LeLC_e_ADASActiveFeature = AUTONCOMMAND;
       }
     }
-    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDrivePath) // Path driver
+    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDrivePath1) // Path driver
     {
       if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false))
       {
         LeLC_e_ADASActiveFeature = E_ADAS_DM_PathFollower;
         V_ADAS_PathNum = 0; //Zero to use path auto load
-        V_ADAS_Auto_PathName = "test1"; //load test1.wpilib.json in deploy/paths/
+        V_ADAS_Auto_PathName = "StartToGameP3"; //load test1.wpilib.json in deploy/paths/
       }
     }
     else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonRotate)
@@ -481,15 +482,10 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     break;
 #endif
   case E_ADAS_DM_PathFollower:
-#ifdef unused
     V_ADAS_StateComplete = ADAS_DM_PathFollower(L_Pct_FwdRev,
                                                 L_Pct_Strafe,
                                                 L_Pct_Rotate,
-                                                L_RPM_Launcher,
                                                 L_Pct_Intake,
-                                                L_Pct_Elevator,
-                                                L_CameraUpperLightCmndOn,
-                                                L_CameraLowerLightCmndOn,
                                                 L_SD_RobotOriented,
                                                 L_L_X_FieldPos,
                                                 L_L_Y_FieldPos,
@@ -497,7 +493,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                 V_ADAS_PathNum,
                                                 V_ADAS_Auto_PathName);
     break;
-#endif
   case E_ADAS_Disabled:
   default:
     *L_Pct_FwdRev = 0;

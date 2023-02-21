@@ -342,11 +342,7 @@ bool ADAS_DM_RotateTo(double     *L_Pct_FwdRev,
 bool ADAS_DM_FieldOrientRotate(double     *L_Pct_FwdRev,
                                double     *L_Pct_Strafe,
                                double     *L_Pct_Rotate,
-                               double     *L_RPM_Launcher,
                                double     *L_Pct_Intake,
-                               double     *L_Pct_Elevator,
-                               bool       *L_CameraUpperLightCmndOn,
-                               bool       *L_CameraLowerLightCmndOn,
                                bool       *L_SD_RobotOriented,
                                double      L_Deg_GyroAngleDeg,
                                double      L_Deg_GyroAngleTarget)
@@ -358,13 +354,9 @@ bool ADAS_DM_FieldOrientRotate(double     *L_Pct_FwdRev,
 
   *L_SD_RobotOriented = true;
   /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_CameraUpperLightCmndOn = false;
-  *L_CameraLowerLightCmndOn = false;
   *L_Pct_FwdRev = 0;
   *L_Pct_Strafe = 0;
-  *L_RPM_Launcher = 0;
   *L_Pct_Intake = 0;
-  *L_Pct_Elevator = 0;
 
   if (V_ADAS_DM_StateInit == false)
     {
@@ -605,11 +597,7 @@ bool ADAS_DM_BlindShot(double       *L_Pct_FwdRev,
 bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
                           double *L_Pct_Strafe,
                           double *L_Pct_Rotate,
-                          double *L_RPM_Launcher,
                           double *L_Pct_Intake,
-                          double *L_Pct_Elevator,
-                          bool   *L_CameraUpperLightCmndOn,
-                          bool   *L_CameraLowerLightCmndOn,
                           bool   *L_SD_RobotOriented,
                           double  L_L_X_FieldPos,
                           double  L_L_Y_FieldPos,
@@ -631,11 +619,7 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
 
   /* Set the things we are not using to off: */
   *L_SD_RobotOriented = false;
-  *L_CameraUpperLightCmndOn = false;
-  *L_CameraLowerLightCmndOn = false;
-  *L_RPM_Launcher = 0;
   *L_Pct_Intake = 0;
-  *L_Pct_Elevator = 0;
 
   /* Look up the desired target location point: */
   L_timeEND = DesiredAutonLocation2(V_ADAS_DM_StateTimer,
@@ -735,11 +719,7 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
       ADAS_DM_FieldOrientRotate(L_Pct_FwdRev,
                                 L_Pct_Strafe,
                                 L_Pct_Rotate,
-                                L_RPM_Launcher,
                                 L_Pct_Intake,
-                                L_Pct_Elevator,
-                                L_CameraUpperLightCmndOn,
-                                L_CameraLowerLightCmndOn,
                                 L_SD_RobotOriented,
                                 L_Deg_GyroAngleDeg,
                                 L_Deg_RotateTarget);
