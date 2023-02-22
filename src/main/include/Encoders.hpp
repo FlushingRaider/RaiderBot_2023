@@ -26,13 +26,13 @@
                              rev::SparkMaxRelativeEncoder m_encoderRearRightDrive);
 
 void Encoders_Drive_PracticeBot(double                       LeENC_Cnt_EncoderWheelAngleFrontLeftRawPracticeBot,
-                    double                       LeENC_Cnt_EncoderWheelAngleFrontRightRawPracticeBot,
-                    double                       LeENC_Cnt_EncoderWheelAngleRearLeftRawPracticeBot,
-                    double                       LeENC_Cnt_EncoderWheelAngleRearRightRawPracticeBot,
-                    rev::SparkMaxRelativeEncoder m_encoderFrontLeftDrive,
-                    rev::SparkMaxRelativeEncoder m_encoderFrontRightDrive,
-                    rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
-                    rev::SparkMaxRelativeEncoder m_encoderRearRightDrive);
+                                double                       LeENC_Cnt_EncoderWheelAngleFrontRightRawPracticeBot,
+                                double                       LeENC_Cnt_EncoderWheelAngleRearLeftRawPracticeBot,
+                                double                       LeENC_Cnt_EncoderWheelAngleRearRightRawPracticeBot,
+                                rev::SparkMaxRelativeEncoder m_encoderFrontLeftDrive,
+                                rev::SparkMaxRelativeEncoder m_encoderFrontRightDrive,
+                                rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive,
+                                rev::SparkMaxRelativeEncoder m_encoderRearRightDrive);
 
 void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
                         rev::SparkMaxRelativeEncoder m_encoderFrontLeftSteer,
@@ -43,10 +43,10 @@ void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
                         rev::SparkMaxRelativeEncoder m_encoderRearRightDrive,
                         rev::SparkMaxRelativeEncoder m_encoderRearLeftDrive);
 
-void EncodersInitComp(rev::SparkMaxRelativeEncoder m_encoderManipulatorYD,
-                      rev::SparkMaxRelativeEncoder m_encoderManipulatorXD,
-                      rev::SparkMaxRelativeEncoder m_encoderrightShooter,
-                      rev::SparkMaxRelativeEncoder m_encoderleftShooter);
+void EncodersInitComp(rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
+                      rev::SparkMaxRelativeEncoder m_WristEncoder,
+                      rev::SparkMaxRelativeEncoder m_GripperEncoder,
+                      rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder);
 
                       
                       
