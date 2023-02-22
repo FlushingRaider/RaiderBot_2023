@@ -639,7 +639,8 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
     V_ADAS_DM_StartAngle = L_Rad_TargetAngle;
     V_ADAS_DM_StateInit = true;
     }
-
+  frc::SmartDashboard::PutNumber("V_ADAS_DM_X_TargetStartPosition", V_ADAS_DM_X_TargetStartPosition);
+  frc::SmartDashboard::PutNumber("V_ADAS_DM_Y_TargetStartPosition", V_ADAS_DM_Y_TargetStartPosition);
   /* We need to offset the position by the start position since the odometry will 
      start at zero, but the lookup table will not */
   L_L_TargetPositionX -= V_ADAS_DM_X_TargetStartPosition;
@@ -682,7 +683,7 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
 
   if (L_ADAS_DM_StateComplete == false)
     {
-    *L_Pct_Strafe =  Control_PID( L_L_TargetPositionX,
+    *L_Pct_Strafe =  -Control_PID( L_L_TargetPositionX,
                                   L_L_RelativePosX,
                                  &V_ADAS_DM_X_ErrorPrev,
                                  &V_ADAS_DM_X_Integral,
@@ -698,7 +699,7 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
                                   K_k_AutonX_PID_Gx[E_Max_Ul],
                                   K_k_AutonX_PID_Gx[E_Max_Ll]);
 
-     *L_Pct_FwdRev =  Control_PID( L_L_TargetPositionY,
+     *L_Pct_FwdRev =  -Control_PID( L_L_TargetPositionY,
                                   L_L_RelativePosY,
                                   &V_ADAS_DM_Y_ErrorPrev,
                                   &V_ADAS_DM_Y_Integral,
@@ -716,13 +717,13 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
    
      //*L_Pct_Rotate = DesiredRotateSpeed(L_Deg_RotateError);
 
-      ADAS_DM_FieldOrientRotate(L_Pct_FwdRev,
-                                L_Pct_Strafe,
-                                L_Pct_Rotate,
-                                L_Pct_Intake,
-                                L_SD_RobotOriented,
-                                L_Deg_GyroAngleDeg,
-                                L_Deg_RotateTarget);
+      // ADAS_DM_FieldOrientRotate(L_Pct_FwdRev,
+      //                           L_Pct_Strafe,
+      //                           L_Pct_Rotate,
+      //                           L_Pct_Intake,
+      //                           L_SD_RobotOriented,
+      //                           L_Deg_GyroAngleDeg,
+      //                           L_Deg_RotateTarget);
 
     }
   else
@@ -739,6 +740,17 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
     V_ADAS_DM_X_TargetStartPosition = 0;
     V_ADAS_DM_Y_TargetStartPosition = 0;
     }
+
+  frc::SmartDashboard::PutBoolean("State Complete", L_ADAS_DM_StateComplete);
+  frc::SmartDashboard::PutNumber("L_Pct_Strafe", *L_Pct_Strafe);
+  frc::SmartDashboard::PutNumber("L_Pct_FwdRev", *L_Pct_FwdRev);
+  frc::SmartDashboard::PutNumber("L_i_PathNum", L_i_PathNum);
+
+  frc::SmartDashboard::PutNumber("L_L_TargetPositionX", L_L_TargetPositionX);
+  frc::SmartDashboard::PutNumber("L_L_RelativePosX", L_L_RelativePosX);
+
+  frc::SmartDashboard::PutNumber("L_L_TargetPositionY", L_L_TargetPositionY);
+  frc::SmartDashboard::PutNumber("L_L_RelativePosY", L_L_RelativePosY);
 
   return (L_ADAS_DM_StateComplete);
   }

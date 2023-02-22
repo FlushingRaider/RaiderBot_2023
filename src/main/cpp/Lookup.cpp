@@ -275,10 +275,10 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
 
   switch (LeLU_Int_AutonSelection)
   {
-  case 0: // Auto load path from json files
+  case 99: // Auto load path from json files BROKEN!!!!
     path = PathLoader(V_ADAS_Auto_PathName);
 
-    //Path is a struct that contains vectors. Vectors will not return the correct size with sizeof() but .size() will. 
+    // Path is a struct that contains vectors. Vectors will not return the correct size with sizeof() but .size() will.
     LeLU_Int_X_AxisSize = (int)(sizeof(path.time.size()) / sizeof(path.x[0]));
     LeLU_Int_X_CalArraySize = (int)(sizeof(path.x.size()) / sizeof(path.x[0]));
     LeLU_Int_Y_AxisSize = (int)(sizeof(path.time.size()) / sizeof(path.y[0]));
@@ -308,7 +308,7 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
     {
       LeLU_b_timeTableDONE = true;
     }
-    
+
     break;
 
   case 1:
@@ -378,7 +378,7 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
     break;
 
   case 3:
-  default:
+
     LeLU_Int_X_AxisSize = (int)(sizeof(K_t_ADAS_DM_Red_3T) / sizeof(K_l_ADAS_DM_Red_3X[0]));
     LeLU_Int_X_CalArraySize = (int)(sizeof(K_l_ADAS_DM_Red_3X) / sizeof(K_l_ADAS_DM_Red_3X[0]));
     LeLU_Int_Y_AxisSize = (int)(sizeof(K_t_ADAS_DM_Red_3T) / sizeof(K_l_ADAS_DM_Red_3Y[0]));
@@ -408,12 +408,46 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
     {
       LeLU_b_timeTableDONE = true;
     }
+    break;
+  case 4:
+    LeLU_Int_X_AxisSize = (int)(sizeof(TestPath1_T) / sizeof(TestPath1_X[0]));
+    LeLU_Int_X_CalArraySize = (int)(sizeof(TestPath1_X) / sizeof(TestPath1_X[0]));
 
+    LeLU_Int_Y_AxisSize = (int)(sizeof(TestPath1_T) / sizeof(TestPath1_Y[0]));
+    LeLU_Inr_Y_CalArraySize = (int)(sizeof(TestPath1_Y) / sizeof(TestPath1_Y[0]));
+    
+    LeLU_Int_Ang_AxisSize = (int)(sizeof(TestPath1_T) / sizeof(TestPath1_ROT[0]));
+    LeLU_Int_Ang_CalArraySize = (int)(sizeof(TestPath1_ROT) / sizeof(TestPath1_ROT[0]));
+
+    LeLU_Int_L_X_Loc = LookUp1D_Table(&TestPath1_T[0],
+                                      &TestPath1_X[0],
+                                      LeLU_Int_X_AxisSize,
+                                      LeLU_Int_X_CalArraySize,
+                                      LeLU_s_AutonTime);
+
+    LeLU_Cmd_L_Y_Loc = LookUp1D_Table(&TestPath1_T[0],
+                                      &TestPath1_Y[0],
+                                      LeLU_Int_Y_AxisSize,
+                                      LeLU_Inr_Y_CalArraySize,
+                                      LeLU_s_AutonTime);
+
+    LeLU_Deg_Ang = LookUp1D_Table(&TestPath1_T[0],
+                                  &TestPath1_ROT[0],
+                                  LeLU_Int_Ang_AxisSize,
+                                  LeLU_Int_Ang_CalArraySize,
+                                  LeLU_s_AutonTime);
+
+    if (LeLU_s_AutonTime >= TestPath1_T[LeLU_Int_X_AxisSize - 1])
+    {
+      LeLU_b_timeTableDONE = true;
+    }
+    break;
+  default:  
     break;
   }
 
-  *LeLU_Cmd_L_X_Location = LeLU_Int_L_X_Loc;
-  *LeLU_Cmd_L_Y_Location = LeLU_Cmd_L_Y_Loc;
+  *LeLU_Cmd_L_X_Location = LeLU_Cmd_L_Y_Loc;
+  *LeLU_Cmd_L_Y_Location = LeLU_Int_L_X_Loc;
   *LeLU_Cmd_Deg_Angle = LeLU_Deg_Ang;
 
   return (LeLU_b_timeTableDONE);

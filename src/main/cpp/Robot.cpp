@@ -288,6 +288,9 @@ void Robot::RobotPeriodic()
                                           V_AllianceColor
                                           );
 
+  frc::SmartDashboard::PutNumber("V_ADAS_Pct_SD_FwdRe", V_ADAS_Pct_SD_FwdRev);
+  frc::SmartDashboard::PutNumber("V_ADAS_Pct_SD_Strafe", V_ADAS_Pct_SD_Strafe);
+
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
                    VsCONT_s_DriverInput.pct_SwerveStrafe,      // swerve control strafe
                    VsCONT_s_DriverInput.deg_SwerveRotate,      // rotate the robot joystick

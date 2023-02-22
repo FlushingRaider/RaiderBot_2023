@@ -71,7 +71,7 @@ void ADAS_Main_Init(void)
   V_ADAS_AutonChooser.AddOption("Blind Shot 2", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootBlind2);
   V_ADAS_AutonChooser.AddOption("Auto Shot 2", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootAuto2);
   V_ADAS_AutonChooser.AddOption("Auto Shot 3", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootAuto3);
-  V_ADAS_AutonChooser.AddOption("Auto Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
+  V_ADAS_AutonChooser.AddOption("Test Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
   V_ADAS_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
   frc::SmartDashboard::PutData(L_AutonSelectorName, &V_ADAS_AutonChooser);
 }
@@ -341,13 +341,12 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         // LeLC_e_ADASActiveFeature = AUTONCOMMAND;
       }
     }
-    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDrivePath1) // Path driver
+    else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDrivePath1) // Test Path
     {
-      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false))
+      if ((LeLC_e_ADASActiveFeature == E_ADAS_Disabled) && (V_ADAS_StateComplete == false))
       {
         LeLC_e_ADASActiveFeature = E_ADAS_DM_PathFollower;
-        V_ADAS_PathNum = 0; //Zero to use path auto load
-        V_ADAS_Auto_PathName = "StartToGameP3"; //load test1.wpilib.json in deploy/paths/
+        V_ADAS_PathNum = 4;
       }
     }
     else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonRotate)
@@ -374,9 +373,11 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     ADAS_DM_Reset();
     V_ADAS_StateComplete = false;
   }
-
+  frc::SmartDashboard::PutNumber("LeLC_e_ADASActiveFeature", (int)LeLC_e_ADASActiveFeature);
   switch (LeLC_e_ADASActiveFeature)
   {
+
+  
   case E_ADAS_UT_AutoUpperTarget:
     V_ADAS_StateComplete = ADAS_UT_Main(L_Pct_FwdRev,
                                         L_Pct_Strafe,
@@ -509,5 +510,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     break;
   }
 
+  frc::SmartDashboard::PutNumber("L_Pct_FwdRev2", *L_Pct_FwdRev);
   return (LeLC_e_ADASActiveFeature);
 }

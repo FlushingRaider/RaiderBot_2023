@@ -2,8 +2,8 @@ import json, os
 
 #open our file
 
-working_path = "src/main/deploy/paths/"
-working_name = "StartToGameP1"
+working_path = "src/main/deploy/paths/output"
+working_name = "TestPath1"
 
 output_path = "src/main/include/MotionProfiles/"
 output_name = working_name + ".hpp"

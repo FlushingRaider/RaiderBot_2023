@@ -333,6 +333,8 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
   bool          Le_b_SD_Active = false;
   double        Le_k_SD_RotateCorrectionGx = 0;
 
+  
+
   /* Scale the joysticks based on a calibratable lookup when in teleop: */
   if (LeLC_e_ADASActiveFeature > E_ADAS_Disabled)
     {

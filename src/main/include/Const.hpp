@@ -769,7 +769,12 @@ const double K_ADAS_DM_XY_Deadband = 0.1;
 #include "MotionProfiles/Red3X.hpp"
 #include "MotionProfiles/Red3Y.hpp"
 
+#include "MotionProfiles/StartToGameP1.hpp"
+#include "MotionProfiles/StartToGameP2.hpp"
+#include "MotionProfiles/StartToGameP3.hpp"
+#include "MotionProfiles/StartToGameP4.hpp"
 
+#include "MotionProfiles/TestPath1.hpp"
 
 /*  Rotation calibrations */
 /* K_DesiredRotateSpeedAxis - This is the effective command axis, function of error calculation, in degrees */
