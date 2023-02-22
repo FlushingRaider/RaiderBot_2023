@@ -62,7 +62,7 @@ void ADAS_DM_ConfigsInit()
   {
     
   // set coefficients
-  // KV_ADAS_UT_LightDelayTIme = K_ADAS_UT_LightDelayTIme;
+  // KV_ADAS_UT_LightDelayTime = K_ADAS_UT_LightDelayTIme;
   // KV_ADAS_UT_LostTargetGx = K_ADAS_UT_LostTargetGx;
   // KV_ADAS_UT_NoTargetError = K_ADAS_UT_NoTargetError;
   // KV_ADAS_UT_DebounceTime = K_ADAS_UT_DebounceTime;
@@ -73,7 +73,7 @@ void ADAS_DM_ConfigsInit()
 
   // #ifdef ADAS_DM_Test
   // // display coefficients on SmartDashboard
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_LightDelayTIme", KV_ADAS_UT_LightDelayTIme);
+  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_LightDelayTime", KV_ADAS_UT_LightDelayTime);
   // frc::SmartDashboard::PutNumber("KV_ADAS_UT_LostTargetGx", KV_ADAS_UT_LostTargetGx);
   // frc::SmartDashboard::PutNumber("KV_ADAS_UT_NoTargetError", KV_ADAS_UT_NoTargetError);
   // frc::SmartDashboard::PutNumber("KV_ADAS_UT_DebounceTime", KV_ADAS_UT_DebounceTime);
@@ -95,7 +95,7 @@ void ADAS_DM_ConfigsCal()
   {
   // read coefficients from SmartDashboard
   #ifdef ADAS_DM_Test
-  // KV_ADAS_UT_LightDelayTIme = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LightDelayTIme", KV_ADAS_UT_LightDelayTIme);
+  // KV_ADAS_UT_LightDelayTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LightDelayTime", KV_ADAS_UT_LightDelayTime);
   // KV_ADAS_UT_LostTargetGx = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LostTargetGx", KV_ADAS_UT_LostTargetGx);
   // KV_ADAS_UT_NoTargetError = frc::SmartDashboard::GetNumber("KV_ADAS_UT_NoTargetError", KV_ADAS_UT_NoTargetError);
   // KV_ADAS_UT_DebounceTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_DebounceTime", KV_ADAS_UT_DebounceTime);

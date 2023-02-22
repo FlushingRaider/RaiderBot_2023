@@ -27,7 +27,7 @@ double V_ADAS_UT_LauncherSpeedPrev = 0;
 bool V_ADAS_UT_TargetAquiredPrev = false;
 
 /* Configuration cals: */
-double KV_ADAS_UT_LightDelayTIme;
+double KV_ADAS_UT_LightDelayTime;
 double KV_ADAS_UT_LostTargetGx;
 double KV_ADAS_UT_NoTargetError;
 double KV_ADAS_UT_DebounceTime;
@@ -44,7 +44,7 @@ double KV_ADAS_UT_TargetVisionAngle;
 void ADAS_UT_ConfigsInit()
 {
   // set coefficients
-  KV_ADAS_UT_LightDelayTIme = K_ADAS_UT_LightDelayTIme;
+  KV_ADAS_UT_LightDelayTime = K_ADAS_UT_LightDelayTIme;
   KV_ADAS_UT_LostTargetGx = K_ADAS_UT_LostTargetGx;
   KV_ADAS_UT_NoTargetError = K_ADAS_UT_NoTargetError;
   KV_ADAS_UT_DebounceTime = K_ADAS_UT_DebounceTime;
@@ -55,7 +55,7 @@ void ADAS_UT_ConfigsInit()
 
 #ifdef ADAS_UT_Test
   // display coefficients on SmartDashboard
-  frc::SmartDashboard::PutNumber("KV_ADAS_UT_LightDelayTIme", KV_ADAS_UT_LightDelayTIme);
+  frc::SmartDashboard::PutNumber("KV_ADAS_UT_LightDelayTime", KV_ADAS_UT_LightDelayTime);
   frc::SmartDashboard::PutNumber("KV_ADAS_UT_LostTargetGx", KV_ADAS_UT_LostTargetGx);
   frc::SmartDashboard::PutNumber("KV_ADAS_UT_NoTargetError", KV_ADAS_UT_NoTargetError);
   frc::SmartDashboard::PutNumber("KV_ADAS_UT_DebounceTime", KV_ADAS_UT_DebounceTime);
@@ -76,7 +76,7 @@ void ADAS_UT_ConfigsCal()
 {
 // read coefficients from SmartDashboard
 #ifdef ADAS_UT_Test
-  KV_ADAS_UT_LightDelayTIme = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LightDelayTIme", KV_ADAS_UT_LightDelayTIme);
+  KV_ADAS_UT_LightDelayTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LightDelayTime", KV_ADAS_UT_LightDelayTime);
   KV_ADAS_UT_LostTargetGx = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LostTargetGx", KV_ADAS_UT_LostTargetGx);
   KV_ADAS_UT_NoTargetError = frc::SmartDashboard::GetNumber("KV_ADAS_UT_NoTargetError", KV_ADAS_UT_NoTargetError);
   KV_ADAS_UT_DebounceTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_DebounceTime", KV_ADAS_UT_DebounceTime);
@@ -136,7 +136,7 @@ T_ADAS_UT_UpperTarget ADAS_UT_CameraLightOn(double *L_Pct_FwdRev,
   /* Start incremeting a debounce time.  We want to give a bit of time for the camera to have light: */
   V_ADAS_UT_DebounceTime += C_ExeTime;
 
-  if (V_ADAS_UT_DebounceTime >= KV_ADAS_UT_LightDelayTIme)
+  if (V_ADAS_UT_DebounceTime >= KV_ADAS_UT_LightDelayTime)
   {
     L_ADAS_UT_State = E_ADAS_UT_AutoCenter;
     V_ADAS_UT_DebounceTime = 0;
