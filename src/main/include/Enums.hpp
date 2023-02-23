@@ -280,7 +280,7 @@ struct RobotUserInput
   double                pct_LinearSlide; // 21
   double                pct_Claw; // 21
   bool                  b_IntakeOut;
-  bool                  b_IntakeIn;
+  bool                  b_DrivingPosition;
   bool                  b_LowerScore;
   bool                  b_UpperScore;
   bool                  b_DropGamepiece;
@@ -288,6 +288,7 @@ struct RobotUserInput
   bool                  b_CubeAlign;
   bool                  b_ConeAlign;
   bool                  b_VisionButton;
+  bool                  b_ArmDown;  //back pickup
 };
 
 

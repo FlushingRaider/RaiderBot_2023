@@ -154,7 +154,7 @@ void ADAS_MN_Reset(void)
 
   if (VsCONT_s_DriverInput.b_IntakeOut == true)
   {VeADAS_E_ScheduledState = E_Swiper};
-  else if (VsCONT_s_DriverInput.b_IntakeIn == true)
+  else if (VsCONT_s_DriverInput.b_DrivingPosition == true)
   {VeADAS_E_ScheduledState = E_DrivingState};
      else if (VsCONT_s_DriverInput.b_DropGamePiece == true)
      {VeADAS_E_ScheduledState = E_DroppingTheLoot};
