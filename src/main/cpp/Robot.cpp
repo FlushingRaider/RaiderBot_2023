@@ -79,15 +79,11 @@ void Robot::RobotMotorCommands()
   
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kForward);
-   }
-  else if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorRetract)
-   {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kReverse);
+   m_DoublePCM_Valve.Set(true);
    }
   else
    {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kOff);
+   m_DoublePCM_Valve.Set(false);
    }
   #endif
 }
@@ -505,15 +501,11 @@ VeROBO_b_TestState = true;
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kForward);
-   }
-  else if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorRetract)
-   {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kReverse);
+   m_DoublePCM_Valve.Set(true);
    }
   else
    {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kOff);
+   m_DoublePCM_Valve.Set(false);
    }
 #endif
 }
