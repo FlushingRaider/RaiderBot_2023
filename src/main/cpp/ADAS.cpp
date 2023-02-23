@@ -27,10 +27,10 @@
 #include <frc/DriverStation.h>
 
 #include "Const.hpp"
-#include "ADAS_UT.hpp"
 #include "ADAS_BT.hpp"
 #include "ADAS_DM.hpp"
 #include "ADAS_ARM.hpp"
+#include "ADAS_MN.hpp"
 
 /* ADAS control state variables */
 T_ADAS_ActiveFeature V_ADAS_ActiveFeature = E_ADAS_Disabled;
@@ -115,7 +115,6 @@ void ADAS_Main_Reset(void)
   V_ADAS_Deg_TargetAngle = 0;
 
   /* Trigger the resets for all of the sub tasks/functions as well: */
-  ADAS_UT_Reset();
 
 #ifdef unused
   ADAS_BT_Reset();
@@ -148,17 +147,15 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       int L_TagID,
                                       bool L_OdomCentered,
                                       double L_TagYawDegrees,
-                                      frc::DriverStation::Alliance LeLC_e_AllianceColor)
+                                      frc::DriverStation::Alliance LeLC_e_AllianceColor,
+                                      bool L_CubeAlignCmd,
+                                      bool L_ConeAlignCmd)
 {
 
   /* First, let's determine what we are going to do: */
   if (L_RobotState == E_Teleop)
   {
     /* Enable criteria goes here: */
-    if (L_Driver_SwerveGoalAutoCenter == true)
-    {
-      LeLC_e_ADASActiveFeature = E_ADAS_UT_AutoUpperTarget;
-    }
 
     /* Abort criteria goes here: */
     if ((L_Driver1_JoystickActive == true) || (V_ADAS_StateComplete == true))
@@ -239,18 +236,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         LeLC_e_ADASActiveFeature = E_ADAS_DM_RotateFieldOriented;
         V_ADAS_Deg_TargetAngle = L_Deg_GyroAngleDeg + 180;
       }
-      else if ((LeLC_e_ADASActiveFeature == E_ADAS_DM_RotateFieldOriented) &&
-               (V_ADAS_StateComplete == true))
-      {
-        LeLC_e_ADASActiveFeature = E_ADAS_UT_AutoUpperTarget;
-      }
-      else if ((LeLC_e_ADASActiveFeature == E_ADAS_UT_AutoUpperTarget) &&
-               (V_ADAS_StateComplete == true))
-      {
-        LeLC_e_ADASActiveFeature = E_ADAS_Disabled;
-        V_ADAS_StateComplete = true;
-        V_ADAS_AutonOncePerTrigger = true;
-      }
     }
     else if (V_ADAS_DriverRequestedAutonFeature == E_ADAS_AutonDriveAndShootAuto3)
     {
@@ -275,12 +260,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         V_ADAS_PathNum = 2;
         V_ADAS_Auton1State = E_ADAS_Auton_DM_PF_3;
       }
-      else if ((V_ADAS_Auton1State == E_ADAS_Auton_DM_PF_3) &&
-               (V_ADAS_StateComplete == true))
-      {
-        LeLC_e_ADASActiveFeature = E_ADAS_UT_AutoUpperTarget;
-        V_ADAS_Auton1State = E_ADAS_Auton_UT_4;
-      }
       else if ((V_ADAS_Auton1State == E_ADAS_Auton_UT_4) &&
                (V_ADAS_StateComplete == true))
       {
@@ -300,12 +279,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         LeLC_e_ADASActiveFeature = E_ADAS_DM_RotateFieldOriented;
         V_ADAS_Deg_TargetAngle = L_Deg_GyroAngleDeg + 180;
         V_ADAS_Auton1State = E_ADAS_Auton_DM_Rotate_7;
-      }
-      else if ((V_ADAS_Auton1State == E_ADAS_Auton_DM_Rotate_7) &&
-               (V_ADAS_StateComplete == true))
-      {
-        LeLC_e_ADASActiveFeature = E_ADAS_UT_AutoUpperTarget;
-        V_ADAS_Auton1State = E_ADAS_Auton_UT_8;
       }
       else if ((V_ADAS_Auton1State == E_ADAS_Auton_UT_8) &&
                (V_ADAS_StateComplete == true))
@@ -366,7 +339,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
   if (LeLC_e_ADASActiveFeature == E_ADAS_Disabled)
   {
     /* Hmm, there was a transition, let's go ahead and reset all of the variables before we start: */
-    ADAS_UT_Reset();
 #ifdef unused
     ADAS_BT_Reset();
 #endif
@@ -377,21 +349,22 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
   switch (LeLC_e_ADASActiveFeature)
   {
 
-  
-  case E_ADAS_UT_AutoUpperTarget:
-    V_ADAS_StateComplete = ADAS_UT_Main(L_Pct_FwdRev,
+  case E_ADAS_MoveToTag:
+    V_ADAS_StateComplete = ADAS_MN_Main(L_Pct_FwdRev,
                                         L_Pct_Strafe,
                                         L_Pct_Rotate,
                                         L_Pct_Intake,
                                         L_VisionTargetingRequest,
                                         L_VisionTopTargetAquired,
                                         L_RobotState,
-                                        L_OdomCentered,
                                         L_TagID,
+                                        L_OdomCentered,
                                         L_L_X_FieldPos,
                                         L_L_Y_FieldPos,
                                         L_TagYawDegrees,
-                                        LeLC_e_AllianceColor);
+                                        LeLC_e_AllianceColor,
+                                        L_CubeAlignCmd,
+                                        L_ConeAlignCmd);
     break;
   case E_ADAS_BT_AutoBallTarget:
 #ifdef unused
