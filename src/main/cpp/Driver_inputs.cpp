@@ -95,11 +95,11 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   double LeCONT_Pct_TurretCmnd = 0.0;
   double LeCONT_Pct_ClawCmnd = 0.0;
 
-  VsCONT_s_DriverInput.b_IntakeArmIn                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) intake in TEST BUTTON
   VsCONT_s_DriverInput.b_IntakeOut                      = LeCONT_b_Driver2ButtonA;      //Controller 2, A button Will be used to bring intake out COMPETION BUTTON
-  VsCONT_s_DriverInput.b_IntakeArmOut                   = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button (2), (robot.cpp) intake out TEST BUTTON
-  VsCONT_s_DriverInput.b_UpperScore                     = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button, Tells robot that we are scoring the gamepiece high COMPETION BUTTON
   VsCONT_s_DriverInput.b_IntakeIn                       = LeCONT_b_Driver2ButtonB;     //Controller 2, B button Will be used to bring intake in COMPETION BUTTON
+  VsCONT_s_DriverInput.b_IntakeArmOut                   = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button (2), (robot.cpp) intake out TEST BUTTON
+  VsCONT_s_DriverInput.b_IntakeArmIn                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) intake in TEST BUTTON
+  VsCONT_s_DriverInput.b_UpperScore                     = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button, Tells robot that we are scoring the gamepiece high COMPETION BUTTON
   VsCONT_s_DriverInput.b_IntakeRollers                  = LeCONT_b_Driver2ButtonX;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
   VsCONT_s_DriverInput.b_LowerScore                     = LeCONT_b_Driver2ButtonX;
   VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
