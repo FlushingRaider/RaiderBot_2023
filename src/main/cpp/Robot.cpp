@@ -384,6 +384,8 @@ FakeButton = false;
   frc::SmartDashboard::PutNumber("WA RR",    VaENC_Deg_WheelAngleConverted[E_RearRight]);
   frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
   frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
+  frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
+  frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
 }
 
 /******************************************************************************
