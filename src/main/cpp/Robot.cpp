@@ -142,8 +142,11 @@ void Robot::RobotInit()
 #ifdef CompBot
   m_ArmPivot.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_Wrist.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_Wrist.SetSmartCurrentLimit(KeMAN_k_ManipulatorNeoCurrentLim);
   m_Gripper.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_Gripper.SetSmartCurrentLimit(KeMAN_k_ManipulatorNeoCurrentLim);
   m_IntakeRollers.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+  m_IntakeRollers.SetSmartCurrentLimit(KeMAN_k_ManipulatorNeoCurrentLim);
 
   m_TurretRotate.ConfigFactoryDefault();
   m_TurretRotate.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
@@ -302,7 +305,7 @@ void Robot::RobotPeriodic()
                    V_ADAS_Pct_SD_FwdRev,
                    V_ADAS_Pct_SD_Strafe,
                    V_ADAS_Pct_SD_Rotate,
-                   V_ADAS_SD_RobotOriented,
+                   V_ADAS_SD_RobotOriented,  // ToDo: Remove, not used
                    VeGRY_Deg_GyroYawAngleDegrees,
                    VeGRY_Rad_GyroYawAngleRad,
                    &VaENC_Deg_WheelAngleFwd[0],

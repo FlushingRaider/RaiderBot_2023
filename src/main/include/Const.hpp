@@ -196,6 +196,9 @@ const double K_LiftPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
                                                    0.0,      // kMaxAcc
                                                    0.0};     // kAllErr
 
+/* KeMAN_k_ManipulatorNeoCurrentLim: Max allowed current going to each Neo 550 used in the manipulator. */
+const double KeMAN_k_ManipulatorNeoCurrentLim = 20;
+
 /* KaMAN_k_ManipulatorTestPower: Test power output for the manipulator controls. ONLY used in test mode!! */
 const double KaMAN_k_ManipulatorTestPower[E_MAN_Sz] = {0.25,  // E_MAN_Turret
                                                        0.08,  // E_MAN_ArmPivot
