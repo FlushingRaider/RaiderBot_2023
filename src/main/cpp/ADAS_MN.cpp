@@ -35,7 +35,7 @@
 // double  LeCont_Pct_Driver2AxisLB
 
 
-T_ADAS_MN_UpperTarget V_ADAS_MN_State = E_ADAS_MN_Disabled;
+TeMAN_ManipulatorStates VeADAS_E_VeADAS_E_ScheduledState = E_ADAS_MN_Disabled;
 double V_ADAS_MN_DebounceTime = 0;
 double V_ADAS_MN_RotateErrorPrev = 0;
 double V_ADAS_MN_LauncherSpeedPrev = 0;
@@ -103,15 +103,16 @@ void ADAS_MN_ConfigsCal()
 /******************************************************************************
  * Function:     ADAS_MN_Reset
  *
- * Description:  Reset all applicable UT variables.
+ * Description:  Reset all applicable MN variables.
  ******************************************************************************/
 void ADAS_MN_Reset(void)
 {
-  V_ADAS_MN_State = E_ADAS_MN_Disabled;
+  TeMAN_ManipulatorStates VeADAS_E_VeADAS_E_ScheduledState = E_ADAS_MN_Disabled;
   V_ADAS_MN_DebounceTime = 0;
   V_ADAS_MN_RotateErrorPrev = 0;
   V_ADAS_MN_LauncherSpeedPrev = 0;
   V_ADAS_MN_TargetAquiredPrev = false;
+  VeADAS_E_ScheduledState = E_Rest
 }
 
 #ifdef 
@@ -126,18 +127,11 @@ void ADAS_MN_Reset(void)
                                             double *L_RPM_Launcher,
                                             double *L_Pct_Intake,
                                             double *L_Pct_Elevator,
-                                            bool *L_CameraUpperLightCmndOn,
-                                            bool *L_CameraLowerLightCmndOn,
                                             bool *L_SD_RobotOriented,
                                             bool *L_VisionTargetingRequest)
 {
-  T_ADAS_MN_UpperTarget L_ADAS_MN_State = E_ADAS_MN_CameraLightOn;
+  T_ADAS_MN_UpperTarget L_ADAS_MN_State = 
 
-  /* First thing, let's turn on the light and request vision targeting: */
-  *L_CameraUpperLightCmndOn = true;
-  *L_VisionTargetingRequest = true;
-
-  *L_SD_RobotOriented = true;
   /* Next, set all other values to off as we are just wanting to command the light on: */
   *L_CameraLowerLightCmndOn = false;
   *L_Pct_FwdRev = 0;
