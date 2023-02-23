@@ -11,8 +11,8 @@
   2023-02-21 -> Alpha
  */
 
-#ifdef HOMOSEXUAL
 
+#ifdef AAAAAAA
 #include <math.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "control_pid.hpp"
@@ -35,19 +35,17 @@
 // double  LeCont_Pct_Driver2AxisLB
 
 
-T_ADAS_MN_UpperTarget V_ADAS_MN_State = E_ADAS_MN_Disabled;
+TeMAN_ManipulatorStates VeADAS_E_VeADAS_E_ScheduledState = E_ADAS_MN_Disabled;
 double V_ADAS_MN_DebounceTime = 0;
 double V_ADAS_MN_RotateErrorPrev = 0;
 double V_ADAS_MN_LauncherSpeedPrev = 0;
 bool V_ADAS_MN_TargetAquiredPrev = false;
+TeMAN_ManipulatorStates VeADAS_E_VeADAS_E_ScheduledState; /*State Scheduled in relation to driver input. Used for non-linear state machines/*
 
 /* Configuration cals: */
-double KV_ADAS_MN_LightDelayTIme;
 double KV_ADAS_MN_LostTargetGx;
 double KV_ADAS_MN_NoTargetError;
 double KV_ADAS_MN_DebounceTime;
-double KV_ADAS_MN_AllowedLauncherError;
-double KV_ADAS_MN_AllowedLauncherTime;
 double KV_ADAS_MN_RotateDeadbandAngle;
 double KV_ADAS_MN_TargetVisionAngle;
 
@@ -105,40 +103,35 @@ void ADAS_MN_ConfigsCal()
 /******************************************************************************
  * Function:     ADAS_MN_Reset
  *
- * Description:  Reset all applicable UT variables.
+ * Description:  Reset all applicable MN variables.
  ******************************************************************************/
 void ADAS_MN_Reset(void)
 {
-  V_ADAS_MN_State = E_ADAS_MN_Disabled;
+  TeMAN_ManipulatorStates VeADAS_E_VeADAS_E_ScheduledState = E_ADAS_MN_Disabled;
   V_ADAS_MN_DebounceTime = 0;
   V_ADAS_MN_RotateErrorPrev = 0;
   V_ADAS_MN_LauncherSpeedPrev = 0;
   V_ADAS_MN_TargetAquiredPrev = false;
+  VeADAS_E_ScheduledState = E_Rest
 }
-#ifdef unused
+
+#ifdef 
 /******************************************************************************
- * Function:    ADAS_MN_StateChosen
+ * Function:    VeADAS_E_ScheduledState
  * Made By:     Jay L 2/21/2023
  * Description: Determines scheduled states based on current 
  ******************************************************************************/
- T_ADAS_MN_ManipulatorStates ADAS_MN_StateChosen (double *L_Pct_FwdRev,
+ T_ADAS_MN_ManipulatorStates VeADAS_E_ScheduledState (double *L_Pct_FwdRev,
                                             double *L_Pct_Strafe,
                                             double *L_Pct_Rotate,
                                             double *L_RPM_Launcher,
                                             double *L_Pct_Intake,
                                             double *L_Pct_Elevator,
-                                            bool *L_CameraUpperLightCmndOn,
-                                            bool *L_CameraLowerLightCmndOn,
                                             bool *L_SD_RobotOriented,
                                             bool *L_VisionTargetingRequest)
 {
-  T_ADAS_MN_UpperTarget L_ADAS_MN_State = E_ADAS_MN_CameraLightOn;
+  T_ADAS_MN_UpperTarget L_ADAS_MN_State = 
 
-  /* First thing, let's turn on the light and request vision targeting: */
-  *L_CameraUpperLightCmndOn = true;
-  *L_VisionTargetingRequest = true;
-
-  *L_SD_RobotOriented = true;
   /* Next, set all other values to off as we are just wanting to command the light on: */
   *L_CameraLowerLightCmndOn = false;
   *L_Pct_FwdRev = 0;
@@ -159,22 +152,22 @@ void ADAS_MN_Reset(void)
 
   return (L_ADAS_MN_State);
 
-  if (b_IntakeOut = true)
-  {ScheduledState = E_Swiper}
-  else if (b_IntakeIn = true)
-  {ScheduledState = E_DrivingState}
-     else if (b_DropGamePiece = true)
-     {ScheduledState = E_DroppingTheLoot}
-       else if (b_IntakeRollers = true)
-       {ScheduledState = E_TradeOff}
-         else if (b_UpperSore)
-         {ScheduledState = E_PositioningState}
-         else if (b_LowerScore = true)
-         {ScheduledState = E_PositioningState}
-           else if (b_IntakeArmOut = true)
-           {ScheduledState = E_PositioningState}
-           else if (b_IntakeArmIn = true)
-           {ScheduledState = E_DrivingState}
+  if (VsCONT_s_DriverInput.b_IntakeOut == true)
+  {VeADAS_E_ScheduledState = E_Swiper};
+  else if (VsCONT_s_DriverInput.b_IntakeIn == true)
+  {VeADAS_E_ScheduledState = E_DrivingState};
+     else if (VsCONT_s_DriverInput.b_DropGamePiece == true)
+     {VeADAS_E_ScheduledState = E_DroppingTheLoot};
+       else if (VsCONT_s_DriverInput.b_IntakeRollers == true)
+       {VeADAS_E_ScheduledState = E_TradeOff};
+         else if (VsCONT_s_DriverInput.b_UpperSore == true)
+         {VeADAS_E_ScheduledState = E_PositioningState};
+         else if (VsCONT_s_DriverInput.b_LowerScore == true)
+         {VeADAS_E_ScheduledState = E_PositioningState};
+           else if (VsCONT_s_DriverInput.b_IntakeArmOut = true)
+           {VeADAS_E_ScheduledState = E_PositioningState};
+           else if (VsCONT_s_DriverInput.b_IntakeArmIn = true)
+           {VeADAS_E_ScheduledState = E_DrivingState};
 }
 #endif
 
@@ -437,4 +430,4 @@ bool ADAS_MN_Main(double *L_Pct_FwdRev,
 
   return (L_ADAS_MN_Complete);
 }
-#endif
+#endif 
