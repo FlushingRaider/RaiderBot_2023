@@ -118,7 +118,10 @@ typedef enum TeMAN_ManipulatorStates
  E_DroppingTheLoot,
  E_Swiper,
  E_TradeOff,
- E_Man_State_Sz
+ E_Man_State_Sz,
+ E_ADAS_MN_Disabled,
+E_ADAS_MN_MoveToTag
+
 } TeMAN_ManipulatorStates;
  
 
@@ -159,12 +162,12 @@ typedef enum T_ADAS_BT_BallTarget /* aka GetDaBalls */
 } T_ADAS_BT_BallTarget;
 
 
-typedef enum T_ADAS_MN_Manipulator
-{
-  E_ADAS_MN_Disabled,
-  E_ADAS_MN_MoveToTag
+// typedef enum T_ADAS_MN_Manipulator
+// {
+//   E_ADAS_MN_Disabled,
+//   E_ADAS_MN_MoveToTag
 
-}T_ADAS_MN_Manipulator;
+// }T_ADAS_MN_Manipulator;
 
 
 
