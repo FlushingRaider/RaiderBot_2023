@@ -159,21 +159,21 @@ void ADAS_MN_Reset(void)
 
   return (L_ADAS_MN_State);
 
-  if (b_IntakeOut = true)
-  {ScheduledState = E_Swiper}
-  else if (b_IntakeIn = true)
+  if (VsCONT_s_DriverInput.b_IntakeOut == true)
+  {ScheduledState == E_Swiper}
+  else if (VsCONT_s_DriverInput.b_IntakeIn == true)
   {ScheduledState = E_DrivingState}
-     else if (b_DropGamePiece = true)
+     else if (VsCONT_s_DriverInput.b_DropGamePiece == true)
      {ScheduledState = E_DroppingTheLoot}
-       else if (b_IntakeRollers = true)
+       else if (VsCONT_s_DriverInput.b_IntakeRollers == true)
        {ScheduledState = E_TradeOff}
-         else if (b_UpperSore)
+         else if (VsCONT_s_DriverInput.b_UpperSore == true)
          {ScheduledState = E_PositioningState}
-         else if (b_LowerScore = true)
+         else if (VsCONT_s_DriverInput.b_LowerScore == true)
          {ScheduledState = E_PositioningState}
-           else if (b_IntakeArmOut = true)
+           else if (VsCONT_s_DriverInput.b_IntakeArmOut = true)
            {ScheduledState = E_PositioningState}
-           else if (b_IntakeArmIn = true)
+           else if (VsCONT_s_DriverInput.b_IntakeArmIn = true)
            {ScheduledState = E_DrivingState}
 }
 #endif
