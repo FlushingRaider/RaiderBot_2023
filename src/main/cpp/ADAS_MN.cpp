@@ -11,8 +11,8 @@
   2023-02-21 -> Alpha
  */
 
-#ifdef HOMOSEXUAL
 
+#ifdef AAAAAAA
 #include <math.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "control_pid.hpp"
@@ -40,14 +40,12 @@ double V_ADAS_MN_DebounceTime = 0;
 double V_ADAS_MN_RotateErrorPrev = 0;
 double V_ADAS_MN_LauncherSpeedPrev = 0;
 bool V_ADAS_MN_TargetAquiredPrev = false;
+TeMAN_ManipulatorStates VeADAS_E_VeADAS_E_ScheduledState; /*State Scheduled in relation to driver input. Used for non-linear state machines/*
 
 /* Configuration cals: */
-double KV_ADAS_MN_LightDelayTIme;
 double KV_ADAS_MN_LostTargetGx;
 double KV_ADAS_MN_NoTargetError;
 double KV_ADAS_MN_DebounceTime;
-double KV_ADAS_MN_AllowedLauncherError;
-double KV_ADAS_MN_AllowedLauncherTime;
 double KV_ADAS_MN_RotateDeadbandAngle;
 double KV_ADAS_MN_TargetVisionAngle;
 
@@ -115,13 +113,14 @@ void ADAS_MN_Reset(void)
   V_ADAS_MN_LauncherSpeedPrev = 0;
   V_ADAS_MN_TargetAquiredPrev = false;
 }
-#ifdef unused
+
+#ifdef 
 /******************************************************************************
- * Function:    ADAS_MN_StateChosen
+ * Function:    VeADAS_E_ScheduledState
  * Made By:     Jay L 2/21/2023
  * Description: Determines scheduled states based on current 
  ******************************************************************************/
- T_ADAS_MN_ManipulatorStates ADAS_MN_StateChosen (double *L_Pct_FwdRev,
+ T_ADAS_MN_ManipulatorStates VeADAS_E_ScheduledState (double *L_Pct_FwdRev,
                                             double *L_Pct_Strafe,
                                             double *L_Pct_Rotate,
                                             double *L_RPM_Launcher,
@@ -160,21 +159,21 @@ void ADAS_MN_Reset(void)
   return (L_ADAS_MN_State);
 
   if (VsCONT_s_DriverInput.b_IntakeOut == true)
-  {ScheduledState == E_Swiper}
+  {VeADAS_E_ScheduledState = E_Swiper};
   else if (VsCONT_s_DriverInput.b_IntakeIn == true)
-  {ScheduledState = E_DrivingState}
+  {VeADAS_E_ScheduledState = E_DrivingState};
      else if (VsCONT_s_DriverInput.b_DropGamePiece == true)
-     {ScheduledState = E_DroppingTheLoot}
+     {VeADAS_E_ScheduledState = E_DroppingTheLoot};
        else if (VsCONT_s_DriverInput.b_IntakeRollers == true)
-       {ScheduledState = E_TradeOff}
+       {VeADAS_E_ScheduledState = E_TradeOff};
          else if (VsCONT_s_DriverInput.b_UpperSore == true)
-         {ScheduledState = E_PositioningState}
+         {VeADAS_E_ScheduledState = E_PositioningState};
          else if (VsCONT_s_DriverInput.b_LowerScore == true)
-         {ScheduledState = E_PositioningState}
+         {VeADAS_E_ScheduledState = E_PositioningState};
            else if (VsCONT_s_DriverInput.b_IntakeArmOut = true)
-           {ScheduledState = E_PositioningState}
+           {VeADAS_E_ScheduledState = E_PositioningState};
            else if (VsCONT_s_DriverInput.b_IntakeArmIn = true)
-           {ScheduledState = E_DrivingState}
+           {VeADAS_E_ScheduledState = E_DrivingState};
 }
 #endif
 
@@ -437,4 +436,4 @@ bool ADAS_MN_Main(double *L_Pct_FwdRev,
 
   return (L_ADAS_MN_Complete);
 }
-#endif
+#endif 
