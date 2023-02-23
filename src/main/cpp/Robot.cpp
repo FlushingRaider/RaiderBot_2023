@@ -339,8 +339,8 @@ void Robot::RobotPeriodic()
 
 #ifdef NewVision
 // FakeButton =frc::SmartDashboard::GetBoolean("Fake auto target buton", false);
-FakeButton = false;
-  VisionRun(FakeButton);
+// FakeButton = false;
+  VisionRun(VsCONT_s_DriverInput.b_VisionButton, VsCONT_s_DriverInput.b_VisionButton); // second value can be filled with the second button later
   // frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
   // frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
   // frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
