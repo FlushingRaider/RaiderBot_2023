@@ -118,7 +118,10 @@ typedef enum TeMAN_ManipulatorStates
  E_DroppingTheLoot,
  E_Swiper,
  E_TradeOff,
- E_Man_State_Sz
+ E_Man_State_Sz,
+ E_ADAS_MN_Disabled,
+E_ADAS_MN_MoveToTag
+
 } TeMAN_ManipulatorStates;
  
 
@@ -158,21 +161,22 @@ typedef enum T_ADAS_BT_BallTarget /* aka GetDaBalls */
   E_ADAS_BT_IntakeAndRun
 } T_ADAS_BT_BallTarget;
 
-typedef enum T_ADAS_UT_UpperTarget
-{
-  E_ADAS_UT_Disabled,
-  E_ADAS_UT_CameraLightOn,
-  E_ADAS_UT_AutoCenter,
-  E_ADAS_UT_LauncherSpeed,
-  E_ADAS_UT_ElevatorControl,
 
-  E_ADAS_UT_MoveToTag
-} T_ADAS_UT_UpperTarget;
+// typedef enum T_ADAS_MN_Manipulator
+// {
+//   E_ADAS_MN_Disabled,
+//   E_ADAS_MN_MoveToTag
+
+// }T_ADAS_MN_Manipulator;
+
+
+
+
 
 typedef enum T_ADAS_ActiveFeature
 {
   E_ADAS_Disabled,
-  E_ADAS_UT_AutoUpperTarget,
+  E_ADAS_MoveToTag,
   E_ADAS_BT_AutoBallTarget,
   E_ADAS_DM_BlindLaunch,
   E_ADAS_DM_DriveStraight,

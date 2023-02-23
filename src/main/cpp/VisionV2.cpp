@@ -50,7 +50,9 @@ double V_TagPitch;
 double V_TagYaw;
 int V_TagID;
 bool V_TagCentered;
-
+bool V_CubeAlignRequested;
+bool _ConeAlignRequested;
+// vars for apriltag cam
 photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1"); // the string is the name of the cam from photon, the name in photon must match this one to assign properly
 fs::path aprilTagsjsonPath = frc::filesystem::GetDeployDirectory();
 std::string aprilTagsjson = aprilTagsjsonPath / "2023_chargedUp.json"; //
@@ -59,9 +61,14 @@ frc::AprilTagFieldLayout aprilTags{aprilTagsjson};
 
 photonlib::PhotonPoseEstimator estimator(aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
 
- photonlib::PhotonPipelineResult CamResult;
+photonlib::PhotonPipelineResult TagCamResult;
 std::optional<photonlib::EstimatedRobotPose> estimatedPose;
-frc::Pose3d pose;
+frc::Pose3d TagPose;
+// vars for cone/cube cam
+photonlib::PhotonCamera Cam2 = photonlib::PhotonCamera("Cam2");
+frc::Transform3d PieceCamPose;
+photonlib::PhotonPipelineResult PieceCamResult;
+photonlib::PhotonTrackedTarget PieceCamTarget;
 
 #endif
 #ifdef OldVision
@@ -234,27 +241,28 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 #endif
 
 #ifdef NewVision
-void VisionRun(bool L_ButtonCmd)
+void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
 {
-  // wpi::PortForwarder::GetInstance().Add(5800, "10.55.61.11", 5800);
-  CamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
 
-  VeVIS_b_TagHasTarget = CamResult.HasTargets();
+  // code for apriltag vision
+  TagCamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
+
+  VeVIS_b_TagHasTarget = TagCamResult.HasTargets();
 
   if (VeVIS_b_TagHasTarget)
   {
 
     estimatedPose = estimator.Update();
-    pose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
-    V_TagID = CamResult.GetBestTarget().GetFiducialId();
+    TagPose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
+    V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
 
-    V_Tagx = pose.X().value();
-    V_Tagy = pose.Y().value();
-    V_Tagz = pose.Z().value();
-    V_TagRoll = pose.Rotation().X().value();
-    V_TagPitch = pose.Rotation().Y().value();
-    V_TagYaw = pose.Rotation().Z().value();
-    if (L_ButtonCmd)
+    V_Tagx = TagPose.X().value();
+    V_Tagy = TagPose.Y().value();
+    V_Tagz = TagPose.Z().value();
+    V_TagRoll = TagPose.Rotation().X().value();
+    V_TagPitch = TagPose.Rotation().Y().value();
+    V_TagYaw = TagPose.Rotation().Z().value();
+    if (L_ButtonCmdCone || L_ButtonCmdCube)
     {
       OdometryInitToArgs(V_Tagx, V_Tagy);
       V_TagCentered = true;
@@ -272,6 +280,16 @@ void VisionRun(bool L_ButtonCmd)
     V_TagRoll = 0.0;
     V_TagPitch = 0.0;
     V_TagYaw = 0.0;
+  }
+
+  // code for cone/cube detection:
+  PieceCamResult = Cam2.GetLatestResult();
+  if (PieceCamResult.HasTargets())
+  {
+    PieceCamTarget = PieceCamResult.GetBestTarget();
+    PieceCamPose = PieceCamTarget.GetBestCameraToTarget();
+
+
   }
 }
 
