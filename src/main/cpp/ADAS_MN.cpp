@@ -12,14 +12,13 @@
  */
 
 
-#ifdef AAAAAAA
 #include <math.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "control_pid.hpp"
 #include "Lookup.hpp"
 #include "Const.hpp"
 #include <frc/DriverStation.h>
-
+#include "ADAS_MN.hpp"
 // bool    LeCONT_b_Driver2ButtonA,
 // bool    LeCONT_b_Driver2ButtonB,
 // bool    LeCONT_b_Driver2ButtonRB,
@@ -35,12 +34,11 @@
 // double  LeCont_Pct_Driver2AxisLB
 
 
-TeMAN_ManipulatorStates VeADAS_E_VeADAS_E_ScheduledState = E_ADAS_MN_Disabled;
+TeMAN_ManipulatorStates VeADAS_E_VeADAS_E_ScheduledState = E_ADAS_MN_Disabled; //State Scheduled in relation to driver input. Used for non-linear state machines
 double V_ADAS_MN_DebounceTime = 0;
 double V_ADAS_MN_RotateErrorPrev = 0;
 double V_ADAS_MN_LauncherSpeedPrev = 0;
 bool V_ADAS_MN_TargetAquiredPrev = false;
-TeMAN_ManipulatorStates VeADAS_E_VeADAS_E_ScheduledState; /*State Scheduled in relation to driver input. Used for non-linear state machines/*
 
 /* Configuration cals: */
 double KV_ADAS_MN_LostTargetGx;
@@ -57,14 +55,13 @@ double KV_ADAS_MN_TargetVisionAngle;
 void ADAS_MN_ConfigsInit()
 {
   // set coefficients
-  KV_ADAS_MN_LightDelayTIme = K_ADAS_MN_LightDelayTIme;
-  KV_ADAS_MN_LostTargetGx = K_ADAS_MN_LostTargetGx;
-  KV_ADAS_MN_NoTargetError = K_ADAS_MN_NoTargetError;
-  KV_ADAS_MN_DebounceTime = K_ADAS_MN_DebounceTime;
-  KV_ADAS_MN_AllowedLauncherError = K_ADAS_MN_AllowedLauncherError;
-  KV_ADAS_MN_AllowedLauncherTime = K_ADAS_MN_AllowedLauncherTime;
-  KV_ADAS_MN_RotateDeadbandAngle = K_ADAS_MN_RotateDeadbandAngle;
-  KV_ADAS_MN_TargetVisionAngle = K_ADAS_MN_TargetVisionAngle;
+
+  // KV_ADAS_MN_LightDelayTIme = K_ADAS_MN_LightDelayTime;
+  // KV_ADAS_MN_LostTargetGx = K_ADAS_MN_LostTargetGx;
+  // KV_ADAS_MN_NoTargetError = K_ADAS_MN_NoTargetError;
+  // KV_ADAS_MN_DebounceTime = K_ADAS_MN_DebounceTime;
+  // KV_ADAS_MN_RotateDeadbandAngle = K_ADAS_MN_RotateDeadbandAngle;
+  // KV_ADAS_MN_TargetVisionAngle = K_ADAS_MN_TargetVisionAngle;
 
 #ifdef ADAS_MN_Test
   // display coefficients on SmartDashboard
@@ -112,14 +109,16 @@ void ADAS_MN_Reset(void)
   V_ADAS_MN_RotateErrorPrev = 0;
   V_ADAS_MN_LauncherSpeedPrev = 0;
   V_ADAS_MN_TargetAquiredPrev = false;
+  #ifdef unfinished
   VeADAS_E_ScheduledState = E_Rest
+  #endif
 }
 
-#ifdef 
+#ifdef unfinished
 /******************************************************************************
  * Function:    VeADAS_E_ScheduledState
  * Made By:     Jay L 2/21/2023
- * Description: Determines scheduled states based on current 
+ * Description: Determines scheduled states based on current
  ******************************************************************************/
  T_ADAS_MN_ManipulatorStates VeADAS_E_ScheduledState (double *L_Pct_FwdRev,
                                             double *L_Pct_Strafe,
@@ -171,13 +170,12 @@ void ADAS_MN_Reset(void)
 }
 #endif
 
-#ifdef move
 /******************************************************************************
  * Function:     ADAS_MN_MoveToTag
  * Author: Carson
  * Description: Moves to the closest tag scanned
  ******************************************************************************/
-T_ADAS_MN_UpperTarget ADAS_MN_MoveToTag(double *L_Pct_FwdRev,
+TeMAN_ManipulatorStates ADAS_MN_MoveToTag(double *L_Pct_FwdRev,
                                         double *L_Pct_Strafe,
                                         double *L_Pct_Rotate,
                                         bool L_OdomCentered,
@@ -187,10 +185,12 @@ T_ADAS_MN_UpperTarget ADAS_MN_MoveToTag(double *L_Pct_FwdRev,
                                         bool *L_VisionTargetingRequest,
                                         double L_VisionTopTargetAquired,
                                         double L_TagYawDegrees,
-                                        frc::DriverStation::Alliance LeLC_e_AllianceColor)
+                                        frc::DriverStation::Alliance LeLC_e_AllianceColor,
+                                        bool L_CubeAlignCmd,
+                                        bool L_ConeAlignCmd)
 {
 
-  T_ADAS_MN_UpperTarget L_ADAS_MN_State = E_ADAS_MN_MoveToTag;
+  TeMAN_ManipulatorStates L_ADAS_MN_State = E_ADAS_MN_MoveToTag;
 
   *L_Pct_FwdRev = 0;
   *L_Pct_Strafe = 0;
@@ -253,8 +253,6 @@ T_ADAS_MN_UpperTarget ADAS_MN_MoveToTag(double *L_Pct_FwdRev,
     }
 
     // find the closest tag and our error to it:
-    if (L_VisionTopTargetAquired)
-    {
 
       // // check if Error 1 is the largest
       // if (L_Tag1YError >= L_Tag2YError && L_Tag1YError >= L_Tag3YError)
@@ -273,18 +271,17 @@ T_ADAS_MN_UpperTarget ADAS_MN_MoveToTag(double *L_Pct_FwdRev,
       // }
 
       L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
-    }
     if (V_ADAS_MN_DebounceTime <= KV_ADAS_MN_DebounceTime) // make sure we're still in the time we've given ourselves
     {
       if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
       {
         *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
       }
-      if (L_OdometryX < L_ChosenX) // TODO: add deadband
+      if (L_OdometryX < L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX < L_ChosenX - K_MoveToTagMovementDeadband)
       {
         *L_Pct_FwdRev = 0.2;
       }
-      else if (L_OdometryX > L_ChosenX)
+      else if (L_OdometryX > L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX > L_ChosenX - K_MoveToTagMovementDeadband)
       {
         *L_Pct_FwdRev = -0.2;
       }
@@ -292,11 +289,11 @@ T_ADAS_MN_UpperTarget ADAS_MN_MoveToTag(double *L_Pct_FwdRev,
       {
         *L_Pct_FwdRev = 0.0;
       }
-      if (L_OdometryY < L_ChosenY) // TODO: add deadband
+      if (L_OdometryY < L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY < L_ChosenY - K_MoveToTagMovementDeadband)
       {
         *L_Pct_Strafe = 0.2;
       }
-      else if (L_OdometryY > L_ChosenY)
+      else if (L_OdometryY > L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY > L_ChosenY - K_MoveToTagMovementDeadband)
       {
         *L_Pct_Strafe = -0.2;
       }
@@ -315,7 +312,6 @@ T_ADAS_MN_UpperTarget ADAS_MN_MoveToTag(double *L_Pct_FwdRev,
   return (L_ADAS_MN_State);
 }
 
-#endif
 /******************************************************************************
  * Function:     ADAS_MN_Main
  *
@@ -334,15 +330,19 @@ bool ADAS_MN_Main(double *L_Pct_FwdRev,
                   double L_OdometryX,
                   double L_OdometryY,
                   double L_TagYawDegrees,
-                  frc::DriverStation::Alliance LeLC_e_AllianceColor)
+                  frc::DriverStation::Alliance LeLC_e_AllianceColor,
+                  bool L_CubeAlignCmd,
+                  bool L_ConeAlignCmd)
 {
   bool L_ADAS_MN_Complete = false;
 
-  switch (V_ADAS_MN_State)
+  switch (VeADAS_E_VeADAS_E_ScheduledState)
   {
   case E_ADAS_MN_Disabled:
+  break;
+  #ifdef unused
   case E_ADAS_MN_CameraLightOn:
-#ifdef unused
+
     V_ADAS_MN_State = ADAS_MN_CameraLightOn(L_Pct_FwdRev,
                                             L_Pct_Strafe,
                                             L_Pct_Rotate,
@@ -355,60 +355,8 @@ bool ADAS_MN_Main(double *L_Pct_FwdRev,
                                             L_VisionTargetingRequest);
     break;
 #endif
-  case E_ADAS_MN_AutoCenter:
-#ifdef unused
-    V_ADAS_MN_State = ADAS_MN_AutoCenter(L_Pct_FwdRev,
-                                         L_Pct_Strafe,
-                                         L_Pct_Rotate,
-                                         L_RPM_Launcher,
-                                         L_Pct_Intake,
-                                         L_Pct_Elevator,
-                                         L_CameraUpperLightCmndOn,
-                                         L_CameraLowerLightCmndOn,
-                                         L_SD_RobotOriented,
-                                         L_VisionTargetingRequest,
-                                         L_VisionTopTargetAquired,
-                                         L_TopTargetYawDegrees);
-    break;
-#endif
-  case E_ADAS_MN_LauncherSpeed:
-#ifdef unused
-    V_ADAS_MN_State = ADAS_MN_LauncherSpeed(L_Pct_FwdRev,
-                                            L_Pct_Strafe,
-                                            L_Pct_Rotate,
-                                            L_RPM_Launcher,
-                                            L_Pct_Intake,
-                                            L_Pct_Elevator,
-                                            L_CameraUpperLightCmndOn,
-                                            L_CameraLowerLightCmndOn,
-                                            L_SD_RobotOriented,
-                                            L_VisionTargetingRequest,
-                                            L_VisionTopTargetAquired,
-                                            L_VisionTopTargetDistanceMeters);
-    break;
-#endif
-  case E_ADAS_MN_ElevatorControl:
-#ifdef unused
-    V_ADAS_MN_State = ADAS_MN_ElevatorControl(L_Pct_FwdRev,
-                                              L_Pct_Strafe,
-                                              L_Pct_Rotate,
-                                              L_RPM_Launcher,
-                                              L_Pct_Intake,
-                                              L_Pct_Elevator,
-                                              L_CameraUpperLightCmndOn,
-                                              L_CameraLowerLightCmndOn,
-                                              L_SD_RobotOriented,
-                                              L_VisionTargetingRequest,
-                                              L_RobotState,
-                                              L_LauncherRPM_Measured,
-                                              L_BallDetectedUpper,
-                                              L_DriverRequestElevatorUp,
-                                              L_DriverRequestElevatorDwn,
-                                              L_DriverRequestIntake);
-    break;
-#endif
   case E_ADAS_MN_MoveToTag:
-    V_ADAS_MN_State = ADAS_MN_MoveToTag(L_Pct_FwdRev,
+    VeADAS_E_VeADAS_E_ScheduledState = ADAS_MN_MoveToTag(L_Pct_FwdRev,
                                         L_Pct_Strafe,
                                         L_Pct_Rotate,
                                         L_OdomCentered,
@@ -418,11 +366,13 @@ bool ADAS_MN_Main(double *L_Pct_FwdRev,
                                         L_VisionTargetingRequest,
                                         L_VisionTopTargetAquired,
                                         L_TagYawDegrees,
-                                        LeLC_e_AllianceColor);
+                                        LeLC_e_AllianceColor,
+                                        L_CubeAlignCmd,
+                                        L_ConeAlignCmd);
     break;
   }
 
-  if (V_ADAS_MN_State == E_ADAS_MN_Disabled)
+  if (VeADAS_E_VeADAS_E_ScheduledState == E_ADAS_MN_Disabled)
   {
     ADAS_MN_Reset();
     L_ADAS_MN_Complete = true;
@@ -430,4 +380,3 @@ bool ADAS_MN_Main(double *L_Pct_FwdRev,
 
   return (L_ADAS_MN_Complete);
 }
-#endif 

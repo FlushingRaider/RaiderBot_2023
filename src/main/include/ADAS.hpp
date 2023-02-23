@@ -46,4 +46,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       int L_TagID,
                                       bool L_OdomCentered,
                                       double L_TagYawDegrees,
-                                      frc::DriverStation::Alliance LeLC_e_AllianceColor);
+                                      frc::DriverStation::Alliance LeLC_e_AllianceColor,
+                                       bool L_CubeAlignCmd,
+                                      bool L_ConeAlignCmd);

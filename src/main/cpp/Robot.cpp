@@ -24,8 +24,8 @@
 #include "VisionV2.hpp"
 #include "ADAS.hpp"
 #include "ADAS_BT.hpp"
-#include "ADAS_UT.hpp"
 #include "ADAS_DM.hpp"
+#include "ADAS_MN.hpp"
 
 T_RobotState V_RobotState = E_Init;
 frc::DriverStation::Alliance V_AllianceColor = frc::DriverStation::Alliance::kInvalid;
@@ -68,7 +68,7 @@ void Robot::RobotMotorCommands()
     m_rearRightSteerMotor.Set(0);
   }
 
-  #ifdef CompBot
+#ifdef CompBot
   m_ArmPivotPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot], rev::ControlType::kPosition);
   m_WristPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist], rev::ControlType::kPosition);
   m_GripperPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper], rev::ControlType::kPosition);
@@ -76,18 +76,14 @@ void Robot::RobotMotorCommands()
 
   m_TurretRotate.Set(ControlMode::Position, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
   m_LinearSlide.Set(ControlMode::Position, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
-  
+
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kForward);
-   }
-  else if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorRetract)
-   {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kReverse);
+   m_DoublePCM_Valve.Set(true);
    }
   else
    {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kOff);
+   m_DoublePCM_Valve.Set(false);
    }
   #endif
 }
@@ -157,9 +153,9 @@ void Robot::RobotInit()
   m_TurretRotate.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
   m_TurretRotate.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
   m_TurretRotate.Config_kF(0, KaMAN_k_TurretPID_Gx[E_kFF], K_t_TurretTimeoutMs);
-	m_TurretRotate.Config_kP(0, KaMAN_k_TurretPID_Gx[E_kP],  K_t_TurretTimeoutMs);
-	m_TurretRotate.Config_kI(0, KaMAN_k_TurretPID_Gx[E_kI],  K_t_TurretTimeoutMs);
-	m_TurretRotate.Config_kD(0, KaMAN_k_TurretPID_Gx[E_kD],  K_t_TurretTimeoutMs);
+  m_TurretRotate.Config_kP(0, KaMAN_k_TurretPID_Gx[E_kP], K_t_TurretTimeoutMs);
+  m_TurretRotate.Config_kI(0, KaMAN_k_TurretPID_Gx[E_kI], K_t_TurretTimeoutMs);
+  m_TurretRotate.Config_kD(0, KaMAN_k_TurretPID_Gx[E_kD], K_t_TurretTimeoutMs);
 
   m_LinearSlide.ConfigFactoryDefault();
   m_LinearSlide.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
@@ -170,9 +166,9 @@ void Robot::RobotInit()
   m_LinearSlide.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
   m_LinearSlide.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
   m_LinearSlide.Config_kF(0, KaMAN_k_LinearSlidePID_Gx[E_kFF], K_t_TurretTimeoutMs);
-	m_LinearSlide.Config_kP(0, KaMAN_k_LinearSlidePID_Gx[E_kP],  K_t_TurretTimeoutMs);
-	m_LinearSlide.Config_kI(0, KaMAN_k_LinearSlidePID_Gx[E_kI],  K_t_TurretTimeoutMs);
-	m_LinearSlide.Config_kD(0, KaMAN_k_LinearSlidePID_Gx[E_kD],  K_t_TurretTimeoutMs);
+  m_LinearSlide.Config_kP(0, KaMAN_k_LinearSlidePID_Gx[E_kP], K_t_TurretTimeoutMs);
+  m_LinearSlide.Config_kI(0, KaMAN_k_LinearSlidePID_Gx[E_kI], K_t_TurretTimeoutMs);
+  m_LinearSlide.Config_kD(0, KaMAN_k_LinearSlidePID_Gx[E_kD], K_t_TurretTimeoutMs);
 
   ManipulatorMotorConfigsInit(m_ArmPivotPID,
                               m_WristPID,
@@ -189,11 +185,10 @@ void Robot::RobotInit()
   ADAS_Main_Reset();
 
   ADAS_DM_ConfigsInit();
-  ADAS_UT_ConfigsInit();
-
+  ADAS_MN_ConfigsInit();
 #ifdef OldVision
   VisionInit(V_AllianceColor);
-  #endif
+#endif
 }
 
 /******************************************************************************
@@ -268,7 +263,6 @@ void Robot::RobotPeriodic()
                          &VaENC_In_WheelDeltaDistance[0],
                          VsCONT_s_DriverInput.b_ZeroGyro);
 
-
   ADAS_DetermineMode();
 
   V_ADAS_ActiveFeature = ADAS_ControlMain(&V_ADAS_Pct_SD_FwdRev,
@@ -288,8 +282,9 @@ void Robot::RobotPeriodic()
                                           V_TagCentered, // comes from Vision
                                           V_TagID,
                                           V_TagYaw,
-                                          V_AllianceColor
-                                          );
+                                          V_AllianceColor,
+                                          VsCONT_s_DriverInput.b_CubeAlign,
+                                          VsCONT_s_DriverInput.b_ConeAlign);
 
   frc::SmartDashboard::PutNumber("V_ADAS_Pct_SD_FwdRe", V_ADAS_Pct_SD_FwdRev);
   frc::SmartDashboard::PutNumber("V_ADAS_Pct_SD_Strafe", V_ADAS_Pct_SD_Strafe);
@@ -305,7 +300,7 @@ void Robot::RobotPeriodic()
                    V_ADAS_Pct_SD_FwdRev,
                    V_ADAS_Pct_SD_Strafe,
                    V_ADAS_Pct_SD_Rotate,
-                   V_ADAS_SD_RobotOriented,  // ToDo: Remove, not used
+                   V_ADAS_SD_RobotOriented, // ToDo: Remove, not used
                    VeGRY_Deg_GyroYawAngleDegrees,
                    VeGRY_Rad_GyroYawAngleRad,
                    &VaENC_Deg_WheelAngleFwd[0],
@@ -341,9 +336,9 @@ void Robot::RobotPeriodic()
 #endif
 
 #ifdef NewVision
-// FakeButton =frc::SmartDashboard::GetBoolean("Fake auto target buton", false);
-FakeButton = false;
-  VisionRun(FakeButton);
+  // FakeButton =frc::SmartDashboard::GetBoolean("Fake auto target buton", false);
+  // FakeButton = false;
+  VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
   // frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
   // frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
   // frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
@@ -370,18 +365,16 @@ FakeButton = false;
                              m_GripperPID,
                              m_IntakeRollersPID);
 
-  ADAS_UT_ConfigsCal();
-
-/* Set light control outputs here */
+  /* Set light control outputs here */
   do_CameraLightControl.Set(VeLC_b_CameraLightCmndOn);
   m_vanityLightControler.Set(VeLC_Cmd_VanityLightCmnd);
 #endif
-  
+
   /* Output all of the content to the dashboard here: */
-  frc::SmartDashboard::PutNumber("WA FL",    VaENC_Deg_WheelAngleConverted[E_FrontLeft]);
-  frc::SmartDashboard::PutNumber("WA FR",    VaENC_Deg_WheelAngleConverted[E_FrontRight]);
-  frc::SmartDashboard::PutNumber("WA RL",    VaENC_Deg_WheelAngleConverted[E_RearLeft]);
-  frc::SmartDashboard::PutNumber("WA RR",    VaENC_Deg_WheelAngleConverted[E_RearRight]);
+  frc::SmartDashboard::PutNumber("WA FL", VaENC_Deg_WheelAngleConverted[E_FrontLeft]);
+  frc::SmartDashboard::PutNumber("WA FR", VaENC_Deg_WheelAngleConverted[E_FrontRight]);
+  frc::SmartDashboard::PutNumber("WA RL", VaENC_Deg_WheelAngleConverted[E_RearLeft]);
+  frc::SmartDashboard::PutNumber("WA RR", VaENC_Deg_WheelAngleConverted[E_RearRight]);
   frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
   frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
   frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
@@ -405,9 +398,9 @@ void Robot::AutonomousInit()
   ManipulatorControlInit();
   ADAS_Main_Reset();
   OdometryInit();
-  #ifdef OldVision
+#ifdef OldVision
   VisionInit(V_AllianceColor);
-  #endif
+#endif
 }
 
 /******************************************************************************
@@ -438,9 +431,9 @@ void Robot::TeleopInit()
   BallHandlerInit();
   ManipulatorControlInit();
   OdometryInit();
-  #ifdef OldVision
+#ifdef OldVision
   VisionInit(V_AllianceColor);
-  #endif
+#endif
 }
 
 /******************************************************************************
@@ -460,7 +453,7 @@ void Robot::TeleopPeriodic()
  ******************************************************************************/
 void Robot::TestPeriodic()
 {
-VeROBO_b_TestState = true;
+  VeROBO_b_TestState = true;
 
 #ifdef CompBot
   ManipulatorControlManualOverride(&VsCONT_s_DriverInput);
@@ -505,15 +498,11 @@ VeROBO_b_TestState = true;
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kForward);
-   }
-  else if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorRetract)
-   {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kReverse);
+   m_DoublePCM_Valve.Set(true);
    }
   else
    {
-   m_DoublePCM_Valve.Set(frc::DoubleSolenoid::Value::kOff);
+   m_DoublePCM_Valve.Set(false);
    }
 #endif
 }

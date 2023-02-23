@@ -25,6 +25,8 @@ extern double V_TagRoll;
 extern double V_TagPitch;
 extern double V_TagYaw;
 extern bool V_TagCentered;
+extern bool V_CubeAlignRequested;
+extern bool _ConeAlignRequested;
 #ifdef OldVision
 
 void VisionRobotInit();
@@ -37,5 +39,5 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 #endif
 void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor);
 #ifdef NewVision
-void VisionRun(bool L_ButtonCmd);
+void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube);
 #endif
