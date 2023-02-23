@@ -41,12 +41,12 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
   VsCONT_s_DriverInput.pct_SwerveStrafe                = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftAxisX);        // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.deg_SwerveRotate                = ScaleJoystickAxis(LeCONT_Cmd_Driver1RightAxisX);      // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.v_SwerveSpeed                   = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftTriggerAxis);  // Scale the axis, also used for debouncing
-  VsCONT_s_DriverInput.b_SwerveGoalAutoCenter          = LeCONT_b_Driver1ButtonA;
-  VsCONT_s_DriverInput.b_SwerveRotateTo0               = LeCONT_b_Driver1ButtonX;
-  VsCONT_s_DriverInput.b_SwerveRotateTo90              = LeCONT_b_Driver1ButtonY;
-  VsCONT_s_DriverInput.b_CameraLight                   = LeCONT_b_Driver1ButtonRB;                      //Controller 1, X button (3), when held, turns on the camera light
-  VsCONT_s_DriverInput.b_AutoIntake                    = LeCONT_b_Driver1ButtonB;
-  VsCONT_s_DriverInput.b_VisionDriverModeOverride      = LeCONT_b_Driver1ButtonLB;
+  VsCONT_s_DriverInput.b_AutoBalance                   = LeCONT_b_Driver1ButtonA;
+ // VsCONT_s_DriverInput.b_SwerveRotateTo0             = LeCONT_b_Driver1ButtonX;
+ // VsCONT_s_DriverInput.b_SwerveRotateTo90            = LeCONT_b_Driver1ButtonY;
+  VsCONT_s_DriverInput.b_CubeAlign                     = LeCONT_b_Driver1ButtonRB;    //Aligns the robot to score a cone
+//  VsCONT_s_DriverInput.b_AutoIntake                  = LeCONT_b_Driver1ButtonB;
+  VsCONT_s_DriverInput.b_ConeAlign                     = LeCONT_b_Driver1ButtonLB;   //Aligns the robot to score a cone
    
   LeCONT_Pct_AxisTotal = (fabs(VsCONT_s_DriverInput.pct_SwerveStrafe) + fabs(VsCONT_s_DriverInput.deg_SwerveRotate) + fabs(VsCONT_s_DriverInput.v_SwerveSpeed));
   
@@ -95,12 +95,18 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   double LeCONT_Pct_TurretCmnd = 0.0;
   double LeCONT_Pct_ClawCmnd = 0.0;
 
-  VsCONT_s_DriverInput.b_IntakeArmIn                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) Elevator goes up
-  VsCONT_s_DriverInput.b_IntakeArmOut                   = LeCONT_b_Driver2ButtonY;      //Controller 2, B button (2), (robot.cpp) Elevator goes down
+  VsCONT_s_DriverInput.b_IntakeArmIn                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) intake in TEST BUTTON
+  VsCONT_s_DriverInput.b_IntakeOut                      = LeCONT_b_Driver2ButtonA;      //Controller 2, A button Will be used to bring intake out COMPETION BUTTON
+  VsCONT_s_DriverInput.b_IntakeArmOut                   = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button (2), (robot.cpp) intake out TEST BUTTON
+  VsCONT_s_DriverInput.b_UpperScore                     = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button, Tells robot that we are scoring the gamepiece high COMPETION BUTTON
+  VsCONT_s_DriverInput.b_IntakeIn                       = LeCONT_b_Driver2ButtonB;     //Controller 2, B button Will be used to bring intake in COMPETION BUTTON
   VsCONT_s_DriverInput.b_IntakeRollers                  = LeCONT_b_Driver2ButtonX;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
+  VsCONT_s_DriverInput.b_LowerScore                     = LeCONT_b_Driver2ButtonX;
   VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
+  VsCONT_s_DriverInput.b_DropGamepiece                  = LeCONT_b_Driver2ButtonStart;
   VsCONT_s_DriverInput.pct_Wrist                        = LeCONT_Pct_Driver2RightAxisX;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
   VsCONT_s_DriverInput.pct_Turret                       = LeCONT_b_Driver2ButtonRB;     //Controller 2, X button (3), (Manipulator.cpp) starts automated states machine
+  VsCONT_s_DriverInput.b_VisionButton                   = LeCONT_b_Driver2ButtonLB;    // Vision button for Carson uses, might keep for comp might end up being just for testing
 
   if (LeCONT_b_Driver2ButtonRB == true)
     {
