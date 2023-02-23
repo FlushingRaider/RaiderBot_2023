@@ -121,7 +121,7 @@ void ADAS_MN_Reset(void)
  * Made By:     Jay L 2/21/2023
  * Description: Determines scheduled states based on current 
  ******************************************************************************/
- T_ADAS_MN_ ADAS_MN_StateChosen (double *L_Pct_FwdRev,
+ T_ADAS_MN_ManipulatorStates ADAS_MN_StateChosen (double *L_Pct_FwdRev,
                                             double *L_Pct_Strafe,
                                             double *L_Pct_Rotate,
                                             double *L_RPM_Launcher,
@@ -159,7 +159,22 @@ void ADAS_MN_Reset(void)
 
   return (L_ADAS_MN_State);
 
-  if ()
+  if (b_IntakeOut = true)
+  {ScheduledState = E_Swiper}
+  else if (b_IntakeIn = true)
+  {ScheduledState = E_DrivingState}
+     else if (b_DropGamePiece = true)
+     {ScheduledState = E_DroppingTheLoot}
+       else if (b_IntakeRollers = true)
+       {ScheduledState = E_TradeOff}
+         else if (b_UpperSore)
+         {ScheduledState = E_PositioningState}
+         else if (b_LowerScore = true)
+         {ScheduledState = E_PositioningState}
+           else if (b_IntakeArmOut = true)
+           {ScheduledState = E_PositioningState}
+           else if (b_IntakeArmIn = true)
+           {ScheduledState = E_DrivingState}
 }
 #endif
 
