@@ -1,25 +1,39 @@
 /*
   ADAS_MN.cpp
 
-  Created on: Feb 25, 2022
-  Author: Biggs
+  Created on: Feb 21, 2023
+  Author: Jay L
 
   ADAS (Advanced Driver-Assistance Systems) Upper Targeting
   Contains the logic and code used for the upper targeting control:
-    - Turns on camera light, auto centers robot on target, spins the rollers up to the correct speed, disables camera light
-
+    - Schedules states in a non-linear state machine
   Changes:
-  2022-02-25 -> Beta
+  2023-02-21 -> Alpha
  */
 
 #ifdef HOMOSEXUAL
-#include <math.h>
 
+#include <math.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "control_pid.hpp"
 #include "Lookup.hpp"
 #include "Const.hpp"
 #include <frc/DriverStation.h>
+
+// bool    LeCONT_b_Driver2ButtonA,
+// bool    LeCONT_b_Driver2ButtonB,
+// bool    LeCONT_b_Driver2ButtonRB,
+// bool    LeCONT_b_Driver2ButtonLB,
+// bool    LeCONT_b_Driver2ButtonStart,
+// bool    LeCONT_b_Driver2ButtonX,
+// bool    LeCONT_b_Driver2ButtonY,
+// double  LeCONT_Pct_Driver2LeftAxisY,
+// double  LeCONT_Pct_Driver2RightAxisX,
+// int     LeCONT_Deg_Driver2POV,
+// bool    LeCONT_b_Driver2ButtonBack,
+// double  LeCont_Pct_Driver2AxisRB,
+// double  LeCont_Pct_Driver2AxisLB
+
 
 T_ADAS_MN_UpperTarget V_ADAS_MN_State = E_ADAS_MN_Disabled;
 double V_ADAS_MN_DebounceTime = 0;
@@ -103,11 +117,11 @@ void ADAS_MN_Reset(void)
 }
 #ifdef unused
 /******************************************************************************
- * Function:     ADAS_MN_CameraLightOn
- *
- * Description:  Initializes and waits for the camera light to come on.
+ * Function:    ADAS_MN_StateChosen
+ * Made By:     Jay L 2/21/2023
+ * Description: Determines scheduled states based on current 
  ******************************************************************************/
-T_ADAS_MN_UpperTarget ADAS_MN_CameraLightOn(double *L_Pct_FwdRev,
+ T_ADAS_MN_ ADAS_MN_StateChosen (double *L_Pct_FwdRev,
                                             double *L_Pct_Strafe,
                                             double *L_Pct_Rotate,
                                             double *L_RPM_Launcher,
@@ -144,262 +158,12 @@ T_ADAS_MN_UpperTarget ADAS_MN_CameraLightOn(double *L_Pct_FwdRev,
   }
 
   return (L_ADAS_MN_State);
-}
-#endif
-#ifdef unused
-/******************************************************************************
- * Function:     ADAS_MN_AutoCenter
- *
- * Description:  Rotates the robot to face the upper target.
- ******************************************************************************/
-T_ADAS_MN_UpperTarget ADAS_MN_AutoCenter(double *L_Pct_FwdRev,
-                                         double *L_Pct_Strafe,
-                                         double *L_Pct_Rotate,
-                                         double *L_RPM_Launcher,
-                                         double *L_Pct_Intake,
-                                         double *L_Pct_Elevator,
-                                         bool *L_CameraUpperLightCmndOn,
-                                         bool *L_CameraLowerLightCmndOn,
-                                         bool *L_SD_RobotOriented,
-                                         bool *L_VisionTargetingRequest,
-                                         double L_VisionTopTargetAquired,
-                                         double L_TopTargetYawDegrees)
-{
-  T_ADAS_MN_UpperTarget L_ADAS_MN_State = E_ADAS_MN_AutoCenter;
-  double L_RotateErrorCalc = 0;
 
-  /* First thing, let's keep the light on and keep request vision targeting: */
-  *L_CameraUpperLightCmndOn = true;
-  *L_VisionTargetingRequest = true;
-
-  *L_SD_RobotOriented = true;
-  /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_CameraLowerLightCmndOn = false;
-  *L_Pct_FwdRev = 0;
-  *L_Pct_Strafe = 0;
-  *L_Pct_Intake = 0;
-  *L_Pct_Elevator = 0;
-
-  /* Get the launcher ready by setting it to the lowest expected speed */
-  *L_RPM_Launcher = K_BH_LauncherSpeed[0];
-
-  /* Ok, now let's focus on the auto centering: */
-  if (L_VisionTopTargetAquired == true)
-  {
-    L_RotateErrorCalc = L_TopTargetYawDegrees - KV_ADAS_MN_TargetVisionAngle;
-    V_ADAS_MN_RotateErrorPrev = L_RotateErrorCalc;
-    V_ADAS_MN_TargetAquiredPrev = true;
-  }
-  else if (V_ADAS_MN_TargetAquiredPrev == true)
-  {
-    /* Hmm, we see to have lost the target.  Use previous value, but reduce so that we don't go too far. */
-    L_RotateErrorCalc = V_ADAS_MN_RotateErrorPrev * KV_ADAS_MN_LostTargetGx;
-  }
-  else
-  {
-    /* Ehh, we don't seem to have observed a good value from the camera yet.
-       Let's take a stab in the dark and hope that we can see something... */
-    L_RotateErrorCalc = KV_ADAS_MN_NoTargetError;
-  }
-
-  if (fabs(L_RotateErrorCalc) <= KV_ADAS_MN_RotateDeadbandAngle && V_ADAS_MN_DebounceTime < KV_ADAS_MN_DebounceTime)
-  {
-    V_ADAS_MN_DebounceTime += C_ExeTime;
-  }
-  else if (fabs(L_RotateErrorCalc) > KV_ADAS_MN_RotateDeadbandAngle)
-  {
-    /* Reset the timer, we have gone out of bounds */
-    V_ADAS_MN_DebounceTime = 0;
-  }
-  else if (V_ADAS_MN_DebounceTime >= KV_ADAS_MN_DebounceTime)
-  {
-    /* Reset the time, proceed to next state. */
-    L_ADAS_MN_State = E_ADAS_MN_LauncherSpeed;
-    V_ADAS_MN_DebounceTime = 0;
-    V_ADAS_MN_RotateErrorPrev = 0;
-    V_ADAS_MN_TargetAquiredPrev = false;
-  }
-
-  if (L_ADAS_MN_State == E_ADAS_MN_AutoCenter)
-  {
-    *L_Pct_Rotate = DesiredAutoRotateSpeed(L_RotateErrorCalc);
-  }
-  else
-  {
-    /* We have been at the correct location for the set amount of time.
-       We have previously set the state to the next one, now set the rotate command to off. */
-    L_ADAS_MN_State = E_ADAS_MN_LauncherSpeed;
-    *L_Pct_Rotate = 0;
-  }
-
-  return (L_ADAS_MN_State);
-}
-#endif
-#ifdef unused
-/******************************************************************************
- * Function:     ADAS_MN_LauncherSpeed
- *
- * Description:  Spins up the launcher to the correct speed.
- ******************************************************************************/
-T_ADAS_MN_UpperTarget ADAS_MN_LauncherSpeed(double *L_Pct_FwdRev,
-                                            double *L_Pct_Strafe,
-                                            double *L_Pct_Rotate,
-                                            double *L_RPM_Launcher,
-                                            double *L_Pct_Intake,
-                                            double *L_Pct_Elevator,
-                                            bool *L_CameraUpperLightCmndOn,
-                                            bool *L_CameraLowerLightCmndOn,
-                                            bool *L_SD_RobotOriented,
-                                            bool *L_VisionTargetingRequest,
-                                            double L_VisionTopTargetAquired,
-                                            double L_VisionTopTargetDistanceMeters)
-{
-  T_ADAS_MN_UpperTarget L_ADAS_MN_State = E_ADAS_MN_LauncherSpeed;
-  double L_LauncherSpeedCmnd = 0;
-
-  /* First thing, let's keep the light on and keep request vision targeting: */
-  *L_CameraUpperLightCmndOn = true;
-  *L_VisionTargetingRequest = true;
-
-  *L_SD_RobotOriented = true;
-  /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_CameraLowerLightCmndOn = false;
-  *L_Pct_FwdRev = 0;
-  *L_Pct_Strafe = 0;
-  *L_Pct_Rotate = 0;
-  *L_Pct_Intake = 0;
-  *L_Pct_Elevator = 0;
-
-  /* Ok, now let's focus on the getting the launcher up to the correct speed: */
-  if (L_VisionTopTargetAquired == true)
-  {
-    L_LauncherSpeedCmnd = DtrmnAutoLauncherSpeed(L_VisionTopTargetDistanceMeters);
-    V_ADAS_MN_LauncherSpeedPrev = L_LauncherSpeedCmnd;
-    V_ADAS_MN_TargetAquiredPrev = true;
-    V_ADAS_MN_DebounceTime += C_ExeTime;
-  }
-  else if (V_ADAS_MN_TargetAquiredPrev == true)
-  {
-    /* Hmm, we see to have lost the target.  Use previous value. */
-    L_LauncherSpeedCmnd = V_ADAS_MN_LauncherSpeedPrev;
-  }
-  else
-  {
-    /* Ehh, we don't seem to have observed a good value from the camera yet.
-       Let's take a stab in the dark and hold it at the initial value and
-       hope that we can see something soon... */
-    L_LauncherSpeedCmnd = K_BH_LauncherSpeed[0];
-    V_ADAS_MN_DebounceTime = 0;
-  }
-
-  if (V_ADAS_MN_DebounceTime >= KV_ADAS_MN_DebounceTime)
-  {
-    /* Ok, we have had enough good camera values/time to beleive we have a decent distance estimate. */
-    L_ADAS_MN_State = E_ADAS_MN_ElevatorControl;
-    V_ADAS_MN_DebounceTime = 0;
-    V_ADAS_MN_TargetAquiredPrev = false;
-    // V_ADAS_MN_LauncherSpeedPrev -> Don't reset the previous speed, we will need this later
-  }
-
-  *L_RPM_Launcher = L_LauncherSpeedCmnd;
-
-  return (L_ADAS_MN_State);
-}
-#endif
-#ifdef unused
-/******************************************************************************
- * Function:     ADAS_MN_ElevatorControl
- *
- * Description:  Controls the elevator.  This will differ if in teleop or auton.
- ******************************************************************************/
-T_ADAS_MN_UpperTarget ADAS_MN_ElevatorControl(double *L_Pct_FwdRev,
-                                              double *L_Pct_Strafe,
-                                              double *L_Pct_Rotate,
-                                              double *L_RPM_Launcher,
-                                              double *L_Pct_Intake,
-                                              double *L_Pct_Elevator,
-                                              bool *L_CameraUpperLightCmndOn,
-                                              bool *L_CameraLowerLightCmndOn,
-                                              bool *L_SD_RobotOriented,
-                                              bool *L_VisionTargetingRequest,
-                                              T_RobotState L_RobotState,
-                                              double L_LauncherRPM_Measured,
-                                              bool L_BallDetectedUpper,
-                                              bool L_DriverRequestElevatorUp,
-                                              bool L_DriverRequestElevatorDwn,
-                                              bool L_DriverRequestIntake)
-{
-  T_ADAS_MN_UpperTarget L_ADAS_MN_State = E_ADAS_MN_ElevatorControl;
-  double L_LauncherSpeedCmnd = 0;
-
-  *L_SD_RobotOriented = true;
-  /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_CameraUpperLightCmndOn = false;
-  *L_CameraLowerLightCmndOn = false;
-  *L_VisionTargetingRequest = false;
-  *L_Pct_FwdRev = 0;
-  *L_Pct_Strafe = 0;
-  *L_Pct_Rotate = 0;
-  *L_RPM_Launcher = V_ADAS_MN_LauncherSpeedPrev; // Hold the desired speed
-
-  if (L_RobotState == E_Teleop)
-  {
-    /* Ok, we are in teleop.  Driver 2 will handle the triggering of the eleveator,
-       but lets use the ball detector and launcher RPM to limit the eleveator.  If
-       the launcher has dropped in RPM and the detector sees a ball, don't allow
-       the elevator to move up.  The eleveator can still be moved down if necessary.*/
-    if (L_DriverRequestElevatorDwn == true)
-    {
-      *L_Pct_Intake = 0;
-      *L_Pct_Elevator = K_BH_ElevatorPowerDwn;
-    }
-    else if ((L_DriverRequestElevatorUp == true) ||
-             (L_DriverRequestIntake == true))
-    {
-      *L_Pct_Intake = K_BH_IntakePower;
-      *L_Pct_Elevator = K_BH_ElevatorPowerUp;
-    }
-    else
-    {
-      *L_Pct_Intake = 0;
-      *L_Pct_Elevator = 0;
-    }
-  }
-  else
-  {
-    /* Ok, we are in auton.  We need to handle the triggering of the eleveator automatically.
-       Lets use the ball detector and launcher RPM to limit the eleveator.  If
-       the launcher has dropped in RPM and the detector sees a ball, don't allow
-       the elevator to move up.*/
-    V_ADAS_MN_DebounceTime += C_ExeTime;
-
-    if (L_BallDetectedUpper == true)
-    {
-      /* Reset the timer each time we detect a ball: */
-      V_ADAS_MN_DebounceTime = 0;
-    }
-
-    if (V_ADAS_MN_DebounceTime < KV_ADAS_MN_AllowedLauncherTime)
-    {
-      *L_Pct_Intake = K_BH_IntakePower;
-      *L_Pct_Elevator = K_BH_ElevatorPowerUp;
-    }
-    else // V_ADAS_MN_DebounceTime >= KV_ADAS_MN_AllowedLauncherTime
-    {
-      /* Once time has expired, exit elevator control */
-      L_ADAS_MN_State = E_ADAS_MN_Disabled;
-      V_ADAS_MN_DebounceTime = 0;
-      *L_Pct_Intake = 0;
-      *L_Pct_Elevator = 0;
-      *L_RPM_Launcher = 0;
-    }
-  }
-
-  return (L_ADAS_MN_State);
+  if ()
 }
 #endif
 
-#ifdef NewVision
+#ifdef move
 /******************************************************************************
  * Function:     ADAS_MN_MoveToTag
  * Author: Carson
