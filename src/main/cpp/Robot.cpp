@@ -99,6 +99,7 @@ void Robot::RobotInit()
   V_AllianceColor = frc::DriverStation::GetAlliance();
   V_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
   VeROBO_b_TestState = false;
+  bool  CompressorEnable = m_pcmCompressor.Enabled();
 
   // frc::CameraServer::StartAutomaticCapture();  // For connecting a single USB camera directly to RIO
 
