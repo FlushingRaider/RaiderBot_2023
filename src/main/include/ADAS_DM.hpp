@@ -93,3 +93,13 @@ bool ADAS_DM_FieldOrientRotate(double     *L_Pct_FwdRev,
                                bool       *L_SD_RobotOriented,
                                double      L_Deg_GyroAngleDeg,
                                double      L_Deg_GyroAngleTarget);
+
+// bool ADAS_DM_AutoBalance(double     gryoroll,
+//                          double     swervecmmd,
+//                          double     swervebrake,
+//                          bool       first,
+//                          bool       signoffirst,
+//                          bool       gaindecider,
+//                          double     Deadband,
+//                          double     PIDGain1,
+//                          double     PIDGain2);
