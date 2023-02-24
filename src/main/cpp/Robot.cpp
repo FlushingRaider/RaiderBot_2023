@@ -79,11 +79,11 @@ void Robot::RobotMotorCommands()
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
-   m_DoublePCM_Valve.Set(true);
+   m_PCM_Valve.Set(true);
    }
   else
    {
-   m_DoublePCM_Valve.Set(false);
+   m_PCM_Valve.Set(false);
    }
   #endif
 }
@@ -498,11 +498,11 @@ void Robot::TestPeriodic()
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
-   m_DoublePCM_Valve.Set(true);
+   m_PCM_Valve.Set(true);
    }
   else
    {
-   m_DoublePCM_Valve.Set(false);
+   m_PCM_Valve.Set(false);
    }
 #endif
 }
