@@ -16,6 +16,7 @@
 #include <math.h>
 
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/DriverStation.h>
 #include "control_pid.hpp"
 #include "Lookup.hpp"
 #include "Const.hpp"
@@ -39,6 +40,15 @@ bool                      V_ADAS_DM_GyroFlipNeg;
 bool                      V_ADAS_DM_GyroFlipPos;
 double                    V_ADAS_DM_InitAngle;
 double                    V_ADAS_DM_StartAngle;
+
+bool                      VeADAS_b_DM_AutoBalanceInit = false;
+bool                      VeADAS_b_DM_AutoBalancePositive = false;
+bool                      VeADAS_b_DM_AutoBalanceFastSearch = false;
+double                    VeADAS_t_DM_AutoBalanceDbTm = 0.0;
+double                    VeADAS_Deg_DM_AutoBalanceErrorPrev = 0;
+double                    VeADAS_Deg_DM_AutoBalanceIntegral = 0;
+
+double                    VeADAS_t_DM_DebounceTime = 0;
 
 double V_TargetAngle;
 double V_GyroPrevious;
@@ -128,6 +138,12 @@ void ADAS_DM_Reset(void)
   V_ADAS_DM_X_TargetStartPosition = 0;
   V_ADAS_DM_Y_TargetStartPosition = 0;
   V_ADAS_DM_InitAngle = 0;
+  VeADAS_b_DM_AutoBalanceInit = false;
+  VeADAS_b_DM_AutoBalancePositive = false;
+  VeADAS_b_DM_AutoBalanceFastSearch = false;
+  VeADAS_t_DM_AutoBalanceDbTm = 0.0;
+  VeADAS_Deg_DM_AutoBalanceErrorPrev = 0;
+  VeADAS_Deg_DM_AutoBalanceIntegral = 0;
   }
 
 
@@ -639,8 +655,7 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
     V_ADAS_DM_StartAngle = L_Rad_TargetAngle;
     V_ADAS_DM_StateInit = true;
     }
-  frc::SmartDashboard::PutNumber("V_ADAS_DM_X_TargetStartPosition", V_ADAS_DM_X_TargetStartPosition);
-  frc::SmartDashboard::PutNumber("V_ADAS_DM_Y_TargetStartPosition", V_ADAS_DM_Y_TargetStartPosition);
+
   /* We need to offset the position by the start position since the odometry will 
      start at zero, but the lookup table will not */
   L_L_TargetPositionX -= V_ADAS_DM_X_TargetStartPosition;
@@ -754,3 +769,264 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
 
   return (L_ADAS_DM_StateComplete);
   }
+
+
+/******************************************************************************
+ * Function:     ADAS_DM_AutoBalance
+ *
+ * Description:  Balance on the charge station
+ ******************************************************************************/
+bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
+                          double *L_Pct_Strafe,
+                          double *L_Pct_Rotate,
+                          bool   *L_SD_RobotOriented,
+                          double  LeADAS_Deg_GyroRoll)
+  {
+  bool   LeADAS_b_DM_StateComplete = false;
+  double LeADAS_Deg_RollError = 0;
+  T_PID_Cal L_Index = E_P_Gx;
+  double LeADAS_k_DM_AutoBalancePID[E_PID_CalSz];
+
+  /* Look up the desired target location point: */
+
+
+  /* Capture some of the things we need to save for this state control: */
+  if (VeADAS_b_DM_AutoBalanceInit == false)
+    {
+      if (LeADAS_Deg_GyroRoll > 0)
+        {
+          VeADAS_b_DM_AutoBalancePositive = true;
+        }
+      else
+        {
+          VeADAS_b_DM_AutoBalancePositive = false;
+        }
+      VeADAS_b_DM_AutoBalanceFastSearch = true;
+    }
+
+  /* Detect roll over here: */
+  if (VeADAS_b_DM_AutoBalanceFastSearch == true &&
+      (((VeADAS_b_DM_AutoBalancePositive == true)  && (LeADAS_Deg_GyroRoll < 0)) ||
+       ((VeADAS_b_DM_AutoBalancePositive == false) && (LeADAS_Deg_GyroRoll > 0))))
+    {
+      VeADAS_b_DM_AutoBalanceFastSearch = false;
+    }
+
+  if (VeADAS_b_DM_AutoBalanceFastSearch == true)
+    {
+      for (L_Index = E_P_Gx;
+           L_Index < E_PID_CalSz;
+           L_Index = T_PID_Cal(int(L_Index) + 1))
+        {
+          LeADAS_k_DM_AutoBalancePID[L_Index] = KeADAS_k_DM_AutoBalanceFastPID[L_Index];
+        }
+    }
+  else
+    {
+      for (L_Index = E_P_Gx;
+           L_Index < E_PID_CalSz;
+           L_Index = T_PID_Cal(int(L_Index) + 1))
+        {
+          LeADAS_k_DM_AutoBalancePID[L_Index] = KeADAS_k_DM_AutoBalanceSlowPID[L_Index];
+        }
+    }
+
+  LeADAS_Deg_RollError = LeADAS_Deg_GyroRoll;
+
+  /* Exit criteria: */
+  if (fabs(LeADAS_Deg_RollError) <= KeADAS_Deg_DM_AutoBalanceDb && 
+      VeADAS_t_DM_AutoBalanceDbTm < KeADAS_t_DM_AutoBalanceDb)
+    {
+    VeADAS_t_DM_AutoBalanceDbTm += C_ExeTime;
+    }
+  else if (fabs(LeADAS_Deg_RollError) > KeADAS_Deg_DM_AutoBalanceDb)
+    {
+    /* Reset the timer, we have gone out of bounds */
+    VeADAS_t_DM_AutoBalanceDbTm = 0;
+    }
+  else if (VeADAS_t_DM_AutoBalanceDbTm >= KeADAS_Deg_DM_AutoBalanceDb)
+    {
+    /* Reset the time, proceed to next state. */
+    LeADAS_b_DM_StateComplete = true;
+    VeADAS_t_DM_AutoBalanceDbTm = 0;
+    }
+
+  if (LeADAS_b_DM_StateComplete == false)
+    {
+     *L_Pct_FwdRev =  Control_PID(0.0,
+                                  LeADAS_Deg_GyroRoll,
+                                  &VeADAS_Deg_DM_AutoBalanceErrorPrev,
+                                  &VeADAS_Deg_DM_AutoBalanceIntegral,
+                                   LeADAS_k_DM_AutoBalancePID[E_P_Gx],
+                                   LeADAS_k_DM_AutoBalancePID[E_I_Gx],
+                                   LeADAS_k_DM_AutoBalancePID[E_D_Gx],
+                                   LeADAS_k_DM_AutoBalancePID[E_P_Ul],
+                                   LeADAS_k_DM_AutoBalancePID[E_P_Ll],
+                                   LeADAS_k_DM_AutoBalancePID[E_I_Ul],
+                                   LeADAS_k_DM_AutoBalancePID[E_I_Ll],
+                                   LeADAS_k_DM_AutoBalancePID[E_D_Ul],
+                                   LeADAS_k_DM_AutoBalancePID[E_D_Ll],
+                                   LeADAS_k_DM_AutoBalancePID[E_Max_Ul],
+                                   LeADAS_k_DM_AutoBalancePID[E_Max_Ll]);
+   
+     *L_Pct_Strafe = 0;
+     *L_Pct_Rotate = 0;
+     *L_SD_RobotOriented = true;
+    }
+  else
+    {
+    /* We have been at the correct location for the set amount of time. */
+    *L_Pct_FwdRev = 0;
+    *L_Pct_Strafe = 0;
+    *L_Pct_Rotate = 0;
+    *L_SD_RobotOriented = true;
+    VeADAS_t_DM_AutoBalanceDbTm = 0;
+    LeADAS_b_DM_StateComplete = true;
+    VeADAS_b_DM_AutoBalanceInit = false;
+    }
+
+  return (LeADAS_b_DM_StateComplete);
+  }
+
+
+/******************************************************************************
+ * Function:     ADAS_DM_MoveToTag
+ * Author: Carson
+ * Description: Moves to the closest tag scanned
+ ******************************************************************************/
+bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
+                       double *L_Pct_Strafe,
+                       double *L_Pct_Rotate,
+                       bool L_OdomCentered,
+                       int L_TagID,
+                       double L_OdometryX,
+                       double L_OdometryY,
+                       bool *L_VisionTargetingRequest,
+                       double L_VisionTopTargetAquired,
+                       double L_TagYawDegrees,
+                       frc::DriverStation::Alliance LeLC_e_AllianceColor,
+                       bool L_CubeAlignCmd,
+                       bool L_ConeAlignCmd)
+{
+
+  bool LeADAS_b_DM_StateComplete = false;
+
+  *L_Pct_FwdRev = 0;
+  *L_Pct_Strafe = 0;
+  /* Next, let's set all the other items we aren't trying to control to off: */
+  double L_ChosenX = 0;
+  double L_ChosenY = 0;
+  double L_ErrorCalcYaw = 0;
+  int L_ClosestTag;
+
+  // all 3 tags are directly across from each other
+
+  // coord of tag ID 1 and 8
+  double L_Tag1Y = 1.071626;
+  // coord of tag ID 2 and 7
+  double L_Tag2Y = 2.748026;
+  // coord of tag ID 3 and 6
+  double L_Tag3Y = 4.424426;
+  double L_TagXred = 15.513558;
+  double L_TagXblue = 1.02743;
+
+  // double L_Tag1YError;
+  // double L_Tag2YError;
+  // double L_Tag3YError;
+
+  VeADAS_t_DM_DebounceTime += C_ExeTime;
+  if (L_OdomCentered) // don't do any of this if we haven't centered our Odometry based on the tag
+  {
+    // pick the right side of tags to look at for our alliance
+    if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
+    {
+      L_ChosenX = L_TagXred; // all 3 tags on the red alliance have the same X
+      if (L_TagID == 1)
+      {
+        L_ChosenY = L_Tag1Y;
+      }
+      else if (L_TagID == 2)
+      {
+        L_ChosenY = L_Tag2Y;
+      }
+      else if (L_TagID == 3)
+      {
+        L_ChosenY = L_Tag3Y;
+      }
+    }
+    else
+    {
+      L_ChosenX = L_TagXblue; // x coord of all blue tags
+      if (L_TagID == 8)
+      {
+        L_ChosenY = L_Tag1Y;
+      }
+      else if (L_TagID == 7)
+      {
+        L_ChosenY = L_Tag2Y;
+      }
+      else if (L_TagID == 6)
+      {
+        L_ChosenY = L_Tag3Y;
+      }
+    }
+
+    // find the closest tag and our error to it:
+
+      // // check if Error 1 is the largest
+      // if (L_Tag1YError >= L_Tag2YError && L_Tag1YError >= L_Tag3YError)
+      // {
+      //   L_ChosenY = L_Tag1Y;
+      // }
+      // // check if Error 2 is the largest number
+      // else if (L_Tag2YError >= L_Tag1YError && L_Tag2YError >= L_Tag3YError)
+      // {
+      //   L_ChosenY = L_Tag2Y;
+      // }
+      // // if neither n1 nor n2 are the largest, Error 3 is the largest
+      // else
+      // {
+      //   L_ChosenY = L_Tag3Y;
+      // }
+
+      L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
+    if (VeADAS_t_DM_DebounceTime <= KeADAS_t_DM_TagCenteringDb) // make sure we're still in the time we've given ourselves
+    {
+      if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
+      {
+        *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
+      }
+      if (L_OdometryX < L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX < L_ChosenX - K_MoveToTagMovementDeadband)
+      {
+        *L_Pct_FwdRev = 0.2;
+      }
+      else if (L_OdometryX > L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX > L_ChosenX - K_MoveToTagMovementDeadband)
+      {
+        *L_Pct_FwdRev = -0.2;
+      }
+      else
+      {
+        *L_Pct_FwdRev = 0.0;
+      }
+      if (L_OdometryY < L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY < L_ChosenY - K_MoveToTagMovementDeadband)
+      {
+        *L_Pct_Strafe = 0.2;
+      }
+      else if (L_OdometryY > L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY > L_ChosenY - K_MoveToTagMovementDeadband)
+      {
+        *L_Pct_Strafe = -0.2;
+      }
+      else
+      {
+        *L_Pct_Strafe = 0.0;
+      }
+    }
+    else if (VeADAS_t_DM_DebounceTime >= 0.3)
+    {
+      VeADAS_t_DM_DebounceTime = 0;
+      *L_Pct_FwdRev = 0;
+      *L_Pct_Strafe = 0;
+    }
+  }
+  return (LeADAS_b_DM_StateComplete);
+}

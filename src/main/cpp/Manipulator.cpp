@@ -17,17 +17,16 @@
 #include "Lookup.hpp"
 #include "Driver_inputs.hpp"
 #include "Encoders.hpp"
+#include "ADAS_MN.hpp"
 
-TeMAN_ManipulatorStates VeMAN_e_SchedState = E_Rest; // Where do we want to end up?
-TeMAN_ManipulatorStates VeMAN_e_CmndState  = E_Rest; // What is our next/current step?
-TeMAN_ManipulatorStates VeMAN_e_AttndState = E_Rest; // What is our current state?
+TeMAN_ManipulatorStates VeMAN_e_CmndState  = E_MAN_Init; // What is our next/current step?
+TeMAN_ManipulatorStates VeMAN_e_AttndState = E_MAN_Init; // What is our desired end state?
 
 TeMAN_MotorControl VsMAN_s_Motors; // All of the motor commands for the manipulator/intake motors
 TeMAN_MotorControl VsMAN_s_MotorsTemp; // Temporary commands for the motors, not the final output
 TeMAN_MotorControl VsMAN_s_MotorsTest; // Temporary commands for the motors, not the final output
 TsMAN_Sensor       VsMAN_s_Sensors; // All of the sensor values for the manipulator/intake motors
 double             VaMAN_k_PositionToEncoder[E_MAN_Sz]; // Conversion value to go from desired manipulator position to equivalent encoder position
-
 
 double VaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz];
 double VaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz];
@@ -99,7 +98,7 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   VaMAN_k_PositionToEncoder[E_MAN_ArmPivot] = KeENC_k_ArmPivot;
   VaMAN_k_PositionToEncoder[E_MAN_LinearSlide] = KeENC_k_LinearSlideEncoderScaler;
   VaMAN_k_PositionToEncoder[E_MAN_Wrist] = KeENC_Deg_Wrist;
-  VaMAN_k_PositionToEncoder[E_MAN_Gripper] = KeENC_Deg_Gripper;
+  VaMAN_k_PositionToEncoder[E_MAN_Gripper] = KeENC_RPM_Gripper;
   VaMAN_k_PositionToEncoder[E_MAN_IntakeRollers] = KeENC_RPM_IntakeRollers;
   VaMAN_k_PositionToEncoder[E_MAN_IntakeArm] = 1.0;
 
@@ -309,9 +308,8 @@ void ManipulatorControlInit()
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
 
-  VeMAN_e_SchedState = E_Rest;
-  VeMAN_e_CmndState  = E_Rest;
-  VeMAN_e_AttndState = E_Rest;
+  VeMAN_e_CmndState  = E_MAN_Init;
+  VeMAN_e_AttndState = E_MAN_Init;
 
   VeMAN_b_CriteriaMet = false;
   VeMAN_b_Paused = false;
@@ -354,12 +352,12 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
     VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = E_MotorRetract;
     }
 
-  if (LsCONT_s_DriverInput->b_IntakeArmOut == true)
+  if (LsCONT_s_DriverInput->b_IntakeArmOutTest == true)
     {
     VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = E_MotorExtend;
     }
 
-  if (LsCONT_s_DriverInput->b_IntakeRollers == true)
+  if (LsCONT_s_DriverInput->b_IntakeRollersTest == true)
     {
     VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeRollers] = KaMAN_k_ManipulatorTestPower[E_MAN_IntakeRollers];
     }
@@ -381,7 +379,7 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
  *
  * Description:  Updates the commanded and attained states for the manipulator
  ******************************************************************************/
-bool Update_Command_Atained_State(bool LeMAN_b_CriteriaMet,
+bool Update_Command_Atained_State(bool                    LeMAN_b_CriteriaMet,
                                   TeMAN_ManipulatorStates LeMAN_e_SchedState)
   {
   TeMAN_ManipulatorStates LeMAN_e_CmndState = VeMAN_e_CmndState;
@@ -424,9 +422,6 @@ bool CmndStateReached(TeMAN_ManipulatorStates LeMAN_e_CmndState)
      (VsMAN_s_Sensors.Deg_Wrist <= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] + KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
      (VsMAN_s_Sensors.Deg_Wrist >= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] - KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
 
-     (VsMAN_s_Sensors.Deg_Gripper <= (KaMAN_Deg_GripperAngle[LeMAN_e_CmndState] + KaMAN_Deg_GripperDb[LeMAN_e_CmndState])) &&
-     (VsMAN_s_Sensors.Deg_Gripper >= (KaMAN_Deg_GripperAngle[LeMAN_e_CmndState] - KaMAN_Deg_GripperDb[LeMAN_e_CmndState])) &&
-
      (VsMAN_s_Sensors.RPM_IntakeRollers <= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] + KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
      (VsMAN_s_Sensors.RPM_IntakeRollers >= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] - KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
 
@@ -460,9 +455,6 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist]     = KaMAN_Deg_WristAngle[LeMAN_e_CmndState];
    VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper]     = KaMAN_Deg_GripperAngle[LeMAN_e_CmndState];
-   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
-
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers]     = KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState];
    VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_IntakeRollers] = KeMAN_RPMS_IntakeRate;
 
@@ -470,55 +462,83 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
   }
 
 /******************************************************************************
- * Function:     Rest_State
+ * Function:     UpdateGripperActuator
  *
- * Description:  Everything in default positions.
+ * Description:  Updates the gripper roller control
  ******************************************************************************/
-bool Rest_State()
+void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
+                                TeMAN_ManipulatorStates LeMAN_e_AttndState,
+                                bool                    LeMAN_b_ReleaseObj,
+                                bool                    LeMAN_b_ObjDetected)
+  {
+   double LeMAN_k_TempCmnd = 0.0;
+
+   if ((LeMAN_b_ReleaseObj == true) && 
+       ((LeMAN_e_AttndState == E_MAN_PositioningHigh) ||
+        (LeMAN_e_AttndState == E_MAN_PositioningLow)))
+     {
+     LeMAN_k_TempCmnd = KeMAN_k_GripperRelease;
+     }
+   else if ((LeMAN_b_ObjDetected == false) &&
+            (((LeMAN_e_AttndState == E_MAN_MainIntake) && (LeMAN_e_CmndState  == E_MAN_MainIntake)) ||
+             ((LeMAN_e_AttndState == E_MAN_FloorIntake) && (LeMAN_e_CmndState  == E_MAN_FloorIntake))))
+     {
+     LeMAN_k_TempCmnd = KeMAN_k_GripperIntake;
+     }
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = LeMAN_k_TempCmnd;
+  }
+
+/******************************************************************************
+ * Function:     Init_State
+ *
+ * Description:  Everything in default / initialization positions.
+ ******************************************************************************/
+bool Init_State()
    {
    bool LeMAN_b_CriteriaMet = false;
 
    /* Ok, let's set the desired postions and rates: */
-   UpdateManipulatorActuators(E_Rest);
+   UpdateManipulatorActuators(E_MAN_Init);
 
    /* Next, let's check each of the actuators to see if we are in the correct positions: */
-   LeMAN_b_CriteriaMet = CmndStateReached(E_Rest);
+   LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_Init);
   
   return(LeMAN_b_CriteriaMet);
   }
 
 /******************************************************************************
- * Function:     Swiper_State
+ * Function:     MidTransition_State
  *
- * Description:  Robot is in a position to intake object
+ * Description:  Manipulator is in a "mid transition" state
  ******************************************************************************/
-bool Swiper_State()
+bool MidTransition_State()
    {
    bool LeMAN_b_CriteriaMet = false;
 
    /* Ok, let's set the desired postions and rates: */
-   UpdateManipulatorActuators(E_Swiper);
+   UpdateManipulatorActuators(E_MAN_MidTransition);
 
    /* Next, let's check each of the actuators to see if we are in the correct positions: */
-   LeMAN_b_CriteriaMet = CmndStateReached(E_Swiper);
+   LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_MidTransition);
   
   return(LeMAN_b_CriteriaMet);
   }
 
 /******************************************************************************
- * Function:     TradeOff_State
+ * Function:     MainIntake_State
  *
- * Description:  Moving object from intake to manipulator
+ * Description:  Pulling objects into the robot with the main intake
  ******************************************************************************/
-bool TradeOff_State()
+bool MainIntake_State()
   {
   bool LeMAN_b_CriteriaMet = false;
 
   /* Ok, let's set the desired postions and rates: */
-  UpdateManipulatorActuators(E_TradeOff);
+  UpdateManipulatorActuators(E_MAN_MainIntake);
 
   /* Next, let's check each of the actuators to see if we are in the correct positions: */
-  LeMAN_b_CriteriaMet = CmndStateReached(E_TradeOff);
+  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_MainIntake);
   
   return(LeMAN_b_CriteriaMet);
   }
@@ -533,64 +553,82 @@ bool TradeOff_State()
   bool LeMAN_b_CriteriaMet = false;
 
   /* Ok, let's set the desired postions and rates: */
-  UpdateManipulatorActuators(E_DrivingState);
+  UpdateManipulatorActuators(E_MAN_Driving);
 
   /* Next, let's check each of the actuators to see if we are in the correct positions: */
-  LeMAN_b_CriteriaMet = CmndStateReached(E_DrivingState);
+  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_Driving);
   
   return(LeMAN_b_CriteriaMet);
   }
 
 /******************************************************************************
- * Function:     Positioning_State
+ * Function:     PositioningHigh_State
  *
- * Description:  Arm extended out to place object
+ * Description:  Arm extended out to place object on high goal
  ******************************************************************************/
-bool Positioning_State()  
+bool PositioningHigh_State()  
   {
   bool LeMAN_b_CriteriaMet = false;
 
   /* Ok, let's set the desired postions and rates: */
-  UpdateManipulatorActuators(E_PositioningState);
+  UpdateManipulatorActuators(E_MAN_PositioningHigh);
 
   /* Next, let's check each of the actuators to see if we are in the correct positions: */
-  LeMAN_b_CriteriaMet = CmndStateReached(E_PositioningState);
+  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_PositioningHigh);
   
   return(LeMAN_b_CriteriaMet);
   }
 
 /******************************************************************************
- * Function:     DroppingTheLoot_State
+ * Function:     PositioningLow_State
  *
- * Description:  Placing the object in the desired position
+ * Description:  Arm extended out to place object on low goal
  ******************************************************************************/
- bool DroppingTheLoot_State()  
+ bool PositioningLow_State()  
   {
   bool LeMAN_b_CriteriaMet = false;
 
   /* Ok, let's set the desired postions and rates: */
-  UpdateManipulatorActuators(E_DroppingTheLoot);
+  UpdateManipulatorActuators(E_MAN_PositioningLow);
 
   /* Next, let's check each of the actuators to see if we are in the correct positions: */
-  LeMAN_b_CriteriaMet = CmndStateReached(E_DroppingTheLoot);
+  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_PositioningLow);
   
   return(LeMAN_b_CriteriaMet);
   }
 
-// #ifdef TEST3
+/******************************************************************************
+ * Function:     FloorIntake_State
+ *
+ * Description:  Arm extended out to pick up object directly from floor
+ ******************************************************************************/
+ bool FloorIntake_State()  
+  {
+  bool LeMAN_b_CriteriaMet = false;
+
+  /* Ok, let's set the desired postions and rates: */
+  UpdateManipulatorActuators(E_MAN_FloorIntake);
+
+  /* Next, let's check each of the actuators to see if we are in the correct positions: */
+  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_FloorIntake);
+  
+  return(LeMAN_b_CriteriaMet);
+  }
+
 /******************************************************************************
  * Function:     ManipulatorControlMain
  *
  * Description:  Main calling function for manipulator control.
  ******************************************************************************/
 void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
-                            bool                    LeMAN_b_TestPowerOverride)
+                            bool                    LeMAN_b_TestPowerOverride,
+                            bool                    LeMAN_b_DropObject)
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
 
   if (LeMAN_b_TestPowerOverride == true)
     {
-    // Do nothing
+    // Do nothing.  Robot is in test state using power commands for all the acutators
     }
   else if (VeMAN_b_TestState == true)
     {
@@ -606,43 +644,59 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
     }
   else
     {
+    /* This is the actual manipulator control */
+
     VeMAN_b_CriteriaMet = Update_Command_Atained_State(VeMAN_b_CriteriaMet,
                                                        LeMAN_e_SchedState);
 
     switch (VeMAN_e_CmndState)
       {
-        case E_Rest:
-            VeMAN_b_CriteriaMet = Rest_State();
+        case E_MAN_Init:
+            VeMAN_b_CriteriaMet = Init_State();
         break;
 
-        case E_TradeOff:
-            VeMAN_b_CriteriaMet = TradeOff_State();
+        case E_MAN_MainIntake:
+            VeMAN_b_CriteriaMet = MainIntake_State();
         break;
 
-        case E_Swiper:
-            VeMAN_b_CriteriaMet = Swiper_State();
+        case E_MAN_MidTransition:
+            VeMAN_b_CriteriaMet = MidTransition_State();
         break;
 
-        case E_DrivingState:
+        case E_MAN_Driving:
             VeMAN_b_CriteriaMet = Driving_State();
         break;
 
-        case E_PositioningState:
-            VeMAN_b_CriteriaMet = Positioning_State();
+        case E_MAN_PositioningHigh:
+            VeMAN_b_CriteriaMet = PositioningHigh_State();
         break;
 
-        case E_DroppingTheLoot:
-            VeMAN_b_CriteriaMet = DroppingTheLoot_State();
+        case E_MAN_PositioningLow:
+            VeMAN_b_CriteriaMet = PositioningLow_State();
+        break;
+
+        case E_MAN_FloorIntake:
+            VeMAN_b_CriteriaMet = FloorIntake_State();
         break;
       }
-    }
 
-  for (LeMAN_i_Index = E_MAN_Turret;
-       LeMAN_i_Index < E_MAN_Sz;
-       LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
-    {
-    VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = RampTo(VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index]);
-    }
+    UpdateGripperActuator(VeMAN_e_CmndState,
+                          VeMAN_e_AttndState,
+                          LeMAN_b_DropObject,
+                          false);  // Need to come up with object detected
 
-  VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm];
+    for (LeMAN_i_Index = E_MAN_Turret;
+         LeMAN_i_Index < E_MAN_Sz;
+         LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
+      {
+        if (LeMAN_i_Index == E_MAN_Gripper)
+          {
+          VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper];  // for the gripper, it is a power command, no need to ramp
+          }
+        else
+          {
+          VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = RampTo(VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index]);
+          }
+      }
+    }
   }

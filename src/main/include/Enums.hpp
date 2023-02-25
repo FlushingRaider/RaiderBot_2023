@@ -86,22 +86,6 @@ typedef enum T_CameraLightStatus
   E_LightForcedOffDueToOvertime
 } T_CameraLightStatus;
 
-typedef enum T_Manipulator_CmndDirection
-{
-  E_ManipulatorCmndNone,
-  E_ManipulatorCmndUp,
-  E_ManipulatorCmndDown,
-  E_ManipulatorCmndForward,
-  E_ManipulatorCmndBack
-} T_Manipulator_CmndDirection;
-
-typedef enum T_TurretCmndDirection
-{
-  E_TurrentCmndNone,
-  E_TurrentCmndLeft,
-  E_TurrentCmndRight
-} T_TurretCmndDirection;
-
 typedef enum T_LED_LightCmnd
 {
   E_LED_Red,
@@ -112,25 +96,16 @@ typedef enum T_LED_LightCmnd
 
 typedef enum TeMAN_ManipulatorStates
 {
- E_Rest,
- E_DrivingState,
- E_PositioningState,
- E_DroppingTheLoot,
- E_Swiper,
- E_TradeOff,
- E_Man_State_Sz,
- E_ADAS_MN_Disabled,
-E_ADAS_MN_MoveToTag
-
+ E_MAN_Init,
+ E_MAN_Driving,
+ E_MAN_PositioningHigh,
+ E_MAN_PositioningLow,
+ E_MAN_MidTransition,
+ E_MAN_MainIntake,
+ E_MAN_FloorIntake,
+ E_MAN_State_Sz
 } TeMAN_ManipulatorStates;
  
-
-// typedef enum T_Man_Iteration
-// {
-//   VeMAN_Cnt_ManIterationNew,
-//   E_ManipulatorIteration2,
-//   E_ManipulatorIterationSz
-// } T_Man_Iteration;
 
 typedef enum T_RobotState
 {
@@ -166,7 +141,6 @@ typedef enum T_ADAS_BT_BallTarget /* aka GetDaBalls */
 // {
 //   E_ADAS_MN_Disabled,
 //   E_ADAS_MN_MoveToTag
-
 // }T_ADAS_MN_Manipulator;
 
 
@@ -176,6 +150,10 @@ typedef enum T_ADAS_BT_BallTarget /* aka GetDaBalls */
 typedef enum T_ADAS_ActiveFeature
 {
   E_ADAS_Disabled,
+  E_ADAS_DM_CubeAlign,
+  E_ADAS_DM_ConeAlign,
+  E_ADAS_DM_AutoBalance,
+  
   E_ADAS_MoveToTag,
   E_ADAS_BT_AutoBallTarget,
   E_ADAS_DM_BlindLaunch,
@@ -245,7 +223,7 @@ struct TsMAN_Sensor
   double RPM_IntakeRollers; // Speed of the intake rollers
   double In_LinearSlide;
   bool   b_IntakeArmExtended;
-  double Deg_Gripper; // Position of the gripper
+  double RPM_Gripper; // Speed of the gripper
   double Deg_Wrist;  // Actual position of the wrist.
 };
 
@@ -273,25 +251,25 @@ struct RobotUserInput
   bool                  b_JoystickActive;
   bool                  b_VisionDriverModeOverride;
   bool                  b_RobotFieldOrientedReq;  // ToDo: Remove
-  T_TurretCmndDirection e_TurretCmndDirection;  // ToDo: Remove
-  bool                  b_IntakeRollers; //21
+  bool                  b_IntakeRollersTest; //21
   bool                  b_ResetManipulatorEnocders; // 21
   bool                  b_IntakeArmIn;  // 21
-  bool                  b_IntakeArmOut; // 21
+  bool                  b_IntakeArmOutTest; // 21
   double                pct_Turret; // 21
   double                pct_Wrist; // 21
   double                pct_ArmPivot; // 21
   double                pct_LinearSlide; // 21
   double                pct_Claw; // 21
-  bool                  b_IntakeOut;
-  bool                  b_IntakeIn;
+  bool                  b_MainIntakeOut;
+  bool                  b_DrivingPosition;
   bool                  b_LowerScore;
   bool                  b_UpperScore;
-  bool                  b_DropGamepiece;
+  bool                  b_DropGamePiece;
   bool                  b_AutoBalance;
   bool                  b_CubeAlign;
   bool                  b_ConeAlign;
   bool                  b_VisionButton;
+  bool                  b_ArmDown;  //back pickup
 };
 
 
@@ -303,6 +281,16 @@ struct TeMAN_MotorControl
   double                k_MotorRampRate[E_MAN_Sz];
   double                k_MotorTestValue[E_MAN_Sz];
   double                k_MotorTestPower[E_MAN_Sz];
+};
+
+struct TeADAS_Controls
+{
+  TeMAN_ManipulatorStates e_MAN_State;
+  bool                    b_MAN_DropObject;
+  double                  Pct_SD_FwdRev;
+  double                  Pct_SD_Strafe;
+  double                  Pct_SD_Rotate;
+  double                  b_SD_RobotOriented;
 };
 
 struct TsRobotMotorCmnd

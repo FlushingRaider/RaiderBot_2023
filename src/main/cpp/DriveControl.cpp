@@ -296,11 +296,11 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
                       bool                 L_JoyStick1Button3, // auto rotate to 0 degrees
                       bool                 L_JoyStick1_ResetDesiredAngle, // auto rotate to 90 degrees
                       bool                 L_Driver_RobotFieldOrientedReq,
-                      T_ADAS_ActiveFeature LeLC_e_ADASActiveFeature,
+                      T_ADAS_ActiveFeature LeDRC_e_ADAS_ActiveFeature,
                       double               L_ADAS_Pct_SD_FwdRev,
                       double               L_ADAS_Pct_SD_Strafe,
                       double               L_ADAS_Pct_SD_Rotate,
-                      bool                 L_ADAS_SD_RobotOriented,  // ToDo: Remove, not used
+                      bool                 L_ADAS_SD_RobotOriented, 
                       double               L_Deg_GyroAngle,
                       double               L_Rad_GyroAngle,
                       double              *L_Deg_WheelAngleFwd,
@@ -333,17 +333,22 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
   bool          Le_b_SD_Active = false;
   double        Le_k_SD_RotateCorrectionGx = 0;
 
-  
+  if (L_ADAS_SD_RobotOriented == true)
+    {
+    L_Deg_GyroAngle = 0.0;
+    L_Rad_GyroAngle = 0.0;
+    VeDRC_b_AutoCenterLatch = false;
+    }
 
   /* Scale the joysticks based on a calibratable lookup when in teleop: */
-  if (LeLC_e_ADASActiveFeature > E_ADAS_Disabled)
+  if (LeDRC_e_ADAS_ActiveFeature > E_ADAS_Disabled)
     {
     /* ADAS is active, pass throught the commands: */
     L_FWD = -L_ADAS_Pct_SD_FwdRev;
     L_STR = L_ADAS_Pct_SD_Strafe;
     L_RCW = L_ADAS_Pct_SD_Rotate;
     }
-  else /* In ADAS, just past through the commands: */
+  else
     {
     /* ADAS is disabled, use the driver joysticks */
     L_FWD = -L_JoyStick1Axis1Y;

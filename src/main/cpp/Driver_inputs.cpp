@@ -34,7 +34,6 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
   {
   double                LeCONT_Pct_AxisTotal         = 0;
   bool                  LeCONT_b_JoystickActive      = false;
-  T_TurretCmndDirection LeCONT_e_TurretCmndDirection = E_TurrentCmndNone;
 
   VsCONT_s_DriverInput.b_ZeroGyro                      = (LeCONT_b_Driver1ButtonBack || LeCONT_b_Driver1ButtonStart);     //Controller 1, Back button (7), (robot.cpp, gyro.cpp) zeroes out the gyro  
   VsCONT_s_DriverInput.pct_SwerveForwardBack           = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftAxisY);  // Scale the axis, also used for debouncing
@@ -56,21 +55,6 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
     }
 
   VsCONT_s_DriverInput.b_JoystickActive = LeCONT_b_JoystickActive;
-
-  if (LeCONT_Deg_Driver1POV == 270)
-    {
-    LeCONT_e_TurretCmndDirection = E_TurrentCmndLeft;
-    }
-  else if (LeCONT_Deg_Driver1POV == 90)
-    {
-    LeCONT_e_TurretCmndDirection = E_TurrentCmndRight;
-    }
-  else
-    {
-    LeCONT_e_TurretCmndDirection = E_TurrentCmndNone;
-    }
-
-   VsCONT_s_DriverInput.e_TurretCmndDirection = LeCONT_e_TurretCmndDirection;
   }
 
 /******************************************************************************
@@ -95,17 +79,18 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   double LeCONT_Pct_TurretCmnd = 0.0;
   double LeCONT_Pct_ClawCmnd = 0.0;
 
-  VsCONT_s_DriverInput.b_IntakeOut                      = LeCONT_b_Driver2ButtonA;      //Controller 2, A button Will be used to bring intake out COMPETION BUTTON
-  VsCONT_s_DriverInput.b_IntakeIn                       = LeCONT_b_Driver2ButtonB;     //Controller 2, B button Will be used to bring intake in COMPETION BUTTON
-  VsCONT_s_DriverInput.b_IntakeArmOut                   = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button (2), (robot.cpp) intake out TEST BUTTON
+  VsCONT_s_DriverInput.b_MainIntakeOut                  = LeCONT_b_Driver2ButtonA;      //Controller 2, A button Will be used to bring intake out COMPETION BUTTON
+  VsCONT_s_DriverInput.b_DrivingPosition                = LeCONT_b_Driver2ButtonB;     //Controller 2, B button Will be used to bring Everything into their position for when the robot is moving COMPETION BUTTON
+  VsCONT_s_DriverInput.b_IntakeArmOutTest               = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button (2), (robot.cpp) intake out TEST BUTTON
   VsCONT_s_DriverInput.b_IntakeArmIn                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) intake in TEST BUTTON
   VsCONT_s_DriverInput.b_UpperScore                     = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button, Tells robot that we are scoring the gamepiece high COMPETION BUTTON
-  VsCONT_s_DriverInput.b_IntakeRollers                  = LeCONT_b_Driver2ButtonX;     //Controller 2 back button (7), (robot.cpp) Stops the shooter- pretty self-explain, pauses auto climb and resets encoders in test mode
+  VsCONT_s_DriverInput.b_IntakeRollersTest              = LeCONT_b_Driver2ButtonX;     //Controller 2 Tests the intake rollers.  For test only.
   VsCONT_s_DriverInput.b_LowerScore                     = LeCONT_b_Driver2ButtonX;
   VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
-  VsCONT_s_DriverInput.b_DropGamepiece                  = LeCONT_b_Driver2ButtonStart;
+  VsCONT_s_DriverInput.b_DropGamePiece                  = LeCONT_b_Driver2ButtonStart;
   VsCONT_s_DriverInput.pct_Wrist                        = LeCONT_Pct_Driver2RightAxisX;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
   VsCONT_s_DriverInput.b_VisionButton                   = LeCONT_b_Driver2ButtonLB;    // Vision button for Carson uses, might keep for comp might end up being just for testing
+  VsCONT_s_DriverInput.b_ArmDown                        = LeCONT_b_Driver2ButtonRB;   // This will bring the arm down to pickup game pieces behind the robot
 
   if (LeCONT_b_Driver2ButtonRB == true)
     {
