@@ -8,7 +8,7 @@
  */
 
 #include <Enums.hpp>
-
+#include <frc/DriverStation.h>
 // extern bool VeVIS_b_VisionTargetAquired[E_CamLocSz];
 extern double VeVIS_Deg_VisionYaw[E_CamLocSz];
 extern double VeVIS_m_VisionTargetDistance[E_CamLocSz];
@@ -26,7 +26,11 @@ extern double V_TagPitch;
 extern double V_TagYaw;
 extern bool V_TagCentered;
 extern bool V_CubeAlignRequested;
-extern bool _ConeAlignRequested;
+extern bool V_ConeAlignRequested;
+
+extern double PieceCamPitch;
+extern double PieceCamYaw;
+extern double PieceCamSkew;
 #ifdef OldVision
 
 void VisionRobotInit();

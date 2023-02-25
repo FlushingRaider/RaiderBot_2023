@@ -351,6 +351,7 @@ void Robot::RobotPeriodic()
   // frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
   // frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
   // frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
+  frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
 
 #endif
 #endif

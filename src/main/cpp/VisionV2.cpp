@@ -66,9 +66,13 @@ std::optional<photonlib::EstimatedRobotPose> estimatedPose;
 frc::Pose3d TagPose;
 // vars for cone/cube cam
 photonlib::PhotonCamera Cam2 = photonlib::PhotonCamera("Cam2");
-frc::Transform3d PieceCamPose;
 photonlib::PhotonPipelineResult PieceCamResult;
 photonlib::PhotonTrackedTarget PieceCamTarget;
+
+double PieceCamPitch;
+double PieceCamYaw;
+double PieceCamSkew;
+
 
 #endif
 #ifdef OldVision
@@ -287,9 +291,16 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
   if (PieceCamResult.HasTargets())
   {
     PieceCamTarget = PieceCamResult.GetBestTarget();
-    PieceCamPose = PieceCamTarget.GetBestCameraToTarget();
+    PieceCamPitch = PieceCamTarget.GetPitch();
+    PieceCamYaw = PieceCamTarget.GetYaw();
+    PieceCamSkew = PieceCamTarget.GetSkew();
+  }
+  else
+  {
 
-
+    PieceCamPitch = 0.0;
+    PieceCamYaw = 0.0;
+    PieceCamSkew = 0.0;
   }
 }
 
