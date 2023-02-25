@@ -282,8 +282,8 @@ void Robot::RobotPeriodic()
                                           VeVIS_b_TagHasTarget,
                                           VeROBO_e_RobotState,
                                           V_ADAS_ActiveFeature,
-                                          V_TagCentered, // comes from Vision
                                           V_TagID,
+                                          V_TagCentered, // comes from Vision
                                           V_TagYaw,
                                           VeROBO_e_AllianceColor,
                                           VsCONT_s_DriverInput.b_CubeAlign,
@@ -358,7 +358,8 @@ void Robot::RobotPeriodic()
                              m_rearRightDrivePID);
 #ifdef CompBot
   ManipulatorControlMain(VeADAS_e_MAN_SchedState,
-                         VeROBO_b_TestState);
+                         VeROBO_b_TestState,
+                         VeADAS_b_MAN_DropObject);
 
   ManipulatorMotorConfigsCal(m_ArmPivotPID,
                              m_WristPID,

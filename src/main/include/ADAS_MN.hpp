@@ -1,5 +1,6 @@
 
 extern TeMAN_ManipulatorStates VeADAS_e_MAN_SchedState;
+extern bool                    VeADAS_b_MAN_DropObject;
 
 void ADAS_MN_ConfigsInit();
 
