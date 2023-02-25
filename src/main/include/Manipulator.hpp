@@ -10,8 +10,8 @@
  */
 
 extern TeMAN_MotorControl      VsMAN_s_Motors;
-extern TeMAN_ManipulatorStates VeMAN_e_SchedState;
 extern TsMAN_Sensor            VsMAN_s_Sensors;
+extern TeMAN_ManipulatorStates VeMAN_e_AttndState;
 
 void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
                                 rev::SparkMaxPIDController m_WristPID,

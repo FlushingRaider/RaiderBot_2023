@@ -94,6 +94,20 @@ bool ADAS_DM_FieldOrientRotate(double     *L_Pct_FwdRev,
                                double      L_Deg_GyroAngleDeg,
                                double      L_Deg_GyroAngleTarget);
 
+bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
+                       double *L_Pct_Strafe,
+                       double *L_Pct_Rotate,
+                       bool L_OdomCentered,
+                       int L_TagID,
+                       double L_OdometryX,
+                       double L_OdometryY,
+                       bool *L_VisionTargetingRequest,
+                       double L_VisionTopTargetAquired,
+                       double L_TagYawDegrees,
+                       frc::DriverStation::Alliance LeLC_e_AllianceColor,
+                       bool L_CubeAlignCmd,
+                       bool L_ConeAlignCmd);
+
 // bool ADAS_DM_AutoBalance(double     gryoroll,
 //                          double     swervecmmd,
 //                          double     swervebrake,

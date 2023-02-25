@@ -54,5 +54,6 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                        rev::SparkMaxRelativeEncoder m_GripperEncoder,
                        rev::SparkMaxRelativeEncoder m_WristEncoder,
-                       double LeENC_Deg_LinearSlide,
-                       double LeENC_Deg_EncoderTurretRotate);
+                       double                       LeENC_Deg_LinearSlide,
+                       double                       LeENC_Deg_EncoderTurretRotate,
+                       T_MotorControlType           LeENC_e_IntakeCmnd);

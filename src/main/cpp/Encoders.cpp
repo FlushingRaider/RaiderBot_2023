@@ -246,14 +246,17 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                        rev::SparkMaxRelativeEncoder m_GripperEncoder,
                        rev::SparkMaxRelativeEncoder m_WristEncoder,
-                       double LeENC_Deg_LinearSlide,
-                       double LeENC_Deg_EncoderTurretRotate)
+                       double                       LeENC_Deg_LinearSlide,
+                       double                       LeENC_Deg_EncoderTurretRotate,
+                       T_MotorControlType           LeENC_e_IntakeCmnd)
   {
+  bool LeENC_b_IntakeExtended = false;
+
   VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_ArmPivot;
 
   VsMAN_s_Sensors.RPM_IntakeRollers = m_IntakeRollersEncoder.GetVelocity() * KeENC_RPM_IntakeRollers;
 
-  VsMAN_s_Sensors.Deg_Gripper = m_GripperEncoder.GetPosition() * KeENC_Deg_Gripper;
+  VsMAN_s_Sensors.RPM_Gripper = m_GripperEncoder.GetVelocity() * KeENC_RPM_Gripper;
 
   VsMAN_s_Sensors.Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
 
@@ -261,10 +264,18 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
 
   VsMAN_s_Sensors.In_LinearSlide = LeENC_Deg_LinearSlide * KeENC_k_LinearSlideEncoderScaler;
 
-  frc::SmartDashboard::PutNumber("ArmPivot",      VsMAN_s_Sensors.Deg_ArmPivot);
-  frc::SmartDashboard::PutNumber("IntakeRollers", VsMAN_s_Sensors.RPM_IntakeRollers);
-  frc::SmartDashboard::PutNumber("Gripper",       VsMAN_s_Sensors.Deg_Gripper);
-  frc::SmartDashboard::PutNumber("Wrist",         VsMAN_s_Sensors.Deg_Wrist);
-  frc::SmartDashboard::PutNumber("Turret",        VsMAN_s_Sensors.Deg_Turret);
-  frc::SmartDashboard::PutNumber("LinearSlide",   VsMAN_s_Sensors.In_LinearSlide);
+  if (LeENC_e_IntakeCmnd == E_MotorExtend)
+    {
+    LeENC_b_IntakeExtended = true;
+    }
+  
+  VsMAN_s_Sensors.b_IntakeArmExtended = LeENC_b_IntakeExtended;
+
+  frc::SmartDashboard::PutNumber("ArmPivot",       VsMAN_s_Sensors.Deg_ArmPivot);
+  frc::SmartDashboard::PutNumber("IntakeRollers",  VsMAN_s_Sensors.RPM_IntakeRollers);
+  frc::SmartDashboard::PutNumber("Gripper",        VsMAN_s_Sensors.RPM_Gripper);
+  frc::SmartDashboard::PutNumber("Wrist",          VsMAN_s_Sensors.Deg_Wrist);
+  frc::SmartDashboard::PutNumber("Turret",         VsMAN_s_Sensors.Deg_Turret);
+  frc::SmartDashboard::PutNumber("LinearSlide",    VsMAN_s_Sensors.In_LinearSlide);
+  frc::SmartDashboard::PutNumber("IntakeExtended", VsMAN_s_Sensors.b_IntakeArmExtended);
   }

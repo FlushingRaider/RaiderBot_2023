@@ -27,8 +27,8 @@
 #include "ADAS_DM.hpp"
 #include "ADAS_MN.hpp"
 
-T_RobotState V_RobotState = E_Init;
-frc::DriverStation::Alliance V_AllianceColor = frc::DriverStation::Alliance::kInvalid;
+T_RobotState VeROBO_e_RobotState = E_Init;
+frc::DriverStation::Alliance VeROBO_e_AllianceColor = frc::DriverStation::Alliance::kInvalid;
 double V_MatchTimeRemaining = 0;
 TsRobotMotorCmnd VsRobotMotorCmnd;
 bool VeROBO_b_TestState = false;
@@ -71,7 +71,8 @@ void Robot::RobotMotorCommands()
 #ifdef CompBot
   m_ArmPivotPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot], rev::ControlType::kPosition);
   m_WristPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist], rev::ControlType::kPosition);
-  m_GripperPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper], rev::ControlType::kPosition);
+  // m_GripperPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper], rev::ControlType::kVelocity);
+  m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]);   // This puts the gripper into a power control setup, not speed/postion
   m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
 
   m_TurretRotate.Set(ControlMode::Position, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
@@ -95,8 +96,8 @@ void Robot::RobotMotorCommands()
  ******************************************************************************/
 void Robot::RobotInit()
 {
-  V_RobotState = E_Init;
-  V_AllianceColor = frc::DriverStation::GetAlliance();
+  VeROBO_e_RobotState = E_Init;
+  VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   V_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
   VeROBO_b_TestState = false;
   bool  CompressorEnable = m_pcmCompressor.Enabled();
@@ -188,7 +189,7 @@ void Robot::RobotInit()
   ADAS_DM_ConfigsInit();
   ADAS_MN_ConfigsInit();
 #ifdef OldVision
-  VisionInit(V_AllianceColor);
+  VisionInit(VeROBO_e_AllianceColor);
 #endif
 }
 
@@ -245,7 +246,8 @@ void Robot::RobotPeriodic()
                    m_GripperEncoder,
                    m_WristEncoder,
                    m_LinearSlide.GetSelectedSensorPosition(),
-                   m_TurretRotate.GetSelectedSensorPosition());
+                   m_TurretRotate.GetSelectedSensorPosition(),
+                   VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm]);
 #else
   Encoders_Drive_PracticeBot(a_encoderFrontLeftSteer.GetVoltage(),
                              a_encoderFrontRightSteer.GetVoltage(),
@@ -278,17 +280,14 @@ void Robot::RobotPeriodic()
                                           VeODO_In_RobotDisplacementX,
                                           VeODO_In_RobotDisplacementY,
                                           VeVIS_b_TagHasTarget,
-                                          V_RobotState,
+                                          VeROBO_e_RobotState,
                                           V_ADAS_ActiveFeature,
                                           V_TagCentered, // comes from Vision
                                           V_TagID,
                                           V_TagYaw,
-                                          V_AllianceColor,
+                                          VeROBO_e_AllianceColor,
                                           VsCONT_s_DriverInput.b_CubeAlign,
                                           VsCONT_s_DriverInput.b_ConeAlign);
-
-  frc::SmartDashboard::PutNumber("V_ADAS_Pct_SD_FwdRe", V_ADAS_Pct_SD_FwdRev);
-  frc::SmartDashboard::PutNumber("V_ADAS_Pct_SD_Strafe", V_ADAS_Pct_SD_Strafe);
 
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
                    VsCONT_s_DriverInput.pct_SwerveStrafe,      // swerve control strafe
@@ -310,7 +309,7 @@ void Robot::RobotPeriodic()
                    &VaDRC_Pct_WheelAngleCmnd[0]);
 
   LightControlMain(V_MatchTimeRemaining,
-                   V_AllianceColor,
+                   VeROBO_e_AllianceColor,
                    VsCONT_s_DriverInput.b_CameraLight,
                    V_ADAS_ActiveFeature,
                    V_ADAS_CameraUpperLightCmndOn,
@@ -358,7 +357,7 @@ void Robot::RobotPeriodic()
                              m_rearLeftDrivePID,
                              m_rearRightDrivePID);
 #ifdef CompBot
-  ManipulatorControlMain(VeMAN_e_SchedState,
+  ManipulatorControlMain(VeADAS_e_MAN_SchedState,
                          VeROBO_b_TestState);
 
   ManipulatorMotorConfigsCal(m_ArmPivotPID,
@@ -390,8 +389,8 @@ void Robot::RobotPeriodic()
  ******************************************************************************/
 void Robot::AutonomousInit()
 {
-  V_RobotState = E_Auton;
-  V_AllianceColor = frc::DriverStation::GetAlliance();
+  VeROBO_e_RobotState = E_Auton;
+  VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_b_TestState = false;
   GyroInit();
   DriveControlInit();
@@ -400,7 +399,7 @@ void Robot::AutonomousInit()
   ADAS_Main_Reset();
   OdometryInit();
 #ifdef OldVision
-  VisionInit(V_AllianceColor);
+  VisionInit(VeROBO_e_AllianceColor);
 #endif
 }
 
@@ -423,8 +422,8 @@ void Robot::AutonomousPeriodic()
  ******************************************************************************/
 void Robot::TeleopInit()
 {
-  V_RobotState = E_Teleop;
-  V_AllianceColor = frc::DriverStation::GetAlliance();
+  VeROBO_e_RobotState = E_Teleop;
+  VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_b_TestState = false;
 
   ADAS_Main_Reset();
@@ -433,7 +432,7 @@ void Robot::TeleopInit()
   ManipulatorControlInit();
   OdometryInit();
 #ifdef OldVision
-  VisionInit(V_AllianceColor);
+  VisionInit(VeROBO_e_AllianceColor);
 #endif
 }
 
