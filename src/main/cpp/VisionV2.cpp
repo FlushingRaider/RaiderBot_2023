@@ -62,7 +62,7 @@ frc::AprilTagFieldLayout aprilTags{aprilTagsjson};
 photonlib::PhotonPoseEstimator estimator(aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
 
 photonlib::PhotonPipelineResult TagCamResult;
-std::optional<photonlib::EstimatedRobotPose> estimatedPose;
+std::optional<photonlib::EstimatedRobotPose> CurrentEstimatedPose;
 frc::Pose3d TagPose;
 // vars for cone/cube cam
 photonlib::PhotonCamera Cam2 = photonlib::PhotonCamera("Cam2");
@@ -256,8 +256,10 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
   if (VeVIS_b_TagHasTarget)
   {
 
-    estimatedPose = estimator.Update();
-    TagPose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
+    CurrentEstimatedPose = estimator.Update();
+    if (CurrentEstimatedPose.has_value()){
+    TagPose = CurrentEstimatedPose.value().estimatedPose;// "pose" object which holds xyz and roll,pitch,yaw values
+    }; 
     V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
 
     V_Tagx = TagPose.X().value();
