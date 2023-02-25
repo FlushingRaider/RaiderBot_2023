@@ -264,7 +264,7 @@ struct RobotUserInput
   bool                  b_DrivingPosition;
   bool                  b_LowerScore;
   bool                  b_UpperScore;
-  bool                  b_DropGamepiece;
+  bool                  b_DropGamePiece;
   bool                  b_AutoBalance;
   bool                  b_CubeAlign;
   bool                  b_ConeAlign;

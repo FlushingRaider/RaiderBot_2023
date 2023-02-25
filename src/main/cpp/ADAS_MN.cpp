@@ -123,7 +123,7 @@ void ADAS_MN_Reset(void)
     {
       LeADAS_e_MAN_State = E_MAN_Driving;
     }
-  else if (VsCONT_s_DriverInput.b_UpperSore == true)
+  else if (VsCONT_s_DriverInput.b_UpperScore == true)
     {
       LeADAS_e_MAN_State = E_MAN_PositioningHigh;
     }
