@@ -911,12 +911,12 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
 
   bool LeADAS_b_DM_StateComplete = false;
 
-  *L_Pct_FwdRev = 0;
-  *L_Pct_Strafe = 0;
+  // *L_Pct_FwdRev = 0.0;
+  // *L_Pct_Strafe = 0.0;
   /* Next, let's set all the other items we aren't trying to control to off: */
-  double L_ChosenX = 0;
-  double L_ChosenY = 0;
-  double L_ErrorCalcYaw = 0;
+  double L_ChosenX = 0.0;
+  double L_ChosenY = 0.0;
+  double L_ErrorCalcYaw = 0.0;
   int L_ClosestTag;
 
   // all 3 tags are directly across from each other
@@ -930,13 +930,14 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
   double L_TagXred = 15.513558;
   double L_TagXblue = 1.02743;
 
-  // double L_Tag1YError;
-  // double L_Tag2YError;
-  // double L_Tag3YError;
+  double L_Tag1YError;
+  double L_Tag2YError;
+  double L_Tag3YError;
 
-  VeADAS_t_DM_DebounceTime += C_ExeTime;
+  
   if (L_OdomCentered) // don't do any of this if we haven't centered our Odometry based on the tag
   {
+    VeADAS_t_DM_DebounceTime += C_ExeTime;
     // pick the right side of tags to look at for our alliance
     if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
     {
@@ -989,7 +990,7 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
       //   L_ChosenY = L_Tag3Y;
       // }
 
-      L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
+       L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
     if (VeADAS_t_DM_DebounceTime <= KeADAS_t_DM_TagCenteringDb) // make sure we're still in the time we've given ourselves
     {
       if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
@@ -998,11 +999,11 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
       }
       if (L_OdometryX < L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX < L_ChosenX - K_MoveToTagMovementDeadband)
       {
-        *L_Pct_FwdRev = 0.2;
+        *L_Pct_FwdRev = 0.2 * (L_OdometryX - L_ChosenX);
       }
       else if (L_OdometryX > L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX > L_ChosenX - K_MoveToTagMovementDeadband)
       {
-        *L_Pct_FwdRev = -0.2;
+        *L_Pct_FwdRev = -0.2 * (L_OdometryX - L_ChosenX);
       }
       else
       {
@@ -1010,11 +1011,11 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
       }
       if (L_OdometryY < L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY < L_ChosenY - K_MoveToTagMovementDeadband)
       {
-        *L_Pct_Strafe = 0.2;
+        *L_Pct_Strafe = 0.2  * (L_OdometryY - L_ChosenY);
       }
       else if (L_OdometryY > L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY > L_ChosenY - K_MoveToTagMovementDeadband)
       {
-        *L_Pct_Strafe = -0.2;
+        *L_Pct_Strafe = -0.2  * (L_OdometryY - L_ChosenY);
       }
       else
       {
@@ -1024,9 +1025,11 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
     else if (VeADAS_t_DM_DebounceTime >= 0.3)
     {
       VeADAS_t_DM_DebounceTime = 0;
-      *L_Pct_FwdRev = 0;
-      *L_Pct_Strafe = 0;
-    }
+      *L_Pct_FwdRev = 0.0;
+      *L_Pct_Strafe = 0.0;
+    }  
+    LeADAS_b_DM_StateComplete = true;
   }
+
   return (LeADAS_b_DM_StateComplete);
 }

@@ -62,6 +62,8 @@ bool V_ADAS_Vision_RequestedTargeting = false;
 double V_ADAS_DriveTime = 0;
 double V_ADAS_Deg_TargetAngle = 0;
 
+bool toggle;
+
 /******************************************************************************
  * Function:     ADAS_Main_Init
  *
@@ -78,6 +80,8 @@ void ADAS_Main_Init(void)
   V_ADAS_AutonChooser.AddOption("Test Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
   V_ADAS_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
   frc::SmartDashboard::PutData(L_AutonSelectorName, &V_ADAS_AutonChooser);
+  frc::SmartDashboard::PutBoolean("movetotag", toggle);
+
 }
 
 /******************************************************************************
@@ -168,17 +172,17 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
   {
     /* Enable criteria goes here: */
     if (VsCONT_s_DriverInput.b_AutoBalance == true)
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance;
-      }
+    {
+      LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance;
+    }
 
     /* Abort criteria goes here: */
     if ((LeADAS_b_Driver1_JoystickActive == true) || (VeADAS_b_StateComplete == true))
-      {
-        /* Abort criteria goes here. */
-        LeADAS_e_ActiveFeature = E_ADAS_Disabled;
-        VeADAS_b_StateComplete = false;
-      }
+    {
+      /* Abort criteria goes here. */
+      LeADAS_e_ActiveFeature = E_ADAS_Disabled;
+      VeADAS_b_StateComplete = false;
+    }
   }
   else if (LeADAS_e_RobotState == E_Auton)
   {
@@ -357,29 +361,32 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     ADAS_DM_Reset();
     VeADAS_b_StateComplete = false;
   }
+toggle = frc::SmartDashboard::GetBoolean("movetotag", false);
 
-  frc::SmartDashboard::PutNumber("LeADAS_e_ActiveFeature", (int)LeADAS_e_ActiveFeature);
-
+if (toggle){
+  LeADAS_e_ActiveFeature = E_ADAS_MoveToTag;
+}
+  // frc::SmartDashboard::PutNumber("current feature", (int)LeADAS_e_ActiveFeature);
   switch (LeADAS_e_ActiveFeature)
-    {
-    case E_ADAS_MoveToTag:
-    #ifdef unused
-    VeADAS_b_StateComplete =  ADAS_DM_MoveToTag(L_Pct_FwdRev,
-                                                L_Pct_Strafe,
-                                                L_Pct_Rotate,
-                                                L_OdomCentered,
-                                                L_TagID,
-                                                L_L_X_FieldPos,
-                                                L_L_Y_FieldPos,
-                                                L_VisionTargetingRequest,
-                                                L_VisionTopTargetAquired,
-                                                L_TagYawDegrees,
-                                                LeLC_e_AllianceColor,
-                                                L_CubeAlignCmd,
-                                                L_ConeAlignCmd);
-    #endif
+  {
+  case E_ADAS_MoveToTag:
+    // #ifdef unused
+    VeADAS_b_StateComplete = ADAS_DM_MoveToTag(L_Pct_FwdRev,
+                                               L_Pct_Strafe,
+                                               L_Pct_Rotate,
+                                               L_OdomCentered,
+                                               L_TagID,
+                                               L_L_X_FieldPos,
+                                               L_L_Y_FieldPos,
+                                               L_VisionTargetingRequest,
+                                               L_VisionTopTargetAquired,
+                                               L_TagYawDegrees,
+                                               LeLC_e_AllianceColor,
+                                               L_CubeAlignCmd,
+                                               L_ConeAlignCmd);
+
     break;
-   case E_ADAS_DM_DriveStraight:
+  case E_ADAS_DM_DriveStraight:
 #ifdef unused
     VeADAS_b_StateComplete = ADAS_DM_DriveStraight(L_Pct_FwdRev,
                                                    L_Pct_Strafe,
@@ -391,7 +398,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                    L_CameraLowerLightCmndOn,
                                                    L_SD_RobotOriented);
 #endif
-  break;
+    break;
   case E_ADAS_DM_Rotate180:
 #ifdef unused
     VeADAS_b_StateComplete = ADAS_DM_Rotate180(L_Pct_FwdRev,
@@ -426,35 +433,35 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                            E_ADAS_DM_PathFollower);
 
     VeADAS_b_StateComplete = ADAS_DM_PathFollower(L_Pct_FwdRev,
-                                                L_Pct_Strafe,
-                                                L_Pct_Rotate,
-                                                L_Pct_Intake,
-                                                L_SD_RobotOriented,
-                                                L_L_X_FieldPos,
-                                                L_L_Y_FieldPos,
-                                                L_Deg_GyroAngleDeg,
-                                                V_ADAS_PathNum,
-                                                V_ADAS_Auto_PathName);
+                                                  L_Pct_Strafe,
+                                                  L_Pct_Rotate,
+                                                  L_Pct_Intake,
+                                                  L_SD_RobotOriented,
+                                                  L_L_X_FieldPos,
+                                                  L_L_Y_FieldPos,
+                                                  L_Deg_GyroAngleDeg,
+                                                  V_ADAS_PathNum,
+                                                  V_ADAS_Auto_PathName);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-  break;
+    break;
   case E_ADAS_DM_AutoBalance:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            E_ADAS_DM_AutoBalance);
 
     VeADAS_b_StateComplete = ADAS_DM_PathFollower(L_Pct_FwdRev,
-                                                L_Pct_Strafe,
-                                                L_Pct_Rotate,
-                                                L_Pct_Intake,
-                                                L_SD_RobotOriented,
-                                                L_L_X_FieldPos,
-                                                L_L_Y_FieldPos,
-                                                L_Deg_GyroAngleDeg,
-                                                V_ADAS_PathNum,
-                                                V_ADAS_Auto_PathName);
+                                                  L_Pct_Strafe,
+                                                  L_Pct_Rotate,
+                                                  L_Pct_Intake,
+                                                  L_SD_RobotOriented,
+                                                  L_L_X_FieldPos,
+                                                  L_L_Y_FieldPos,
+                                                  L_Deg_GyroAngleDeg,
+                                                  V_ADAS_PathNum,
+                                                  V_ADAS_Auto_PathName);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-  break;
+    break;
   case E_ADAS_Disabled:
   default:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,

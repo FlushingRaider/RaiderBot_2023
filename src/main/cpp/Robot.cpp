@@ -72,21 +72,21 @@ void Robot::RobotMotorCommands()
   m_ArmPivotPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot], rev::ControlType::kPosition);
   m_WristPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist], rev::ControlType::kPosition);
   // m_GripperPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper], rev::ControlType::kVelocity);
-  m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]);   // This puts the gripper into a power control setup, not speed/postion
+  m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]); // This puts the gripper into a power control setup, not speed/postion
   m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
 
   m_TurretRotate.Set(ControlMode::Position, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
   m_LinearSlide.Set(ControlMode::Position, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
-   {
-   m_PCM_Valve.Set(true);
-   }
+  {
+    m_PCM_Valve.Set(true);
+  }
   else
-   {
-   m_PCM_Valve.Set(false);
-   }
-  #endif
+  {
+    m_PCM_Valve.Set(false);
+  }
+#endif
 }
 
 /******************************************************************************
@@ -100,10 +100,10 @@ void Robot::RobotInit()
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   V_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
   VeROBO_b_TestState = false;
-  bool  CompressorEnable = m_pcmCompressor.Enabled();
-
-  // frc::CameraServer::StartAutomaticCapture();  // For connecting a single USB camera directly to RIO
-
+#ifdef CompBot
+  bool CompressorEnable = m_pcmCompressor.Enabled();
+// frc::CameraServer::StartAutomaticCapture();  // For connecting a single USB camera directly to RIO
+#endif
   EncodersInitCommon(m_encoderFrontRightSteer,
                      m_encoderFrontLeftSteer,
                      m_encoderRearRightSteer,
@@ -334,22 +334,24 @@ void Robot::RobotPeriodic()
     pc_Camera2.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam2]); // Need to comment this out if Photon Vision is being calibrated/tweaked
   }
 #endif
-
+#endif
 #ifdef NewVision
   // FakeButton =frc::SmartDashboard::GetBoolean("Fake auto target buton", false);
   // FakeButton = false;
-  VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
-  // frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
-  // frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
-  // frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
-  // frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
-  // frc::SmartDashboard::PutNumber("TagID ", V_TagID);
-  // frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
-  // frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
-  // frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
-  frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
+  // VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
+  VisionRun(false, true);
 
-#endif
+  frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
+  frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
+  frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
+  frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
+  frc::SmartDashboard::PutNumber("TagID ", V_TagID);
+  frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
+  frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
+  frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
+  frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
+  frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
+
 #endif
 
   /* These function calls are for test mode calibration. */
@@ -381,6 +383,10 @@ void Robot::RobotPeriodic()
   frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
   frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
   frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
+
+  frc::SmartDashboard::PutNumber("X power", V_ADAS_Pct_SD_Strafe);
+  frc::SmartDashboard::PutNumber("Y power", V_ADAS_Pct_SD_FwdRev);
+  frc::SmartDashboard::PutNumber("rotate power", V_ADAS_Pct_SD_Rotate);
 }
 
 /******************************************************************************
@@ -499,13 +505,13 @@ void Robot::TestPeriodic()
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide]);
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
-   {
-   m_PCM_Valve.Set(true);
-   }
+  {
+    m_PCM_Valve.Set(true);
+  }
   else
-   {
-   m_PCM_Valve.Set(false);
-   }
+  {
+    m_PCM_Valve.Set(false);
+  }
 #endif
 }
 
