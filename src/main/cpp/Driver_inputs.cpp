@@ -87,7 +87,7 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   VsCONT_s_DriverInput.b_IntakeRollersTest              = LeCONT_b_Driver2ButtonX;     //Controller 2 Tests the intake rollers.  For test only.
   VsCONT_s_DriverInput.b_LowerScore                     = LeCONT_b_Driver2ButtonX;
   VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
-  VsCONT_s_DriverInput.b_DropGamepiece                  = LeCONT_b_Driver2ButtonStart;
+  VsCONT_s_DriverInput.b_DropGamePiece                  = LeCONT_b_Driver2ButtonStart;
   VsCONT_s_DriverInput.pct_Wrist                        = LeCONT_Pct_Driver2RightAxisX;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
   VsCONT_s_DriverInput.b_VisionButton                   = LeCONT_b_Driver2ButtonLB;    // Vision button for Carson uses, might keep for comp might end up being just for testing
   VsCONT_s_DriverInput.b_ArmDown                        = LeCONT_b_Driver2ButtonRB;   // This will bring the arm down to pickup game pieces behind the robot
