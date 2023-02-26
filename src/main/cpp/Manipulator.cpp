@@ -625,7 +625,7 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                             bool                    LeMAN_b_DropObject)
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
-
+LeMAN_b_TestPowerOverride = false;
   if (LeMAN_b_TestPowerOverride == true)
     {
     // Do nothing.  Robot is in test state using power commands for all the acutators
@@ -684,7 +684,8 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                           VeMAN_e_AttndState,
                           LeMAN_b_DropObject,
                           false);  // Need to come up with object detected
-
+    }
+    
     for (LeMAN_i_Index = E_MAN_Turret;
          LeMAN_i_Index < E_MAN_Sz;
          LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
@@ -698,5 +699,4 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
           VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = RampTo(VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index]);
           }
       }
-    }
   }

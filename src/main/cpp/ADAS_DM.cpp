@@ -756,16 +756,16 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
     V_ADAS_DM_Y_TargetStartPosition = 0;
     }
 
-  frc::SmartDashboard::PutBoolean("State Complete", L_ADAS_DM_StateComplete);
-  frc::SmartDashboard::PutNumber("L_Pct_Strafe", *L_Pct_Strafe);
-  frc::SmartDashboard::PutNumber("L_Pct_FwdRev", *L_Pct_FwdRev);
-  frc::SmartDashboard::PutNumber("L_i_PathNum", L_i_PathNum);
+  // frc::SmartDashboard::PutBoolean("State Complete", L_ADAS_DM_StateComplete);
+  // frc::SmartDashboard::PutNumber("L_Pct_Strafe", *L_Pct_Strafe);
+  // frc::SmartDashboard::PutNumber("L_Pct_FwdRev", *L_Pct_FwdRev);
+  // frc::SmartDashboard::PutNumber("L_i_PathNum", L_i_PathNum);
 
-  frc::SmartDashboard::PutNumber("L_L_TargetPositionX", L_L_TargetPositionX);
-  frc::SmartDashboard::PutNumber("L_L_RelativePosX", L_L_RelativePosX);
+  // frc::SmartDashboard::PutNumber("L_L_TargetPositionX", L_L_TargetPositionX);
+  // frc::SmartDashboard::PutNumber("L_L_RelativePosX", L_L_RelativePosX);
 
-  frc::SmartDashboard::PutNumber("L_L_TargetPositionY", L_L_TargetPositionY);
-  frc::SmartDashboard::PutNumber("L_L_RelativePosY", L_L_RelativePosY);
+  // frc::SmartDashboard::PutNumber("L_L_TargetPositionY", L_L_TargetPositionY);
+  // frc::SmartDashboard::PutNumber("L_L_RelativePosY", L_L_RelativePosY);
 
   return (L_ADAS_DM_StateComplete);
   }

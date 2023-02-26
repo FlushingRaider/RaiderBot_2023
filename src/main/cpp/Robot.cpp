@@ -75,8 +75,14 @@ void Robot::RobotMotorCommands()
   m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]);   // This puts the gripper into a power control setup, not speed/postion
   m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
 
-  m_TurretRotate.Set(ControlMode::Position, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
-  m_LinearSlide.Set(ControlMode::Position, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
+  // m_TurretRotate.Set(ControlMode::Position, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
+  // m_LinearSlide.Set(ControlMode::Position,  VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
+
+  m_TurretRotate.Set(ControlMode::PercentOutput, 0);
+  m_LinearSlide.Set(ControlMode::PercentOutput, 0);
+
+
+  frc::SmartDashboard::PutNumber("LinearCmnd", VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
@@ -162,6 +168,7 @@ void Robot::RobotInit()
   m_LinearSlide.ConfigFactoryDefault();
   m_LinearSlide.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
   m_LinearSlide.SetSensorPhase(true);
+  m_LinearSlide.SetInverted(true);
   m_LinearSlide.SetSelectedSensorPosition(0);
   m_LinearSlide.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
   m_LinearSlide.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
@@ -372,14 +379,14 @@ void Robot::RobotPeriodic()
 #endif
 
   /* Output all of the content to the dashboard here: */
-  frc::SmartDashboard::PutNumber("WA FL", VaENC_Deg_WheelAngleConverted[E_FrontLeft]);
-  frc::SmartDashboard::PutNumber("WA FR", VaENC_Deg_WheelAngleConverted[E_FrontRight]);
-  frc::SmartDashboard::PutNumber("WA RL", VaENC_Deg_WheelAngleConverted[E_RearLeft]);
-  frc::SmartDashboard::PutNumber("WA RR", VaENC_Deg_WheelAngleConverted[E_RearRight]);
-  frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
-  frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
-  frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
-  frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
+  // frc::SmartDashboard::PutNumber("WA FL", VaENC_Deg_WheelAngleConverted[E_FrontLeft]);
+  // frc::SmartDashboard::PutNumber("WA FR", VaENC_Deg_WheelAngleConverted[E_FrontRight]);
+  // frc::SmartDashboard::PutNumber("WA RL", VaENC_Deg_WheelAngleConverted[E_RearLeft]);
+  // frc::SmartDashboard::PutNumber("WA RR", VaENC_Deg_WheelAngleConverted[E_RearRight]);
+  // frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
+  // frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
+  // frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
+  // frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
 }
 
 /******************************************************************************
@@ -455,6 +462,7 @@ void Robot::TeleopPeriodic()
 void Robot::TestPeriodic()
 {
   VeROBO_b_TestState = true;
+  bool LeROBO_b_Pneuaticaon = false;
 
 #ifdef CompBot
   ManipulatorControlManualOverride(&VsCONT_s_DriverInput);
@@ -499,12 +507,14 @@ void Robot::TestPeriodic()
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
-   m_PCM_Valve.Set(true);
+   
+   LeROBO_b_Pneuaticaon = true;
    }
   else
    {
-   m_PCM_Valve.Set(false);
+   LeROBO_b_Pneuaticaon = false;
    }
+m_PCM_Valve.Set(LeROBO_b_Pneuaticaon);
 #endif
 }
 

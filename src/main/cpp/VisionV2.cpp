@@ -252,21 +252,21 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
   if (VeVIS_b_TagHasTarget)
   {
 
-    estimatedPose = estimator.Update();
-    TagPose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
-    V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
+    // estimatedPose = estimator.Update();
+    // TagPose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
+    // V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
 
-    V_Tagx = TagPose.X().value();
-    V_Tagy = TagPose.Y().value();
-    V_Tagz = TagPose.Z().value();
-    V_TagRoll = TagPose.Rotation().X().value();
-    V_TagPitch = TagPose.Rotation().Y().value();
-    V_TagYaw = TagPose.Rotation().Z().value();
-    if (L_ButtonCmdCone || L_ButtonCmdCube)
-    {
-      OdometryInitToArgs(V_Tagx, V_Tagy);
-      V_TagCentered = true;
-    }
+    // V_Tagx = TagPose.X().value();
+    // V_Tagy = TagPose.Y().value();
+    // V_Tagz = TagPose.Z().value();
+    // V_TagRoll = TagPose.Rotation().X().value();
+    // V_TagPitch = TagPose.Rotation().Y().value();
+    // V_TagYaw = TagPose.Rotation().Z().value();
+    // if (L_ButtonCmdCone || L_ButtonCmdCube)
+    // {
+    //   OdometryInitToArgs(V_Tagx, V_Tagy);
+    //   V_TagCentered = true;
+    // }
   }
   else
   {

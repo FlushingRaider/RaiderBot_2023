@@ -4,7 +4,7 @@
 #include <units/length.h>
 
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
-#define COMP
+#define Manipulator_Test
 // Define the bot type: CompBot, PracticeBot
 #define CompBot
 
@@ -120,10 +120,10 @@ const double K_t_TurretTimeoutMs = 30;
 const double K_Pct_TurretOpenLoopCmnd = 0.1;
 
 /* KeENC_k_TurretEncoderScaler: Scalar multiplied against the encoder read to translate to degrees relative to turret. */
-const double KeENC_k_TurretEncoderScaler = 1.0;  //0.025947816048
+const double KeENC_k_TurretEncoderScaler = -0.025947816048;
 
 /* KeENC_k_LinearSlideEncoderScaler: Scalar multiplied against the encoder read to translate to degrees relative to inches traveled for the linear slide. */
-const double KeENC_k_LinearSlideEncoderScaler = 1.0;
+const double KeENC_k_LinearSlideEncoderScaler = 0.001218;
 
 /* K_deg_TurretMinDeltaOL: Minimum delta position change value expected when in OL control.  If this isn't met for a specific amount of time, it will advance to the next state. */
 const double K_deg_TurretMinDeltaOL = 0.05;
@@ -135,7 +135,7 @@ const double K_t_TurretDebounceTimeout = 0.5;
 const double K_t_TurretOL_Timeout = 5.0;
 
 /* KeENC_k_ArmPivot: Scalar multiplied against the encoder. */
-const double KeENC_k_ArmPivot = 1.0;
+const double KeENC_k_ArmPivot = 2.9605;
 
 /* KeENC_RPM_IntakeROllers: Finds the speed of the intake rollers. */
 const double KeENC_RPM_IntakeRollers = 1.0;
@@ -144,7 +144,7 @@ const double KeENC_RPM_IntakeRollers = 1.0;
 const double KeENC_RPM_Gripper = 1.0;
 
 /* KeENC_Deg_Wrist: Actual position of the wrist, how much we've rotated. */
-const double KeENC_Deg_Wrist = 1.0;
+const double KeENC_Deg_Wrist = -1.16883;
 
 // Lift related cals
 const double K_lift_S2_YD = 8; //initial lift of the robot
@@ -276,7 +276,7 @@ const double KaMAN_k_TurretPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
                                                            0.0};     // kAllErr
 
 /* KaMAN_k_LinearSlidePID_Gx: PID gains for the linear slide control. */
-const double KaMAN_k_LinearSlidePID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
+const double KaMAN_k_LinearSlidePID_Gx[E_PID_SparkMaxCalSz] = { 0.05,      // kP
                                                                 0.000001, // kI
                                                                 0.002000, // kD
                                                                 0.0,      // kIz
@@ -291,11 +291,11 @@ const double KaMAN_k_LinearSlidePID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
 /* KaMAN_Deg_TurretAngle: sets turret final positons for each state */
 const double KaMAN_Deg_TurretAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                       0.0,  // Driving
-                                                      0.0,  // Positioning High
-                                                      0.0,  // Positioning Low
-                                                      0.0,  // Mid Transition
+                                                      180.0,  // Positioning High
+                                                      180.0,  // Positioning Low
+                                                      92.24,  // Mid Transition
                                                       0.0,  // Main Intake
-                                                      0.0}; // Floor Intake
+                                                      180.0}; // Floor Intake
 
 /* KeMAN_DegS_TurretRate: Rate that is used to transition to turret state */
 const double KeMAN_DegS_TurretRate = 0.0;
@@ -312,32 +312,32 @@ const double KaMAN_Deg_TurretDb[E_MAN_State_Sz] = {0.0,  // Init
 /* KaMAN_Deg_ArmPivotAngle: sets Arm Pivot final positons for each state */
 const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                         0.0,  // Driving
-                                                        0.0,  // Positioning High
-                                                        0.0,  // Positioning Low
-                                                        0.0,  // Mid Transition
-                                                        0.0,  // Main Intake
-                                                        0.0}; // Floor Intake
+                                                        105.45,  // Positioning High
+                                                        87.89,  // Positioning Low
+                                                        -3.45,  // Mid Transition
+                                                        23.19,  // Main Intake
+                                                        -3.24}; // Floor Intake
 
 /* KeMAN_DegS_ArmPivotRate: Sets Arm Pivot transition rate. */
-const double KeMAN_DegS_ArmPivotRate = 0.0;
+const double KeMAN_DegS_ArmPivotRate = 0.3;
 
 /* KaMAN_Deg_ArmPivotDb: Sets Arm Pivot dead bandl */
-const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {0.0,  // Init
-                                                     0.0,  // Driving
-                                                     0.0,  // Positioning High
-                                                     0.0,  // Positioning Low
-                                                     0.0,  // Mid Transition
-                                                     0.0,  // Main Intake
-                                                     0.0}; // Floor Intake
+const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {1.0,  // Init
+                                                     1.0,  // Driving
+                                                     1.0,  // Positioning High
+                                                     1.0,  // Positioning Low
+                                                     1.0,  // Mid Transition
+                                                     1.0,  // Main Intake
+                                                     1.0}; // Floor Intake
 
 /* KaMAN_In_LinearSlidePosition: sets LInear Slide final positons for each state */
 const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {0.0,  // Init
-                                                             0.0,  // Driving
-                                                             0.0,  // Positioning High
-                                                             0.0,  // Positioning Low
-                                                             0.0,  // Mid Transition
-                                                             0.0,  // Main Intake
-                                                             0.0}; // Floor Intake
+                                                             3.09,  // Driving
+                                                             -10.78,  // Positioning High
+                                                             12.8,  // Positioning Low
+                                                             3.4,  // Mid Transition
+                                                             -1.67,  // Main Intake
+                                                             -12.94}; // Floor Intake
 
 /* KeMAN_InS_LinearSlideRate: Sets Linear Slide transition rate. */
 const double KeMAN_InS_LinearSlideRate = 0.0; // Drop-off
@@ -353,15 +353,15 @@ const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.0,  // Init
 
 /* KaMAN_Deg_WristAngle: sets Wrist final angle for each state */
 const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {0.0,  // Init
-                                                     0.0,  // Driving
-                                                     0.0,  // Positioning High
-                                                     0.0,  // Positioning Low
-                                                     0.0,  // Mid Transition
-                                                     0.0,  // Main Intake
-                                                     0.0}; // Floor Intake
+                                                     30.37,  // Driving
+                                                     -6.29,  // Positioning High
+                                                     2.34,  // Positioning Low
+                                                     70.69,  // Mid Transition
+                                                     18.11,  // Main Intake
+                                                     71.96}; // Floor Intake
 
 /* KeMAN_DegS_WristRate: Sets Wrist transition rate. */
-const double KeMAN_DegS_WristRate = 0.0;
+const double KeMAN_DegS_WristRate = 0.75;
 
 /* KaMAN_Deg_WristDb: sets Wrist final angle for each state */
 const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {0.0,  // Init
@@ -390,7 +390,7 @@ const double KaMAN_RPM_IntakeSpeed[E_MAN_State_Sz] = {0.0,  // Init
                                                       0.0,  // Positioning High
                                                       0.0,  // Positioning Low
                                                       0.0,  // Mid Transition
-                                                      0.0,  // Main Intake
+                                                      50.0,  // Main Intake
                                                       0.0}; // Floor Intake
 
 /* KeMAN_RPMS_IntakeRate: Sets Intake roller transition rate. */

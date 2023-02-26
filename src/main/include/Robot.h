@@ -92,7 +92,7 @@ class Robot : public frc::TimedRobot {
   WPI_TalonSRX                               m_LinearSlide          {KeMAN_i_LinearSlide};
 
   frc::Compressor                            m_pcmCompressor          {KeINT_i_PCM, frc::PneumaticsModuleType::CTREPCM};
-  frc::Solenoid                              m_PCM_Valve        {frc::PneumaticsModuleType::CTREPCM, 1};
+  frc::Solenoid                              m_PCM_Valve              {KeINT_i_PCM, frc::PneumaticsModuleType::CTREPCM, 0};
   #endif
 
   // PWM Motor / Light Controllers

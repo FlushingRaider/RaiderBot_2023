@@ -277,5 +277,6 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   frc::SmartDashboard::PutNumber("Wrist",          VsMAN_s_Sensors.Deg_Wrist);
   frc::SmartDashboard::PutNumber("Turret",         VsMAN_s_Sensors.Deg_Turret);
   frc::SmartDashboard::PutNumber("LinearSlide",    VsMAN_s_Sensors.In_LinearSlide);
+  frc::SmartDashboard::PutNumber("LinearSlideRaw", LeENC_Deg_LinearSlide);
   frc::SmartDashboard::PutNumber("IntakeExtended", VsMAN_s_Sensors.b_IntakeArmExtended);
   }
