@@ -62,13 +62,17 @@ frc::AprilTagFieldLayout aprilTags{aprilTagsjson};
 photonlib::PhotonPoseEstimator estimator(aprilTags, photonlib::LOWEST_AMBIGUITY, std::move(Cam1), {});
 
 photonlib::PhotonPipelineResult TagCamResult;
-std::optional<photonlib::EstimatedRobotPose> estimatedPose;
+std::optional<photonlib::EstimatedRobotPose> CurrentEstimatedPose;
 frc::Pose3d TagPose;
 // vars for cone/cube cam
 photonlib::PhotonCamera Cam2 = photonlib::PhotonCamera("Cam2");
-frc::Transform3d PieceCamPose;
 photonlib::PhotonPipelineResult PieceCamResult;
 photonlib::PhotonTrackedTarget PieceCamTarget;
+
+double PieceCamPitch;
+double PieceCamYaw;
+double PieceCamSkew;
+
 
 #endif
 #ifdef OldVision
@@ -252,21 +256,23 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
   if (VeVIS_b_TagHasTarget)
   {
 
-    // estimatedPose = estimator.Update();
-    // TagPose = estimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
-    // V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
+    CurrentEstimatedPose = estimator.Update();
+    if (CurrentEstimatedPose.has_value()){
+    TagPose = CurrentEstimatedPose.value().estimatedPose;// "pose" object which holds xyz and roll,pitch,yaw values
+    }; 
+    V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
 
-    // V_Tagx = TagPose.X().value();
-    // V_Tagy = TagPose.Y().value();
-    // V_Tagz = TagPose.Z().value();
-    // V_TagRoll = TagPose.Rotation().X().value();
-    // V_TagPitch = TagPose.Rotation().Y().value();
-    // V_TagYaw = TagPose.Rotation().Z().value();
-    // if (L_ButtonCmdCone || L_ButtonCmdCube)
-    // {
-    //   OdometryInitToArgs(V_Tagx, V_Tagy);
-    //   V_TagCentered = true;
-    // }
+    V_Tagx = TagPose.X().value();
+    V_Tagy = TagPose.Y().value();
+    V_Tagz = TagPose.Z().value();
+    V_TagRoll = TagPose.Rotation().X().value();
+    V_TagPitch = TagPose.Rotation().Y().value();
+    V_TagYaw = TagPose.Rotation().Z().value();
+    if (L_ButtonCmdCone || L_ButtonCmdCube)
+    {
+      OdometryInitToArgs(V_Tagx, V_Tagy);
+      V_TagCentered = true;
+    }
   }
   else
   {
@@ -287,9 +293,16 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
   if (PieceCamResult.HasTargets())
   {
     PieceCamTarget = PieceCamResult.GetBestTarget();
-    PieceCamPose = PieceCamTarget.GetBestCameraToTarget();
+    PieceCamPitch = PieceCamTarget.GetPitch();
+    PieceCamYaw = PieceCamTarget.GetYaw();
+    PieceCamSkew = PieceCamTarget.GetSkew();
+  }
+  else
+  {
 
-
+    PieceCamPitch = 0.0;
+    PieceCamYaw = 0.0;
+    PieceCamSkew = 0.0;
   }
 }
 

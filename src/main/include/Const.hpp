@@ -6,7 +6,7 @@
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
 #define Manipulator_Test
 // Define the bot type: CompBot, PracticeBot
-#define CompBot
+#define PracticeBot
 
 #define NewVision // NewVision or OldVision
 
@@ -63,7 +63,7 @@ static const int C_VanityLight_ID = 0;
 
 
 // Vision Cals:
-const double K_MoveToTagMovementDeadband = 0.01; // 1 cm
+const double K_MoveToTagMovementDeadband = 0.05; // 5 cm
 
 // cals for top target cam
 
