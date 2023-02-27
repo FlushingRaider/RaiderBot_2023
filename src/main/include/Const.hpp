@@ -245,19 +245,19 @@ const double KaMAN_Deg_TurretAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                       0.0,  // Main Intake
                                                       180.0}; // Floor Intake
 
-/* KeMAN_DegS_TurretRate: Rate that is used to transition to turret state */
+/* KeMAN_DegS_TurretRate: Rate that is used in transition for the turret */
 const double KeMAN_DegS_TurretRate = 0.0;
 
 /* KaMAN_Deg_TurretDb: Sets turret dead band */
-const double KaMAN_Deg_TurretDb[E_MAN_State_Sz] = {0.0,  // Init
-                                                   0.0,  // Driving
-                                                   0.0,  // Positioning High Cube
-                                                   0.0,  // Positioning High Cone
-                                                   0.0,  // Positioning Low Cube
-                                                   0.0,  // Positioning Low Cone
-                                                   0.0,  // Mid Transition
-                                                   0.0,  // Main Intake
-                                                   0.0}; // Floor Intake
+const double KaMAN_Deg_TurretDb[E_MAN_State_Sz] = {2.0,  // Init
+                                                   2.0,  // Driving
+                                                   2.0,  // Positioning High Cube
+                                                   2.0,  // Positioning High Cone
+                                                   2.0,  // Positioning Low Cube
+                                                   2.0,  // Positioning Low Cone
+                                                   2.0,  // Mid Transition
+                                                   2.0,  // Main Intake
+                                                   2.0}; // Floor Intake
 
 /* KaMAN_Deg_ArmPivotAngle: sets Arm Pivot final positons for each state */
 const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Init
@@ -274,48 +274,48 @@ const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Init
 const double KeMAN_DegS_ArmPivotRate = 0.3;
 
 /* KaMAN_Deg_ArmPivotDb: Sets Arm Pivot dead bandl */
-const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {1.0,  // Init
-                                                     1.0,  // Driving
-                                                     1.0,  // Positioning High Cube
-                                                     1.0,  // Positioning High Cone
-                                                     1.0,  // Positioning Low Cube
-                                                     1.0,  // Positioning Low Cone
-                                                     1.0,  // Mid Transition
-                                                     1.0,  // Main Intake
-                                                     1.0}; // Floor Intake
+const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {2.0,  // Init
+                                                     2.0,  // Driving
+                                                     2.0,  // Positioning High Cube
+                                                     2.0,  // Positioning High Cone
+                                                     2.0,  // Positioning Low Cube
+                                                     2.0,  // Positioning Low Cone
+                                                     2.0,  // Mid Transition
+                                                     2.0,  // Main Intake
+                                                     2.0}; // Floor Intake
 
 /* KaMAN_In_LinearSlidePosition: sets LInear Slide final positons for each state */
-const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {0.0,  // Init
-                                                             3.09,  // Driving
-                                                             -10.78,  // Positioning High Cube
-                                                             -10.78,  // Positioning High Cone
-                                                             12.8,  // Positioning Low Cube
-                                                             12.8,  // Positioning Low Cone
-                                                             3.4,  // Mid Transition
-                                                             -1.67,  // Main Intake
-                                                             -12.94}; // Floor Intake
+const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,  // Init
+                                                               3.09, // Driving
+                                                             -10.78, // Positioning High Cube
+                                                             -10.78, // Positioning High Cone
+                                                              12.8,  // Positioning Low Cube
+                                                              12.8,  // Positioning Low Cone
+                                                               3.4,  // Mid Transition
+                                                              -1.67, // Main Intake
+                                                            -12.94}; // Floor Intake
 
 /* KeMAN_InS_LinearSlideRate: Sets Linear Slide transition rate. */
 const double KeMAN_InS_LinearSlideRate = 0.0; // Drop-off
 
 /* KaMAN_In_LinearSlideDb: Sets LInear Slide dead band. */
-const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.0,  // Init
-                                                       0.0,  // Driving
-                                                       0.0,  // Positioning High Cube
-                                                       0.0,  // Positioning High Cone
-                                                       0.0,  // Positioning Low Cube
-                                                       0.0,  // Positioning Low Cone
-                                                       0.0,  // Mid Transition
-                                                       0.0,  // Main Intake
-                                                       0.0}; // Floor Intake
+const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.2,  // Init
+                                                       0.2,  // Driving
+                                                       0.2,  // Positioning High Cube
+                                                       0.2,  // Positioning High Cone
+                                                       0.2,  // Positioning Low Cube
+                                                       0.2,  // Positioning Low Cone
+                                                       0.2,  // Mid Transition
+                                                       0.2,  // Main Intake
+                                                       0.2}; // Floor Intake
 
 /* KaMAN_Deg_WristAngle: sets Wrist final angle for each state */
-const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {0.0,  // Init
+const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = { 0.00,  // Init
                                                      30.37,  // Driving
                                                      -6.29,  // Positioning High Cube
                                                      -6.29,  // Positioning High Cone
-                                                     2.34,  // Positioning Low Cube
-                                                     2.34,  // Positioning Low Cone
+                                                      2.34,  // Positioning Low Cube
+                                                      2.34,  // Positioning Low Cone
                                                      70.69,  // Mid Transition
                                                      18.11,  // Main Intake
                                                      71.96}; // Floor Intake
@@ -324,15 +324,15 @@ const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {0.0,  // Init
 const double KeMAN_DegS_WristRate = 0.75;
 
 /* KaMAN_Deg_WristDb: sets Wrist final angle for each state */
-const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {0.0,  // Init
-                                                  0.0,  // Driving
-                                                  0.0,  // Positioning High Cube
-                                                  0.0,  // Positioning High Cone
-                                                  0.0,  // Positioning Low Cube
-                                                  0.0,  // Positioning Low Cone
-                                                  0.0,  // Mid Transition
-                                                  0.0,  // Main Intake
-                                                  0.0}; // Floor Intake
+const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {1.0,  // Init
+                                                  1.0,  // Driving
+                                                  1.0,  // Positioning High Cube
+                                                  1.0,  // Positioning High Cone
+                                                  1.0,  // Positioning Low Cube
+                                                  1.0,  // Positioning Low Cone
+                                                  1.0,  // Mid Transition
+                                                  1.0,  // Main Intake
+                                                  1.0}; // Floor Intake
 
 /* KeMAN_DegS_GripperRate: Sets Gripper transition rate */
 const double KeMAN_DegS_GripperRate = 0.0;

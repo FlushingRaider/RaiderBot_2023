@@ -331,7 +331,6 @@ void Robot::RobotPeriodic()
   frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
   frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
   frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
-
 #endif
 
   /* These function calls are for test mode calibration. */
@@ -355,10 +354,6 @@ void Robot::RobotPeriodic()
 #endif
 
   /* Output all of the content to the dashboard here: */
-  frc::SmartDashboard::PutNumber("WA FL", VaENC_Deg_WheelAngleConverted[E_FrontLeft]);
-  frc::SmartDashboard::PutNumber("WA FR", VaENC_Deg_WheelAngleConverted[E_FrontRight]);
-  frc::SmartDashboard::PutNumber("WA RL", VaENC_Deg_WheelAngleConverted[E_RearLeft]);
-  frc::SmartDashboard::PutNumber("WA RR", VaENC_Deg_WheelAngleConverted[E_RearRight]);
   frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
   frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
   frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
@@ -436,7 +431,7 @@ void Robot::TeleopPeriodic()
 void Robot::TestPeriodic()
 {
   VeROBO_b_TestState = true;
-  bool LeROBO_b_Pneuaticaon = false;
+  bool LeROBO_b_IntakeArmExtend = false;
 
 #ifdef CompBot
   ManipulatorControlManualOverride(&VsCONT_s_DriverInput);
@@ -482,13 +477,13 @@ void Robot::TestPeriodic()
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
    
-   LeROBO_b_Pneuaticaon = true;
+   LeROBO_b_IntakeArmExtend = true;
    }
   else
    {
-   LeROBO_b_Pneuaticaon = false;
+   LeROBO_b_IntakeArmExtend = false;
    }
-  m_PCM_Valve.Set(LeROBO_b_Pneuaticaon);
+  m_PCM_Valve.Set(LeROBO_b_IntakeArmExtend);
 #endif
 }
 

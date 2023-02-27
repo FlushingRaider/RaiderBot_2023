@@ -571,8 +571,9 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
          LeMAN_i_Index < E_MAN_Sz;
          LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
       {
-      VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = VsMAN_s_MotorsTest.k_MotorCmnd[LeMAN_i_Index] / VaMAN_k_PositionToEncoder[LeMAN_i_Index]; // back convert from engineering position to encoder position
-      VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index] = VsMAN_s_MotorsTest.k_MotorRampRate[LeMAN_i_Index];
+      VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[LeMAN_i_Index] / VaMAN_k_PositionToEncoder[LeMAN_i_Index], 
+                                                             VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index],
+                                                             VsMAN_s_MotorsTest.k_MotorRampRate[LeMAN_i_Index]);
       }
      VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm];
     }
