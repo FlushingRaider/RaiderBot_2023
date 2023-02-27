@@ -108,12 +108,9 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
                        bool L_CubeAlignCmd,
                        bool L_ConeAlignCmd);
 
-// bool ADAS_DM_AutoBalance(double     gryoroll,
-//                          double     swervecmmd,
-//                          double     swervebrake,
-//                          bool       first,
-//                          bool       signoffirst,
-//                          bool       gaindecider,
-//                          double     Deadband,
-//                          double     PIDGain1,
-//                          double     PIDGain2);
+bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
+                          double *L_Pct_Strafe,
+                          double *L_Pct_Rotate,
+                          bool   *L_SD_RobotOriented,
+                          bool   *LeADAS_b_X_Mode,
+                          double  LeADAS_Deg_GyroRoll);

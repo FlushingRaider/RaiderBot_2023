@@ -24,6 +24,7 @@ extern bool V_ADAS_CameraUpperLightCmndOn;
 extern bool V_ADAS_CameraLowerLightCmndOn;
 extern bool V_ADAS_SD_RobotOriented;
 extern bool V_ADAS_Vision_RequestedTargeting;
+extern bool VeADAS_b_X_Mode;
 
 void ADAS_Main_Reset(void);
 void ADAS_Main_Init(void);
@@ -34,6 +35,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Rotate,
                                       double *L_Pct_Intake,
                                       bool *L_SD_RobotOriented,
+                                      bool *LeADAS_b_X_Mode,
                                       bool *L_VisionTargetingRequest,
                                       bool LeADAS_b_Driver1_JoystickActive,
                                       bool L_Driver_SwerveGoalAutoCenter,

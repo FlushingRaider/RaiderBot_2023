@@ -56,7 +56,7 @@ class Robot : public frc::TimedRobot {
   WPI_CANCoder          m_encoderWheelAngleCAN_RR     {KeEnc_i_WheelAngleRR, "rio"};
   
   frc::DigitalInput     di_TurrentLimitSwitch {C_TurretSensorID};
-  frc::DigitalOutput    do_CameraLightControl {C_CameraLightControl_ID};
+  // frc::DigitalOutput    do_CameraLightControl {C_CameraLightControl_ID};
   #endif
 
   // PDP - Power Distribution Panel - CAN

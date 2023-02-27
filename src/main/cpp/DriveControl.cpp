@@ -294,8 +294,8 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
                       double               L_JoyStick1Axis2X,  // rotate the robot joystick
                       double               L_JoyStick1Axis3,   // extra speed trigger
                       bool                 L_JoyStick1Button3, // auto rotate to 0 degrees
-                      bool                 L_JoyStick1_ResetDesiredAngle, // auto rotate to 90 degrees
-                      bool                 L_Driver_RobotFieldOrientedReq,
+                      bool                 L_JoyStick1_ResetDesiredAngle, // auto correct reset angle
+                      bool                 LeDRC_b_X_ModeReq,  // When requested, move all wheels into an X configuration, meant to hold robot still
                       T_ADAS_ActiveFeature LeDRC_e_ADAS_ActiveFeature,
                       double               L_ADAS_Pct_SD_FwdRev,
                       double               L_ADAS_Pct_SD_Strafe,
@@ -332,13 +332,9 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
   double        La_n_SD_Offset[E_RobotCornerSz];
   bool          Le_b_SD_Active = false;
   double        Le_k_SD_RotateCorrectionGx = 0;
+  bool          LeDRC_b_X_ModeReqActive = false;
 
-  if (L_ADAS_SD_RobotOriented == true)
-    {
-    L_Deg_GyroAngle = 0.0;
-    L_Rad_GyroAngle = 0.0;
-    VeDRC_b_AutoCenterLatch = false;
-    }
+  VeDRC_b_AutoCenterLatch = true;  // force autocorrect to always be enabled when driver is running or ADAS is NOT in robot oriented control
 
   /* Scale the joysticks based on a calibratable lookup when in teleop: */
   if (LeDRC_e_ADAS_ActiveFeature > E_ADAS_Disabled)
@@ -347,6 +343,14 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
     L_FWD = -L_ADAS_Pct_SD_FwdRev;
     L_STR = L_ADAS_Pct_SD_Strafe;
     L_RCW = L_ADAS_Pct_SD_Rotate;
+    LeDRC_b_X_ModeReqActive = LeDRC_b_X_ModeReq;
+
+    if (L_ADAS_SD_RobotOriented == true)
+      {
+      L_Deg_GyroAngle = 0.0;
+      L_Rad_GyroAngle = 0.0;
+      VeDRC_b_AutoCenterLatch = false;
+      }
     }
   else
     {
@@ -355,18 +359,18 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
     L_STR = L_JoyStick1Axis1X;
     L_RCW = L_JoyStick1Axis2X;
 
-    if (L_JoyStick1Button3 == true && VeDRC_b_AutoCenterLatch == false && VeDRC_b_AutoCenterLatch == VeDRC_b_AutoCenterLatchPrev)
-      {
-      VeDRC_b_AutoCenterLatch = true;
-      }
-    else if (L_JoyStick1Button3 == true && VeDRC_b_AutoCenterLatch == true && VeDRC_b_AutoCenterLatch == VeDRC_b_AutoCenterLatchPrev)
-      {
-      VeDRC_b_AutoCenterLatch = false;
-      }
-    else if (L_JoyStick1Button3 == false)
-      {
-      VeDRC_b_AutoCenterLatchPrev = VeDRC_b_AutoCenterLatch;
-      }
+    // if (L_JoyStick1Button3 == true && VeDRC_b_AutoCenterLatch == false && VeDRC_b_AutoCenterLatch == VeDRC_b_AutoCenterLatchPrev)
+    //   {
+    //   VeDRC_b_AutoCenterLatch = true;
+    //   }
+    // else if (L_JoyStick1Button3 == true && VeDRC_b_AutoCenterLatch == true && VeDRC_b_AutoCenterLatch == VeDRC_b_AutoCenterLatchPrev)
+    //   {
+    //   VeDRC_b_AutoCenterLatch = false;
+    //   }
+    // else if (L_JoyStick1Button3 == false)
+    //   {
+    //   VeDRC_b_AutoCenterLatchPrev = VeDRC_b_AutoCenterLatch;
+    //   }
     } 
 
   /* Here, we are attempting to determine if the drive/ADAS is attempting to turn the robot.  If we are 
@@ -429,15 +433,32 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
   L_C = L_FWD - L_RCW * (C_SD_W/C_SD_R);
   L_D = L_FWD + L_RCW * (C_SD_W/C_SD_R);
 
-  L_RPM_SD_WS[E_FrontRight] = pow((L_B * L_B + L_C * L_C), 0.5);
-  L_RPM_SD_WS[E_FrontLeft]  = pow((L_B * L_B + L_D * L_D), 0.5);
-  L_RPM_SD_WS[E_RearLeft]   = pow((L_A * L_A + L_D * L_D), 0.5);
-  L_RPM_SD_WS[E_RearRight]  = pow((L_A * L_A + L_C * L_C), 0.5);
+  if (LeDRC_b_X_ModeReqActive == false)
+    {
+      L_RPM_SD_WS[E_FrontRight] = pow((L_B * L_B + L_C * L_C), 0.5);
+      L_RPM_SD_WS[E_FrontLeft]  = pow((L_B * L_B + L_D * L_D), 0.5);
+      L_RPM_SD_WS[E_RearLeft]   = pow((L_A * L_A + L_D * L_D), 0.5);
+      L_RPM_SD_WS[E_RearRight]  = pow((L_A * L_A + L_C * L_C), 0.5);
+    
+      L_Deg_SD_WA[E_FrontRight] = -atan2(L_B, L_C) *180/C_PI;
+      L_Deg_SD_WA[E_FrontLeft]  = -atan2(L_B, L_D) *180/C_PI;
+      L_Deg_SD_WA[E_RearLeft]   = -atan2(L_A, L_D) *180/C_PI;
+      L_Deg_SD_WA[E_RearRight]  = -atan2(L_A, L_C) *180/C_PI;
+    }
+  else
+    {
+      /* X mode is being requested, force speeds to 0, move wheels into an X configuration:*/
+      L_RPM_SD_WS[E_FrontRight] = 0;
+      L_RPM_SD_WS[E_FrontLeft]  = 0;
+      L_RPM_SD_WS[E_RearLeft]   = 0;
+      L_RPM_SD_WS[E_RearRight]  = 0;
+    
+      L_Deg_SD_WA[E_FrontRight] = 45;
+      L_Deg_SD_WA[E_FrontLeft]  = -45;
+      L_Deg_SD_WA[E_RearLeft]   = -45;
+      L_Deg_SD_WA[E_RearRight]  = 45;
+    }
 
-  L_Deg_SD_WA[E_FrontRight] = -atan2(L_B, L_C) *180/C_PI;
-  L_Deg_SD_WA[E_FrontLeft]  = -atan2(L_B, L_D) *180/C_PI;
-  L_Deg_SD_WA[E_RearLeft]   = -atan2(L_A, L_D) *180/C_PI;
-  L_Deg_SD_WA[E_RearRight]  = -atan2(L_A, L_C) *180/C_PI;
 
   /* Normalize everything to a max value of 1 for wheel speeds: */
   L_Max = L_RPM_SD_WS[E_FrontRight];

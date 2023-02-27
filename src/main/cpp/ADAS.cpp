@@ -32,6 +32,7 @@
 #include "ADAS_ARM.hpp"
 #include "ADAS_MN.hpp"
 #include "Driver_inputs.hpp"
+#include "Gyro.hpp"
 
 /* ADAS control state variables */
 T_ADAS_ActiveFeature V_ADAS_ActiveFeature = E_ADAS_Disabled;
@@ -61,6 +62,7 @@ bool V_ADAS_SD_RobotOriented = false;
 bool V_ADAS_Vision_RequestedTargeting = false;
 double V_ADAS_DriveTime = 0;
 double V_ADAS_Deg_TargetAngle = 0;
+bool VeADAS_b_X_Mode = false;
 
 bool toggle;
 
@@ -148,6 +150,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Rotate,
                                       double *L_Pct_Intake,
                                       bool *L_SD_RobotOriented,
+                                      bool *LeADAS_b_X_Mode,
                                       bool *L_VisionTargetingRequest,
                                       bool LeADAS_b_Driver1_JoystickActive,
                                       bool L_Driver_SwerveGoalAutoCenter,
@@ -371,6 +374,10 @@ if (toggle){
   {
   case E_ADAS_MoveToTag:
     // #ifdef unused
+    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
+                                           E_ADAS_MoveToTag);
+    *LeADAS_b_X_Mode = false;
+
     VeADAS_b_StateComplete = ADAS_DM_MoveToTag(L_Pct_FwdRev,
                                                L_Pct_Strafe,
                                                L_Pct_Rotate,
@@ -449,16 +456,12 @@ if (toggle){
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            E_ADAS_DM_AutoBalance);
 
-    VeADAS_b_StateComplete = ADAS_DM_PathFollower(L_Pct_FwdRev,
+    LeADAS_b_State2Complete = ADAS_DM_AutoBalance(L_Pct_FwdRev,
                                                   L_Pct_Strafe,
                                                   L_Pct_Rotate,
-                                                  L_Pct_Intake,
                                                   L_SD_RobotOriented,
-                                                  L_L_X_FieldPos,
-                                                  L_L_Y_FieldPos,
-                                                  L_Deg_GyroAngleDeg,
-                                                  V_ADAS_PathNum,
-                                                  V_ADAS_Auto_PathName);
+                                                  LeADAS_b_X_Mode,
+                                                  VeGRY_Deg_GyroRollAngleDegrees);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
     break;
@@ -469,7 +472,7 @@ if (toggle){
     *L_Pct_FwdRev = 0;
     *L_Pct_Strafe = 0;
     *L_Pct_Rotate = 0;
-    *L_Pct_Intake = 0;
+    *LeADAS_b_X_Mode = false;
     *L_VisionTargetingRequest = false;
     break;
   }

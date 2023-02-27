@@ -218,6 +218,7 @@ bool ADAS_MN_Main(T_RobotState         L_RobotState,
   case E_ADAS_DM_CubeAlign:
   case E_ADAS_DM_ConeAlign:
   case E_ADAS_DM_AutoBalance:
+  case E_ADAS_MoveToTag:
   default:
     LeADAS_b_MN_Complete = ManipulatorScheduelerAuton();
   break;

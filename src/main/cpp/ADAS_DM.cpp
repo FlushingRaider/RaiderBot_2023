@@ -45,6 +45,7 @@ bool                      VeADAS_b_DM_AutoBalanceInit = false;
 bool                      VeADAS_b_DM_AutoBalancePositive = false;
 bool                      VeADAS_b_DM_AutoBalanceFastSearch = false;
 double                    VeADAS_t_DM_AutoBalanceDbTm = 0.0;
+double                    VeADAS_t_DM_AutoBalanceHoldTm = 0.0;
 double                    VeADAS_Deg_DM_AutoBalanceErrorPrev = 0;
 double                    VeADAS_Deg_DM_AutoBalanceIntegral = 0;
 
@@ -142,6 +143,7 @@ void ADAS_DM_Reset(void)
   VeADAS_b_DM_AutoBalancePositive = false;
   VeADAS_b_DM_AutoBalanceFastSearch = false;
   VeADAS_t_DM_AutoBalanceDbTm = 0.0;
+  VeADAS_t_DM_AutoBalanceHoldTm = 0.0;
   VeADAS_Deg_DM_AutoBalanceErrorPrev = 0;
   VeADAS_Deg_DM_AutoBalanceIntegral = 0;
   }
@@ -780,6 +782,7 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
                           double *L_Pct_Strafe,
                           double *L_Pct_Rotate,
                           bool   *L_SD_RobotOriented,
+                          bool   *LeADAS_b_X_Mode,
                           double  LeADAS_Deg_GyroRoll)
   {
   bool   LeADAS_b_DM_StateComplete = false;
@@ -849,6 +852,7 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
     /* Reset the time, proceed to next state. */
     LeADAS_b_DM_StateComplete = true;
     VeADAS_t_DM_AutoBalanceDbTm = 0;
+    VeADAS_t_DM_AutoBalanceHoldTm += C_ExeTime;
     }
 
   if (LeADAS_b_DM_StateComplete == false)
@@ -872,6 +876,20 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
      *L_Pct_Strafe = 0;
      *L_Pct_Rotate = 0;
      *L_SD_RobotOriented = true;
+     *LeADAS_b_X_Mode = false;
+    }
+  else if ((VeADAS_t_DM_AutoBalanceHoldTm >= C_ExeTime) &&
+           (VeADAS_t_DM_AutoBalanceHoldTm <= KeADAS_t_DM_AutoBalanceHold))
+    {
+    *L_Pct_FwdRev = 0;
+    *L_Pct_Strafe = 0;
+    *L_Pct_Rotate = 0;
+    *L_SD_RobotOriented = false;
+    *LeADAS_b_X_Mode = true;
+    VeADAS_t_DM_AutoBalanceHoldTm += C_ExeTime;
+    VeADAS_t_DM_AutoBalanceDbTm = 0;
+    LeADAS_b_DM_StateComplete = false;
+    VeADAS_b_DM_AutoBalanceInit = false;
     }
   else
     {
@@ -879,8 +897,10 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
     *L_Pct_FwdRev = 0;
     *L_Pct_Strafe = 0;
     *L_Pct_Rotate = 0;
-    *L_SD_RobotOriented = true;
+    *L_SD_RobotOriented = false;
+    *LeADAS_b_X_Mode = false;
     VeADAS_t_DM_AutoBalanceDbTm = 0;
+    VeADAS_t_DM_AutoBalanceHoldTm = 0.0;
     LeADAS_b_DM_StateComplete = true;
     VeADAS_b_DM_AutoBalanceInit = false;
     }

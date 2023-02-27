@@ -271,6 +271,7 @@ void Robot::RobotPeriodic()
                                           &V_ADAS_Pct_SD_Rotate,
                                           &V_ADAS_Pct_BH_Intake,
                                           &V_ADAS_SD_RobotOriented,
+                                          &VeADAS_b_X_Mode,
                                           &V_ADAS_Vision_RequestedTargeting,
                                           VsCONT_s_DriverInput.b_JoystickActive,
                                           VsCONT_s_DriverInput.b_SwerveGoalAutoCenter,
@@ -292,13 +293,13 @@ void Robot::RobotPeriodic()
                    VsCONT_s_DriverInput.deg_SwerveRotate,      // rotate the robot joystick
                    VsCONT_s_DriverInput.v_SwerveSpeed,         // extra speed trigger
                    VsCONT_s_DriverInput.b_SwerveRotateTo0,     // auto rotate to 0 degrees
-                   VsCONT_s_DriverInput.b_ZeroGyro,            // auto rotate to 90 degrees
-                   false,
+                   VsCONT_s_DriverInput.b_ZeroGyro,
+                   VeADAS_b_X_Mode,                            // X mode req from ADAS
                    V_ADAS_ActiveFeature,
                    V_ADAS_Pct_SD_FwdRev,
                    V_ADAS_Pct_SD_Strafe,
                    V_ADAS_Pct_SD_Rotate,
-                   V_ADAS_SD_RobotOriented, // ToDo: Remove, not used
+                   V_ADAS_SD_RobotOriented,
                    VeGRY_Deg_GyroYawAngleDegrees,
                    VeGRY_Rad_GyroYawAngleRad,
                    &VaENC_Deg_WheelAngleFwd[0],
@@ -349,7 +350,7 @@ void Robot::RobotPeriodic()
                              m_IntakeRollersPID);
 
   /* Set light control outputs here */
-  do_CameraLightControl.Set(VeLC_b_CameraLightCmndOn);
+  // do_CameraLightControl.Set(VeLC_b_CameraLightCmndOn);
   m_vanityLightControler.Set(VeLC_Cmd_VanityLightCmnd);
 #endif
 

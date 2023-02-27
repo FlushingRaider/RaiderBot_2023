@@ -739,6 +739,9 @@ const double KeADAS_Deg_DM_AutoBalanceDb = 1.8;
 /* KeADAS_t_DM_AutoBalanceDb: This is the debounce time for the DM auto balance state. [seconds] */
 const double KeADAS_t_DM_AutoBalanceDb = 0.06;
 
+/* KeADAS_t_DM_AutoBalanceHold: This is the amount of time for the DM auto balance to hold. [seconds] */
+const double KeADAS_t_DM_AutoBalanceHold = 10;
+
 /* KeADAS_k_DM_AutoBalanceFastPID: This is the PID gains for the auto balance. */
 const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.4,       // P Gx
                                                              0.000001,    // I Gx
