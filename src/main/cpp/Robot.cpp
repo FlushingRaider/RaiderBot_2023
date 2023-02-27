@@ -29,8 +29,7 @@
 
 T_RobotState VeROBO_e_RobotState = E_Init;
 frc::DriverStation::Alliance VeROBO_e_AllianceColor = frc::DriverStation::Alliance::kInvalid;
-double V_MatchTimeRemaining = 0;
-TsRobotMotorCmnd VsRobotMotorCmnd;
+double VeROBO_t_MatchTimeRemaining = 0;
 bool VeROBO_b_TestState = false;
 
 bool FakeButton;
@@ -42,6 +41,7 @@ bool FakeButton;
  ******************************************************************************/
 void Robot::RobotMotorCommands()
 {
+  bool LeROBO_b_IntakeArmExtend = false;
   // Motor output commands:
   // Swerve drive motors
   // Swerve stear motors
@@ -72,27 +72,21 @@ void Robot::RobotMotorCommands()
   m_ArmPivotPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot], rev::ControlType::kPosition);
   m_WristPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist], rev::ControlType::kPosition);
   // m_GripperPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper], rev::ControlType::kVelocity);
-  m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]); // This puts the gripper into a power control setup, not speed/postion
+  m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]);   // This puts the gripper into a power control setup, not speed/postion
   m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
-
-  // m_TurretRotate.Set(ControlMode::Position, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
-  // m_LinearSlide.Set(ControlMode::Position,  VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
-
-  m_TurretRotate.Set(ControlMode::PercentOutput, 0);
-  m_LinearSlide.Set(ControlMode::PercentOutput, 0);
+  m_TurretRotate.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
+  m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
 
 
   frc::SmartDashboard::PutNumber("LinearCmnd", VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
-  {
-    m_PCM_Valve.Set(true);
-  }
-  else
-  {
-    m_PCM_Valve.Set(false);
-  }
-#endif
+   {
+   LeROBO_b_IntakeArmExtend = true;
+   }
+
+  m_PCM_Valve.Set(LeROBO_b_IntakeArmExtend);
+  #endif
 }
 
 /******************************************************************************
@@ -104,7 +98,7 @@ void Robot::RobotInit()
 {
   VeROBO_e_RobotState = E_Init;
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
-  V_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
+  VeROBO_t_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
   VeROBO_b_TestState = false;
 #ifdef CompBot
   bool CompressorEnable = m_pcmCompressor.Enabled();
@@ -153,31 +147,31 @@ void Robot::RobotInit()
   m_IntakeRollers.SetSmartCurrentLimit(KeMAN_k_ManipulatorNeoCurrentLim);
 
   m_TurretRotate.ConfigFactoryDefault();
-  m_TurretRotate.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
+  m_TurretRotate.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, KeROBO_t_MotorTimeoutMs);
   m_TurretRotate.SetSensorPhase(true);
   m_TurretRotate.SetSelectedSensorPosition(0);
-  m_TurretRotate.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
-  m_TurretRotate.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
-  m_TurretRotate.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
-  m_TurretRotate.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
-  m_TurretRotate.Config_kF(0, KaMAN_k_TurretPID_Gx[E_kFF], K_t_TurretTimeoutMs);
-  m_TurretRotate.Config_kP(0, KaMAN_k_TurretPID_Gx[E_kP], K_t_TurretTimeoutMs);
-  m_TurretRotate.Config_kI(0, KaMAN_k_TurretPID_Gx[E_kI], K_t_TurretTimeoutMs);
-  m_TurretRotate.Config_kD(0, KaMAN_k_TurretPID_Gx[E_kD], K_t_TurretTimeoutMs);
+  m_TurretRotate.ConfigNominalOutputForward(0, KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.ConfigNominalOutputReverse(0, KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.ConfigPeakOutputForward(1, KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.ConfigPeakOutputReverse(-1, KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.Config_kF(0, KaMAN_k_TurretPID_Gx[E_kFF], KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.Config_kP(0, KaMAN_k_TurretPID_Gx[E_kP], KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.Config_kI(0, KaMAN_k_TurretPID_Gx[E_kI], KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.Config_kD(0, KaMAN_k_TurretPID_Gx[E_kD], KeROBO_t_MotorTimeoutMs);
 
   m_LinearSlide.ConfigFactoryDefault();
-  m_LinearSlide.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, K_t_TurretTimeoutMs);
+  m_LinearSlide.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, KeROBO_t_MotorTimeoutMs);
   m_LinearSlide.SetSensorPhase(true);
   m_LinearSlide.SetInverted(true);
   m_LinearSlide.SetSelectedSensorPosition(0);
-  m_LinearSlide.ConfigNominalOutputForward(0, K_t_TurretTimeoutMs);
-  m_LinearSlide.ConfigNominalOutputReverse(0, K_t_TurretTimeoutMs);
-  m_LinearSlide.ConfigPeakOutputForward(1, K_t_TurretTimeoutMs);
-  m_LinearSlide.ConfigPeakOutputReverse(-1, K_t_TurretTimeoutMs);
-  m_LinearSlide.Config_kF(0, KaMAN_k_LinearSlidePID_Gx[E_kFF], K_t_TurretTimeoutMs);
-  m_LinearSlide.Config_kP(0, KaMAN_k_LinearSlidePID_Gx[E_kP], K_t_TurretTimeoutMs);
-  m_LinearSlide.Config_kI(0, KaMAN_k_LinearSlidePID_Gx[E_kI], K_t_TurretTimeoutMs);
-  m_LinearSlide.Config_kD(0, KaMAN_k_LinearSlidePID_Gx[E_kD], K_t_TurretTimeoutMs);
+  m_LinearSlide.ConfigNominalOutputForward(0, KeROBO_t_MotorTimeoutMs);
+  m_LinearSlide.ConfigNominalOutputReverse(0, KeROBO_t_MotorTimeoutMs);
+  m_LinearSlide.ConfigPeakOutputForward(1, KeROBO_t_MotorTimeoutMs);
+  m_LinearSlide.ConfigPeakOutputReverse(-1, KeROBO_t_MotorTimeoutMs);
+  m_LinearSlide.Config_kF(0, KaMAN_k_LinearSlidePID_Gx[E_kFF], KeROBO_t_MotorTimeoutMs);
+  m_LinearSlide.Config_kP(0, KaMAN_k_LinearSlidePID_Gx[E_kP], KeROBO_t_MotorTimeoutMs);
+  m_LinearSlide.Config_kI(0, KaMAN_k_LinearSlidePID_Gx[E_kI], KeROBO_t_MotorTimeoutMs);
+  m_LinearSlide.Config_kD(0, KaMAN_k_LinearSlidePID_Gx[E_kD], KeROBO_t_MotorTimeoutMs);
 
   ManipulatorMotorConfigsInit(m_ArmPivotPID,
                               m_WristPID,
@@ -195,9 +189,6 @@ void Robot::RobotInit()
 
   ADAS_DM_ConfigsInit();
   ADAS_MN_ConfigsInit();
-#ifdef OldVision
-  VisionInit(VeROBO_e_AllianceColor);
-#endif
 }
 
 /******************************************************************************
@@ -208,7 +199,7 @@ void Robot::RobotInit()
  ******************************************************************************/
 void Robot::RobotPeriodic()
 {
-  V_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
+  VeROBO_t_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
 
   Joystick1_robot_mapping(c_joyStick.GetRawButton(7),
                           c_joyStick.GetRawButton(8),
@@ -302,7 +293,7 @@ void Robot::RobotPeriodic()
                    VsCONT_s_DriverInput.v_SwerveSpeed,         // extra speed trigger
                    VsCONT_s_DriverInput.b_SwerveRotateTo0,     // auto rotate to 0 degrees
                    VsCONT_s_DriverInput.b_ZeroGyro,            // auto rotate to 90 degrees
-                   VsCONT_s_DriverInput.b_RobotFieldOrientedReq,
+                   false,
                    V_ADAS_ActiveFeature,
                    V_ADAS_Pct_SD_FwdRev,
                    V_ADAS_Pct_SD_Strafe,
@@ -315,7 +306,7 @@ void Robot::RobotPeriodic()
                    &VaDRC_RPM_WheelSpeedCmnd[0],
                    &VaDRC_Pct_WheelAngleCmnd[0]);
 
-  LightControlMain(V_MatchTimeRemaining,
+  LightControlMain(VeROBO_t_MatchTimeRemaining,
                    VeROBO_e_AllianceColor,
                    VsCONT_s_DriverInput.b_CameraLight,
                    V_ADAS_ActiveFeature,
@@ -324,24 +315,6 @@ void Robot::RobotPeriodic()
                    &VeLC_b_CameraLightCmndOn,
                    &VeLC_Cmd_VanityLightCmnd);
 
-#ifdef CompBot
-#ifdef OldVision
-  VisionRun(pc_Camera1.GetLatestResult(),
-            pc_Camera2.GetLatestResult(),
-            V_ADAS_Vision_RequestedTargeting,
-            VsCONT_s_DriverInput.b_VisionDriverModeOverride,
-            &VeVIS_b_VisionDriverRequestedModeCmnd);
-
-  pc_Camera1.SetDriverMode(VeVIS_b_VisionDriverRequestedModeCmnd);
-  pc_Camera2.SetDriverMode(VeVIS_b_VisionDriverRequestedModeCmnd);
-
-  if (VeVIS_b_VisionDriverRequestedModeCmnd == false)
-  {
-    // pc_Camera1.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam1]);  // Shouldn't need this one so long as Cam1 remains as top
-    pc_Camera2.SetPipelineIndex(VnVIS_int_VisionCameraIndex[E_Cam2]); // Need to comment this out if Photon Vision is being calibrated/tweaked
-  }
-#endif
-#endif
 #ifdef NewVision
   // FakeButton =frc::SmartDashboard::GetBoolean("Fake auto target buton", false);
   // FakeButton = false;
@@ -413,9 +386,6 @@ void Robot::AutonomousInit()
   ManipulatorControlInit();
   ADAS_Main_Reset();
   OdometryInit();
-#ifdef OldVision
-  VisionInit(VeROBO_e_AllianceColor);
-#endif
 }
 
 /******************************************************************************
@@ -446,9 +416,6 @@ void Robot::TeleopInit()
   BallHandlerInit();
   ManipulatorControlInit();
   OdometryInit();
-#ifdef OldVision
-  VisionInit(VeROBO_e_AllianceColor);
-#endif
 }
 
 /******************************************************************************
@@ -513,13 +480,15 @@ void Robot::TestPeriodic()
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide]);
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
-  {
-    m_PCM_Valve.Set(true);
-  }
+   {
+   
+   LeROBO_b_Pneuaticaon = true;
+   }
   else
-  {
-    m_PCM_Valve.Set(false);
-  }
+   {
+   LeROBO_b_Pneuaticaon = false;
+   }
+  m_PCM_Valve.Set(LeROBO_b_Pneuaticaon);
 #endif
 }
 

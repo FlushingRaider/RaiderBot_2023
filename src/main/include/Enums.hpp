@@ -20,14 +20,6 @@ typedef enum T_RobotCorner
 } T_RobotCorner;
 
 
-typedef enum T_RoboShooter
-{
-  E_rightShooter,
-  E_leftShooter,
-  E_RoboShooter
-} T_RoboShooter;
-
-
 typedef enum T_PID_Cal
 {
   E_P_Gx,
@@ -62,15 +54,6 @@ typedef enum T_PID_SparkMaxCal
 } T_PID_SparkMaxCal;
 
 
-typedef enum T_AutoTargetStates
-{
-  E_NotActive, //not doing anything
-  E_TargetFoundRotateBot, //target locked
-  E_RollerSpinUp, //we movin
-  E_MoveBallsToRollers, // get ready
-  E_AutoTargetStatesSz // 
-} T_AutoTargetStates;
-
 typedef enum T_LauncherStates
 {
   E_LauncherNotActive,
@@ -94,12 +77,15 @@ typedef enum T_LED_LightCmnd
   E_LED_Orange
 } T_LED_LightCmnd;
 
+/* TeMAN_ManipulatorStates: States of the manipulator for the 2023 game. */
 typedef enum TeMAN_ManipulatorStates
 {
  E_MAN_Init,
  E_MAN_Driving,
- E_MAN_PositioningHigh,
- E_MAN_PositioningLow,
+ E_MAN_PositioningHighCube,
+ E_MAN_PositioningHighCone,
+ E_MAN_PositioningLowCube,
+ E_MAN_PositioningLowCone,
  E_MAN_MidTransition,
  E_MAN_MainIntake,
  E_MAN_FloorIntake,
@@ -135,17 +121,6 @@ typedef enum T_ADAS_BT_BallTarget /* aka GetDaBalls */
   E_ADAS_BT_AutoCenter,
   E_ADAS_BT_IntakeAndRun
 } T_ADAS_BT_BallTarget;
-
-
-// typedef enum T_ADAS_MN_Manipulator
-// {
-//   E_ADAS_MN_Disabled,
-//   E_ADAS_MN_MoveToTag
-// }T_ADAS_MN_Manipulator;
-
-
-
-
 
 typedef enum T_ADAS_ActiveFeature
 {
@@ -191,7 +166,6 @@ typedef enum T_ADAS_ActiveAutonFeature
   E_ADAS_AutonDriveAndShootAuto3,// Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
   E_ADAS_AutonDrivePath1      
 } T_ADAS_ActiveAutonFeature;
-
 
 typedef enum TeMAN_e_ManipulatorActuator
 {
@@ -250,20 +224,21 @@ struct RobotUserInput
   bool                  b_AutoIntake;
   bool                  b_JoystickActive;
   bool                  b_VisionDriverModeOverride;
-  bool                  b_RobotFieldOrientedReq;  // ToDo: Remove
   bool                  b_IntakeRollersTest; //21
   bool                  b_ResetManipulatorEnocders; // 21
   bool                  b_IntakeArmIn;  // 21
-  bool                  b_IntakeArmOutTest; // 21
-  double                pct_Turret; // 21
-  double                pct_Wrist; // 21
-  double                pct_ArmPivot; // 21
-  double                pct_LinearSlide; // 21
-  double                pct_Claw; // 21
+  bool                  b_IntakeArmOutTest;
+  double                Pct_TurretTest;
+  double                Pct_WristTest;
+  double                Pct_ArmPivotTest;
+  double                Pct_LinearSlideTest;
+  double                pct_IntakeRollerTest;
   bool                  b_MainIntakeOut;
   bool                  b_DrivingPosition;
-  bool                  b_LowerScore;
-  bool                  b_UpperScore;
+  bool                  b_LowPositionCube;
+  bool                  b_HighPositionCube;
+  bool                  b_LowPositionCone;
+  bool                  b_HighPositionCone;
   bool                  b_DropGamePiece;
   bool                  b_AutoBalance;
   bool                  b_CubeAlign;
@@ -271,8 +246,6 @@ struct RobotUserInput
   bool                  b_VisionButton;
   bool                  b_ArmDown;  //back pickup
 };
-
-
 
 struct TeMAN_MotorControl
 {
@@ -291,13 +264,6 @@ struct TeADAS_Controls
   double                  Pct_SD_Strafe;
   double                  Pct_SD_Rotate;
   double                  b_SD_RobotOriented;
-};
-
-struct TsRobotMotorCmnd
-{
-  T_MotorControlType    e_TurretControlType;
-  double                pct_TurretCmnd;
-  double                deg_TurretCmnd;
 };
 
 #endif

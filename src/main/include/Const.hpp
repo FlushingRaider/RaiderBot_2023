@@ -6,7 +6,7 @@
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
 #define Manipulator_Test
 // Define the bot type: CompBot, PracticeBot
-#define PracticeBot
+#define CompBot
 
 #define NewVision // NewVision or OldVision
 
@@ -113,11 +113,8 @@ const double KeENC_In_WheelCircumfrence = 12.566; // Circumferance of wheel, in 
 
 
 // Turret cals
-/* K_t_TurretTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */
-const double K_t_TurretTimeoutMs = 30;
-
-/* K_Pct_TurretOpenLoopCmnd: Percent motor command sent to turrent when in open loop control. */
-const double K_Pct_TurretOpenLoopCmnd = 0.1;
+/* KeROBO_t_MotorTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */
+const double KeROBO_t_MotorTimeoutMs = 30;
 
 /* KeENC_k_TurretEncoderScaler: Scalar multiplied against the encoder read to translate to degrees relative to turret. */
 const double KeENC_k_TurretEncoderScaler = -0.025947816048;
@@ -146,58 +143,7 @@ const double KeENC_RPM_Gripper = 1.0;
 /* KeENC_Deg_Wrist: Actual position of the wrist, how much we've rotated. */
 const double KeENC_Deg_Wrist = -1.16883;
 
-// Lift related cals
-const double K_lift_S2_YD = 8; //initial lift of the robot
-const double K_lift_S3_YD = 8; //stays the same
-const double K_lift_S4_YD = 26; //Move YD off of hooks
-const double K_lift_S5_YD = 26; //stays the same
-const double K_lift_S6_YD = 38; //lower YD below the rung
-const double K_lift_S7_YD = 165; //
-const double K_lift_S8_YD = 210; //
-const double K_lift_S9_YD = 210; //stays the same
-const double K_lift_S10_YD = 170; //
-const double K_lift_S11_YD = 140; //
-
-const double K_lift_max_YD = 210; //max allowed travel distance of YD
-const double K_lift_min_YD = 0; //it crunch
-const double K_lift_enable_auto_YD = 150; //distance the lift must be above to allow the driver to enable the auto climb
-const double K_lift_deadband_YD = 1.1; //it's a deadband for the y lift yeah
-const double K_lift_driver_up_rate_YD = 1.8; // This is the amount of traversal added per loop (0.02 sec)
-const double K_lift_driver_down_rate_YD = 0.3; // This is the amount of traversal added per loop (0.02 sec)
-const double K_Manipulator_Driver_manual_MoterTurret = 0.25; // Manual override power
-const double K_Manipulator_Driver_manual_MoterArmPivot = -0.25; // Manual override power
-const double K_lift_autoResetDown_YD = -0.20; // Auto reset power
-
-const double K_lift_S3_XD = 30; //move XD onto the rungs
-const double K_lift_S4_XD = 30; //stays the same
-const double K_lift_S5_XD = 32; //tilt the robot
-const double K_lift_S6_XD = 34; //connect YD with the upper rungs
-const double K_lift_S7_XD = 133; //
-const double K_lift_S8_XD = 133; //stays the same
-const double K_lift_S9_XD = 122; //
-const double K_lift_S10_XD = 122; //stays the same
-const double K_lift_S11_XD = 0; //
-
-const double K_lift_max_XD = 133; //max allowed travel distance of XD
-const double K_lift_min_XD = 0; //we don't want XD to past this or it crunch
-const double K_lift_deadband_XD = 0.7; //it's a deadband for the x lift yeah
-const double K_lift_driver_manual_forward_XD = 0.15; // Manual override power
-const double K_lift_driver_manual_back_XD = -0.15; // Manual override power
-
-const double K_Lift_deadband_timer = 0.035; //keep the deadband for a certain amount of time [seconds]
-
-const double K_LiftPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
-                                                   0.000001, // kI
-                                                   0.002000, // kD
-                                                   0.0,      // kIz
-                                                   0.0,      // kFF
-                                                   1.0,      // kMaxOutput
-                                                  -1.0,      // kMinOutput
-                                                   1.05,     // kMaxVel - 0.93
-                                                   0.5,      // kMinVel
-                                                   0.0,      // kMaxAcc
-                                                   0.0};     // kAllErr
-
+// Manipulator related cals
 /* KeMAN_k_ManipulatorNeoCurrentLim: Max allowed current going to each Neo 550 used in the manipulator. */
 const double KeMAN_k_ManipulatorNeoCurrentLim = 20;
 
@@ -263,36 +209,38 @@ const double KaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz] = { 0.00055,  // k
                                                                   0.0};     // kAllErr
 
 /* KaMAN_k_TurretPID_Gx: PID gains for the turret control. */
-const double KaMAN_k_TurretPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
-                                                           0.000001, // kI
-                                                           0.002000, // kD
-                                                           0.0,      // kIz
-                                                           0.0,      // kFF
-                                                           1.0,      // kMaxOut
-                                                          -1.0,      // kMinOut
-                                                           1.05,     // kMaxVel
-                                                           0.5,      // kMinVel
-                                                           0.0,      // kMaxAcc
-                                                           0.0};     // kAllErr
+const double KaMAN_k_TurretPID_Gx[E_PID_CalSz] = { 0.1,      // P Gx
+                                                   0.000001,  // I Gx
+                                                   0.002000, // D Gx 
+                                                   1.0,       // P UL
+                                                  -1.0,       // P LL
+                                                   0.15,      // I UL
+                                                  -0.15,      // I LL
+                                                   1.0,       // D UL
+                                                  -1.0,       // D LL
+                                                   1.0,       // Max upper
+                                                  -1.0};      // Max lower
 
 /* KaMAN_k_LinearSlidePID_Gx: PID gains for the linear slide control. */
-const double KaMAN_k_LinearSlidePID_Gx[E_PID_SparkMaxCalSz] = { 0.05,      // kP
-                                                                0.000001, // kI
-                                                                0.002000, // kD
-                                                                0.0,      // kIz
-                                                                0.0,      // kFF
-                                                                1.0,      // kMaxOut
-                                                               -1.0,      // kMinOut
-                                                                1.05,     // kMaxVel
-                                                                0.5,      // kMinVel
-                                                                0.0,      // kMaxAcc
-                                                                0.0};     // kAllErr
+const double KaMAN_k_LinearSlidePID_Gx[E_PID_CalSz] = { 0.1,      // P Gx
+                                                        0.000001,  // I Gx
+                                                        0.002000, // D Gx 
+                                                        1.0,       // P UL
+                                                       -1.0,       // P LL
+                                                        0.15,      // I UL
+                                                       -0.15,      // I LL
+                                                        1.0,       // D UL
+                                                       -1.0,       // D LL
+                                                        1.0,       // Max upper
+                                                       -1.0};      // Max lower
 
 /* KaMAN_Deg_TurretAngle: sets turret final positons for each state */
 const double KaMAN_Deg_TurretAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                       0.0,  // Driving
-                                                      180.0,  // Positioning High
-                                                      180.0,  // Positioning Low
+                                                      180.0,  // Positioning High Cube
+                                                      180.0,  // Positioning High Cone
+                                                      180.0,  // Positioning Low Cube
+                                                      180.0,  // Positioning Low Cone
                                                       92.24,  // Mid Transition
                                                       0.0,  // Main Intake
                                                       180.0}; // Floor Intake
@@ -303,8 +251,10 @@ const double KeMAN_DegS_TurretRate = 0.0;
 /* KaMAN_Deg_TurretDb: Sets turret dead band */
 const double KaMAN_Deg_TurretDb[E_MAN_State_Sz] = {0.0,  // Init
                                                    0.0,  // Driving
-                                                   0.0,  // Positioning High
-                                                   0.0,  // Positioning Low
+                                                   0.0,  // Positioning High Cube
+                                                   0.0,  // Positioning High Cone
+                                                   0.0,  // Positioning Low Cube
+                                                   0.0,  // Positioning Low Cone
                                                    0.0,  // Mid Transition
                                                    0.0,  // Main Intake
                                                    0.0}; // Floor Intake
@@ -312,8 +262,10 @@ const double KaMAN_Deg_TurretDb[E_MAN_State_Sz] = {0.0,  // Init
 /* KaMAN_Deg_ArmPivotAngle: sets Arm Pivot final positons for each state */
 const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                         0.0,  // Driving
-                                                        105.45,  // Positioning High
-                                                        87.89,  // Positioning Low
+                                                        105.45,  // Positioning High Cube
+                                                        105.45,  // Positioning High Cone
+                                                        87.89,  // Positioning Low Cube
+                                                        87.89,  // Positioning Low Cone
                                                         -3.45,  // Mid Transition
                                                         23.19,  // Main Intake
                                                         -3.24}; // Floor Intake
@@ -324,8 +276,10 @@ const double KeMAN_DegS_ArmPivotRate = 0.3;
 /* KaMAN_Deg_ArmPivotDb: Sets Arm Pivot dead bandl */
 const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {1.0,  // Init
                                                      1.0,  // Driving
-                                                     1.0,  // Positioning High
-                                                     1.0,  // Positioning Low
+                                                     1.0,  // Positioning High Cube
+                                                     1.0,  // Positioning High Cone
+                                                     1.0,  // Positioning Low Cube
+                                                     1.0,  // Positioning Low Cone
                                                      1.0,  // Mid Transition
                                                      1.0,  // Main Intake
                                                      1.0}; // Floor Intake
@@ -333,8 +287,10 @@ const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {1.0,  // Init
 /* KaMAN_In_LinearSlidePosition: sets LInear Slide final positons for each state */
 const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {0.0,  // Init
                                                              3.09,  // Driving
-                                                             -10.78,  // Positioning High
-                                                             12.8,  // Positioning Low
+                                                             -10.78,  // Positioning High Cube
+                                                             -10.78,  // Positioning High Cone
+                                                             12.8,  // Positioning Low Cube
+                                                             12.8,  // Positioning Low Cone
                                                              3.4,  // Mid Transition
                                                              -1.67,  // Main Intake
                                                              -12.94}; // Floor Intake
@@ -345,8 +301,10 @@ const double KeMAN_InS_LinearSlideRate = 0.0; // Drop-off
 /* KaMAN_In_LinearSlideDb: Sets LInear Slide dead band. */
 const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.0,  // Init
                                                        0.0,  // Driving
-                                                       0.0,  // Positioning High
-                                                       0.0,  // Positioning Low
+                                                       0.0,  // Positioning High Cube
+                                                       0.0,  // Positioning High Cone
+                                                       0.0,  // Positioning Low Cube
+                                                       0.0,  // Positioning Low Cone
                                                        0.0,  // Mid Transition
                                                        0.0,  // Main Intake
                                                        0.0}; // Floor Intake
@@ -354,8 +312,10 @@ const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.0,  // Init
 /* KaMAN_Deg_WristAngle: sets Wrist final angle for each state */
 const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                      30.37,  // Driving
-                                                     -6.29,  // Positioning High
-                                                     2.34,  // Positioning Low
+                                                     -6.29,  // Positioning High Cube
+                                                     -6.29,  // Positioning High Cone
+                                                     2.34,  // Positioning Low Cube
+                                                     2.34,  // Positioning Low Cone
                                                      70.69,  // Mid Transition
                                                      18.11,  // Main Intake
                                                      71.96}; // Floor Intake
@@ -366,8 +326,10 @@ const double KeMAN_DegS_WristRate = 0.75;
 /* KaMAN_Deg_WristDb: sets Wrist final angle for each state */
 const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {0.0,  // Init
                                                   0.0,  // Driving
-                                                  0.0,  // Positioning High
-                                                  0.0,  // Positioning Low
+                                                  0.0,  // Positioning High Cube
+                                                  0.0,  // Positioning High Cone
+                                                  0.0,  // Positioning Low Cube
+                                                  0.0,  // Positioning Low Cone
                                                   0.0,  // Mid Transition
                                                   0.0,  // Main Intake
                                                   0.0}; // Floor Intake
@@ -385,45 +347,53 @@ const double KeMAN_k_GripperIntake = 0.0;
 const double KeMAN_t_GripperOnTm = 1.0;
 
 /* KaMAN_RPM_IntakeSpeed: sets Intake speed final speed for each state */
-const double KaMAN_RPM_IntakeSpeed[E_MAN_State_Sz] = {0.0,  // Init
-                                                      0.0,  // Driving
-                                                      0.0,  // Positioning High
-                                                      0.0,  // Positioning Low
-                                                      0.0,  // Mid Transition
-                                                      50.0,  // Main Intake
-                                                      0.0}; // Floor Intake
+const double KaMAN_RPM_IntakeSpeed[E_MAN_State_Sz] = {  0.0,  // Init
+                                                        0.0,  // Driving
+                                                        0.0,  // Positioning High Cube
+                                                        0.0,  // Positioning High Cone
+                                                        0.0,  // Positioning Low Cube
+                                                        0.0,  // Positioning Low Cone
+                                                        0.0,  // Mid Transition
+                                                      200.0,  // Main Intake
+                                                        0.0}; // Floor Intake
 
 /* KeMAN_RPMS_IntakeRate: Sets Intake roller transition rate. */
 const double KeMAN_RPMS_IntakeRate = 0.0;
 
 /* KaMAN_RPM_IntakeSpeedDb: Sets Intake speed dead band. */
-const double KaMAN_RPM_IntakeSpeedDb[E_MAN_State_Sz] = {0.0,  // Init
-                                                        0.0,  // Driving
-                                                        0.0,  // Positioning High
-                                                        0.0,  // Positioning Low
-                                                        0.0,  // Mid Transition
-                                                        0.0,  // Main Intake
-                                                        0.0}; // Floor Intake
+const double KaMAN_RPM_IntakeSpeedDb[E_MAN_State_Sz] = {10.0,  // Init
+                                                        10.0,  // Driving
+                                                        10.0,  // Positioning High Cube
+                                                        10.0,  // Positioning High Cone
+                                                        10.0,  // Positioning Low Cube
+                                                        10.0,  // Positioning Low Cone
+                                                        10.0,  // Mid Transition
+                                                        10.0,  // Main Intake
+                                                        10.0}; // Floor Intake
 
 /* KaMAN_e_IntakePneumatics: sets the Pneumatics either true (arm extended) or false (arm retracted) for each state */
 const T_MotorControlType KaMAN_e_IntakePneumatics[E_MAN_State_Sz] = {E_MotorRetract,  // Init
                                                                      E_MotorRetract,  // Driving
-                                                                     E_MotorRetract,  // Positioning High
-                                                                     E_MotorRetract,  // Positioning Low
+                                                                     E_MotorRetract,  // Positioning High Cube
+                                                                     E_MotorRetract,  // Positioning High Cone
+                                                                     E_MotorRetract,  // Positioning Low Cube
+                                                                     E_MotorRetract,  // Positioning Low Cone
                                                                      E_MotorRetract,  // Mid Transition
-                                                                     E_MotorRetract,  // Main Intake
+                                                                     E_MotorExtend,  // Main Intake
                                                                      E_MotorRetract}; // Floor Intake
 
 /* KaMAN_e_ControllingTable: Table that contains the commanded state of the manipulator and intake based on the current attained state and schedueld state. */
 const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_MAN_State_Sz][E_MAN_State_Sz] =  // [Sched][Attnd]
   {
-    {E_MAN_Init,    E_MAN_Driving,       E_MAN_PositioningHigh, E_MAN_PositioningLow,  E_MAN_MidTransition,   E_MAN_MainIntake, E_MAN_FloorIntake},     // Sched - Init
-    {E_MAN_Driving, E_MAN_Driving,       E_MAN_MidTransition,   E_MAN_MidTransition,   E_MAN_Driving,         E_MAN_Driving,    E_MAN_MidTransition},   // Sched - Driving
-    {E_MAN_Driving, E_MAN_MidTransition, E_MAN_PositioningHigh, E_MAN_PositioningHigh, E_MAN_PositioningHigh, E_MAN_Driving,    E_MAN_PositioningHigh}, // Sched - Positioning High
-    {E_MAN_Driving, E_MAN_MidTransition, E_MAN_PositioningLow,  E_MAN_PositioningLow,  E_MAN_PositioningLow,  E_MAN_Driving,    E_MAN_PositioningLow},  // Sched - Positioning Low
-    {E_MAN_Driving, E_MAN_MidTransition, E_MAN_MidTransition,   E_MAN_MidTransition,   E_MAN_MidTransition,   E_MAN_Driving,    E_MAN_MidTransition},   // Sched - Mid Transition
-    {E_MAN_Driving, E_MAN_MainIntake,    E_MAN_MidTransition,   E_MAN_MidTransition,   E_MAN_Driving,         E_MAN_MainIntake, E_MAN_MidTransition},   // Sched - Main Intake
-    {E_MAN_Driving, E_MAN_FloorIntake,   E_MAN_FloorIntake,     E_MAN_FloorIntake,     E_MAN_FloorIntake,     E_MAN_Driving,    E_MAN_FloorIntake}      // Sched - Floor Intake
+    {E_MAN_Init,    E_MAN_Driving,       E_MAN_PositioningHighCube, E_MAN_PositioningHighCone, E_MAN_PositioningLowCube,  E_MAN_PositioningLowCone,  E_MAN_MidTransition,       E_MAN_MainIntake, E_MAN_FloorIntake},     // Sched - Init
+    {E_MAN_Driving, E_MAN_Driving,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,             E_MAN_Driving,    E_MAN_MidTransition},   // Sched - Driving
+    {E_MAN_Driving, E_MAN_MidTransition, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_Driving,    E_MAN_PositioningHighCube}, // Sched - Positioning High Cube
+    {E_MAN_Driving, E_MAN_MidTransition, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_Driving,    E_MAN_PositioningHighCone}, // Sched - Positioning High Cone
+    {E_MAN_Driving, E_MAN_MidTransition, E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_Driving,    E_MAN_PositioningLowCube},  // Sched - Positioning Low Cube
+    {E_MAN_Driving, E_MAN_MidTransition, E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_Driving,    E_MAN_PositioningLowCone},  // Sched - Positioning Low Cone
+    {E_MAN_Driving, E_MAN_MidTransition, E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,    E_MAN_MidTransition},   // Sched - Mid Transition
+    {E_MAN_Driving, E_MAN_MainIntake,    E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,             E_MAN_MainIntake, E_MAN_MidTransition},   // Sched - Main Intake
+    {E_MAN_Driving, E_MAN_MidTransition, E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_Driving,    E_MAN_FloorIntake}      // Sched - Floor Intake
   };
 
 /* Ball handler (BH) cals: */

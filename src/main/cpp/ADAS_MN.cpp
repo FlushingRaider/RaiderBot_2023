@@ -124,13 +124,21 @@ void ADAS_MN_Reset(void)
     {
       LeADAS_e_MAN_State = E_MAN_Driving;
     }
-  else if (VsCONT_s_DriverInput.b_UpperScore == true)
+  else if (VsCONT_s_DriverInput.b_HighPositionCube == true)
     {
-      LeADAS_e_MAN_State = E_MAN_PositioningHigh;
+      LeADAS_e_MAN_State = E_MAN_PositioningHighCube;
     }
-  else if (VsCONT_s_DriverInput.b_LowerScore == true)
+  else if (VsCONT_s_DriverInput.b_LowPositionCube == true)
     {
-      LeADAS_e_MAN_State = E_MAN_PositioningLow;
+      LeADAS_e_MAN_State = E_MAN_PositioningLowCube;
+    }
+  else if (VsCONT_s_DriverInput.b_HighPositionCone == true)
+    {
+      LeADAS_e_MAN_State = E_MAN_PositioningHighCone;
+    }
+  else if (VsCONT_s_DriverInput.b_LowPositionCone == true)
+    {
+      LeADAS_e_MAN_State = E_MAN_PositioningLowCone;
     }
   else if (VsCONT_s_DriverInput.b_IntakeArmIn = true)
     {

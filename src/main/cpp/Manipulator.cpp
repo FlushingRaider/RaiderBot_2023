@@ -14,6 +14,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/DriverStation.h>
 #include "Const.hpp"
+#include "control_pid.hpp"
 #include "Lookup.hpp"
 #include "Driver_inputs.hpp"
 #include "Encoders.hpp"
@@ -28,12 +29,17 @@ TeMAN_MotorControl VsMAN_s_MotorsTest; // Temporary commands for the motors, not
 TsMAN_Sensor       VsMAN_s_Sensors; // All of the sensor values for the manipulator/intake motors
 double             VaMAN_k_PositionToEncoder[E_MAN_Sz]; // Conversion value to go from desired manipulator position to equivalent encoder position
 
+double             VaMAN_Deg_TurretAngleError;
+double             VaMAN_k_TurretAngleIntegral;
+double             VaMAN_In_LinearSlideError;
+double             VaMAN_k_LinearSlideIntegral;
+
 double VaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz];
 double VaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz];
 double VaMAN_k_GripperPID_Gx[E_PID_SparkMaxCalSz];
 double VaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz];
-double VaMAN_k_TurretPID_Gx[E_PID_SparkMaxCalSz];
-double VaMAN_k_LinearSlidePID_Gx[E_PID_SparkMaxCalSz];
+double VaMAN_k_TurretPID_Gx[E_PID_CalSz];
+double VaMAN_k_LinearSlidePID_Gx[E_PID_CalSz];
 
 bool   VeMAN_b_CriteriaMet = false;
 bool   VeMAN_b_Paused = false; //Checks to see if paused (for testing)
@@ -116,8 +122,14 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers] = KeMAN_RPMS_IntakeRate;
 
+  VaMAN_Deg_TurretAngleError = 0.0;
+  VaMAN_k_TurretAngleIntegral = 0.0;
+  VaMAN_In_LinearSlideError = 0.0;
+  VaMAN_k_LinearSlideIntegral = 0.0;
+
   #ifdef Manipulator_Test
   T_PID_SparkMaxCal LeMAN_i_Index2 = E_kP;
+  T_PID_Cal LeMAN_i_Index3 = E_P_Gx;
 
   for (LeMAN_i_Index2 = E_kP;
        LeMAN_i_Index2 < E_PID_SparkMaxCalSz;
@@ -127,8 +139,14 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
     VaMAN_k_WristPID_Gx[LeMAN_i_Index2] = KaMAN_k_WristPID_Gx[LeMAN_i_Index2];
     VaMAN_k_GripperPID_Gx[LeMAN_i_Index2] = KaMAN_k_GripperPID_Gx[LeMAN_i_Index2];
     VaMAN_k_IntakeRollersPID_Gx[LeMAN_i_Index2] = KaMAN_k_IntakeRollersPID_Gx[LeMAN_i_Index2];
-    VaMAN_k_TurretPID_Gx[LeMAN_i_Index2] = KaMAN_k_TurretPID_Gx[LeMAN_i_Index2];
-    VaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index2] = KaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index2];
+    }
+
+  for (LeMAN_i_Index3 = E_P_Gx;
+       LeMAN_i_Index3 < E_PID_CalSz;
+       LeMAN_i_Index3 = T_PID_Cal(int(LeMAN_i_Index3) + 1))
+    {
+    VaMAN_k_TurretPID_Gx[LeMAN_i_Index3] = KaMAN_k_TurretPID_Gx[LeMAN_i_Index3];
+    VaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3] = KaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3];
     }
 
   // display PID coefficients on SmartDashboard
@@ -160,19 +178,21 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   frc::SmartDashboard::PutNumber("Max Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
   frc::SmartDashboard::PutNumber("Min Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput]);
 
-  // frc::SmartDashboard::PutNumber("P Gain - Turret", KaMAN_k_TurretPID_Gx[E_kP]);
-  // frc::SmartDashboard::PutNumber("I Gain - Turret", KaMAN_k_TurretPID_Gx[E_kI]);
-  // frc::SmartDashboard::PutNumber("D Gain - Turret", KaMAN_k_TurretPID_Gx[E_kD]);
-  // frc::SmartDashboard::PutNumber("I Zone - Turret", KaMAN_k_TurretPID_Gx[E_kIz]);
-  // frc::SmartDashboard::PutNumber("Max Output - Turret", KaMAN_k_TurretPID_Gx[E_kMaxOutput]);
-  // frc::SmartDashboard::PutNumber("Min Output - Turret", KaMAN_k_TurretPID_Gx[E_kMinOutput]);
+  frc::SmartDashboard::PutNumber("P Gain - Turret", KaMAN_k_TurretPID_Gx[E_P_Gx]);
+  frc::SmartDashboard::PutNumber("I Gain - Turret", KaMAN_k_TurretPID_Gx[E_I_Gx]);
+  frc::SmartDashboard::PutNumber("D Gain - Turret", KaMAN_k_TurretPID_Gx[E_D_Gx]);
+  frc::SmartDashboard::PutNumber("I Upper - Turret", KaMAN_k_TurretPID_Gx[E_I_Ul]);
+  frc::SmartDashboard::PutNumber("I Lower - Turret", KaMAN_k_TurretPID_Gx[E_I_Ll]);
+  frc::SmartDashboard::PutNumber("Max Output - Turret", KaMAN_k_TurretPID_Gx[E_Max_Ul]);
+  frc::SmartDashboard::PutNumber("Min Output - Turret", KaMAN_k_TurretPID_Gx[E_Max_Ll]);
 
-  // frc::SmartDashboard::PutNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kP]);
-  // frc::SmartDashboard::PutNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kI]);
-  // frc::SmartDashboard::PutNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kD]);
-  // frc::SmartDashboard::PutNumber("I Zone - Linear", KaMAN_k_LinearSlidePID_Gx[E_kIz]);
-  // frc::SmartDashboard::PutNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_kMaxOutput]);
-  // frc::SmartDashboard::PutNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_kMinOutput]);
+  frc::SmartDashboard::PutNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_P_Gx]);
+  frc::SmartDashboard::PutNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Gx]);
+  frc::SmartDashboard::PutNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_D_Gx]);
+  frc::SmartDashboard::PutNumber("I Upper - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ul]);
+  frc::SmartDashboard::PutNumber("I Lower - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ll]);
+  frc::SmartDashboard::PutNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ul]);
+  frc::SmartDashboard::PutNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
 
   // display secondary coefficients
   frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRate", KeMAN_DegS_TurretRate);
@@ -236,19 +256,21 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   double L_max_Intake = frc::SmartDashboard::GetNumber("Max Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
   double L_min_Intake = frc::SmartDashboard::GetNumber("Min Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput]);
 
-  // double L_p_Turret   = frc::SmartDashboard::GetNumber("P Gain - Turret", KaMAN_k_TurretPID_Gx[E_kP]);
-  // double L_i_Turret   = frc::SmartDashboard::GetNumber("I Gain - Turret", KaMAN_k_TurretPID_Gx[E_kI]);
-  // double L_d_Turret   = frc::SmartDashboard::GetNumber("D Gain - Turret", KaMAN_k_TurretPID_Gx[E_kD]);
-  // double L_iz_Turret  = frc::SmartDashboard::GetNumber("I Zone - Turret", KaMAN_k_TurretPID_Gx[E_kIz]);
-  // double L_max_Turret = frc::SmartDashboard::GetNumber("Max Output - Turret", KaMAN_k_TurretPID_Gx[E_kMaxOutput]);
-  // double L_min_Turret = frc::SmartDashboard::GetNumber("Min Output - Turret", KaMAN_k_TurretPID_Gx[E_kMinOutput]);
+  double L_p_Turret   = frc::SmartDashboard::GetNumber("P Gain - Turret", KaMAN_k_TurretPID_Gx[E_P_Gx]);
+  double L_i_Turret   = frc::SmartDashboard::GetNumber("I Gain - Turret", KaMAN_k_TurretPID_Gx[E_I_Gx]);
+  double L_d_Turret   = frc::SmartDashboard::GetNumber("D Gain - Turret", KaMAN_k_TurretPID_Gx[E_D_Gx]);
+  double L_iu_Turret  = frc::SmartDashboard::GetNumber("I Upper - Turret", KaMAN_k_TurretPID_Gx[E_I_Ul]);
+  double L_il_Turret  = frc::SmartDashboard::GetNumber("I Lower - Turret", KaMAN_k_TurretPID_Gx[E_I_Ll]);
+  double L_max_Turret = frc::SmartDashboard::GetNumber("Max Output - Turret", KaMAN_k_TurretPID_Gx[E_Max_Ul]);
+  double L_min_Turret = frc::SmartDashboard::GetNumber("Min Output - Turret", KaMAN_k_TurretPID_Gx[E_Max_Ll]);
 
-  // double L_p_Linear   = frc::SmartDashboard::GetNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kP]);
-  // double L_i_Linear   = frc::SmartDashboard::GetNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kI]);
-  // double L_d_Linear   = frc::SmartDashboard::GetNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_kD]);
-  // double L_iz_Linear  = frc::SmartDashboard::GetNumber("I Zone - Linear", KaMAN_k_LinearSlidePID_Gx[E_kIz]);
-  // double L_max_Linear = frc::SmartDashboard::GetNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_kMaxOutput]);
-  // double L_min_Linear = frc::SmartDashboard::GetNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_kMinOutput]);
+  double L_p_Linear   = frc::SmartDashboard::GetNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_P_Gx]);
+  double L_i_Linear   = frc::SmartDashboard::GetNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Gx]);
+  double L_d_Linear   = frc::SmartDashboard::GetNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_D_Gx]);
+  double L_iu_Linear  = frc::SmartDashboard::GetNumber("I Upper - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ul]);
+  double L_il_Linear  = frc::SmartDashboard::GetNumber("I Lower - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ll]);
+  double L_max_Linear = frc::SmartDashboard::GetNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ul]);
+  double L_min_Linear = frc::SmartDashboard::GetNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
 
   VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Gripper] = frc::SmartDashboard::GetNumber("Set Position Gripper", 0);
   VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("Set Position Wrist", 0);
@@ -290,6 +312,20 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   if(L_iz_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kIz]) { m_IntakeRollersPID.SetIZone(L_iz_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kIz] = L_iz_Intake; }
   if((L_max_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]) || (L_min_Pivot != VaMAN_k_IntakeRollersPID_Gx[E_kMinOutput])) { m_IntakeRollersPID.SetOutputRange(L_min_Pivot, L_max_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kMinOutput] = L_min_Pivot; VaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput] = L_max_Intake; }
 
+  if(L_p_Turret != VaMAN_k_TurretPID_Gx[E_P_Gx])   { VaMAN_k_TurretPID_Gx[E_P_Gx] = L_p_Turret; }
+  if(L_i_Turret != VaMAN_k_TurretPID_Gx[E_I_Gx])   { VaMAN_k_TurretPID_Gx[E_I_Gx] = L_i_Turret; }
+  if(L_d_Turret != VaMAN_k_TurretPID_Gx[E_D_Gx])   { VaMAN_k_TurretPID_Gx[E_D_Gx] = L_d_Turret; }
+  if(L_iu_Turret != VaMAN_k_TurretPID_Gx[E_I_Ul]) { VaMAN_k_TurretPID_Gx[E_I_Ul] = L_iu_Turret; }
+  if(L_il_Turret != VaMAN_k_TurretPID_Gx[E_I_Ll]) { VaMAN_k_TurretPID_Gx[E_I_Ll] = L_il_Turret; }
+  if((L_max_Turret != VaMAN_k_TurretPID_Gx[E_Max_Ul]) || (L_min_Turret != VaMAN_k_TurretPID_Gx[E_Max_Ll])) { VaMAN_k_TurretPID_Gx[E_Max_Ll] = L_min_Turret; VaMAN_k_TurretPID_Gx[E_Max_Ul] = L_max_Turret; }
+
+  if(L_p_Linear != VaMAN_k_LinearSlidePID_Gx[E_P_Gx])   { VaMAN_k_LinearSlidePID_Gx[E_P_Gx] = L_p_Linear; }
+  if(L_i_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Gx])   { VaMAN_k_LinearSlidePID_Gx[E_I_Gx] = L_i_Linear; }
+  if(L_d_Linear != VaMAN_k_LinearSlidePID_Gx[E_D_Gx])   { VaMAN_k_LinearSlidePID_Gx[E_D_Gx] = L_d_Linear; }
+  if(L_iu_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Ul]) { VaMAN_k_LinearSlidePID_Gx[E_I_Ul] = L_iu_Linear; }
+  if(L_il_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Ll]) { VaMAN_k_LinearSlidePID_Gx[E_I_Ll] = L_il_Linear; }
+  if((L_max_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ul]) || (L_min_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ll])) { VaMAN_k_LinearSlidePID_Gx[E_Max_Ll] = L_min_Linear; VaMAN_k_LinearSlidePID_Gx[E_Max_Ul] = L_max_Linear; }
+
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = frc::SmartDashboard::GetNumber("KeMAN_DegS_TurretRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret]);
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("KeMAN_DegS_ArmPivotRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("KeMAN_InS_LinearSlideRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
@@ -310,6 +346,11 @@ void ManipulatorControlInit()
 
   VeMAN_e_CmndState  = E_MAN_Init;
   VeMAN_e_AttndState = E_MAN_Init;
+
+  VaMAN_Deg_TurretAngleError = 0.0;
+  VaMAN_k_TurretAngleIntegral = 0.0;
+  VaMAN_In_LinearSlideError = 0.0;
+  VaMAN_k_LinearSlideIntegral = 0.0;
 
   VeMAN_b_CriteriaMet = false;
   VeMAN_b_Paused = false;
@@ -363,15 +404,15 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
     }
 
 
-  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Wrist] = LsCONT_s_DriverInput->pct_Wrist * KaMAN_k_ManipulatorTestPower[E_MAN_Wrist];
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Wrist] = LsCONT_s_DriverInput->Pct_WristTest * KaMAN_k_ManipulatorTestPower[E_MAN_Wrist];
 
-  VsMAN_s_Motors.k_MotorTestPower[E_MAN_ArmPivot] = LsCONT_s_DriverInput->pct_ArmPivot * KaMAN_k_ManipulatorTestPower[E_MAN_ArmPivot];
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_ArmPivot] = LsCONT_s_DriverInput->Pct_ArmPivotTest * KaMAN_k_ManipulatorTestPower[E_MAN_ArmPivot];
 
-  VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide] = LsCONT_s_DriverInput->pct_LinearSlide * KaMAN_k_ManipulatorTestPower[E_MAN_LinearSlide];
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide] = LsCONT_s_DriverInput->Pct_LinearSlideTest * KaMAN_k_ManipulatorTestPower[E_MAN_LinearSlide];
 
-  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Turret] = LsCONT_s_DriverInput->pct_Turret * KaMAN_k_ManipulatorTestPower[E_MAN_Turret];
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Turret] = LsCONT_s_DriverInput->Pct_TurretTest * KaMAN_k_ManipulatorTestPower[E_MAN_Turret];
 
-  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Gripper] = LsCONT_s_DriverInput->pct_Claw * KaMAN_k_ManipulatorTestPower[E_MAN_Gripper];
+  VsMAN_s_Motors.k_MotorTestPower[E_MAN_Gripper] = LsCONT_s_DriverInput->pct_IntakeRollerTest * KaMAN_k_ManipulatorTestPower[E_MAN_Gripper];
   }
 
 /******************************************************************************
@@ -442,21 +483,27 @@ bool CmndStateReached(TeMAN_ManipulatorStates LeMAN_e_CmndState)
  ******************************************************************************/
 void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
   {
-   /* Ok, let's set the desired postions and rates: */
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret]     = KaMAN_Deg_TurretAngle[LeMAN_e_CmndState];
-   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRate;
+   /* Ok, let's set the desired postions: */
+   
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(KaMAN_Deg_TurretAngle[LeMAN_e_CmndState] / KeENC_k_TurretEncoderScaler, 
+                                                         VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
+                                                         KeMAN_DegS_TurretRate);
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot]     = KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState];
-   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] / KeENC_k_ArmPivot, 
+                                                           VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
+                                                           KeMAN_DegS_ArmPivotRate);
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide]     = KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState];
-   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] / KeENC_k_LinearSlideEncoderScaler, 
+                                                              VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
+                                                              KeMAN_InS_LinearSlideRate);
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist]     = KaMAN_Deg_WristAngle[LeMAN_e_CmndState];
-   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist] = RampTo(KaMAN_Deg_WristAngle[LeMAN_e_CmndState] / KeENC_Deg_Wrist, 
+                                                        VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist],
+                                                        KeMAN_DegS_WristRate);
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers]     = KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState];
-   VsMAN_s_MotorsTemp.k_MotorRampRate[E_MAN_IntakeRollers] = KeMAN_RPMS_IntakeRate;
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers] = RampTo(KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] / KeENC_RPM_IntakeRollers, 
+                                                                VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers],
+                                                                KeMAN_RPMS_IntakeRate);
 
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeArm] = KaMAN_e_IntakePneumatics[LeMAN_e_CmndState];
   }
@@ -472,10 +519,22 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
                                 bool                    LeMAN_b_ObjDetected)
   {
    double LeMAN_k_TempCmnd = 0.0;
+   bool   LeMAN_b_AllowedReleaseState = false;
+
+   if ((LeMAN_e_AttndState == LeMAN_e_CmndState) &&
+
+       ((LeMAN_e_AttndState == E_MAN_PositioningHighCube) ||
+        (LeMAN_e_AttndState == E_MAN_PositioningLowCube)  ||
+        (LeMAN_e_AttndState == E_MAN_PositioningHighCone)  ||
+        (LeMAN_e_AttndState == E_MAN_PositioningLowCone) ||
+        (LeMAN_e_AttndState == E_MAN_MainIntake) ||
+        (LeMAN_e_AttndState == E_MAN_FloorIntake)))
+     {
+      LeMAN_b_AllowedReleaseState = true;
+     }
 
    if ((LeMAN_b_ReleaseObj == true) && 
-       ((LeMAN_e_AttndState == E_MAN_PositioningHigh) ||
-        (LeMAN_e_AttndState == E_MAN_PositioningLow)))
+       (LeMAN_b_AllowedReleaseState == true))
      {
      LeMAN_k_TempCmnd = KeMAN_k_GripperRelease;
      }
@@ -490,132 +549,6 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
   }
 
 /******************************************************************************
- * Function:     Init_State
- *
- * Description:  Everything in default / initialization positions.
- ******************************************************************************/
-bool Init_State()
-   {
-   bool LeMAN_b_CriteriaMet = false;
-
-   /* Ok, let's set the desired postions and rates: */
-   UpdateManipulatorActuators(E_MAN_Init);
-
-   /* Next, let's check each of the actuators to see if we are in the correct positions: */
-   LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_Init);
-  
-  return(LeMAN_b_CriteriaMet);
-  }
-
-/******************************************************************************
- * Function:     MidTransition_State
- *
- * Description:  Manipulator is in a "mid transition" state
- ******************************************************************************/
-bool MidTransition_State()
-   {
-   bool LeMAN_b_CriteriaMet = false;
-
-   /* Ok, let's set the desired postions and rates: */
-   UpdateManipulatorActuators(E_MAN_MidTransition);
-
-   /* Next, let's check each of the actuators to see if we are in the correct positions: */
-   LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_MidTransition);
-  
-  return(LeMAN_b_CriteriaMet);
-  }
-
-/******************************************************************************
- * Function:     MainIntake_State
- *
- * Description:  Pulling objects into the robot with the main intake
- ******************************************************************************/
-bool MainIntake_State()
-  {
-  bool LeMAN_b_CriteriaMet = false;
-
-  /* Ok, let's set the desired postions and rates: */
-  UpdateManipulatorActuators(E_MAN_MainIntake);
-
-  /* Next, let's check each of the actuators to see if we are in the correct positions: */
-  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_MainIntake);
-  
-  return(LeMAN_b_CriteriaMet);
-  }
-
-/******************************************************************************
- * Function:     Driving_State
- *
- * Description:  Holding object in robot, intake in
- ******************************************************************************/
- bool Driving_State()  
-  {
-  bool LeMAN_b_CriteriaMet = false;
-
-  /* Ok, let's set the desired postions and rates: */
-  UpdateManipulatorActuators(E_MAN_Driving);
-
-  /* Next, let's check each of the actuators to see if we are in the correct positions: */
-  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_Driving);
-  
-  return(LeMAN_b_CriteriaMet);
-  }
-
-/******************************************************************************
- * Function:     PositioningHigh_State
- *
- * Description:  Arm extended out to place object on high goal
- ******************************************************************************/
-bool PositioningHigh_State()  
-  {
-  bool LeMAN_b_CriteriaMet = false;
-
-  /* Ok, let's set the desired postions and rates: */
-  UpdateManipulatorActuators(E_MAN_PositioningHigh);
-
-  /* Next, let's check each of the actuators to see if we are in the correct positions: */
-  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_PositioningHigh);
-  
-  return(LeMAN_b_CriteriaMet);
-  }
-
-/******************************************************************************
- * Function:     PositioningLow_State
- *
- * Description:  Arm extended out to place object on low goal
- ******************************************************************************/
- bool PositioningLow_State()  
-  {
-  bool LeMAN_b_CriteriaMet = false;
-
-  /* Ok, let's set the desired postions and rates: */
-  UpdateManipulatorActuators(E_MAN_PositioningLow);
-
-  /* Next, let's check each of the actuators to see if we are in the correct positions: */
-  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_PositioningLow);
-  
-  return(LeMAN_b_CriteriaMet);
-  }
-
-/******************************************************************************
- * Function:     FloorIntake_State
- *
- * Description:  Arm extended out to pick up object directly from floor
- ******************************************************************************/
- bool FloorIntake_State()  
-  {
-  bool LeMAN_b_CriteriaMet = false;
-
-  /* Ok, let's set the desired postions and rates: */
-  UpdateManipulatorActuators(E_MAN_FloorIntake);
-
-  /* Next, let's check each of the actuators to see if we are in the correct positions: */
-  LeMAN_b_CriteriaMet = CmndStateReached(E_MAN_FloorIntake);
-  
-  return(LeMAN_b_CriteriaMet);
-  }
-
-/******************************************************************************
  * Function:     ManipulatorControlMain
  *
  * Description:  Main calling function for manipulator control.
@@ -625,7 +558,8 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                             bool                    LeMAN_b_DropObject)
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
-LeMAN_b_TestPowerOverride = false;
+  // LeMAN_b_TestPowerOverride = false;
+
   if (LeMAN_b_TestPowerOverride == true)
     {
     // Do nothing.  Robot is in test state using power commands for all the acutators
@@ -649,36 +583,18 @@ LeMAN_b_TestPowerOverride = false;
     VeMAN_b_CriteriaMet = Update_Command_Atained_State(VeMAN_b_CriteriaMet,
                                                        LeMAN_e_SchedState);
 
-    switch (VeMAN_e_CmndState)
+    if ((LeMAN_e_SchedState != VeMAN_e_CmndState) ||
+        (LeMAN_e_SchedState != VeMAN_e_AttndState))
       {
-        case E_MAN_Init:
-            VeMAN_b_CriteriaMet = Init_State();
-        break;
+        UpdateManipulatorActuators(VeMAN_e_CmndState);
 
-        case E_MAN_MainIntake:
-            VeMAN_b_CriteriaMet = MainIntake_State();
-        break;
-
-        case E_MAN_MidTransition:
-            VeMAN_b_CriteriaMet = MidTransition_State();
-        break;
-
-        case E_MAN_Driving:
-            VeMAN_b_CriteriaMet = Driving_State();
-        break;
-
-        case E_MAN_PositioningHigh:
-            VeMAN_b_CriteriaMet = PositioningHigh_State();
-        break;
-
-        case E_MAN_PositioningLow:
-            VeMAN_b_CriteriaMet = PositioningLow_State();
-        break;
-
-        case E_MAN_FloorIntake:
-            VeMAN_b_CriteriaMet = FloorIntake_State();
-        break;
+        VeMAN_b_CriteriaMet = CmndStateReached(VeMAN_e_CmndState);
       }
+    else
+      {
+        UpdateManipulatorActuators(VeMAN_e_CmndState);
+      }
+
 
     UpdateGripperActuator(VeMAN_e_CmndState,
                           VeMAN_e_AttndState,
@@ -686,17 +602,46 @@ LeMAN_b_TestPowerOverride = false;
                           false);  // Need to come up with object detected
     }
     
-    for (LeMAN_i_Index = E_MAN_Turret;
-         LeMAN_i_Index < E_MAN_Sz;
-         LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
-      {
-        if (LeMAN_i_Index == E_MAN_Gripper)
-          {
-          VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper];  // for the gripper, it is a power command, no need to ramp
-          }
-        else
-          {
-          VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = RampTo(VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index], VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index]);
-          }
-      }
+    /* Final output to the motor command that will be sent to the motor controller: */
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret] =  Control_PID( VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
+                                                             VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret],
+                                                            &VaMAN_Deg_TurretAngleError,
+                                                            &VaMAN_k_TurretAngleIntegral,
+                                                             VaMAN_k_TurretPID_Gx[E_P_Gx],
+                                                             VaMAN_k_TurretPID_Gx[E_I_Gx],
+                                                             VaMAN_k_TurretPID_Gx[E_D_Gx],
+                                                             VaMAN_k_TurretPID_Gx[E_P_Ul],
+                                                             VaMAN_k_TurretPID_Gx[E_P_Ll],
+                                                             VaMAN_k_TurretPID_Gx[E_I_Ul],
+                                                             VaMAN_k_TurretPID_Gx[E_I_Ll],
+                                                             VaMAN_k_TurretPID_Gx[E_D_Ul],
+                                                             VaMAN_k_TurretPID_Gx[E_D_Ll],
+                                                             VaMAN_k_TurretPID_Gx[E_Max_Ul],
+                                                             VaMAN_k_TurretPID_Gx[E_Max_Ll]);
+
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot];
+
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide] =  Control_PID( VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
+                                                                  VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide],
+                                                                 &VaMAN_In_LinearSlideError,
+                                                                 &VaMAN_k_LinearSlideIntegral,
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_P_Gx],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_I_Gx],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_D_Gx],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_P_Ul],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_P_Ll],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_I_Ul],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_I_Ll],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_D_Ul],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_D_Ll],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_Max_Ul],
+                                                                  VaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
+
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist];
+
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper];
+
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers];
+
+    VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm];
   }
