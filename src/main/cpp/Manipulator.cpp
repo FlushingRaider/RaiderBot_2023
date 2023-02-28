@@ -355,19 +355,19 @@ void ManipulatorControlInit()
   VeMAN_b_CriteriaMet = false;
   VeMAN_b_Paused = false;
 
-  for (LeMAN_i_Index = E_MAN_Turret;
-       LeMAN_i_Index < E_MAN_Sz;
-       LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
-    {
-      VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = 0.0;
-      VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = 0.0;
-      VsMAN_s_Motors.k_MotorTestPower[LeMAN_i_Index] = 0.0;
-      VsMAN_s_Motors.k_MotorTestValue[LeMAN_i_Index] = 0.0;
-      VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = 0.0;
-      VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index] = 0.0;
-      VsMAN_s_MotorsTemp.k_MotorTestPower[LeMAN_i_Index] = 0.0;
-      VsMAN_s_MotorsTemp.k_MotorTestValue[LeMAN_i_Index] = 0.0;
-    }
+  // for (LeMAN_i_Index = E_MAN_Turret;
+  //      LeMAN_i_Index < E_MAN_Sz;
+  //      LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
+  //   {
+  //     VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = 0.0;
+  //     VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = 0.0;
+  //     VsMAN_s_Motors.k_MotorTestPower[LeMAN_i_Index] = 0.0;
+  //     VsMAN_s_Motors.k_MotorTestValue[LeMAN_i_Index] = 0.0;
+  //     VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = 0.0;
+  //     VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index] = 0.0;
+  //     VsMAN_s_MotorsTemp.k_MotorTestPower[LeMAN_i_Index] = 0.0;
+  //     VsMAN_s_MotorsTemp.k_MotorTestValue[LeMAN_i_Index] = 0.0;
+  //   }
   }
 
 
@@ -485,7 +485,7 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
   {
    /* Ok, let's set the desired postions: */
    
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(KaMAN_Deg_TurretAngle[LeMAN_e_CmndState] / KeENC_k_TurretEncoderScaler, 
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(KaMAN_Deg_TurretAngle[LeMAN_e_CmndState], // / KeENC_k_TurretEncoderScaler, 
                                                          VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
                                                          KeMAN_DegS_TurretRate);
 
@@ -493,7 +493,7 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
                                                            VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
                                                            KeMAN_DegS_ArmPivotRate);
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] / KeENC_k_LinearSlideEncoderScaler, 
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState],  // / KeENC_k_LinearSlideEncoderScaler
                                                               VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
                                                               KeMAN_InS_LinearSlideRate);
 
@@ -558,6 +558,9 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                             bool                    LeMAN_b_DropObject)
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
+  double LeMAN_Deg_Error = 0.0;
+  double LeMAN_k_P_Gain = 0.0;
+
   // LeMAN_b_TestPowerOverride = false;
 
   if (LeMAN_b_TestPowerOverride == true)
@@ -567,14 +570,30 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
   else if (VeMAN_b_TestState == true)
     {
     /* Only used for testing/calibration. */
-    for (LeMAN_i_Index = E_MAN_Turret;
-         LeMAN_i_Index < E_MAN_Sz;
-         LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
-      {
-      VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[LeMAN_i_Index] / VaMAN_k_PositionToEncoder[LeMAN_i_Index], 
-                                                             VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index],
-                                                             VsMAN_s_MotorsTest.k_MotorRampRate[LeMAN_i_Index]);
-      }
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Turret], 
+                                                           VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
+                                                           VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret]);
+
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_ArmPivot] / VaMAN_k_PositionToEncoder[E_MAN_ArmPivot], 
+                                                             VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
+                                                             VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
+
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_LinearSlide], 
+                                                                VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
+                                                                VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
+
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Wrist] / VaMAN_k_PositionToEncoder[E_MAN_Wrist], 
+                                                          VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist],
+                                                          VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
+
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Gripper] / VaMAN_k_PositionToEncoder[E_MAN_Gripper], 
+                                                          VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper],
+                                                          VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper]);
+
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_IntakeRollers] / VaMAN_k_PositionToEncoder[E_MAN_IntakeRollers], 
+                                                                  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers],
+                                                                  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers]);
+
      VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm];
     }
   else
@@ -584,6 +603,13 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
     VeMAN_b_CriteriaMet = Update_Command_Atained_State(VeMAN_b_CriteriaMet,
                                                        LeMAN_e_SchedState);
 
+    UpdateManipulatorActuators(VeMAN_e_CmndState);
+
+    UpdateGripperActuator(VeMAN_e_CmndState,
+                          VeMAN_e_AttndState,
+                          LeMAN_b_DropObject,
+                          false);  // Need to come up with object detected
+
     if ((LeMAN_e_SchedState != VeMAN_e_CmndState) ||
         (LeMAN_e_SchedState != VeMAN_e_AttndState))
       {
@@ -591,39 +617,41 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
 
         VeMAN_b_CriteriaMet = CmndStateReached(VeMAN_e_CmndState);
       }
+    }
+
+    /* Due to inertia / lash in turret, need to use varying P gains to better control */
+    LeMAN_Deg_Error = fabs(VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] - VsMAN_s_Sensors.Deg_Turret);
+
+    if (LeMAN_Deg_Error > KeMAN_Deg_TurretHighGx )
+      {
+        LeMAN_k_P_Gain = VaMAN_k_TurretPID_Gx[E_P_Gx];
+      }
     else
       {
-        UpdateManipulatorActuators(VeMAN_e_CmndState);
+        LeMAN_k_P_Gain = KeMAN_Deg_TurretLowGxMult * VaMAN_k_TurretPID_Gx[E_P_Gx];
       }
 
-
-    UpdateGripperActuator(VeMAN_e_CmndState,
-                          VeMAN_e_AttndState,
-                          LeMAN_b_DropObject,
-                          false);  // Need to come up with object detected
-    }
-    
     /* Final output to the motor command that will be sent to the motor controller: */
-    VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret] =  Control_PID( VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
-                                                             VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret],
-                                                            &VaMAN_Deg_TurretAngleError,
-                                                            &VaMAN_k_TurretAngleIntegral,
-                                                             VaMAN_k_TurretPID_Gx[E_P_Gx],
-                                                             VaMAN_k_TurretPID_Gx[E_I_Gx],
-                                                             VaMAN_k_TurretPID_Gx[E_D_Gx],
-                                                             VaMAN_k_TurretPID_Gx[E_P_Ul],
-                                                             VaMAN_k_TurretPID_Gx[E_P_Ll],
-                                                             VaMAN_k_TurretPID_Gx[E_I_Ul],
-                                                             VaMAN_k_TurretPID_Gx[E_I_Ll],
-                                                             VaMAN_k_TurretPID_Gx[E_D_Ul],
-                                                             VaMAN_k_TurretPID_Gx[E_D_Ll],
-                                                             VaMAN_k_TurretPID_Gx[E_Max_Ul],
-                                                             VaMAN_k_TurretPID_Gx[E_Max_Ll]);
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret] =  Control_PID(  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
+                                                              VsMAN_s_Sensors.Deg_Turret,
+                                                             &VaMAN_Deg_TurretAngleError,
+                                                             &VaMAN_k_TurretAngleIntegral,
+                                                              LeMAN_k_P_Gain,
+                                                              VaMAN_k_TurretPID_Gx[E_I_Gx],
+                                                              VaMAN_k_TurretPID_Gx[E_D_Gx],
+                                                              VaMAN_k_TurretPID_Gx[E_P_Ul],
+                                                              VaMAN_k_TurretPID_Gx[E_P_Ll],
+                                                              VaMAN_k_TurretPID_Gx[E_I_Ul],
+                                                              VaMAN_k_TurretPID_Gx[E_I_Ll],
+                                                              VaMAN_k_TurretPID_Gx[E_D_Ul],
+                                                              VaMAN_k_TurretPID_Gx[E_D_Ll],
+                                                              VaMAN_k_TurretPID_Gx[E_Max_Ul],
+                                                              VaMAN_k_TurretPID_Gx[E_Max_Ll]);
 
     VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot];
 
-    VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide] =  Control_PID( VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
-                                                                  VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide],
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide] =  -Control_PID( VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
+                                                                  VsMAN_s_Sensors.In_LinearSlide,
                                                                  &VaMAN_In_LinearSlideError,
                                                                  &VaMAN_k_LinearSlideIntegral,
                                                                   VaMAN_k_LinearSlidePID_Gx[E_P_Gx],

@@ -75,10 +75,16 @@ void Robot::RobotMotorCommands()
   m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]);   // This puts the gripper into a power control setup, not speed/postion
   m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
   m_TurretRotate.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
-  m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
+  // m_TurretRotate.Set(ControlMode::PercentOutput, 0.0);
+  // m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
+  m_LinearSlide.Set(ControlMode::PercentOutput, 0.0);
 
-
-  frc::SmartDashboard::PutNumber("LinearCmnd", VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
+  frc::SmartDashboard::PutNumber("LinearCmnd1", VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Turret]);
+  frc::SmartDashboard::PutNumber("LinearCmnd2", VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret]);
+  frc::SmartDashboard::PutNumber("LinearCmnd3", VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
+  frc::SmartDashboard::PutNumber("LinearCmndSensor", VsMAN_s_Sensors.In_LinearSlide);
+  frc::SmartDashboard::PutNumber("LinearError", VaMAN_In_LinearSlideError);
+  
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
@@ -322,16 +328,16 @@ void Robot::RobotPeriodic()
   // VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
   VisionRun(false, true);
 
-  frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
-  frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
-  frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
-  frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
-  frc::SmartDashboard::PutNumber("TagID ", V_TagID);
-  frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
-  frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
-  frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
-  frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
-  frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
+  // frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
+  // frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
+  // frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
+  // frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
+  // frc::SmartDashboard::PutNumber("TagID ", V_TagID);
+  // frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
+  // frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
+  // frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
+  // frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
+  // frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
 #endif
 
   /* These function calls are for test mode calibration. */
@@ -355,14 +361,14 @@ void Robot::RobotPeriodic()
 #endif
 
   /* Output all of the content to the dashboard here: */
-  frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
-  frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
-  frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
-  frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
+  // frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
+  // frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
+  // frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
+  // frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
 
-  frc::SmartDashboard::PutNumber("X power", V_ADAS_Pct_SD_Strafe);
-  frc::SmartDashboard::PutNumber("Y power", V_ADAS_Pct_SD_FwdRev);
-  frc::SmartDashboard::PutNumber("rotate power", V_ADAS_Pct_SD_Rotate);
+  // frc::SmartDashboard::PutNumber("X power", V_ADAS_Pct_SD_Strafe);
+  // frc::SmartDashboard::PutNumber("Y power", V_ADAS_Pct_SD_FwdRev);
+  // frc::SmartDashboard::PutNumber("rotate power", V_ADAS_Pct_SD_Rotate);
 }
 
 /******************************************************************************
