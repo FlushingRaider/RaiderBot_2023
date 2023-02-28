@@ -12,6 +12,7 @@
 
 extern double V_ADAS_DM_InitGyroAngle;
 extern double V_ADAS_DM_Rotate180TargetAngle;
+extern std::string V_MoveToTagStep;
 
 void ADAS_DM_Reset(void);
 void ADAS_DM_ConfigsCal(void);

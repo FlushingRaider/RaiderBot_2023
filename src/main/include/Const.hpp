@@ -6,7 +6,7 @@
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
 #define Manipulator_Test
 // Define the bot type: CompBot, PracticeBot
-#define CompBot
+#define PracticeBot
 
 #define NewVision // NewVision or OldVision
 
@@ -23,6 +23,7 @@ const double C_End_game_time = 30;
 // Numerical constants
 const double C_RadtoDeg = 57.2957795;
 const double C_Deg2Rad = 0.017453292519943295;
+const double C_MeterToIn = 39.37008;
 const double C_PI = 3.14159265358979;
 const double C_Tau = 6.28318530717958647;
 

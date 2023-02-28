@@ -406,6 +406,7 @@ void Robot::TeleopInit()
   VeROBO_e_RobotState = E_Teleop;
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_b_TestState = false;
+  V_TagCentered = false;
 
   ADAS_Main_Reset();
   DriveControlInit();

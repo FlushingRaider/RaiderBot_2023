@@ -34,6 +34,8 @@
 #include "Driver_inputs.hpp"
 #include "Gyro.hpp"
 
+#include "VisionV2.hpp"
+
 /* ADAS control state variables */
 T_ADAS_ActiveFeature V_ADAS_ActiveFeature = E_ADAS_Disabled;
 T_ADAS_ActiveAutonFeature VeADAS_e_DriverRequestedAutonFeature = E_ADAS_AutonDisabled;
@@ -83,7 +85,6 @@ void ADAS_Main_Init(void)
   V_ADAS_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
   frc::SmartDashboard::PutData(L_AutonSelectorName, &V_ADAS_AutonChooser);
   frc::SmartDashboard::PutBoolean("movetotag", toggle);
-
 }
 
 /******************************************************************************
@@ -391,6 +392,10 @@ if (toggle){
                                                LeLC_e_AllianceColor,
                                                L_CubeAlignCmd,
                                                L_ConeAlignCmd);
+  if (VeADAS_b_StateComplete){
+    V_TagCentered = true; // we did what we needed with that tag snapshot, allow ourselves to take another later
+  }
+    frc::SmartDashboard::PutString("movetotagstep", V_MoveToTagStep);
 
     break;
   case E_ADAS_DM_DriveStraight:

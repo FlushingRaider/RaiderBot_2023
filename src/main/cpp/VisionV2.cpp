@@ -73,7 +73,6 @@ double PieceCamPitch;
 double PieceCamYaw;
 double PieceCamSkew;
 
-
 #endif
 #ifdef OldVision
 /******************************************************************************
@@ -257,9 +256,10 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
   {
 
     CurrentEstimatedPose = estimator.Update();
-    if (CurrentEstimatedPose.has_value()){
-    TagPose = CurrentEstimatedPose.value().estimatedPose;// "pose" object which holds xyz and roll,pitch,yaw values
-    }; 
+    if (CurrentEstimatedPose.has_value())
+    {
+      TagPose = CurrentEstimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
+    };
     V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
 
     V_Tagx = TagPose.X().value();
@@ -268,10 +268,18 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
     V_TagRoll = TagPose.Rotation().X().value();
     V_TagPitch = TagPose.Rotation().Y().value();
     V_TagYaw = TagPose.Rotation().Z().value();
+
+    V_Tagx = V_Tagx * C_MeterToIn;
+    V_Tagy = V_Tagy * C_MeterToIn;
+
+
     if (L_ButtonCmdCone || L_ButtonCmdCube)
     {
-      OdometryInitToArgs(V_Tagx, V_Tagy);
-      V_TagCentered = true;
+      if (V_TagCentered != true)
+      {
+        OdometryInitToArgs(V_Tagx, V_Tagy);
+        V_TagCentered = true;
+      }
     }
   }
   else
