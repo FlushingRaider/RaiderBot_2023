@@ -225,30 +225,30 @@ const double KaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz] = { 0.00055,  // k
                                                                   0.0};     // kAllErr
 
 /* KaMAN_k_TurretPID_Gx: PID gains for the turret control. */
-const double KaMAN_k_TurretPID_Gx[E_PID_CalSz] = { 0.1,      // P Gx
-                                                   0.000001,  // I Gx
-                                                   0.002000, // D Gx 
-                                                   1.0,       // P UL
-                                                  -1.0,       // P LL
+const double KaMAN_k_TurretPID_Gx[E_PID_CalSz] = { 0.038,      // P Gx
+                                                   0.000007,  // I Gx
+                                                   0.000000, // D Gx 
+                                                   0.3,       // P UL
+                                                  -0.3,       // P LL
                                                    0.15,      // I UL
                                                   -0.15,      // I LL
-                                                   1.0,       // D UL
-                                                  -1.0,       // D LL
-                                                   1.0,       // Max upper
-                                                  -1.0};      // Max lower
+                                                   0.2,       // D UL
+                                                  -0.2,       // D LL
+                                                   0.3,       // Max upper
+                                                  -0.3};      // Max lower
 
 /* KaMAN_k_LinearSlidePID_Gx: PID gains for the linear slide control. */
-const double KaMAN_k_LinearSlidePID_Gx[E_PID_CalSz] = { 0.1,      // P Gx
-                                                        0.000001,  // I Gx
-                                                        0.002000, // D Gx 
-                                                        1.0,       // P UL
-                                                       -1.0,       // P LL
-                                                        0.15,      // I UL
-                                                       -0.15,      // I LL
-                                                        1.0,       // D UL
-                                                       -1.0,       // D LL
-                                                        1.0,       // Max upper
-                                                       -1.0};      // Max lower
+const double KaMAN_k_LinearSlidePID_Gx[E_PID_CalSz] = { 0.00000001,     // P Gx
+                                                        0.0000000,  // I Gx
+                                                        0.000000, // D Gx 
+                                                        0.3,       // P UL
+                                                       -0.3,       // P LL
+                                                        0.05,      // I UL
+                                                       -0.05,      // I LL
+                                                        0.2,       // D UL
+                                                       -0.2,       // D LL
+                                                        0.5,       // Max upper
+                                                       -0.5};      // Max lower
 
 /* KaMAN_Deg_TurretAngle: sets turret final positons for each state */
 const double KaMAN_Deg_TurretAngle[E_MAN_State_Sz] = {0.0,  // Init
@@ -262,18 +262,24 @@ const double KaMAN_Deg_TurretAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                       180.0}; // Floor Intake
 
 /* KeMAN_DegS_TurretRate: Rate that is used in transition for the turret */
-const double KeMAN_DegS_TurretRate = 0.0;
+const double KeMAN_DegS_TurretRate = 1.35;
+
+/* KeMAN_Deg_TurretHighGx: Error angles greater than this will have the large proportional gain */
+const double KeMAN_Deg_TurretHighGx = 95;
+
+/* KeMAN_Deg_TurretLowGxMult: When error is less than KeMAN_Deg_TurretHighGx, multiply the gain against this. */
+const double KeMAN_Deg_TurretLowGxMult = 0.25;
 
 /* KaMAN_Deg_TurretDb: Sets turret dead band */
-const double KaMAN_Deg_TurretDb[E_MAN_State_Sz] = {2.0,  // Init
-                                                   2.0,  // Driving
-                                                   2.0,  // Positioning High Cube
-                                                   2.0,  // Positioning High Cone
-                                                   2.0,  // Positioning Low Cube
-                                                   2.0,  // Positioning Low Cone
-                                                   2.0,  // Mid Transition
-                                                   2.0,  // Main Intake
-                                                   2.0}; // Floor Intake
+const double KaMAN_Deg_TurretDb[E_MAN_State_Sz] = {6.0,  // Init
+                                                   6.0,  // Driving
+                                                   6.0,  // Positioning High Cube
+                                                   6.0,  // Positioning High Cone
+                                                   6.0,  // Positioning Low Cube
+                                                   6.0,  // Positioning Low Cone
+                                                   6.0,  // Mid Transition
+                                                   6.0,  // Main Intake
+                                                   6.0}; // Floor Intake
 
 /* KaMAN_Deg_ArmPivotAngle: sets Arm Pivot final positons for each state */
 const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Init
@@ -312,7 +318,7 @@ const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,  // Init
                                                             -12.94}; // Floor Intake
 
 /* KeMAN_InS_LinearSlideRate: Sets Linear Slide transition rate. */
-const double KeMAN_InS_LinearSlideRate = 0.0; // Drop-off
+const double KeMAN_InS_LinearSlideRate = 1.0; // Drop-off
 
 /* KaMAN_In_LinearSlideDb: Sets LInear Slide dead band. */
 const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.2,  // Init
@@ -351,13 +357,13 @@ const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {1.0,  // Init
                                                   1.0}; // Floor Intake
 
 /* KeMAN_DegS_GripperRate: Sets Gripper transition rate */
-const double KeMAN_DegS_GripperRate = 0.0;
+const double KeMAN_DegS_GripperRate = 1.0;
 
 /* KeMAN_k_GripperRelease: Sets Gripper release power */
-const double KeMAN_k_GripperRelease = 0.0;
+const double KeMAN_k_GripperRelease = 0.5;
 
 /* KeMAN_k_GripperIntake: Sets Gripper intake power */
-const double KeMAN_k_GripperIntake = 0.0;
+const double KeMAN_k_GripperIntake = 0.5;
 
 /* KeMAN_t_GripperOnTm: Amount of time gripper will remain on after it is initially commanded on. */
 const double KeMAN_t_GripperOnTm = 1.0;
@@ -374,7 +380,7 @@ const double KaMAN_RPM_IntakeSpeed[E_MAN_State_Sz] = {  0.0,  // Init
                                                         0.0}; // Floor Intake
 
 /* KeMAN_RPMS_IntakeRate: Sets Intake roller transition rate. */
-const double KeMAN_RPMS_IntakeRate = 0.0;
+const double KeMAN_RPMS_IntakeRate = 1.0;
 
 /* KaMAN_RPM_IntakeSpeedDb: Sets Intake speed dead band. */
 const double KaMAN_RPM_IntakeSpeedDb[E_MAN_State_Sz] = {10.0,  // Init
