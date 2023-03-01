@@ -277,9 +277,10 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
     {
       if (V_TagCentered != true)
       {
-        OdometryInitToArgs(V_Tagx, V_Tagy);
+        OdometryInitToArgs(V_Tagy, V_Tagx); // flipped for odom for some reason
         V_TagCentered = true;
       }
+
     }
   }
   else

@@ -264,6 +264,11 @@ void Robot::RobotPeriodic()
                          &VaENC_In_WheelDeltaDistance[0],
                          VsCONT_s_DriverInput.b_ZeroGyro);
 
+ DtrmTagOffset(1);
+
+  frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
+  frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
+
   ADAS_DetermineMode();
 
   V_ADAS_ActiveFeature = ADAS_ControlMain(&V_ADAS_Pct_SD_FwdRev,
@@ -286,7 +291,9 @@ void Robot::RobotPeriodic()
                                           V_TagYaw,
                                           VeROBO_e_AllianceColor,
                                           VsCONT_s_DriverInput.b_CubeAlign,
-                                          VsCONT_s_DriverInput.b_ConeAlign);
+                                          VsCONT_s_DriverInput.b_ConeAlign,
+                                          V_OffsetXOut,
+                                          V_OffsetYOut);
 
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
                    VsCONT_s_DriverInput.pct_SwerveStrafe,      // swerve control strafe

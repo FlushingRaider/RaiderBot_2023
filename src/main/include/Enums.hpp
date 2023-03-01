@@ -129,7 +129,7 @@ typedef enum T_ADAS_ActiveFeature
   E_ADAS_DM_ConeAlign,
   E_ADAS_DM_AutoBalance,
   
-  E_ADAS_MoveToTag,
+  E_ADAS_MoveOffsetTag,
   E_ADAS_BT_AutoBallTarget,
   E_ADAS_DM_BlindLaunch,
   E_ADAS_DM_DriveStraight,

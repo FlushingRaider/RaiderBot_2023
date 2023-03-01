@@ -929,14 +929,6 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
   // all 3 tags are directly across from each other
 
   // coord of tag ID 1 and 8
-  double LC_Tag1Y = 1.071626 * C_MeterToIn; // all these come in meters, we need them in inches to match odometry
-  // coord of tag ID 2 and 7
-  double LC_Tag2Y = 2.748026 * C_MeterToIn;
-  // coord of tag ID 3 and 6
-  double LC_Tag3Y = 4.424426 * C_MeterToIn;
-  // double LC_TagXred = 15.513558;
-  double LC_TagXred = 14.513558 * C_MeterToIn;
-  double LC_TagXblue = 1.02743 * C_MeterToIn;
 
   // double L_Tag1YError;
   // double L_Tag2YError;
@@ -950,34 +942,34 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
 
     if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
     {
-      L_ChosenX = LC_TagXred; // all 3 tags on the red alliance have the same X
+      L_ChosenX = C_TagXred; // all 3 tags on the red alliance have the same X
       if (L_TagID == 1)
       {
-        L_ChosenY = LC_Tag1Y;
+        L_ChosenY = C_Tag1Y;
       }
       else if (L_TagID == 2)
       {
-        L_ChosenY = LC_Tag2Y;
+        L_ChosenY = C_Tag2Y;
       }
       else if (L_TagID == 3)
       {
-        L_ChosenY = LC_Tag3Y;
+        L_ChosenY = C_Tag3Y;
       }
     }
     else
     {
-      L_ChosenX = LC_TagXblue; // x coord of all blue tags
+      L_ChosenX = C_TagXblue; // x coord of all blue tags
       if (L_TagID == 8)
       {
-        L_ChosenY = LC_Tag1Y;
+        L_ChosenY = C_Tag1Y;
       }
       else if (L_TagID == 7)
       {
-        L_ChosenY = LC_Tag2Y;
+        L_ChosenY = C_Tag2Y;
       }
       else if (L_TagID == 6)
       {
-        L_ChosenY = LC_Tag3Y;
+        L_ChosenY = C_Tag3Y;
       }
     }
 
@@ -1042,12 +1034,56 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
     }
     if (L_OdometryX <= L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX >= L_ChosenX - K_MoveToTagMovementDeadband)
     {
-      if (L_OdometryY <= L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY>= L_ChosenY - K_MoveToTagMovementDeadband)
+      if (L_OdometryY <= L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY >= L_ChosenY - K_MoveToTagMovementDeadband)
       {
         LeADAS_b_DM_StateComplete = true;
       }
     }
   }
 
+  return (LeADAS_b_DM_StateComplete);
+}
+
+bool MoveWIthOffsetTag(double *L_Pct_FwdRev,
+                     double *L_Pct_Strafe,
+                     double L_OdomOffsetX,
+                     double L_OdomOffsetY,
+                     double L_RequestedOffsetX,
+                     double L_RequestedOffsetY)
+{
+
+  bool LeADAS_b_DM_StateComplete = false;
+
+  if (L_OdomOffsetX > L_RequestedOffsetX + K_MoveToTagMovementDeadband || L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadband)
+  {
+    *L_Pct_FwdRev = -0.05 * (L_OdomOffsetX - L_RequestedOffsetX );
+  }
+  // else if (L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadband)
+  // {
+  //   *L_Pct_FwdRev = 0.2 * (L_OdomOffsetX - L_RequestedOffsetX);
+  // }
+
+  if (L_OdomOffsetY > L_RequestedOffsetY + K_MoveToTagMovementDeadband || L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadband)
+  {
+    *L_Pct_Strafe = -0.05 * (L_OdomOffsetY - L_RequestedOffsetY);
+  }
+  // else if (L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadband)
+  // {
+  //   *L_Pct_Strafe = -0.2 * (L_OdomOffsetY - L_RequestedOffsetY);
+  // }
+
+  if (L_OdomOffsetX <= L_RequestedOffsetX + K_MoveToTagMovementDeadband && L_OdomOffsetX >= L_RequestedOffsetX - K_MoveToTagMovementDeadband)
+  {
+    *L_Pct_FwdRev = 0.0;
+  }
+  if (L_OdomOffsetY <= L_RequestedOffsetY + K_MoveToTagMovementDeadband && L_OdomOffsetY >= L_RequestedOffsetY - K_MoveToTagMovementDeadband)
+  {
+    *L_Pct_Strafe = 0.0;
+  }
+
+  if (*L_Pct_Strafe == 0.0 && *L_Pct_FwdRev == 0.0)
+  {
+    LeADAS_b_DM_StateComplete = true;
+  }
   return (LeADAS_b_DM_StateComplete);
 }
