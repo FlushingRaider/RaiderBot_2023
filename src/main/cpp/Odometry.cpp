@@ -16,6 +16,9 @@
 double VeODO_In_RobotDisplacementX = 0; // Displacement in the X direction, which is left/right
 double VeODO_In_RobotDisplacementY = 0; // Displacement in the Y direction, which is forward/back
 
+double V_OffsetXOut;
+double V_OffsetYOut;
+
 /******************************************************************************
  * Function:     OdometryInitToArgs
  *
@@ -84,4 +87,48 @@ void DtrmnSwerveBotLocation(double LeODO_Rad_Gyro,
 
 
   
+}
+
+void DtrmTagOffset(int L_TagID)
+{
+
+double L_OffsetX;
+double L_OffsetY;
+
+  if (L_TagID == 1 || L_TagID == 2 || L_TagID == 3)
+  {
+    L_OffsetX =  C_TagXred - VeODO_In_RobotDisplacementY;
+    if (L_TagID == 1)
+    {
+      L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementX;
+    }
+    else if (L_TagID == 2)
+    {
+      L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementX;
+    }
+    else if (L_TagID == 3)
+    {
+      L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementX;
+    }
+  }
+  else
+  {
+    L_OffsetX = C_TagXblue - VeODO_In_RobotDisplacementX;
+    if (L_TagID == 8)
+    {
+      L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementX;
+    }
+    else if (L_TagID == 7)
+    {
+      L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementX;
+    }
+    else if (L_TagID == 6)
+    {
+      L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementX;
+    }
+  }
+  V_OffsetXOut = L_OffsetX;
+  V_OffsetYOut = L_OffsetY;
+
+
 }

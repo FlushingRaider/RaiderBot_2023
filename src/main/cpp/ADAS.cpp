@@ -68,6 +68,9 @@ bool VeADAS_b_X_Mode = false;
 
 bool toggle;
 
+double testXOffset;
+double testYOffset;
+
 /******************************************************************************
  * Function:     ADAS_Main_Init
  *
@@ -85,6 +88,9 @@ void ADAS_Main_Init(void)
   V_ADAS_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
   frc::SmartDashboard::PutData(L_AutonSelectorName, &V_ADAS_AutonChooser);
   frc::SmartDashboard::PutBoolean("movetotag", toggle);
+
+  frc::SmartDashboard::PutNumber("test x", testXOffset);
+  frc::SmartDashboard::PutNumber("test y", testYOffset);
 }
 
 /******************************************************************************
@@ -166,7 +172,9 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double L_TagYawDegrees,
                                       frc::DriverStation::Alliance LeLC_e_AllianceColor,
                                       bool L_CubeAlignCmd,
-                                      bool L_ConeAlignCmd)
+                                      bool L_ConeAlignCmd,
+                                      double L_OdomOffsetX,
+                                      double L_OdomOffsetY)
 {
   bool LeADAS_b_State1Complete = false;
   bool LeADAS_b_State2Complete = false;
@@ -365,37 +373,37 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     ADAS_DM_Reset();
     VeADAS_b_StateComplete = false;
   }
-toggle = frc::SmartDashboard::GetBoolean("movetotag", false);
+  toggle = frc::SmartDashboard::GetBoolean("movetotag", false);
+  testXOffset = frc::SmartDashboard::GetNumber("test x", 46.0);
+  testYOffset = frc::SmartDashboard::GetNumber("test y", 3.0);
 
-if (toggle){
-  LeADAS_e_ActiveFeature = E_ADAS_MoveToTag;
-}
+
+  if (toggle)
+  {
+    LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
+  }
   // frc::SmartDashboard::PutNumber("current feature", (int)LeADAS_e_ActiveFeature);
   switch (LeADAS_e_ActiveFeature)
   {
-  case E_ADAS_MoveToTag:
+  case E_ADAS_MoveOffsetTag:
     // #ifdef unused
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
-                                           E_ADAS_MoveToTag);
+                                           E_ADAS_MoveOffsetTag);
     *LeADAS_b_X_Mode = false;
 
-    VeADAS_b_StateComplete = ADAS_DM_MoveToTag(L_Pct_FwdRev,
-                                               L_Pct_Strafe,
-                                               L_Pct_Rotate,
-                                               L_OdomCentered,
-                                               L_TagID,
-                                               L_L_X_FieldPos,
-                                               L_L_Y_FieldPos,
-                                               L_VisionTargetingRequest,
-                                               L_VisionTopTargetAquired,
-                                               L_TagYawDegrees,
-                                               LeLC_e_AllianceColor,
-                                               L_CubeAlignCmd,
-                                               L_ConeAlignCmd);
-  if (VeADAS_b_StateComplete){
-    V_TagCentered = true; // we did what we needed with that tag snapshot, allow ourselves to take another later
-  }
-    frc::SmartDashboard::PutString("movetotagstep", V_MoveToTagStep);
+    VeADAS_b_StateComplete = MoveWIthOffsetTag(
+        L_Pct_FwdRev,
+        L_Pct_Strafe,
+        L_OdomOffsetX,
+        L_OdomOffsetY,
+        testXOffset,
+        testYOffset);
+
+    if (VeADAS_b_StateComplete)
+    {
+      V_TagCentered = false; // we did what we needed with that tag snapshot, allow ourselves to take another later
+    }
+    // frc::SmartDashboard::PutString("movetotagstep", V_MoveToTagStep);
 
     break;
   case E_ADAS_DM_DriveStraight:

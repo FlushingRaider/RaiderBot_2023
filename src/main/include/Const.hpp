@@ -10,6 +10,12 @@
 
 #define NewVision // NewVision or OldVision
 
+#ifdef PracticeBot
+const double C_VisOffsetY = 1.0;
+const double C_VisOffsetX = 2.0;
+
+#endif
+
 
 
 
@@ -29,6 +35,15 @@ const double C_Tau = 6.28318530717958647;
 
 static const double KeENC_k_EncoderToAngle = 1; // Raw output of PWM encoder to degrees
 static const double KeENC_k_VoltageToAngle = 72.0; // Gain that converts the measured voltage of the absolute encoder to an equivalent angle in degrees. (practice bot only)
+
+
+ const double C_Tag1Y = 1.071626 * C_MeterToIn; // all these come in meters, we need them in inches to match odometry
+  // coord of tag ID 2 and 7
+ const double C_Tag2Y = 2.748026 * C_MeterToIn;
+  // coord of tag ID 3 and 6
+ const double C_Tag3Y = 4.424426 * C_MeterToIn;
+ const double C_TagXred = 15.513558 * C_MeterToIn;
+const  double C_TagXblue = 1.02743 * C_MeterToIn;
 
 
 // CAN Device IDs:
@@ -64,7 +79,7 @@ static const int C_VanityLight_ID = 0;
 
 
 // Vision Cals:
-const double K_MoveToTagMovementDeadband = 0.05; // 5 cm
+const double K_MoveToTagMovementDeadband = 1.0; // inches
 
 // cals for top target cam
 
