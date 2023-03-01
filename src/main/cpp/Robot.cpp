@@ -76,20 +76,25 @@ void Robot::RobotMotorCommands()
   m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
   m_TurretRotate.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
   // m_TurretRotate.Set(ControlMode::PercentOutput, 0.0);
-  // m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
-  m_LinearSlide.Set(ControlMode::PercentOutput, 0.0);
+  m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
+  // m_LinearSlide.Set(ControlMode::PercentOutput, 0.0);
 
-  frc::SmartDashboard::PutNumber("LinearCmnd1", VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Turret]);
-  frc::SmartDashboard::PutNumber("LinearCmnd2", VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret]);
-  frc::SmartDashboard::PutNumber("LinearCmnd3", VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
+  frc::SmartDashboard::PutNumber("LinearCmnd1", VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_LinearSlide]);
+  frc::SmartDashboard::PutNumber("LinearCmnd2", VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide]);
+  frc::SmartDashboard::PutNumber("LinearCmnd3", VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
   frc::SmartDashboard::PutNumber("LinearCmndSensor", VsMAN_s_Sensors.In_LinearSlide);
   frc::SmartDashboard::PutNumber("LinearError", VaMAN_In_LinearSlideError);
+  frc::SmartDashboard::PutNumber("VeMAN_e_AttndState", (double)VeMAN_e_AttndState);
+  frc::SmartDashboard::PutNumber("VeMAN_e_CmndState", (double)VeMAN_e_CmndState);
+  frc::SmartDashboard::PutNumber("VeADAS_e_MAN_SchedState", (double)VeADAS_e_MAN_SchedState);
   
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
    {
    LeROBO_b_IntakeArmExtend = true;
    }
+frc::SmartDashboard::PutBoolean("b_IntakeArmIn", VsCONT_s_DriverInput.b_IntakeArmIn);
+frc::SmartDashboard::PutBoolean("b_DrivingPosition", VsCONT_s_DriverInput.b_DrivingPosition);
 
   m_PCM_Valve.Set(LeROBO_b_IntakeArmExtend);
   #endif

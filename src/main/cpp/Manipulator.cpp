@@ -29,6 +29,7 @@ TeMAN_MotorControl VsMAN_s_MotorsTest; // Temporary commands for the motors, not
 TsMAN_Sensor       VsMAN_s_Sensors; // All of the sensor values for the manipulator/intake motors
 double             VaMAN_k_PositionToEncoder[E_MAN_Sz]; // Conversion value to go from desired manipulator position to equivalent encoder position
 
+double             VeMAM_t_TransitionTime = 0;
 double             VaMAN_Deg_TurretAngleError;
 double             VaMAN_k_TurretAngleIntegral;
 double             VaMAN_In_LinearSlideError;
@@ -61,6 +62,7 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
                                  rev::SparkMaxPIDController m_IntakeRollersPID)
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
+  T_PID_Cal LeMAN_i_Index3 = E_P_Gx;
 
   // set PID coefficients
   m_ArmPivotPID.SetP(KaMAN_k_ArmPivotPID_Gx[E_kP]);
@@ -127,9 +129,16 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   VaMAN_In_LinearSlideError = 0.0;
   VaMAN_k_LinearSlideIntegral = 0.0;
 
+  for (LeMAN_i_Index3 = E_P_Gx;
+       LeMAN_i_Index3 < E_PID_CalSz;
+       LeMAN_i_Index3 = T_PID_Cal(int(LeMAN_i_Index3) + 1))
+    {
+    VaMAN_k_TurretPID_Gx[LeMAN_i_Index3] = KaMAN_k_TurretPID_Gx[LeMAN_i_Index3];
+    VaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3] = KaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3];
+    }
+
   #ifdef Manipulator_Test
   T_PID_SparkMaxCal LeMAN_i_Index2 = E_kP;
-  T_PID_Cal LeMAN_i_Index3 = E_P_Gx;
 
   for (LeMAN_i_Index2 = E_kP;
        LeMAN_i_Index2 < E_PID_SparkMaxCalSz;
@@ -354,6 +363,7 @@ void ManipulatorControlInit()
 
   VeMAN_b_CriteriaMet = false;
   VeMAN_b_Paused = false;
+  VeMAM_t_TransitionTime = 0.0;
 
   // for (LeMAN_i_Index = E_MAN_Turret;
   //      LeMAN_i_Index < E_MAN_Sz;
@@ -451,25 +461,30 @@ bool CmndStateReached(TeMAN_ManipulatorStates LeMAN_e_CmndState)
   {
   bool LeMAN_b_CriteriaMet = false;
 
-  if((VsMAN_s_Sensors.Deg_Turret <= (KaMAN_Deg_TurretAngle[LeMAN_e_CmndState] + KaMAN_Deg_TurretDb[LeMAN_e_CmndState])) &&
-     (VsMAN_s_Sensors.Deg_Turret >= (KaMAN_Deg_TurretAngle[LeMAN_e_CmndState] - KaMAN_Deg_TurretDb[LeMAN_e_CmndState])) &&
+  VeMAM_t_TransitionTime += C_ExeTime;
 
-     (VsMAN_s_Sensors.Deg_ArmPivot <= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] + KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
-     (VsMAN_s_Sensors.Deg_ArmPivot >= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] - KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
+  if((VeMAM_t_TransitionTime >= KeMAN_t_StateTimeOut) ||
 
-     (VsMAN_s_Sensors.In_LinearSlide <= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] + KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
-     (VsMAN_s_Sensors.In_LinearSlide >= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] - KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
+     ((VsMAN_s_Sensors.Deg_Turret <= (KaMAN_Deg_TurretAngle[LeMAN_e_CmndState] + KaMAN_Deg_TurretDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.Deg_Turret >= (KaMAN_Deg_TurretAngle[LeMAN_e_CmndState] - KaMAN_Deg_TurretDb[LeMAN_e_CmndState])) &&
 
-     (VsMAN_s_Sensors.Deg_Wrist <= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] + KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
-     (VsMAN_s_Sensors.Deg_Wrist >= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] - KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.Deg_ArmPivot <= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] + KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.Deg_ArmPivot >= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] - KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
 
-     (VsMAN_s_Sensors.RPM_IntakeRollers <= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] + KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
-     (VsMAN_s_Sensors.RPM_IntakeRollers >= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] - KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.In_LinearSlide <= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] + KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.In_LinearSlide >= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] - KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
 
-     ((VsMAN_s_Sensors.b_IntakeArmExtended == true && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorExtend) ||
-      (VsMAN_s_Sensors.b_IntakeArmExtended == false && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorRetract)))
+      (VsMAN_s_Sensors.Deg_Wrist <= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] + KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.Deg_Wrist >= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] - KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
+
+      (VsMAN_s_Sensors.RPM_IntakeRollers <= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] + KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.RPM_IntakeRollers >= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] - KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
+
+      ((VsMAN_s_Sensors.b_IntakeArmExtended == true && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorExtend) ||
+       (VsMAN_s_Sensors.b_IntakeArmExtended == false && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorRetract))))
       {
       LeMAN_b_CriteriaMet = true;
+      VeMAM_t_TransitionTime = 0.0;
       }
 
   return(LeMAN_b_CriteriaMet);
@@ -484,6 +499,7 @@ bool CmndStateReached(TeMAN_ManipulatorStates LeMAN_e_CmndState)
 void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
   {
    /* Ok, let's set the desired postions: */
+   double LeMAN_InS_LinearSlideRate = 0.0;
    
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(KaMAN_Deg_TurretAngle[LeMAN_e_CmndState], // / KeENC_k_TurretEncoderScaler, 
                                                          VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
@@ -493,9 +509,18 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
                                                            VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
                                                            KeMAN_DegS_ArmPivotRate);
 
+   if (LeMAN_e_CmndState == E_MAN_MainIntake)
+     {
+      LeMAN_InS_LinearSlideRate = KeMAN_InS_LinearSlideIntakeRate;
+     }
+    else
+     {
+      LeMAN_InS_LinearSlideRate = KeMAN_InS_LinearSlideRate;
+     }
+
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState],  // / KeENC_k_LinearSlideEncoderScaler
                                                               VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
-                                                              KeMAN_InS_LinearSlideRate);
+                                                              LeMAN_InS_LinearSlideRate);
 
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist] = RampTo(KaMAN_Deg_WristAngle[LeMAN_e_CmndState] / KeENC_Deg_Wrist, 
                                                         VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist],
@@ -505,7 +530,7 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
                                                                 VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers],
                                                                 KeMAN_RPMS_IntakeRate);
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeArm] = KaMAN_e_IntakePneumatics[LeMAN_e_CmndState];
+   VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm] = KaMAN_e_IntakePneumatics[LeMAN_e_CmndState];
   }
 
 /******************************************************************************
@@ -560,6 +585,7 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
   double LeMAN_Deg_Error = 0.0;
   double LeMAN_k_P_Gain = 0.0;
+  double LeMAN_k_I_Gain = 0.0;
 
   // LeMAN_b_TestPowerOverride = false;
 
@@ -625,11 +651,13 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
     if (LeMAN_Deg_Error > KeMAN_Deg_TurretHighGx )
       {
         LeMAN_k_P_Gain = VaMAN_k_TurretPID_Gx[E_P_Gx];
+        LeMAN_k_I_Gain = VaMAN_k_TurretPID_Gx[E_I_Gx];
       }
     else
       {
         LeMAN_k_P_Gain = KeMAN_Deg_TurretLowGxMult * VaMAN_k_TurretPID_Gx[E_P_Gx];
-      }
+        LeMAN_k_I_Gain = KeMAN_Deg_TurretLowGxMult * VaMAN_k_TurretPID_Gx[E_I_Gx];
+      } 
 
     /* Final output to the motor command that will be sent to the motor controller: */
     VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret] =  Control_PID(  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
@@ -637,16 +665,16 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                                                              &VaMAN_Deg_TurretAngleError,
                                                              &VaMAN_k_TurretAngleIntegral,
                                                               LeMAN_k_P_Gain,
-                                                              VaMAN_k_TurretPID_Gx[E_I_Gx],
-                                                              VaMAN_k_TurretPID_Gx[E_D_Gx],
-                                                              VaMAN_k_TurretPID_Gx[E_P_Ul],
-                                                              VaMAN_k_TurretPID_Gx[E_P_Ll],
-                                                              VaMAN_k_TurretPID_Gx[E_I_Ul],
-                                                              VaMAN_k_TurretPID_Gx[E_I_Ll],
-                                                              VaMAN_k_TurretPID_Gx[E_D_Ul],
-                                                              VaMAN_k_TurretPID_Gx[E_D_Ll],
-                                                              VaMAN_k_TurretPID_Gx[E_Max_Ul],
-                                                              VaMAN_k_TurretPID_Gx[E_Max_Ll]);
+                                                              KaMAN_k_TurretPID_Gx[E_I_Gx],
+                                                              KaMAN_k_TurretPID_Gx[E_D_Gx],
+                                                              KaMAN_k_TurretPID_Gx[E_P_Ul],
+                                                              KaMAN_k_TurretPID_Gx[E_P_Ll],
+                                                              KaMAN_k_TurretPID_Gx[E_I_Ul],
+                                                              KaMAN_k_TurretPID_Gx[E_I_Ll],
+                                                              KaMAN_k_TurretPID_Gx[E_D_Ul],
+                                                              KaMAN_k_TurretPID_Gx[E_D_Ll],
+                                                              KaMAN_k_TurretPID_Gx[E_Max_Ul],
+                                                              KaMAN_k_TurretPID_Gx[E_Max_Ll]);
 
     VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot];
 
@@ -654,17 +682,17 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                                                                   VsMAN_s_Sensors.In_LinearSlide,
                                                                  &VaMAN_In_LinearSlideError,
                                                                  &VaMAN_k_LinearSlideIntegral,
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_P_Gx],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_I_Gx],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_D_Gx],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_P_Ul],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_P_Ll],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_I_Ul],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_I_Ll],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_D_Ul],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_D_Ll],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_Max_Ul],
-                                                                  VaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_P_Gx],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_I_Gx],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_D_Gx],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_P_Ul],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_P_Ll],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_I_Ul],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_I_Ll],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_D_Ul],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_D_Ll],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_Max_Ul],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
 
     VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist];
 

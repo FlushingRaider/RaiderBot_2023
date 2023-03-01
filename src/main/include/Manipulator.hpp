@@ -12,6 +12,7 @@
 extern TeMAN_MotorControl      VsMAN_s_Motors;
 extern TsMAN_Sensor            VsMAN_s_Sensors;
 extern TeMAN_ManipulatorStates VeMAN_e_AttndState;
+extern TeMAN_ManipulatorStates VeMAN_e_CmndState;
 extern TeMAN_MotorControl      VsMAN_s_MotorsTest;
 extern TeMAN_MotorControl      VsMAN_s_MotorsTemp;
 extern double VaMAN_In_LinearSlideError;
