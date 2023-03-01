@@ -34,6 +34,10 @@ double             VaMAN_Deg_TurretAngleError;
 double             VaMAN_k_TurretAngleIntegral;
 double             VaMAN_In_LinearSlideError;
 double             VaMAN_k_LinearSlideIntegral;
+double             VeMAN_DegS_TurretRampFast = 0;
+double             VeMAN_DegS_TurretRampSlow = 0;
+double             VeMAN_Deg_TurretRateDb = 0;
+
 
 double VaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz];
 double VaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz];
@@ -111,6 +115,10 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   VaMAN_k_PositionToEncoder[E_MAN_IntakeArm] = 1.0;
 
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRateFast;
+  VeMAN_DegS_TurretRampFast = KeMAN_DegS_TurretRateFast;
+  VeMAN_DegS_TurretRampSlow = KeMAN_DegS_TurretRateSlow;
+  VeMAN_Deg_TurretRateDb = KeMAN_Deg_TurretRateDb;
+
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
@@ -204,6 +212,7 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   // frc::SmartDashboard::PutNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
 
   // display secondary coefficients
+  frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRateSlow", KeMAN_DegS_TurretRateSlow);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRateFast", KeMAN_DegS_TurretRateFast);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_ArmPivotRate", KeMAN_DegS_ArmPivotRate);
   frc::SmartDashboard::PutNumber("KeMAN_InS_LinearSlideRate", KeMAN_InS_LinearSlideRate);
@@ -335,7 +344,9 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   // if(L_il_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Ll]) { VaMAN_k_LinearSlidePID_Gx[E_I_Ll] = L_il_Linear; }
   // if((L_max_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ul]) || (L_min_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ll])) { VaMAN_k_LinearSlidePID_Gx[E_Max_Ll] = L_min_Linear; VaMAN_k_LinearSlidePID_Gx[E_Max_Ul] = L_max_Linear; }
 
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = frc::SmartDashboard::GetNumber("KeMAN_DegS_TurretRateFast", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret]);
+  VeMAN_DegS_TurretRampFast = frc::SmartDashboard::GetNumber("KeMAN_DegS_TurretRateFast", VeMAN_DegS_TurretRampFast);
+  VeMAN_DegS_TurretRampSlow = frc::SmartDashboard::GetNumber("KeMAN_DegS_TurretRateSlow", VeMAN_DegS_TurretRampSlow);
+  VeMAN_Deg_TurretRateDb = frc::SmartDashboard::GetNumber("KeMAN_Deg_TurretRateDb", VeMAN_Deg_TurretRateDb);
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("KeMAN_DegS_ArmPivotRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("KeMAN_InS_LinearSlideRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("KeMAN_DegS_WristRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
@@ -596,9 +607,9 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
 
      VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo_2Ramp(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Turret],
                                                                  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
-                                                                 KeMAN_DegS_TurretRateFast,
-                                                                 KeMAN_DegS_TurretRateSlow,
-                                                                 KeMAN_Deg_TurretRateDb);
+                                                                 VeMAN_DegS_TurretRampFast,
+                                                                 VeMAN_DegS_TurretRampSlow,
+                                                                 VeMAN_Deg_TurretRateDb);
 
      VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_ArmPivot] / VaMAN_k_PositionToEncoder[E_MAN_ArmPivot], 
                                                              VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
