@@ -73,7 +73,8 @@ void Robot::RobotMotorCommands()
   m_WristPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist], rev::ControlType::kPosition);
   // m_GripperPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper], rev::ControlType::kVelocity);
   m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]);   // This puts the gripper into a power control setup, not speed/postion
-  m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
+  // m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
+  m_IntakeRollers.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers]);
   m_TurretRotate.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
   // m_TurretRotate.Set(ControlMode::PercentOutput, 0.0);
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
@@ -156,6 +157,9 @@ void Robot::RobotInit()
   m_Gripper.SetSmartCurrentLimit(KeMAN_k_ManipulatorNeoCurrentLim);
   m_IntakeRollers.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_IntakeRollers.SetSmartCurrentLimit(KeMAN_k_ManipulatorNeoCurrentLim);
+
+  m_WristforwardLimit.EnableLimitSwitch(false);
+  m_WristreverseLimit.EnableLimitSwitch(false);
 
   m_TurretRotate.ConfigFactoryDefault();
   m_TurretRotate.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, KeROBO_t_MotorTimeoutMs);
@@ -256,7 +260,9 @@ void Robot::RobotPeriodic()
                    m_WristEncoder,
                    m_LinearSlide.GetSelectedSensorPosition(),
                    m_TurretRotate.GetSelectedSensorPosition(),
-                   VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm]);
+                   VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm],
+                   m_WristforwardLimit.Get(),
+                   m_WristreverseLimit.Get());
 #else
   Encoders_Drive_PracticeBot(a_encoderFrontLeftSteer.GetVoltage(),
                              a_encoderFrontRightSteer.GetVoltage(),

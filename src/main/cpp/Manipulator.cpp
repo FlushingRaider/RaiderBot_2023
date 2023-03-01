@@ -477,15 +477,15 @@ bool CmndStateReached(TeMAN_ManipulatorStates LeMAN_e_CmndState)
       (VsMAN_s_Sensors.Deg_Wrist <= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] + KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
       (VsMAN_s_Sensors.Deg_Wrist >= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] - KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
 
-      (VsMAN_s_Sensors.RPM_IntakeRollers <= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] + KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
-      (VsMAN_s_Sensors.RPM_IntakeRollers >= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] - KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
-
       ((VsMAN_s_Sensors.b_IntakeArmExtended == true && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorExtend) ||
        (VsMAN_s_Sensors.b_IntakeArmExtended == false && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorRetract))))
       {
       LeMAN_b_CriteriaMet = true;
       VeMAM_t_TransitionTime = 0.0;
       }
+
+      // (VsMAN_s_Sensors.RPM_IntakeRollers <= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] + KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
+      // (VsMAN_s_Sensors.RPM_IntakeRollers >= (KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] - KaMAN_RPM_IntakeSpeedDb[LeMAN_e_CmndState])) &&
 
   return(LeMAN_b_CriteriaMet);
   }
@@ -526,9 +526,11 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
                                                         VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist],
                                                         KeMAN_DegS_WristRate);
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers] = RampTo(KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] / KeENC_RPM_IntakeRollers, 
-                                                                VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers],
-                                                                KeMAN_RPMS_IntakeRate);
+  //  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers] = RampTo(KaMAN_RPM_IntakeSpeed[LeMAN_e_CmndState] / KeENC_RPM_IntakeRollers, 
+  //                                                               VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers],
+  //                                                               KeMAN_RPMS_IntakeRate);
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers] = KaMAN_RPM_IntakePower[LeMAN_e_CmndState]; // Change to power based.  Don't think we need speed control here...
 
    VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm] = KaMAN_e_IntakePneumatics[LeMAN_e_CmndState];
   }
@@ -565,7 +567,8 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
      }
    else if ((LeMAN_b_ObjDetected == false) &&
             (((LeMAN_e_AttndState == E_MAN_MainIntake) && (LeMAN_e_CmndState  == E_MAN_MainIntake)) ||
-             ((LeMAN_e_AttndState == E_MAN_FloorIntake) && (LeMAN_e_CmndState  == E_MAN_FloorIntake))))
+             ((LeMAN_e_AttndState == E_MAN_FloorIntake) && (LeMAN_e_CmndState  == E_MAN_FloorIntake)) ||
+             ((LeMAN_e_AttndState == E_MAN_MidIntake) && (LeMAN_e_CmndState  == E_MAN_MidIntake))))
      {
      LeMAN_k_TempCmnd = KeMAN_k_GripperIntake;
      }
@@ -634,7 +637,7 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
     UpdateGripperActuator(VeMAN_e_CmndState,
                           VeMAN_e_AttndState,
                           LeMAN_b_DropObject,
-                          false);  // Need to come up with object detected
+                          VsMAN_s_Sensors.b_GripperObjDetected);  // Need to come up with object detected
 
     if ((LeMAN_e_SchedState != VeMAN_e_CmndState) ||
         (LeMAN_e_SchedState != VeMAN_e_AttndState))

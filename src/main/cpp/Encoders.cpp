@@ -248,9 +248,12 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        rev::SparkMaxRelativeEncoder m_WristEncoder,
                        double                       LeENC_Deg_LinearSlide,
                        double                       LeENC_Deg_EncoderTurretRotate,
-                       T_MotorControlType           LeENC_e_IntakeCmnd)
+                       T_MotorControlType           LeENC_e_IntakeCmnd,
+                       bool                         LeENC_b_WristForwardLimit,
+                       bool                         LeENC_b_WristReverseLimit)
   {
   bool LeENC_b_IntakeExtended = false;
+  bool LeENC_b_ObjectDetected = false;
 
   VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_ArmPivot;
 
@@ -271,12 +274,23 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   
   VsMAN_s_Sensors.b_IntakeArmExtended = LeENC_b_IntakeExtended;
 
+  /* Switches are wired to the wrist motor controller.  Switches are intended to detect object in the gripper... */
+  if ((LeENC_b_WristForwardLimit == true) ||
+      (LeENC_b_WristReverseLimit == true))
+    {
+      LeENC_b_ObjectDetected = true;
+    }
+
+  VsMAN_s_Sensors.b_GripperObjDetected = LeENC_b_ObjectDetected;
+
   frc::SmartDashboard::PutNumber("ArmPivot",       VsMAN_s_Sensors.Deg_ArmPivot);
   frc::SmartDashboard::PutNumber("IntakeRollers",  VsMAN_s_Sensors.RPM_IntakeRollers);
   frc::SmartDashboard::PutNumber("Gripper",        VsMAN_s_Sensors.RPM_Gripper);
   frc::SmartDashboard::PutNumber("Wrist",          VsMAN_s_Sensors.Deg_Wrist);
   frc::SmartDashboard::PutNumber("Turret",         VsMAN_s_Sensors.Deg_Turret);
   frc::SmartDashboard::PutNumber("LinearSlide",    VsMAN_s_Sensors.In_LinearSlide);
-  frc::SmartDashboard::PutNumber("LinearSlideRaw", LeENC_Deg_LinearSlide);
-  frc::SmartDashboard::PutNumber("IntakeExtended", VsMAN_s_Sensors.b_IntakeArmExtended);
+  frc::SmartDashboard::PutBoolean("IntakeExtended",  VsMAN_s_Sensors.b_IntakeArmExtended);
+  frc::SmartDashboard::PutBoolean("GripObjDetected", VsMAN_s_Sensors.b_GripperObjDetected);
+  frc::SmartDashboard::PutBoolean("FwdLim",         LeENC_b_WristForwardLimit);
+  frc::SmartDashboard::PutBoolean("RevLim",         LeENC_b_WristReverseLimit);
   }

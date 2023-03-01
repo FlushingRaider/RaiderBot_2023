@@ -88,6 +88,9 @@ class Robot : public frc::TimedRobot {
   rev::SparkMaxPIDController                 m_GripperPID          = m_Gripper.GetPIDController();
   rev::SparkMaxPIDController                 m_IntakeRollersPID    = m_IntakeRollers.GetPIDController();
 
+  rev::SparkMaxLimitSwitch                   m_WristforwardLimit   = m_Wrist.GetForwardLimitSwitch(rev::SparkMaxLimitSwitch::Type::kNormallyClosed);
+  rev::SparkMaxLimitSwitch                   m_WristreverseLimit   = m_Wrist.GetReverseLimitSwitch(rev::SparkMaxLimitSwitch::Type::kNormallyClosed);
+
   WPI_TalonSRX                               m_TurretRotate         {KeMAN_i_TurretRotate};
   WPI_TalonSRX                               m_LinearSlide          {KeMAN_i_LinearSlide};
 

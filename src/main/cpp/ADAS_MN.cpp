@@ -112,7 +112,6 @@ void ADAS_MN_Reset(void)
  ******************************************************************************/
  bool ManipulatorScheduelerTeleop (void)
   {
-  // TeMAN_ManipulatorStates LeADAS_e_MAN_State      = VeADAS_e_MAN_SchedState;
   bool                    LeADAS_b_MAN_DropObject = false;
   bool                    LeADAS_b_MAN_StateComplete = false;
 
@@ -148,6 +147,10 @@ void ADAS_MN_Reset(void)
     {
       VeADAS_e_MAN_SchedState = E_MAN_FloorIntake;
     }
+  else if (VsCONT_s_DriverInput.b_MidIntakeOut == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_MidIntake;
+    }
   else
     {
       /* No updates */
@@ -171,7 +174,6 @@ void ADAS_MN_Reset(void)
       LeADAS_b_MAN_StateComplete = true;
     }
 
-    // VeADAS_e_MAN_SchedState = LeADAS_e_MAN_State;
     VeADAS_b_MAN_DropObject = LeADAS_b_MAN_DropObject;
 
     return(LeADAS_b_MAN_StateComplete);
