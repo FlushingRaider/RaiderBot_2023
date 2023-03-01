@@ -481,7 +481,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
   case E_ADAS_Disabled:
   default:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
-                                           E_ADAS_DM_PathFollower);
+                                           E_ADAS_Disabled);
     *L_Pct_FwdRev = 0;
     *L_Pct_Strafe = 0;
     *L_Pct_Rotate = 0;

@@ -262,8 +262,14 @@ const double KaMAN_Deg_TurretAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                       180.0, // Floor Intake
                                                       0.0};  // Mid Intake
 
-/* KeMAN_DegS_TurretRate: Rate that is used in transition for the turret */
-const double KeMAN_DegS_TurretRate = 1.35;
+/* KeMAN_DegS_TurretRate: Fast rate that is used in transition for the turret */
+const double KeMAN_DegS_TurretRateFast = 1.35;
+
+/* KeMAN_DegS_TurretRateSlow: Slow rate that is used in transition for the turret */
+const double KeMAN_DegS_TurretRateSlow = 0.1;
+
+/* KeMAN_DegS_TurretRate: Deadband used to switch to slow ramp rate */
+const double KeMAN_Deg_TurretRateDb = 10;
 
 /* KeMAN_Deg_TurretHighGx: Error angles greater than this will have the large proportional gain */
 const double KeMAN_Deg_TurretHighGx = 90;

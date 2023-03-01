@@ -211,7 +211,6 @@ bool ADAS_MN_Main(T_RobotState         L_RobotState,
 {
   bool LeADAS_b_MN_Complete = false;
 
-  LeADAS_e_ActiveFeature = E_ADAS_Disabled;
   switch (LeADAS_e_ActiveFeature)
   {
   case E_ADAS_Disabled:
@@ -223,7 +222,7 @@ bool ADAS_MN_Main(T_RobotState         L_RobotState,
   case E_ADAS_DM_AutoBalance:
   case E_ADAS_MoveOffsetTag:
   default:
-    // LeADAS_b_MN_Complete = ManipulatorScheduelerAuton();
+    LeADAS_b_MN_Complete = ManipulatorScheduelerAuton();
   break;
   }
 

@@ -124,13 +124,62 @@ double RampTo(double LeLU_Cmd_Final,
 }
 
 /******************************************************************************
+ * Function:     RampTo_2Ramp
+ *
+ * Description:  Function to ramp from one value to another. Will use a second 
+ *               ramp when in deadband.
+ *****************************************************************************/
+double RampTo_2Ramp(double LeLU_Cmd_Final,
+                    double LeLU_Cmd_Current,
+                    double LeLU_Cmd_SlopeFast,
+                    double LeLU_Cmd_SlopeSlow,
+                    double LeLU_K_Db)
+{
+double LeLU_Cmd_DeltaToFinish = fabs(LeLU_Cmd_Final - LeLU_Cmd_Current);
+double LeLU_Cmd_SlopeActual = 0;
+
+  if (LeLU_Cmd_DeltaToFinish > LeLU_K_Db)
+    {
+      /* We have a large enough delta to remain in the fast slope */
+      LeLU_Cmd_SlopeActual = LeLU_Cmd_SlopeFast;
+    }
+  else
+    {
+      LeLU_Cmd_SlopeActual = LeLU_Cmd_SlopeSlow;
+    }
+
+  if (LeLU_Cmd_Final - LeLU_Cmd_Current > 0)
+  {
+    LeLU_Cmd_Current += LeLU_Cmd_SlopeActual;
+
+    if (LeLU_Cmd_Current >= LeLU_Cmd_Final)
+    {
+      LeLU_Cmd_Current = LeLU_Cmd_Final;
+    }
+  }
+  else if (LeLU_Cmd_Final - LeLU_Cmd_Current < 0)
+  {
+    LeLU_Cmd_Current -= LeLU_Cmd_SlopeActual;
+    if (LeLU_Cmd_Current <= LeLU_Cmd_Final)
+    {
+      LeLU_Cmd_Current = LeLU_Cmd_Final;
+    }
+  }
+  else
+  {
+    LeLU_Cmd_Current = LeLU_Cmd_Final;
+  }
+  return (LeLU_Cmd_Current);
+}
+
+/******************************************************************************
  * Function:     LookUp1D_Axis
  *
  * Description:  Single axis lookup.
  ******************************************************************************/
 void LookUp1D_Axis(const double *LKLU_Cmd_Axis,
                    int LeLU_Int_AxisSize,
-                   int *LeLU_Int_Index_i,
+                   int *LeLU_Int_Index_i, 
                    int *LeLU_Int_Index_j,
                    double LeLU_Cmd_Input,
                    double *LeLU_Cmd_InputScalar,

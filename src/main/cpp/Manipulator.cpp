@@ -110,14 +110,14 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   VaMAN_k_PositionToEncoder[E_MAN_IntakeRollers] = KeENC_RPM_IntakeRollers;
   VaMAN_k_PositionToEncoder[E_MAN_IntakeArm] = 1.0;
 
-  VsMAN_s_Motors.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRate;
+  VsMAN_s_Motors.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRateFast;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_IntakeRollers] = KeMAN_RPMS_IntakeRate;
 
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRate;
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRateFast;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
@@ -159,33 +159,33 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
     }
 
   // display PID coefficients on SmartDashboard
-  frc::SmartDashboard::PutNumber("P Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kP]);
-  frc::SmartDashboard::PutNumber("I Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kI]);
-  frc::SmartDashboard::PutNumber("D Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kD]);
-  frc::SmartDashboard::PutNumber("I Zone - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kIz]);
-  frc::SmartDashboard::PutNumber("Max Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]);
-  frc::SmartDashboard::PutNumber("Min Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMinOutput]);
+  // frc::SmartDashboard::PutNumber("P Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kP]);
+  // frc::SmartDashboard::PutNumber("I Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kI]);
+  // frc::SmartDashboard::PutNumber("D Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kD]);
+  // frc::SmartDashboard::PutNumber("I Zone - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kIz]);
+  // frc::SmartDashboard::PutNumber("Max Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]);
+  // frc::SmartDashboard::PutNumber("Min Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMinOutput]);
 
-  frc::SmartDashboard::PutNumber("P Gain - Wrist", KaMAN_k_WristPID_Gx[E_kP]);
-  frc::SmartDashboard::PutNumber("I Gain - Wrist", KaMAN_k_WristPID_Gx[E_kI]);
-  frc::SmartDashboard::PutNumber("D Gain - Wrist", KaMAN_k_WristPID_Gx[E_kD]);
-  frc::SmartDashboard::PutNumber("I Zone - Wrist", KaMAN_k_WristPID_Gx[E_kIz]);
-  frc::SmartDashboard::PutNumber("Max Output - Wrist", KaMAN_k_WristPID_Gx[E_kMaxOutput]);
-  frc::SmartDashboard::PutNumber("Min Output - Wrist", KaMAN_k_WristPID_Gx[E_kMinOutput]);
+  // frc::SmartDashboard::PutNumber("P Gain - Wrist", KaMAN_k_WristPID_Gx[E_kP]);
+  // frc::SmartDashboard::PutNumber("I Gain - Wrist", KaMAN_k_WristPID_Gx[E_kI]);
+  // frc::SmartDashboard::PutNumber("D Gain - Wrist", KaMAN_k_WristPID_Gx[E_kD]);
+  // frc::SmartDashboard::PutNumber("I Zone - Wrist", KaMAN_k_WristPID_Gx[E_kIz]);
+  // frc::SmartDashboard::PutNumber("Max Output - Wrist", KaMAN_k_WristPID_Gx[E_kMaxOutput]);
+  // frc::SmartDashboard::PutNumber("Min Output - Wrist", KaMAN_k_WristPID_Gx[E_kMinOutput]);
 
-  frc::SmartDashboard::PutNumber("P Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kP]);
-  frc::SmartDashboard::PutNumber("I Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kI]);
-  frc::SmartDashboard::PutNumber("D Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kD]);
-  frc::SmartDashboard::PutNumber("I Zone - Gripper", KaMAN_k_GripperPID_Gx[E_kIz]);
-  frc::SmartDashboard::PutNumber("Max Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMaxOutput]);
-  frc::SmartDashboard::PutNumber("Min Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMinOutput]);
+  // frc::SmartDashboard::PutNumber("P Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kP]);
+  // frc::SmartDashboard::PutNumber("I Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kI]);
+  // frc::SmartDashboard::PutNumber("D Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kD]);
+  // frc::SmartDashboard::PutNumber("I Zone - Gripper", KaMAN_k_GripperPID_Gx[E_kIz]);
+  // frc::SmartDashboard::PutNumber("Max Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMaxOutput]);
+  // frc::SmartDashboard::PutNumber("Min Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMinOutput]);
 
-  frc::SmartDashboard::PutNumber("P Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kP]);
-  frc::SmartDashboard::PutNumber("I Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kI]);
-  frc::SmartDashboard::PutNumber("D Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kD]);
-  frc::SmartDashboard::PutNumber("I Zone - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kIz]);
-  frc::SmartDashboard::PutNumber("Max Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
-  frc::SmartDashboard::PutNumber("Min Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput]);
+  // frc::SmartDashboard::PutNumber("P Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kP]);
+  // frc::SmartDashboard::PutNumber("I Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kI]);
+  // frc::SmartDashboard::PutNumber("D Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kD]);
+  // frc::SmartDashboard::PutNumber("I Zone - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kIz]);
+  // frc::SmartDashboard::PutNumber("Max Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
+  // frc::SmartDashboard::PutNumber("Min Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput]);
 
   frc::SmartDashboard::PutNumber("P Gain - Turret", KaMAN_k_TurretPID_Gx[E_P_Gx]);
   frc::SmartDashboard::PutNumber("I Gain - Turret", KaMAN_k_TurretPID_Gx[E_I_Gx]);
@@ -195,16 +195,16 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   frc::SmartDashboard::PutNumber("Max Output - Turret", KaMAN_k_TurretPID_Gx[E_Max_Ul]);
   frc::SmartDashboard::PutNumber("Min Output - Turret", KaMAN_k_TurretPID_Gx[E_Max_Ll]);
 
-  frc::SmartDashboard::PutNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_P_Gx]);
-  frc::SmartDashboard::PutNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Gx]);
-  frc::SmartDashboard::PutNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_D_Gx]);
-  frc::SmartDashboard::PutNumber("I Upper - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ul]);
-  frc::SmartDashboard::PutNumber("I Lower - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ll]);
-  frc::SmartDashboard::PutNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ul]);
-  frc::SmartDashboard::PutNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
+  // frc::SmartDashboard::PutNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_P_Gx]);
+  // frc::SmartDashboard::PutNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Gx]);
+  // frc::SmartDashboard::PutNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_D_Gx]);
+  // frc::SmartDashboard::PutNumber("I Upper - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ul]);
+  // frc::SmartDashboard::PutNumber("I Lower - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ll]);
+  // frc::SmartDashboard::PutNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ul]);
+  // frc::SmartDashboard::PutNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
 
   // display secondary coefficients
-  frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRate", KeMAN_DegS_TurretRate);
+  frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRateFast", KeMAN_DegS_TurretRateFast);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_ArmPivotRate", KeMAN_DegS_ArmPivotRate);
   frc::SmartDashboard::PutNumber("KeMAN_InS_LinearSlideRate", KeMAN_InS_LinearSlideRate);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_WristRate", KeMAN_DegS_WristRate);
@@ -237,33 +237,33 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   // read PID coefficients from SmartDashboard
   #ifdef Manipulator_Test
   bool LeMAN_b_IntakePosition = false;  // false is retracted, true extended
-  double L_p_Pivot   = frc::SmartDashboard::GetNumber("P Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kP]);
-  double L_i_Pivot   = frc::SmartDashboard::GetNumber("I Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kI]);
-  double L_d_Pivot   = frc::SmartDashboard::GetNumber("D Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kD]);
-  double L_iz_Pivot  = frc::SmartDashboard::GetNumber("I Zone - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kIz]);
-  double L_max_Pivot = frc::SmartDashboard::GetNumber("Max Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]);
-  double L_min_Pivot = frc::SmartDashboard::GetNumber("Min Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMinOutput]);
+  // double L_p_Pivot   = frc::SmartDashboard::GetNumber("P Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kP]);
+  // double L_i_Pivot   = frc::SmartDashboard::GetNumber("I Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kI]);
+  // double L_d_Pivot   = frc::SmartDashboard::GetNumber("D Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kD]);
+  // double L_iz_Pivot  = frc::SmartDashboard::GetNumber("I Zone - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kIz]);
+  // double L_max_Pivot = frc::SmartDashboard::GetNumber("Max Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]);
+  // double L_min_Pivot = frc::SmartDashboard::GetNumber("Min Output - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kMinOutput]);
 
-  double L_p_Wrist   = frc::SmartDashboard::GetNumber("P Gain - Wrist", KaMAN_k_WristPID_Gx[E_kP]);
-  double L_i_Wrist   = frc::SmartDashboard::GetNumber("I Gain - Wrist", KaMAN_k_WristPID_Gx[E_kI]);
-  double L_d_Wrist   = frc::SmartDashboard::GetNumber("D Gain - Wrist", KaMAN_k_WristPID_Gx[E_kD]);
-  double L_iz_Wrist  = frc::SmartDashboard::GetNumber("I Zone - Wrist", KaMAN_k_WristPID_Gx[E_kIz]);
-  double L_max_Wrist = frc::SmartDashboard::GetNumber("Max Output - Wrist", KaMAN_k_WristPID_Gx[E_kMaxOutput]);
-  double L_min_Wrist = frc::SmartDashboard::GetNumber("Min Output - Wrist", KaMAN_k_WristPID_Gx[E_kMinOutput]);
+  // double L_p_Wrist   = frc::SmartDashboard::GetNumber("P Gain - Wrist", KaMAN_k_WristPID_Gx[E_kP]);
+  // double L_i_Wrist   = frc::SmartDashboard::GetNumber("I Gain - Wrist", KaMAN_k_WristPID_Gx[E_kI]);
+  // double L_d_Wrist   = frc::SmartDashboard::GetNumber("D Gain - Wrist", KaMAN_k_WristPID_Gx[E_kD]);
+  // double L_iz_Wrist  = frc::SmartDashboard::GetNumber("I Zone - Wrist", KaMAN_k_WristPID_Gx[E_kIz]);
+  // double L_max_Wrist = frc::SmartDashboard::GetNumber("Max Output - Wrist", KaMAN_k_WristPID_Gx[E_kMaxOutput]);
+  // double L_min_Wrist = frc::SmartDashboard::GetNumber("Min Output - Wrist", KaMAN_k_WristPID_Gx[E_kMinOutput]);
 
-  double L_p_Gripper   = frc::SmartDashboard::GetNumber("P Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kP]);
-  double L_i_Gripper   = frc::SmartDashboard::GetNumber("I Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kI]);
-  double L_d_Gripper   = frc::SmartDashboard::GetNumber("D Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kD]);
-  double L_iz_Gripper  = frc::SmartDashboard::GetNumber("I Zone - Gripper", KaMAN_k_GripperPID_Gx[E_kIz]);
-  double L_max_Gripper = frc::SmartDashboard::GetNumber("Max Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMaxOutput]);
-  double L_min_Gripper = frc::SmartDashboard::GetNumber("Min Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMinOutput]);
+  // double L_p_Gripper   = frc::SmartDashboard::GetNumber("P Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kP]);
+  // double L_i_Gripper   = frc::SmartDashboard::GetNumber("I Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kI]);
+  // double L_d_Gripper   = frc::SmartDashboard::GetNumber("D Gain - Gripper", KaMAN_k_GripperPID_Gx[E_kD]);
+  // double L_iz_Gripper  = frc::SmartDashboard::GetNumber("I Zone - Gripper", KaMAN_k_GripperPID_Gx[E_kIz]);
+  // double L_max_Gripper = frc::SmartDashboard::GetNumber("Max Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMaxOutput]);
+  // double L_min_Gripper = frc::SmartDashboard::GetNumber("Min Output - Gripper", KaMAN_k_GripperPID_Gx[E_kMinOutput]);
 
-  double L_p_Intake   = frc::SmartDashboard::GetNumber("P Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kP]);
-  double L_i_Intake   = frc::SmartDashboard::GetNumber("I Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kI]);
-  double L_d_Intake   = frc::SmartDashboard::GetNumber("D Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kD]);
-  double L_iz_Intake  = frc::SmartDashboard::GetNumber("I Zone - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kIz]);
-  double L_max_Intake = frc::SmartDashboard::GetNumber("Max Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
-  double L_min_Intake = frc::SmartDashboard::GetNumber("Min Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput]);
+  // double L_p_Intake   = frc::SmartDashboard::GetNumber("P Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kP]);
+  // double L_i_Intake   = frc::SmartDashboard::GetNumber("I Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kI]);
+  // double L_d_Intake   = frc::SmartDashboard::GetNumber("D Gain - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kD]);
+  // double L_iz_Intake  = frc::SmartDashboard::GetNumber("I Zone - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kIz]);
+  // double L_max_Intake = frc::SmartDashboard::GetNumber("Max Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
+  // double L_min_Intake = frc::SmartDashboard::GetNumber("Min Output - Intake", KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput]);
 
   double L_p_Turret   = frc::SmartDashboard::GetNumber("P Gain - Turret", KaMAN_k_TurretPID_Gx[E_P_Gx]);
   double L_i_Turret   = frc::SmartDashboard::GetNumber("I Gain - Turret", KaMAN_k_TurretPID_Gx[E_I_Gx]);
@@ -273,13 +273,13 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   double L_max_Turret = frc::SmartDashboard::GetNumber("Max Output - Turret", KaMAN_k_TurretPID_Gx[E_Max_Ul]);
   double L_min_Turret = frc::SmartDashboard::GetNumber("Min Output - Turret", KaMAN_k_TurretPID_Gx[E_Max_Ll]);
 
-  double L_p_Linear   = frc::SmartDashboard::GetNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_P_Gx]);
-  double L_i_Linear   = frc::SmartDashboard::GetNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Gx]);
-  double L_d_Linear   = frc::SmartDashboard::GetNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_D_Gx]);
-  double L_iu_Linear  = frc::SmartDashboard::GetNumber("I Upper - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ul]);
-  double L_il_Linear  = frc::SmartDashboard::GetNumber("I Lower - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ll]);
-  double L_max_Linear = frc::SmartDashboard::GetNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ul]);
-  double L_min_Linear = frc::SmartDashboard::GetNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
+  // double L_p_Linear   = frc::SmartDashboard::GetNumber("P Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_P_Gx]);
+  // double L_i_Linear   = frc::SmartDashboard::GetNumber("I Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Gx]);
+  // double L_d_Linear   = frc::SmartDashboard::GetNumber("D Gain - Linear", KaMAN_k_LinearSlidePID_Gx[E_D_Gx]);
+  // double L_iu_Linear  = frc::SmartDashboard::GetNumber("I Upper - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ul]);
+  // double L_il_Linear  = frc::SmartDashboard::GetNumber("I Lower - Linear", KaMAN_k_LinearSlidePID_Gx[E_I_Ll]);
+  // double L_max_Linear = frc::SmartDashboard::GetNumber("Max Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ul]);
+  // double L_min_Linear = frc::SmartDashboard::GetNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
 
   VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Gripper] = frc::SmartDashboard::GetNumber("Set Position Gripper", 0);
   VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("Set Position Wrist", 0);
@@ -297,29 +297,29 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
    VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm] = E_MotorRetract;
    }
   
-  if(L_p_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kP])   { m_ArmPivotPID.SetP(L_p_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kP] = L_p_Pivot; }
-  if(L_i_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kI])   { m_ArmPivotPID.SetI(L_i_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kI] = L_i_Pivot; }
-  if(L_d_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kD])   { m_ArmPivotPID.SetD(L_d_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kD] = L_d_Pivot; }
-  if(L_iz_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kIz]) { m_ArmPivotPID.SetIZone(L_iz_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kIz] = L_iz_Pivot; }
-  if((L_max_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]) || (L_min_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kMinOutput])) { m_ArmPivotPID.SetOutputRange(L_min_Pivot, L_max_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kMinOutput] = L_min_Pivot; VaMAN_k_ArmPivotPID_Gx[E_kMaxOutput] = L_max_Pivot; }
+  // if(L_p_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kP])   { m_ArmPivotPID.SetP(L_p_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kP] = L_p_Pivot; }
+  // if(L_i_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kI])   { m_ArmPivotPID.SetI(L_i_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kI] = L_i_Pivot; }
+  // if(L_d_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kD])   { m_ArmPivotPID.SetD(L_d_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kD] = L_d_Pivot; }
+  // if(L_iz_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kIz]) { m_ArmPivotPID.SetIZone(L_iz_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kIz] = L_iz_Pivot; }
+  // if((L_max_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kMaxOutput]) || (L_min_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kMinOutput])) { m_ArmPivotPID.SetOutputRange(L_min_Pivot, L_max_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kMinOutput] = L_min_Pivot; VaMAN_k_ArmPivotPID_Gx[E_kMaxOutput] = L_max_Pivot; }
 
-  if(L_p_Wrist != VaMAN_k_WristPID_Gx[E_kP])   { m_WristPID.SetP(L_p_Wrist); VaMAN_k_WristPID_Gx[E_kP] = L_p_Wrist; }
-  if(L_i_Wrist != VaMAN_k_WristPID_Gx[E_kI])   { m_WristPID.SetI(L_i_Wrist); VaMAN_k_WristPID_Gx[E_kI] = L_i_Wrist; }
-  if(L_d_Wrist != VaMAN_k_WristPID_Gx[E_kD])   { m_WristPID.SetD(L_d_Wrist); VaMAN_k_WristPID_Gx[E_kD] = L_d_Wrist; }
-  if(L_iz_Wrist != VaMAN_k_WristPID_Gx[E_kIz]) { m_WristPID.SetIZone(L_iz_Wrist); VaMAN_k_WristPID_Gx[E_kIz] = L_iz_Wrist; }
-  if((L_max_Wrist != VaMAN_k_WristPID_Gx[E_kMaxOutput]) || (L_min_Wrist != VaMAN_k_WristPID_Gx[E_kMinOutput])) { m_WristPID.SetOutputRange(L_min_Wrist, L_max_Wrist); VaMAN_k_WristPID_Gx[E_kMinOutput] = L_min_Wrist; VaMAN_k_WristPID_Gx[E_kMaxOutput] = L_max_Wrist; }
+  // if(L_p_Wrist != VaMAN_k_WristPID_Gx[E_kP])   { m_WristPID.SetP(L_p_Wrist); VaMAN_k_WristPID_Gx[E_kP] = L_p_Wrist; }
+  // if(L_i_Wrist != VaMAN_k_WristPID_Gx[E_kI])   { m_WristPID.SetI(L_i_Wrist); VaMAN_k_WristPID_Gx[E_kI] = L_i_Wrist; }
+  // if(L_d_Wrist != VaMAN_k_WristPID_Gx[E_kD])   { m_WristPID.SetD(L_d_Wrist); VaMAN_k_WristPID_Gx[E_kD] = L_d_Wrist; }
+  // if(L_iz_Wrist != VaMAN_k_WristPID_Gx[E_kIz]) { m_WristPID.SetIZone(L_iz_Wrist); VaMAN_k_WristPID_Gx[E_kIz] = L_iz_Wrist; }
+  // if((L_max_Wrist != VaMAN_k_WristPID_Gx[E_kMaxOutput]) || (L_min_Wrist != VaMAN_k_WristPID_Gx[E_kMinOutput])) { m_WristPID.SetOutputRange(L_min_Wrist, L_max_Wrist); VaMAN_k_WristPID_Gx[E_kMinOutput] = L_min_Wrist; VaMAN_k_WristPID_Gx[E_kMaxOutput] = L_max_Wrist; }
 
-  if(L_p_Gripper != VaMAN_k_GripperPID_Gx[E_kP])   { m_GripperPID.SetP(L_p_Gripper); VaMAN_k_GripperPID_Gx[E_kP] = L_p_Gripper; }
-  if(L_i_Gripper != VaMAN_k_GripperPID_Gx[E_kI])   { m_GripperPID.SetI(L_i_Gripper); VaMAN_k_GripperPID_Gx[E_kI] = L_i_Gripper; }
-  if(L_d_Gripper != VaMAN_k_GripperPID_Gx[E_kD])   { m_GripperPID.SetD(L_d_Gripper); VaMAN_k_GripperPID_Gx[E_kD] = L_d_Gripper; }
-  if(L_iz_Gripper != VaMAN_k_GripperPID_Gx[E_kIz]) { m_GripperPID.SetIZone(L_iz_Gripper); VaMAN_k_GripperPID_Gx[E_kIz] = L_iz_Gripper; }
-  if((L_max_Gripper != VaMAN_k_GripperPID_Gx[E_kMaxOutput]) || (L_min_Gripper != VaMAN_k_GripperPID_Gx[E_kMinOutput])) { m_GripperPID.SetOutputRange(L_min_Gripper, L_max_Gripper); VaMAN_k_GripperPID_Gx[E_kMinOutput] = L_min_Gripper; VaMAN_k_GripperPID_Gx[E_kMaxOutput] = L_max_Gripper; }
+  // if(L_p_Gripper != VaMAN_k_GripperPID_Gx[E_kP])   { m_GripperPID.SetP(L_p_Gripper); VaMAN_k_GripperPID_Gx[E_kP] = L_p_Gripper; }
+  // if(L_i_Gripper != VaMAN_k_GripperPID_Gx[E_kI])   { m_GripperPID.SetI(L_i_Gripper); VaMAN_k_GripperPID_Gx[E_kI] = L_i_Gripper; }
+  // if(L_d_Gripper != VaMAN_k_GripperPID_Gx[E_kD])   { m_GripperPID.SetD(L_d_Gripper); VaMAN_k_GripperPID_Gx[E_kD] = L_d_Gripper; }
+  // if(L_iz_Gripper != VaMAN_k_GripperPID_Gx[E_kIz]) { m_GripperPID.SetIZone(L_iz_Gripper); VaMAN_k_GripperPID_Gx[E_kIz] = L_iz_Gripper; }
+  // if((L_max_Gripper != VaMAN_k_GripperPID_Gx[E_kMaxOutput]) || (L_min_Gripper != VaMAN_k_GripperPID_Gx[E_kMinOutput])) { m_GripperPID.SetOutputRange(L_min_Gripper, L_max_Gripper); VaMAN_k_GripperPID_Gx[E_kMinOutput] = L_min_Gripper; VaMAN_k_GripperPID_Gx[E_kMaxOutput] = L_max_Gripper; }
 
-  if(L_p_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kP])   { m_IntakeRollersPID.SetP(L_p_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kP] = L_p_Intake; }
-  if(L_i_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kI])   { m_IntakeRollersPID.SetI(L_i_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kI] = L_i_Intake; }
-  if(L_d_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kD])   { m_IntakeRollersPID.SetD(L_d_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kD] = L_d_Intake; }
-  if(L_iz_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kIz]) { m_IntakeRollersPID.SetIZone(L_iz_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kIz] = L_iz_Intake; }
-  if((L_max_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]) || (L_min_Pivot != VaMAN_k_IntakeRollersPID_Gx[E_kMinOutput])) { m_IntakeRollersPID.SetOutputRange(L_min_Pivot, L_max_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kMinOutput] = L_min_Pivot; VaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput] = L_max_Intake; }
+  // if(L_p_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kP])   { m_IntakeRollersPID.SetP(L_p_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kP] = L_p_Intake; }
+  // if(L_i_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kI])   { m_IntakeRollersPID.SetI(L_i_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kI] = L_i_Intake; }
+  // if(L_d_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kD])   { m_IntakeRollersPID.SetD(L_d_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kD] = L_d_Intake; }
+  // if(L_iz_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kIz]) { m_IntakeRollersPID.SetIZone(L_iz_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kIz] = L_iz_Intake; }
+  // if((L_max_Intake != VaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]) || (L_min_Pivot != VaMAN_k_IntakeRollersPID_Gx[E_kMinOutput])) { m_IntakeRollersPID.SetOutputRange(L_min_Pivot, L_max_Intake); VaMAN_k_IntakeRollersPID_Gx[E_kMinOutput] = L_min_Pivot; VaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput] = L_max_Intake; }
 
   if(L_p_Turret != VaMAN_k_TurretPID_Gx[E_P_Gx])   { VaMAN_k_TurretPID_Gx[E_P_Gx] = L_p_Turret; }
   if(L_i_Turret != VaMAN_k_TurretPID_Gx[E_I_Gx])   { VaMAN_k_TurretPID_Gx[E_I_Gx] = L_i_Turret; }
@@ -328,19 +328,19 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   if(L_il_Turret != VaMAN_k_TurretPID_Gx[E_I_Ll]) { VaMAN_k_TurretPID_Gx[E_I_Ll] = L_il_Turret; }
   if((L_max_Turret != VaMAN_k_TurretPID_Gx[E_Max_Ul]) || (L_min_Turret != VaMAN_k_TurretPID_Gx[E_Max_Ll])) { VaMAN_k_TurretPID_Gx[E_Max_Ll] = L_min_Turret; VaMAN_k_TurretPID_Gx[E_Max_Ul] = L_max_Turret; }
 
-  if(L_p_Linear != VaMAN_k_LinearSlidePID_Gx[E_P_Gx])   { VaMAN_k_LinearSlidePID_Gx[E_P_Gx] = L_p_Linear; }
-  if(L_i_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Gx])   { VaMAN_k_LinearSlidePID_Gx[E_I_Gx] = L_i_Linear; }
-  if(L_d_Linear != VaMAN_k_LinearSlidePID_Gx[E_D_Gx])   { VaMAN_k_LinearSlidePID_Gx[E_D_Gx] = L_d_Linear; }
-  if(L_iu_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Ul]) { VaMAN_k_LinearSlidePID_Gx[E_I_Ul] = L_iu_Linear; }
-  if(L_il_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Ll]) { VaMAN_k_LinearSlidePID_Gx[E_I_Ll] = L_il_Linear; }
-  if((L_max_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ul]) || (L_min_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ll])) { VaMAN_k_LinearSlidePID_Gx[E_Max_Ll] = L_min_Linear; VaMAN_k_LinearSlidePID_Gx[E_Max_Ul] = L_max_Linear; }
+  // if(L_p_Linear != VaMAN_k_LinearSlidePID_Gx[E_P_Gx])   { VaMAN_k_LinearSlidePID_Gx[E_P_Gx] = L_p_Linear; }
+  // if(L_i_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Gx])   { VaMAN_k_LinearSlidePID_Gx[E_I_Gx] = L_i_Linear; }
+  // if(L_d_Linear != VaMAN_k_LinearSlidePID_Gx[E_D_Gx])   { VaMAN_k_LinearSlidePID_Gx[E_D_Gx] = L_d_Linear; }
+  // if(L_iu_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Ul]) { VaMAN_k_LinearSlidePID_Gx[E_I_Ul] = L_iu_Linear; }
+  // if(L_il_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Ll]) { VaMAN_k_LinearSlidePID_Gx[E_I_Ll] = L_il_Linear; }
+  // if((L_max_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ul]) || (L_min_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ll])) { VaMAN_k_LinearSlidePID_Gx[E_Max_Ll] = L_min_Linear; VaMAN_k_LinearSlidePID_Gx[E_Max_Ul] = L_max_Linear; }
 
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = frc::SmartDashboard::GetNumber("KeMAN_DegS_TurretRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret]);
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("KeMAN_DegS_ArmPivotRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("KeMAN_InS_LinearSlideRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("KeMAN_DegS_WristRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = frc::SmartDashboard::GetNumber("KeMAN_DegS_GripperRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper]);
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers] = frc::SmartDashboard::GetNumber("KeMAN_RPMS_IntakeRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers]);
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = frc::SmartDashboard::GetNumber("KeMAN_DegS_TurretRateFast", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret]);
+  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("KeMAN_DegS_ArmPivotRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
+  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("KeMAN_InS_LinearSlideRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
+  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("KeMAN_DegS_WristRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
+  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = frc::SmartDashboard::GetNumber("KeMAN_DegS_GripperRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper]);
+  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers] = frc::SmartDashboard::GetNumber("KeMAN_RPMS_IntakeRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers]);
   #endif
   }
 
@@ -364,20 +364,6 @@ void ManipulatorControlInit()
   VeMAN_b_CriteriaMet = false;
   VeMAN_b_Paused = false;
   VeMAM_t_TransitionTime = 0.0;
-
-  // for (LeMAN_i_Index = E_MAN_Turret;
-  //      LeMAN_i_Index < E_MAN_Sz;
-  //      LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
-  //   {
-  //     VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = 0.0;
-  //     VsMAN_s_Motors.k_MotorRampRate[LeMAN_i_Index] = 0.0;
-  //     VsMAN_s_Motors.k_MotorTestPower[LeMAN_i_Index] = 0.0;
-  //     VsMAN_s_Motors.k_MotorTestValue[LeMAN_i_Index] = 0.0;
-  //     VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = 0.0;
-  //     VsMAN_s_MotorsTemp.k_MotorRampRate[LeMAN_i_Index] = 0.0;
-  //     VsMAN_s_MotorsTemp.k_MotorTestPower[LeMAN_i_Index] = 0.0;
-  //     VsMAN_s_MotorsTemp.k_MotorTestValue[LeMAN_i_Index] = 0.0;
-  //   }
   }
 
 
@@ -503,7 +489,13 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState)
    
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(KaMAN_Deg_TurretAngle[LeMAN_e_CmndState], // / KeENC_k_TurretEncoderScaler, 
                                                          VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
-                                                         KeMAN_DegS_TurretRate);
+                                                         KeMAN_DegS_TurretRateFast);
+
+  //  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo_2Ramp(KaMAN_Deg_TurretAngle[LeMAN_e_CmndState],
+  //                                                              VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
+  //                                                              KeMAN_DegS_TurretRateFast,
+  //                                                              KeMAN_DegS_TurretRateSlow,
+  //                                                              KeMAN_Deg_TurretRateDb);
 
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] / KeENC_k_ArmPivot, 
                                                            VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
@@ -588,7 +580,6 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
   double LeMAN_Deg_Error = 0.0;
   double LeMAN_k_P_Gain = 0.0;
-  double LeMAN_k_I_Gain = 0.0;
 
   // LeMAN_b_TestPowerOverride = false;
 
@@ -599,9 +590,15 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
   else if (VeMAN_b_TestState == true)
     {
     /* Only used for testing/calibration. */
-     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Turret], 
-                                                           VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
-                                                           VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret]);
+    //  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Turret], 
+    //                                                        VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
+    //                                                        VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret]);
+
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo_2Ramp(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Turret],
+                                                                 VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
+                                                                 KeMAN_DegS_TurretRateFast,
+                                                                 KeMAN_DegS_TurretRateSlow,
+                                                                 KeMAN_Deg_TurretRateDb);
 
      VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_ArmPivot] / VaMAN_k_PositionToEncoder[E_MAN_ArmPivot], 
                                                              VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
@@ -649,25 +646,23 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
     }
 
     /* Due to inertia / lash in turret, need to use varying P gains to better control */
-    LeMAN_Deg_Error = fabs(VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] - VsMAN_s_Sensors.Deg_Turret);
+    // LeMAN_Deg_Error = fabs(VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] - VsMAN_s_Sensors.Deg_Turret);
 
-    if (LeMAN_Deg_Error > KeMAN_Deg_TurretHighGx )
-      {
-        LeMAN_k_P_Gain = VaMAN_k_TurretPID_Gx[E_P_Gx];
-        LeMAN_k_I_Gain = VaMAN_k_TurretPID_Gx[E_I_Gx];
-      }
-    else
-      {
-        LeMAN_k_P_Gain = KeMAN_Deg_TurretLowGxMult * VaMAN_k_TurretPID_Gx[E_P_Gx];
-        LeMAN_k_I_Gain = KeMAN_Deg_TurretLowGxMult * VaMAN_k_TurretPID_Gx[E_I_Gx];
-      } 
+    // if (LeMAN_Deg_Error > KeMAN_Deg_TurretHighGx )
+    //   {
+    //     LeMAN_k_P_Gain = VaMAN_k_TurretPID_Gx[E_P_Gx];
+    //   }
+    // else
+    //   {
+    //     LeMAN_k_P_Gain = KeMAN_Deg_TurretLowGxMult * VaMAN_k_TurretPID_Gx[E_P_Gx];
+    //   } 
 
     /* Final output to the motor command that will be sent to the motor controller: */
     VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret] =  Control_PID(  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
                                                               VsMAN_s_Sensors.Deg_Turret,
                                                              &VaMAN_Deg_TurretAngleError,
                                                              &VaMAN_k_TurretAngleIntegral,
-                                                              LeMAN_k_P_Gain,
+                                                              VaMAN_k_TurretPID_Gx[E_P_Gx],
                                                               KaMAN_k_TurretPID_Gx[E_I_Gx],
                                                               KaMAN_k_TurretPID_Gx[E_D_Gx],
                                                               KaMAN_k_TurretPID_Gx[E_P_Ul],
