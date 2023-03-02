@@ -80,6 +80,7 @@ static const int C_VanityLight_ID = 0;
 
 // Vision Cals:
 const double K_MoveToTagMovementDeadband = 1.0; // inches
+// const double K_MoveToTagRotationDeadband = 2.0; // degrees
 
 // cals for top target cam
 

@@ -57,7 +57,8 @@ bool V_GyroFlipNeg;
 bool V_GyroFlipPos;
 double V_OffsettedGyro;
 
-std::string V_MoveToTagStep;
+bool wantToStopX;
+bool wantToStopY;
 
 /* Configuration cals: */
 // double KV_ADAS_DM_DebounceTime;
@@ -1010,7 +1011,6 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
       }
       else
       {
-        V_MoveToTagStep = "fwdrevStop";
         *L_Pct_Strafe = 0.0;
       }
       if (L_OdometryY < L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY < L_ChosenY - K_MoveToTagMovementDeadband)
@@ -1044,46 +1044,111 @@ bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
   return (LeADAS_b_DM_StateComplete);
 }
 
-bool MoveWIthOffsetTag(double *L_Pct_FwdRev,
-                     double *L_Pct_Strafe,
-                     double L_OdomOffsetX,
-                     double L_OdomOffsetY,
-                     double L_RequestedOffsetX,
-                     double L_RequestedOffsetY)
+bool MoveWithOffsetTag(double *L_Pct_FwdRev,
+                       double *L_Pct_Strafe,
+                       double *L_Pct_Rotate,
+                       bool L_OdomCentered,
+                       double L_TagYawDegrees,
+                       double L_OdomOffsetX,
+                       double L_OdomOffsetY,
+                       double L_RequestedOffsetX,
+                       double L_RequestedOffsetY)
+{
+  bool LeADAS_b_DM_StateComplete = false;
+  double L_ErrorCalcYaw;
+  if (L_OdomCentered)
+  {
+
+    L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
+
+    if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
+    {
+      *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
+    }
+
+    if (L_OdomOffsetX > L_RequestedOffsetX + K_MoveToTagMovementDeadband || L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadband)
+    {
+      *L_Pct_FwdRev = -0.05 * (L_OdomOffsetX - L_RequestedOffsetX);
+    }
+    // else if (L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadband)
+    // {
+    //   *L_Pct_FwdRev = 0.2 * (L_OdomOffsetX - L_RequestedOffsetX);
+    // }
+
+    if (L_OdomOffsetY > L_RequestedOffsetY + K_MoveToTagMovementDeadband || L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadband)
+    {
+      *L_Pct_Strafe = -0.05 * (L_OdomOffsetY - L_RequestedOffsetY);
+    }
+    // else if (L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadband)
+    // {
+    //   *L_Pct_Strafe = -0.2 * (L_OdomOffsetY - L_RequestedOffsetY);
+    // }
+
+    if (L_OdomOffsetX <= L_RequestedOffsetX + K_MoveToTagMovementDeadband && L_OdomOffsetX >= L_RequestedOffsetX - K_MoveToTagMovementDeadband)
+    {
+      *L_Pct_FwdRev = 0.0;
+    }
+    if (L_OdomOffsetY <= L_RequestedOffsetY + K_MoveToTagMovementDeadband && L_OdomOffsetY >= L_RequestedOffsetY - K_MoveToTagMovementDeadband)
+    {
+      *L_Pct_Strafe = 0.0;
+    }
+
+    if (*L_Pct_Strafe == 0.0 && *L_Pct_FwdRev == 0.0)
+    {
+      LeADAS_b_DM_StateComplete = true;
+    }
+  }
+  return (LeADAS_b_DM_StateComplete);
+}
+
+bool MoveWithGlobalCoords(double *L_Pct_FwdRev,
+                          double *L_Pct_Strafe,
+                          double *L_Pct_Rotate,
+                          bool L_OdomCentered,
+                          double L_TagYawDegrees,
+                          double L_CurrentOdomX,
+                          double L_CurrentOdomY,
+                          double L_RequestedCoordX,
+                          double L_RequestedCoordY)
 {
 
   bool LeADAS_b_DM_StateComplete = false;
 
-  if (L_OdomOffsetX > L_RequestedOffsetX + K_MoveToTagMovementDeadband || L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadband)
-  {
-    *L_Pct_FwdRev = -0.05 * (L_OdomOffsetX - L_RequestedOffsetX );
-  }
-  // else if (L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadband)
-  // {
-  //   *L_Pct_FwdRev = 0.2 * (L_OdomOffsetX - L_RequestedOffsetX);
-  // }
+  double L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
 
-  if (L_OdomOffsetY > L_RequestedOffsetY + K_MoveToTagMovementDeadband || L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadband)
+  if (L_OdomCentered)
   {
-    *L_Pct_Strafe = -0.05 * (L_OdomOffsetY - L_RequestedOffsetY);
-  }
-  // else if (L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadband)
-  // {
-  //   *L_Pct_Strafe = -0.2 * (L_OdomOffsetY - L_RequestedOffsetY);
-  // }
 
-  if (L_OdomOffsetX <= L_RequestedOffsetX + K_MoveToTagMovementDeadband && L_OdomOffsetX >= L_RequestedOffsetX - K_MoveToTagMovementDeadband)
-  {
-    *L_Pct_FwdRev = 0.0;
-  }
-  if (L_OdomOffsetY <= L_RequestedOffsetY + K_MoveToTagMovementDeadband && L_OdomOffsetY >= L_RequestedOffsetY - K_MoveToTagMovementDeadband)
-  {
-    *L_Pct_Strafe = 0.0;
-  }
+    if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
+    {
+      *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
+    }
 
-  if (*L_Pct_Strafe == 0.0 && *L_Pct_FwdRev == 0.0)
-  {
-    LeADAS_b_DM_StateComplete = true;
+    if (L_CurrentOdomX > L_RequestedCoordX + K_MoveToTagMovementDeadband || L_CurrentOdomX < L_RequestedCoordX - K_MoveToTagMovementDeadband)
+    {
+      *L_Pct_FwdRev = 0.0001 * (L_CurrentOdomX - L_RequestedCoordX);
+    }
+
+    if (L_CurrentOdomY > L_RequestedCoordY + K_MoveToTagMovementDeadband || L_CurrentOdomY < L_RequestedCoordY - K_MoveToTagMovementDeadband)
+    {
+      *L_Pct_Strafe = 0.0001 * (L_CurrentOdomY - L_RequestedCoordY);
+    }
+
+    if (L_CurrentOdomX <= L_RequestedCoordX + 10 && L_CurrentOdomX >= L_RequestedCoordX - 10)
+    {
+      *L_Pct_FwdRev = 0.0;
+      wantToStopX = true;
+    }
+    if (L_CurrentOdomY <= L_RequestedCoordY + 10 && L_CurrentOdomY >= L_RequestedCoordY - 10)
+    {
+      *L_Pct_Strafe = 0.0;
+      wantToStopY = true;
+    }
+
+    if (*L_Pct_Strafe == 0.0 && *L_Pct_FwdRev == 0.0)
+    {
+      LeADAS_b_DM_StateComplete = true;
+    }
   }
   return (LeADAS_b_DM_StateComplete);
 }

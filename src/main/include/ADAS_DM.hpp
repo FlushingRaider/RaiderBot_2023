@@ -13,6 +13,10 @@
 extern double V_ADAS_DM_InitGyroAngle;
 extern double V_ADAS_DM_Rotate180TargetAngle;
 
+
+extern bool wantToStopX;
+extern bool wantToStopY;
+
 extern std::string V_MoveToTagStep;
 
 void ADAS_DM_Reset(void);
@@ -117,9 +121,22 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
                          bool *LeADAS_b_X_Mode,
                          double LeADAS_Deg_GyroRoll);
 
-bool MoveWIthOffsetTag(double *L_Pct_FwdRev,
-                     double *L_Pct_Strafe,
-                     double L_OdomOffsetX,
-                     double L_OdomOffsetY,
-                     double L_RequestedOffsetX,
-                     double L_RequestedOffsetY);
+bool MoveWithOffsetTag(double *L_Pct_FwdRev,
+                       double *L_Pct_Strafe,
+                       double *L_Pct_Rotate,
+                       bool L_OdomCentered,
+                       double L_TagYawDegrees,
+                       double L_OdomOffsetX,
+                       double L_OdomOffsetY,
+                       double L_RequestedOffsetX,
+                       double L_RequestedOffsetY);
+
+bool MoveWithGlobalCoords(double *L_Pct_FwdRev,
+                          double *L_Pct_Strafe,
+                          double *L_Pct_Rotate,
+                          bool L_OdomCentered,
+                          double L_TagYawDegrees,
+                          double L_CurrentOdomX,
+                          double L_CurrentOdomY,
+                          double L_RequestedCoordX,
+                          double L_RequestedCoordY);
