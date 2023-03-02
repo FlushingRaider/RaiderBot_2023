@@ -26,6 +26,12 @@ extern bool V_ADAS_SD_RobotOriented;
 extern bool V_ADAS_Vision_RequestedTargeting;
 extern bool VeADAS_b_X_Mode;
 
+extern double VeADAS_in_OffsetRequestX;
+extern double VeADAS_in_OffsetRequestY;
+
+extern double VeADAS_in_GlobalRequestX;
+extern double VeADAS_in_GlobalRequestY;
+
 void ADAS_Main_Reset(void);
 void ADAS_Main_Init(void);
 void ADAS_DetermineMode(void);
@@ -49,7 +55,9 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       bool L_OdomCentered,
                                       double L_TagYawDegrees,
                                       frc::DriverStation::Alliance LeLC_e_AllianceColor,
-                                      bool L_CubeAlignCmd,
-                                      bool L_ConeAlignCmd,
                                       double L_OdomOffsetX,
-                                      double L_OdomOffsetY);
+                                      double L_OdomOffsetY,
+                                      double L_OdomGlobalRequestX,
+                                      double L_OdomGlobalRequestY,
+                                      double L_OdomOffsetRequestX,
+                                      double L_OdomOffsetRequestY);

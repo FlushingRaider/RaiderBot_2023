@@ -66,10 +66,16 @@ double V_ADAS_DriveTime = 0;
 double V_ADAS_Deg_TargetAngle = 0;
 bool VeADAS_b_X_Mode = false;
 
+double VeADAS_in_OffsetRequestX;
+double VeADAS_in_OffsetRequestY;
+
+double VeADAS_in_GlobalRequestX;
+double VeADAS_in_GlobalRequestY;
+
 bool toggle;
 
-double testXOffset;
-double testYOffset;
+// double testXOffset;
+// double testYOffset;
 
 /******************************************************************************
  * Function:     ADAS_Main_Init
@@ -89,8 +95,8 @@ void ADAS_Main_Init(void)
   frc::SmartDashboard::PutData(L_AutonSelectorName, &V_ADAS_AutonChooser);
   frc::SmartDashboard::PutBoolean("movetotag", toggle);
 
-  frc::SmartDashboard::PutNumber("test x", testXOffset);
-  frc::SmartDashboard::PutNumber("test y", testYOffset);
+  // frc::SmartDashboard::PutNumber("test x", testXOffset);
+  // frc::SmartDashboard::PutNumber("test y", testYOffset);
 }
 
 /******************************************************************************
@@ -171,10 +177,12 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       bool L_OdomCentered,
                                       double L_TagYawDegrees,
                                       frc::DriverStation::Alliance LeLC_e_AllianceColor,
-                                      bool L_CubeAlignCmd,
-                                      bool L_ConeAlignCmd,
                                       double L_OdomOffsetX,
-                                      double L_OdomOffsetY)
+                                      double L_OdomOffsetY,
+                                      double L_OdomGlobalRequestX,
+                                      double L_OdomGlobalRequestY,
+                                      double L_OdomOffsetRequestX,
+                                      double L_OdomOffsetRequestY)
 {
   bool LeADAS_b_State1Complete = false;
   bool LeADAS_b_State2Complete = false;
@@ -356,6 +364,19 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonRotate)
     {
     }
+    else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_MoveOffsetTag && LeADAS_e_ActiveFeature == E_ADAS_Disabled)
+    {
+      LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
+      VeADAS_in_OffsetRequestX = 168.0; // 14ft
+      if (V_TagID == 1 || V_TagID == 8)
+      {
+        VeADAS_in_OffsetRequestY = C_Tag1Y;
+      }
+      if (V_TagID == 3 || V_TagID == 6)
+      {
+        VeADAS_in_OffsetRequestY = C_Tag3Y;
+      }
+    }
     else
     {
       /* No auton requested. */
@@ -373,31 +394,56 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     ADAS_DM_Reset();
     VeADAS_b_StateComplete = false;
   }
-  toggle = frc::SmartDashboard::GetBoolean("movetotag", false);
-  testXOffset = frc::SmartDashboard::GetNumber("test x", 46.0);
-  testYOffset = frc::SmartDashboard::GetNumber("test y", 3.0);
 
+  // toggle = frc::SmartDashboard::GetBoolean("movetotag", false);
+  // testXOffset = frc::SmartDashboard::GetNumber("test x", 46.0);
+  // testYOffset = frc::SmartDashboard::GetNumber("test y", 3.0);
 
-  if (toggle)
-  {
-    LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
-  }
+  // if (toggle)
+  // {
+  //   LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
+  // }
   // frc::SmartDashboard::PutNumber("current feature", (int)LeADAS_e_ActiveFeature);
+
   switch (LeADAS_e_ActiveFeature)
   {
+  case E_ADAS_MoveGlobalTag:
+    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
+                                           E_ADAS_MoveGlobalTag);
+    *LeADAS_b_X_Mode = false;
+
+    VeADAS_b_StateComplete = MoveWithGlobalCoords(
+        L_Pct_FwdRev,
+        L_Pct_Strafe,
+        L_Pct_Rotate,
+        L_OdomCentered,
+        L_TagYawDegrees,
+        L_L_X_FieldPos,
+        L_L_Y_FieldPos,
+        L_OdomGlobalRequestX,
+        L_OdomGlobalRequestY);
+
+    if (VeADAS_b_StateComplete)
+    {
+      V_TagCentered = false; // we did what we needed with that tag snapshot, allow ourselves to take another later
+    }
+    break;
   case E_ADAS_MoveOffsetTag:
     // #ifdef unused
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            E_ADAS_MoveOffsetTag);
     *LeADAS_b_X_Mode = false;
 
-    VeADAS_b_StateComplete = MoveWIthOffsetTag(
+    VeADAS_b_StateComplete = MoveWithOffsetTag(
         L_Pct_FwdRev,
         L_Pct_Strafe,
+        L_Pct_Rotate,
+        L_OdomCentered,
+        L_TagYawDegrees,
         L_OdomOffsetX,
         L_OdomOffsetY,
-        testXOffset,
-        testYOffset);
+        L_OdomOffsetRequestX,
+        L_OdomOffsetRequestY);
 
     if (VeADAS_b_StateComplete)
     {

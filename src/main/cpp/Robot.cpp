@@ -32,7 +32,7 @@ frc::DriverStation::Alliance VeROBO_e_AllianceColor = frc::DriverStation::Allian
 double VeROBO_t_MatchTimeRemaining = 0;
 bool VeROBO_b_TestState = false;
 
-bool FakeButton;
+// bool FakeButton;
 
 /******************************************************************************
  * Function:     RobotMotorCommands
@@ -98,7 +98,7 @@ frc::SmartDashboard::PutBoolean("b_IntakeArmIn", VsCONT_s_DriverInput.b_IntakeAr
 frc::SmartDashboard::PutBoolean("b_DrivingPosition", VsCONT_s_DriverInput.b_DrivingPosition);
 
   m_PCM_Valve.Set(LeROBO_b_IntakeArmExtend);
-  #endif
+#endif
 }
 
 /******************************************************************************
@@ -112,6 +112,10 @@ void Robot::RobotInit()
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_t_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
   VeROBO_b_TestState = false;
+
+  frc::SmartDashboard::PutNumber("Goal Global X", VeADAS_in_GlobalRequestX);
+  frc::SmartDashboard::PutNumber("Goal Global Y", VeADAS_in_GlobalRequestY);
+
 #ifdef CompBot
   bool CompressorEnable = m_pcmCompressor.Enabled();
 // frc::CameraServer::StartAutomaticCapture();  // For connecting a single USB camera directly to RIO
@@ -284,7 +288,7 @@ void Robot::RobotPeriodic()
                          &VaENC_In_WheelDeltaDistance[0],
                          VsCONT_s_DriverInput.b_ZeroGyro);
 
- DtrmTagOffset(1);
+  DtrmTagOffset(V_TagID);
 
   frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
   frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
@@ -310,10 +314,12 @@ void Robot::RobotPeriodic()
                                           V_TagCentered, // comes from Vision
                                           V_TagYaw,
                                           VeROBO_e_AllianceColor,
-                                          VsCONT_s_DriverInput.b_CubeAlign,
-                                          VsCONT_s_DriverInput.b_ConeAlign,
                                           V_OffsetXOut,
-                                          V_OffsetYOut);
+                                          V_OffsetYOut,
+                                          VeADAS_in_GlobalRequestX,
+                                          VeADAS_in_GlobalRequestY,
+                                          VeADAS_in_OffsetRequestX,
+                                          VeADAS_in_OffsetRequestY);
 
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
                    VsCONT_s_DriverInput.pct_SwerveStrafe,      // swerve control strafe
@@ -321,7 +327,7 @@ void Robot::RobotPeriodic()
                    VsCONT_s_DriverInput.v_SwerveSpeed,         // extra speed trigger
                    VsCONT_s_DriverInput.b_SwerveRotateTo0,     // auto rotate to 0 degrees
                    VsCONT_s_DriverInput.b_ZeroGyro,
-                   VeADAS_b_X_Mode,                            // X mode req from ADAS
+                   VeADAS_b_X_Mode, // X mode req from ADAS
                    V_ADAS_ActiveFeature,
                    V_ADAS_Pct_SD_FwdRev,
                    V_ADAS_Pct_SD_Strafe,
@@ -346,17 +352,40 @@ void Robot::RobotPeriodic()
 #ifdef NewVision
   // FakeButton =frc::SmartDashboard::GetBoolean("Fake auto target buton", false);
   // FakeButton = false;
-  // VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
-  VisionRun(false, true);
+  if (VeROBO_e_RobotState == E_Teleop){
+  VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
+  
+  if (VsCONT_s_DriverInput.b_ConeAlign || VsCONT_s_DriverInput.b_CubeAlign)
+  {
+    // V_ADAS_ActiveFeature = E_ADAS_MoveOffsetTag;
+        V_ADAS_ActiveFeature = E_ADAS_MoveGlobalTag;
+  }
+  }
+  else if (VeROBO_e_RobotState == E_Auton){
+    VisionRun(false, true);
+  }
+  // VisionRun(false, true);
+  frc::SmartDashboard::PutBoolean("Vision Button Cube", VsCONT_s_DriverInput.b_CubeAlign);
+  
 
-  // frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
-  // frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
-  // frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
+  VeADAS_in_GlobalRequestX = 530.0;
+  VeADAS_in_GlobalRequestY = 50.0;
+
+  VeADAS_in_OffsetRequestX = 36.0;
+  VeADAS_in_OffsetRequestY = 18.0;
+
+  frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
+  frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
+  frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
+
+  frc::SmartDashboard::PutBoolean("Want to stop X", wantToStopX);
+    frc::SmartDashboard::PutBoolean("Want to stop Y", wantToStopY);
+
   // frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
   // frc::SmartDashboard::PutNumber("TagID ", V_TagID);
   // frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
   // frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
-  // frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
+  frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
   // frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
   // frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
 #endif
@@ -382,13 +411,16 @@ void Robot::RobotPeriodic()
 #endif
 
   /* Output all of the content to the dashboard here: */
-  // frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
-  // frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
+  frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
+  frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
+
+
+  
   // frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
   // frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
 
-  // frc::SmartDashboard::PutNumber("X power", V_ADAS_Pct_SD_Strafe);
-  // frc::SmartDashboard::PutNumber("Y power", V_ADAS_Pct_SD_FwdRev);
+  frc::SmartDashboard::PutNumber("Y power", V_ADAS_Pct_SD_Strafe);
+  frc::SmartDashboard::PutNumber("X power", V_ADAS_Pct_SD_FwdRev);
   // frc::SmartDashboard::PutNumber("rotate power", V_ADAS_Pct_SD_Rotate);
 }
 
@@ -504,14 +536,14 @@ void Robot::TestPeriodic()
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide]);
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
-   {
-   
-   LeROBO_b_IntakeArmExtend = true;
-   }
+  {
+
+    LeROBO_b_IntakeArmExtend = true;
+  }
   else
-   {
-   LeROBO_b_IntakeArmExtend = false;
-   }
+  {
+    LeROBO_b_IntakeArmExtend = false;
+  }
   m_PCM_Valve.Set(LeROBO_b_IntakeArmExtend);
 #endif
 }
