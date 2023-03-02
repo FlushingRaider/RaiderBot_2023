@@ -49,7 +49,7 @@ double KV_ADAS_MN_TargetVisionAngle;
 void ADAS_MN_ConfigsInit()
 {
   // set coefficients
-
+ 
   // KV_ADAS_MN_LightDelayTIme = K_ADAS_MN_LightDelayTime;
   // KV_ADAS_MN_LostTargetGx = K_ADAS_MN_LostTargetGx;
   // KV_ADAS_MN_NoTargetError = K_ADAS_MN_NoTargetError;
@@ -150,6 +150,10 @@ void ADAS_MN_Reset(void)
   else if (VsCONT_s_DriverInput.b_MidIntakeOut == true)
     {
       VeADAS_e_MAN_SchedState = E_MAN_MidIntake;
+    }
+  else if (VsCONT_s_DriverInput.b_InitState == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_Init;
     }
   else
     {

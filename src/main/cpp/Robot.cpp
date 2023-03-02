@@ -192,6 +192,9 @@ void Robot::RobotInit()
                               m_WristPID,
                               m_GripperPID,
                               m_IntakeRollersPID);
+
+  ADAS_MN_Reset();
+  ManipulatorControlInit();
 #endif
 
   SwerveDriveMotorConfigsInit(m_frontLeftDrivePID,
@@ -403,7 +406,7 @@ void Robot::AutonomousInit()
   GyroInit();
   DriveControlInit();
   BallHandlerInit();
-  ManipulatorControlInit();
+  // ManipulatorControlInit();
   ADAS_Main_Reset();
   OdometryInit();
 }
@@ -435,7 +438,7 @@ void Robot::TeleopInit()
   ADAS_Main_Reset();
   DriveControlInit();
   BallHandlerInit();
-  ManipulatorControlInit();
+  // ManipulatorControlInit();
   OdometryInit();
 }
 

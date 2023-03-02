@@ -237,6 +237,7 @@ struct RobotUserInput
   double                pct_IntakeRollerTest;
   bool                  b_MainIntakeOut;
   bool                  b_MidIntakeOut;
+  bool                  b_InitState;
   bool                  b_DrivingPosition;
   bool                  b_LowPositionCube;
   bool                  b_HighPositionCube;
