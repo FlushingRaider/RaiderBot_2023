@@ -112,41 +112,44 @@ void ADAS_MN_Reset(void)
  ******************************************************************************/
  bool ManipulatorScheduelerTeleop (void)
   {
-  TeMAN_ManipulatorStates LeADAS_e_MAN_State      = VeADAS_e_MAN_SchedState;
   bool                    LeADAS_b_MAN_DropObject = false;
   bool                    LeADAS_b_MAN_StateComplete = false;
 
   if (VsCONT_s_DriverInput.b_MainIntakeOut == true)
     {
-      LeADAS_e_MAN_State = E_MAN_MainIntake;
+      VeADAS_e_MAN_SchedState = E_MAN_MainIntake;
     }
   else if (VsCONT_s_DriverInput.b_DrivingPosition == true)
     {
-      LeADAS_e_MAN_State = E_MAN_Driving;
+      VeADAS_e_MAN_SchedState = E_MAN_Driving;
     }
   else if (VsCONT_s_DriverInput.b_HighPositionCube == true)
     {
-      LeADAS_e_MAN_State = E_MAN_PositioningHighCube;
+      VeADAS_e_MAN_SchedState = E_MAN_PositioningHighCube;
     }
   else if (VsCONT_s_DriverInput.b_LowPositionCube == true)
     {
-      LeADAS_e_MAN_State = E_MAN_PositioningLowCube;
+      VeADAS_e_MAN_SchedState = E_MAN_PositioningLowCube;
     }
   else if (VsCONT_s_DriverInput.b_HighPositionCone == true)
     {
-      LeADAS_e_MAN_State = E_MAN_PositioningHighCone;
+      VeADAS_e_MAN_SchedState = E_MAN_PositioningHighCone;
     }
   else if (VsCONT_s_DriverInput.b_LowPositionCone == true)
     {
-      LeADAS_e_MAN_State = E_MAN_PositioningLowCone;
+      VeADAS_e_MAN_SchedState = E_MAN_PositioningLowCone;
     }
-  else if (VsCONT_s_DriverInput.b_IntakeArmIn = true)
+  else if (VsCONT_s_DriverInput.b_IntakeArmIn == true)
     {
-      LeADAS_e_MAN_State = E_MAN_Driving;
+      VeADAS_e_MAN_SchedState = E_MAN_Driving;
     }
-  else if (VsCONT_s_DriverInput.b_ArmDown = true)
+  else if (VsCONT_s_DriverInput.b_ArmDown == true)
     {
-      LeADAS_e_MAN_State = E_MAN_FloorIntake;
+      VeADAS_e_MAN_SchedState = E_MAN_FloorIntake;
+    }
+  else if (VsCONT_s_DriverInput.b_MidIntakeOut == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_MidIntake;
     }
   else
     {
@@ -166,12 +169,11 @@ void ADAS_MN_Reset(void)
       VeADAS_t_MAN_DropObjectTm = 0.0;
     }
 
-  if (LeADAS_e_MAN_State == VeMAN_e_AttndState)
+  if (VeADAS_e_MAN_SchedState == VeMAN_e_AttndState)
     {
       LeADAS_b_MAN_StateComplete = true;
     }
 
-    VeADAS_e_MAN_SchedState = LeADAS_e_MAN_State;
     VeADAS_b_MAN_DropObject = LeADAS_b_MAN_DropObject;
 
     return(LeADAS_b_MAN_StateComplete);

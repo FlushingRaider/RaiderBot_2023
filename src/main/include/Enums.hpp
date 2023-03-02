@@ -89,6 +89,7 @@ typedef enum TeMAN_ManipulatorStates
  E_MAN_MidTransition,
  E_MAN_MainIntake,
  E_MAN_FloorIntake,
+ E_MAN_MidIntake,
  E_MAN_State_Sz
 } TeMAN_ManipulatorStates;
  
@@ -200,6 +201,7 @@ struct TsMAN_Sensor
   bool   b_IntakeArmExtended;
   double RPM_Gripper; // Speed of the gripper
   double Deg_Wrist;  // Actual position of the wrist.
+  bool   b_GripperObjDetected;
 };
 
 struct TsRobotSensor 
@@ -235,6 +237,7 @@ struct RobotUserInput
   double                Pct_LinearSlideTest;
   double                pct_IntakeRollerTest;
   bool                  b_MainIntakeOut;
+  bool                  b_MidIntakeOut;
   bool                  b_DrivingPosition;
   bool                  b_LowPositionCube;
   bool                  b_HighPositionCube;

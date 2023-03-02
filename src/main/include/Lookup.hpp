@@ -15,6 +15,12 @@ extern double RampTo(double  L_Final,
                      double  L_Current,
                      double  L_Slope);
 
+extern double RampTo_2Ramp(double LeLU_Cmd_Final,
+                           double LeLU_Cmd_Current,
+                           double LeLU_Cmd_SlopeFast,
+                           double LeLU_Cmd_SlopeSlow,
+                           double LeLU_K_Db);
+
 extern void DesiredRollerSpeed(double  LeLU_In_Distance,
                                double  LeLU_Deg_Angle,
                                double *LeLU_Cmd_UpperCmnd,

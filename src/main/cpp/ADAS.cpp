@@ -395,14 +395,14 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     VeADAS_b_StateComplete = false;
   }
 
-  toggle = frc::SmartDashboard::GetBoolean("movetotag", false);
+  // toggle = frc::SmartDashboard::GetBoolean("movetotag", false);
   // testXOffset = frc::SmartDashboard::GetNumber("test x", 46.0);
   // testYOffset = frc::SmartDashboard::GetNumber("test y", 3.0);
 
-  if (toggle)
-  {
-    LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
-  }
+  // if (toggle)
+  // {
+  //   LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
+  // }
   // frc::SmartDashboard::PutNumber("current feature", (int)LeADAS_e_ActiveFeature);
 
   switch (LeADAS_e_ActiveFeature)
@@ -527,7 +527,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
   case E_ADAS_Disabled:
   default:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
-                                           E_ADAS_DM_PathFollower);
+                                           E_ADAS_Disabled);
     *L_Pct_FwdRev = 0;
     *L_Pct_Strafe = 0;
     *L_Pct_Rotate = 0;
