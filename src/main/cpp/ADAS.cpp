@@ -377,6 +377,32 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         VeADAS_in_OffsetRequestY = C_Tag3Y;
       }
     }
+    else if (VsCONT_s_DriverInput.b_CubeAlign && LeADAS_e_ActiveFeature == E_ADAS_Disabled)
+    {
+
+      if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue)
+      {
+        VeADAS_in_OffsetRequestX = C_TagXblue - C_TagScoreOffset;
+      }
+      else if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
+      {
+        VeADAS_in_OffsetRequestX = C_TagXred + C_TagScoreOffset;
+      }
+
+      if (V_TagID == 1 || V_TagID == 8)
+      {
+        VeADAS_in_OffsetRequestY = C_Tag1Y;
+      }
+      else if(V_TagID == 2 || V_TagID == 7){
+        VeADAS_in_OffsetRequestY = C_Tag2Y;
+      }
+      else if (V_TagID == 3 || V_TagID == 6)
+      {
+        VeADAS_in_OffsetRequestY = C_Tag3Y;
+      }      
+
+      LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
+    }
     else
     {
       /* No auton requested. */

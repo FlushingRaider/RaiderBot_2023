@@ -351,13 +351,13 @@ void Robot::RobotPeriodic()
   // FakeButton = false;
   if (VeROBO_e_RobotState == E_Teleop){
   VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
-  
-  if (VsCONT_s_DriverInput.b_ConeAlign || VsCONT_s_DriverInput.b_CubeAlign)
-  {
-    // V_ADAS_ActiveFeature = E_ADAS_MoveOffsetTag;
-        V_ADAS_ActiveFeature = E_ADAS_MoveGlobalTag;
   }
-  }
+  // if (VsCONT_s_DriverInput.b_ConeAlign || VsCONT_s_DriverInput.b_CubeAlign)
+  // {
+  //   // V_ADAS_ActiveFeature = E_ADAS_MoveOffsetTag;
+  //       V_ADAS_ActiveFeature = E_ADAS_MoveGlobalTag;
+  // }
+  // }
   else if (VeROBO_e_RobotState == E_Auton){
     VisionRun(false, true);
   }

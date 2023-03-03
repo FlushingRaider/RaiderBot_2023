@@ -45,6 +45,7 @@ static const double KeENC_k_VoltageToAngle = 72.0; // Gain that converts the mea
  const double C_TagXred = 15.513558 * C_MeterToIn;
 const  double C_TagXblue = 1.02743 * C_MeterToIn;
 
+const double C_TagScoreOffset = 16.0; //that little space our bumper is against to score cubes
 
 // CAN Device IDs:
 static const int C_PDP_ID = 21;
