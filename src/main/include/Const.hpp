@@ -301,7 +301,7 @@ const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                         -3.45,  // Mid Transition
                                                         30.00,  // Main Intake
                                                         -3.24, // Floor Intake
-                                                        90.0};  // Mid Intake
+                                                        99.42};  // Mid Intake
 
 /* KeMAN_DegS_ArmPivotRate: Sets Arm Pivot transition rate. */
 const double KeMAN_DegS_ArmPivotRate = 0.15;
@@ -320,9 +320,9 @@ const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {4.0,  // Init
 
 /* KaMAN_In_LinearSlidePosition: sets LInear Slide final positons for each state */
 const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,   // Init
-                                                             -10.0,   // Driving
+                                                             -11.0,   // Driving
                                                               -1.77,  // Positioning High Cube
-                                                              10.78,  // Positioning High Cone
+                                                              11.00,  // Positioning High Cone
                                                              -13.45,  // Positioning Low Cube
                                                              -13.0,   // Positioning Low Cone
                                                              -11.0,   // Mid Transition -5.6
@@ -337,7 +337,7 @@ const double KeMAN_t_StateTimeOut = 5.0; // Drop-off
 const double KeMAN_InS_LinearSlideRate = 9.0; // Drop-off
 
 /* KeMAN_InS_LinearSlideIntakeRate: Sets Linear Slide transition rate. */
-const double KeMAN_InS_LinearSlideIntakeRate = 1.5; // Drop-off
+const double KeMAN_InS_LinearSlideIntakeRate = 0.6; // Drop-off
 
 /* KaMAN_In_LinearSlideDb: Sets LInear Slide dead band. */
 const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.5,  // Init
@@ -361,10 +361,10 @@ const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {  0.00,  // Init
                                                       90.00,  // Mid Transition 5.0
                                                       18.11,  // Main Intake
                                                       71.96,  // Floor Intake
-                                                     -10.0};  // Mid Intake
+                                                      3.0};  // Mid Intake
 
 /* KeMAN_DegS_WristRate: Sets Wrist transition rate. */
-const double KeMAN_DegS_WristRate = 0.75;
+const double KeMAN_DegS_WristRate = 0.45;
 
 /* KaMAN_Deg_WristDb: sets Wrist final angle for each state */
 const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {1.0,  // Init
@@ -382,7 +382,7 @@ const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {1.0,  // Init
 const double KeMAN_DegS_GripperRate = 1.0;
 
 /* KeMAN_k_GripperRelease: Sets Gripper release power */
-const double KeMAN_k_GripperRelease = 0.1;
+const double KeMAN_k_GripperRelease = 0.15;
 
 /* KeMAN_k_GripperIntake: Sets Gripper intake power */
 const double KeMAN_k_GripperIntake = -0.5;
@@ -410,7 +410,7 @@ const double KaMAN_RPM_IntakePower[E_MAN_State_Sz] = {  0.0,  // Init
                                                         0.0,  // Positioning Low Cube
                                                         0.0,  // Positioning Low Cone
                                                         0.0,  // Mid Transition
-                                                       -0.75, // Main Intake
+                                                       -0.35, // Main Intake
                                                         0.0,  // Floor Intake
                                                         0.0}; // Mid Intake
 
@@ -444,7 +444,7 @@ const T_MotorControlType KaMAN_e_IntakePneumatics[E_MAN_State_Sz] = {E_MotorRetr
 /* KaMAN_e_ControllingTable: Table that contains the commanded state of the manipulator and intake based on the current attained state and schedueld state. */
 const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_MAN_State_Sz][E_MAN_State_Sz] =  // [Sched][Attnd]
   {
-    {E_MAN_Init,    E_MAN_Driving,       E_MAN_PositioningHighCube, E_MAN_PositioningHighCone, E_MAN_PositioningLowCube,  E_MAN_PositioningLowCone,  E_MAN_MidTransition,       E_MAN_MainIntake, E_MAN_FloorIntake,         E_MAN_MidIntake},     // Sched - Init
+    {E_MAN_Init,    E_MAN_Init,          E_MAN_PositioningHighCube, E_MAN_PositioningHighCone, E_MAN_PositioningLowCube,  E_MAN_PositioningLowCone,  E_MAN_MidTransition,       E_MAN_MainIntake, E_MAN_FloorIntake,         E_MAN_MidIntake},     // Sched - Init
     {E_MAN_Driving, E_MAN_Driving,       E_MAN_PositioningLowCube,  E_MAN_PositioningLowCone,  E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,             E_MAN_Driving,    E_MAN_PositioningLowCube,  E_MAN_Driving},       // Sched - Driving
     {E_MAN_Driving, E_MAN_MidTransition, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_Driving,    E_MAN_PositioningHighCube, E_MAN_MidTransition}, // Sched - Positioning High Cube
     {E_MAN_Driving, E_MAN_MidTransition, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_Driving,    E_MAN_PositioningHighCone, E_MAN_MidTransition}, // Sched - Positioning High Cone
@@ -794,7 +794,7 @@ const double K_ADAS_DM_RotateDeadbandAngle = 1.8;
 const double K_ADAS_DM_XY_Deadband = 0.1;
 
 /* KeADAS_Deg_DM_AutoBalanceDb: This is the deband angle for the DM auto balance state. [degrees] */
-const double KeADAS_Deg_DM_AutoBalanceDb = 1.8;
+const double KeADAS_Deg_DM_AutoBalanceDb = 5.0;
 
 /* KeADAS_t_DM_AutoBalanceDb: This is the debounce time for the DM auto balance state. [seconds] */
 const double KeADAS_t_DM_AutoBalanceDb = 0.06;
@@ -803,30 +803,30 @@ const double KeADAS_t_DM_AutoBalanceDb = 0.06;
 const double KeADAS_t_DM_AutoBalanceHold = 10;
 
 /* KeADAS_k_DM_AutoBalanceFastPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.4,       // P Gx
+const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.02,       // P Gx
                                                              0.000001,    // I Gx
-                                                             0.00012,      // D Gx
+                                                             0.00001,      // D Gx
                                                              0.8,       // P UL
                                                             -0.8,       // P LL
-                                                             0.05,      // I UL
-                                                            -0.05,      // I LL
+                                                             0.03,      // I UL
+                                                            -0.03,      // I LL
                                                               0.5,       // D UL
                                                              -0.5,       // D LL
-                                                              1.0,       // Max upper
-                                                             -1.0};      // Max lower
+                                                              0.30,       // Max upper
+                                                             -0.30};      // Max lower
 
 /* KeADAS_k_DM_AutoBalanceSlowPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.18,       // P Gx
-                                                             0.000001,    // I Gx
-                                                             0.00012,      // D Gx
+const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.002,       // P Gx
+                                                             0.0000001,    // I Gx
+                                                             0.0000,      // D Gx
                                                              0.8,       // P UL
                                                             -0.8,       // P LL
-                                                             0.05,      // I UL
-                                                            -0.05,      // I LL
+                                                             0.02,      // I UL
+                                                            -0.02,      // I LL
                                                               0.5,       // D UL
                                                              -0.5,       // D LL
-                                                              1.0,       // Max upper
-                                                             -1.0};      // Max lower
+                                                              0.30,       // Max upper
+                                                             -0.35};      // Max lower
 
 /* KeADAS_t_DM_TagCenteringDb: This is the deband position for the DM drive state auto centering. [sec] */
 const double KeADAS_t_DM_TagCenteringDb = 0.1;

@@ -275,8 +275,8 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   VsMAN_s_Sensors.b_IntakeArmExtended = LeENC_b_IntakeExtended;
 
   /* Switches are wired to the wrist motor controller.  Switches are intended to detect object in the gripper... */
-  if ((LeENC_b_WristForwardLimit == true) ||
-      (LeENC_b_WristReverseLimit == true))
+  if ((LeENC_b_WristForwardLimit == false) ||
+      (LeENC_b_WristReverseLimit == false))
     {
       LeENC_b_ObjectDetected = true;
     }

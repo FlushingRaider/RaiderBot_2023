@@ -798,8 +798,8 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
 
   /* Detect roll over here: */
   if (VeADAS_b_DM_AutoBalanceFastSearch == true &&
-      (((VeADAS_b_DM_AutoBalancePositive == true) && (LeADAS_Deg_GyroRoll < 0)) ||
-       ((VeADAS_b_DM_AutoBalancePositive == false) && (LeADAS_Deg_GyroRoll > 0))))
+      (((VeADAS_b_DM_AutoBalancePositive == true) && (LeADAS_Deg_GyroRoll > 0)) ||
+       ((VeADAS_b_DM_AutoBalancePositive == false) && (LeADAS_Deg_GyroRoll < 0))))
   {
     VeADAS_b_DM_AutoBalanceFastSearch = false;
   }
@@ -822,8 +822,11 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
       LeADAS_k_DM_AutoBalancePID[L_Index] = KeADAS_k_DM_AutoBalanceSlowPID[L_Index];
     }
   }
-
+  
   LeADAS_Deg_RollError = LeADAS_Deg_GyroRoll;
+  frc::SmartDashboard::PutBoolean("VeADAS_b_DM_AutoBalanceFastSearch", VeADAS_b_DM_AutoBalanceFastSearch);
+  frc::SmartDashboard::PutNumber("LeADAS_Deg_RollError", LeADAS_Deg_RollError);
+
 
   /* Exit criteria: */
   if (fabs(LeADAS_Deg_RollError) <= KeADAS_Deg_DM_AutoBalanceDb &&
