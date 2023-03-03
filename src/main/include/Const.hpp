@@ -803,7 +803,7 @@ const double KeADAS_t_DM_AutoBalanceDb = 0.06;
 const double KeADAS_t_DM_AutoBalanceHold = 10;
 
 /* KeADAS_k_DM_AutoBalanceFastPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.02,       // P Gx
+const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.09,       // P Gx
                                                              0.000001,    // I Gx
                                                              0.00001,      // D Gx
                                                              0.8,       // P UL
@@ -816,7 +816,7 @@ const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.02,       // P Gx
                                                              -1.0};      // Max lower
 
 /* KeADAS_k_DM_AutoBalanceSlowPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.002,       // P Gx
+const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.05,       // P Gx
                                                              0.0000001,    // I Gx
                                                              0.0000,      // D Gx
                                                              0.8,       // P UL
