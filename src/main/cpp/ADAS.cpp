@@ -86,15 +86,12 @@ void ADAS_Main_Init(void)
 {
   std::string_view L_AutonSelectorName = "Auton";
   V_ADAS_AutonChooser.AddOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
-  V_ADAS_AutonChooser.AddOption("Blind Shot 1", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootBlind1);
-  V_ADAS_AutonChooser.AddOption("Blind Shot 2", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootBlind2);
-  V_ADAS_AutonChooser.AddOption("Auto Shot 2", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootAuto2);
-  V_ADAS_AutonChooser.AddOption("Auto Shot 3", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveAndShootAuto3);
+  V_ADAS_AutonChooser.AddOption("Drive Straight", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveStraight);
   V_ADAS_AutonChooser.AddOption("Test Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
   V_ADAS_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
   frc::SmartDashboard::PutData(L_AutonSelectorName, &V_ADAS_AutonChooser);
-  frc::SmartDashboard::PutBoolean("movetotag", toggle);
 
+  frc::SmartDashboard::PutBoolean("movetotag", toggle);
   // frc::SmartDashboard::PutNumber("test x", testXOffset);
   // frc::SmartDashboard::PutNumber("test y", testYOffset);
 }
@@ -206,7 +203,23 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
   }
   else if (LeADAS_e_RobotState == E_Auton)
   {
-    if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDriveAndShootBlind1)
+    if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDriveStraight)
+    {
+      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
+          (VeADAS_b_StateComplete == false) &&
+          (V_ADAS_AutonOncePerTrigger == false))
+      {
+        LeADAS_e_ActiveFeature = E_ADAS_DM_DriveStraight;
+      }
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveStraight) &&
+               (VeADAS_b_StateComplete == true))
+      {
+        LeADAS_e_ActiveFeature = E_ADAS_Disabled;
+        VeADAS_b_StateComplete = true;
+        V_ADAS_AutonOncePerTrigger = true;
+      }
+    }
+    else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDriveAndShootBlind1)
     {
       if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
           (VeADAS_b_StateComplete == false) &&
@@ -479,17 +492,13 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
 
     break;
   case E_ADAS_DM_DriveStraight:
-#ifdef unused
+    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
+                                           E_ADAS_DM_DriveStraight);
+
     VeADAS_b_StateComplete = ADAS_DM_DriveStraight(L_Pct_FwdRev,
                                                    L_Pct_Strafe,
                                                    L_Pct_Rotate,
-                                                   L_RPM_Launcher,
-                                                   L_Pct_Intake,
-                                                   L_Pct_Elevator,
-                                                   L_CameraUpperLightCmndOn,
-                                                   L_CameraLowerLightCmndOn,
                                                    L_SD_RobotOriented);
-#endif
     break;
   case E_ADAS_DM_Rotate180:
 #ifdef unused

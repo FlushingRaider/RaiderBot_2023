@@ -466,24 +466,14 @@ bool ADAS_DM_FieldOrientRotate(double *L_Pct_FwdRev,
 bool ADAS_DM_DriveStraight(double *L_Pct_FwdRev,
                            double *L_Pct_Strafe,
                            double *L_Pct_Rotate,
-                           double *L_RPM_Launcher,
-                           double *L_Pct_Intake,
-                           double *L_Pct_Elevator,
-                           bool *L_CameraUpperLightCmndOn,
-                           bool *L_CameraLowerLightCmndOn,
-                           bool *L_SD_RobotOriented)
+                           bool   *L_SD_RobotOriented)
 {
   bool L_ADAS_DM_StateComplete = false;
 
   *L_SD_RobotOriented = true;
   /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_CameraUpperLightCmndOn = false;
-  *L_CameraLowerLightCmndOn = false;
   *L_Pct_Strafe = 0;
   *L_Pct_Rotate = 0;
-  *L_RPM_Launcher = 0;
-  *L_Pct_Intake = 0;
-  *L_Pct_Elevator = 0;
 
   V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
 

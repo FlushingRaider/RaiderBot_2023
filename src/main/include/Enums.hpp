@@ -159,13 +159,14 @@ typedef enum T_ADAS_Auton1
   E_ADAS_Auton_UT_8
 } T_ADAS_Auton1;
 
-typedef enum T_ADAS_ActiveAutonFeature
+typedef enum T_ADAS_ActiveAutonFeature  // This is the high level feature, called by the driver station
 {
   E_ADAS_AutonDisabled,
   E_ADAS_AutonDriveAndShootBlind1,     // Shoot preloaded ball, drive straight, robot oriented
   E_ADAS_AutonDriveAndShootBlind2,     // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
   E_ADAS_AutonDriveAndShootAuto2,      // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
   E_ADAS_AutonDriveAndShootAuto3,// Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
+  E_ADAS_AutonDriveStraight,
   E_ADAS_AutonDrivePath1      
 } T_ADAS_ActiveAutonFeature;
 
