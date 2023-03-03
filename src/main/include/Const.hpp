@@ -794,7 +794,7 @@ const double K_ADAS_DM_RotateDeadbandAngle = 1.8;
 const double K_ADAS_DM_XY_Deadband = 0.1;
 
 /* KeADAS_Deg_DM_AutoBalanceDb: This is the deband angle for the DM auto balance state. [degrees] */
-const double KeADAS_Deg_DM_AutoBalanceDb = 5.0;
+const double KeADAS_Deg_DM_AutoBalanceDb = 10.0;
 
 /* KeADAS_t_DM_AutoBalanceDb: This is the debounce time for the DM auto balance state. [seconds] */
 const double KeADAS_t_DM_AutoBalanceDb = 0.06;
@@ -803,7 +803,7 @@ const double KeADAS_t_DM_AutoBalanceDb = 0.06;
 const double KeADAS_t_DM_AutoBalanceHold = 10;
 
 /* KeADAS_k_DM_AutoBalanceFastPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.02,       // P Gx
+const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.09,       // P Gx
                                                              0.000001,    // I Gx
                                                              0.00001,      // D Gx
                                                              0.8,       // P UL
@@ -816,7 +816,7 @@ const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.02,       // P Gx
                                                              -0.30};      // Max lower
 
 /* KeADAS_k_DM_AutoBalanceSlowPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.002,       // P Gx
+const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.05,       // P Gx
                                                              0.0000001,    // I Gx
                                                              0.0000,      // D Gx
                                                              0.8,       // P UL
