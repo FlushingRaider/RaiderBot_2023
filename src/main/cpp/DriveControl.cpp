@@ -455,8 +455,8 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
       L_RPM_SD_WS[E_RearLeft]   = 0;
       L_RPM_SD_WS[E_RearRight]  = 0;
     
-      L_Deg_SD_WA[E_FrontRight] = 45;
-      L_Deg_SD_WA[E_FrontLeft]  = -45;
+      L_Deg_SD_WA[E_FrontRight] = -45;
+      L_Deg_SD_WA[E_FrontLeft]  = 45;
       L_Deg_SD_WA[E_RearLeft]   = -45;
       L_Deg_SD_WA[E_RearRight]  = 45;
     }
@@ -565,15 +565,24 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
         }
     }
 
-  VeDRC_b_DriveWheelsInPID = Le_b_SD_DriveWheelsPowered;
+  // VeDRC_b_DriveWheelsInPID = Le_b_SD_DriveWheelsPowered;
+
+  if ((Le_b_SD_DriveWheelsPowered == true) ||
+       (LeDRC_b_X_ModeReqActive == true))
+       {
+        VeDRC_b_DriveWheelsInPID = true;
+       }
+    else
+      {
+        VeDRC_b_DriveWheelsInPID = false;
+      }
 
   /* Output the wheel angle commands: */
   for (L_Index = E_FrontLeft;
        L_Index < E_RobotCornerSz;
        L_Index = T_RobotCorner(int(L_Index) + 1))
     {
-    if ((VeDRC_b_DriveWheelsInPID == true) ||
-        (LeDRC_b_X_ModeReqActive == true))
+    if (VeDRC_b_DriveWheelsInPID == true)
       {
       /* We do PID control within the Rio for angle control: */
       L_k_SD_WheelAngleCmnd[L_Index] =  Control_PID( L_Deg_SD_WA[L_Index],
@@ -605,7 +614,7 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
 
   frc::SmartDashboard::PutNumber("Rotate Gx", Le_k_SD_RotateCorrectionGx);
   
-  // frc::SmartDashboard::PutBoolean("SD Auto Correct",  VeDRC_b_AutoCenterLatch);
+  frc::SmartDashboard::PutBoolean("X Mode Active",  LeDRC_b_X_ModeReqActive);
 
   frc::SmartDashboard::PutNumber("X Mode Pwr[E_FrontLeft]",  L_k_SD_WheelAngleCmnd[E_FrontLeft]);
   frc::SmartDashboard::PutNumber("X Mode WA[E_FrontLeft]", L_Deg_SD_WA[E_FrontLeft]);

@@ -769,6 +769,7 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
   double LeADAS_Deg_RollError = 0;
   T_PID_Cal L_Index = E_P_Gx;
   double LeADAS_k_DM_AutoBalancePID[E_PID_CalSz];
+  bool    LeADAS_b_Searching = false;
 
   /* Look up the desired target location point: */
 
@@ -825,11 +826,13 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
     VeADAS_t_DM_AutoBalanceDbTm += C_ExeTime;
     VeADAS_Deg_DM_AutoBalanceErrorPrev = 0.0;
     VeADAS_Deg_DM_AutoBalanceIntegral = 0.0;
+    LeADAS_b_Searching = false;
   }
   else if (fabs(LeADAS_Deg_RollError) > KeADAS_Deg_DM_AutoBalanceDb)
   {
     /* Reset the timer, we have gone out of bounds */
     VeADAS_t_DM_AutoBalanceDbTm = 0;
+    LeADAS_b_Searching = true;
   }
   else if (VeADAS_t_DM_AutoBalanceDbTm >= KeADAS_Deg_DM_AutoBalanceDb)
   {
@@ -839,9 +842,10 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
     VeADAS_t_DM_AutoBalanceHoldTm += C_ExeTime;
     VeADAS_Deg_DM_AutoBalanceErrorPrev = 0.0;
     VeADAS_Deg_DM_AutoBalanceIntegral = 0.0;
+    LeADAS_b_Searching = false;
   }
 
-  if (LeADAS_b_DM_StateComplete == false)
+  if ((LeADAS_b_Searching == true))
   {
     *L_Pct_FwdRev = Control_PID(0.0,
                                 LeADAS_Deg_GyroRoll,
@@ -864,8 +868,7 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
     *L_SD_RobotOriented = true;
     *LeADAS_b_X_Mode = false;
   }
-  else if ((VeADAS_t_DM_AutoBalanceHoldTm >= C_ExeTime) &&
-           (VeADAS_t_DM_AutoBalanceHoldTm <= KeADAS_t_DM_AutoBalanceHold))
+  else if ((VeADAS_t_DM_AutoBalanceHoldTm <= KeADAS_t_DM_AutoBalanceHold))
   {
     *L_Pct_FwdRev = 0;
     *L_Pct_Strafe = 0;
@@ -884,12 +887,15 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
     *L_Pct_Strafe = 0;
     *L_Pct_Rotate = 0;
     *L_SD_RobotOriented = false;
-    *LeADAS_b_X_Mode = false;
+    *LeADAS_b_X_Mode = true;
     VeADAS_t_DM_AutoBalanceDbTm = 0;
     VeADAS_t_DM_AutoBalanceHoldTm = 0.0;
     LeADAS_b_DM_StateComplete = true;
     VeADAS_b_DM_AutoBalanceInit = false;
   }
+
+  frc::SmartDashboard::PutBoolean("LeADAS_b_DM_StateComplete", LeADAS_b_DM_StateComplete);
+  frc::SmartDashboard::PutBoolean("LeADAS_b_Searching", LeADAS_b_Searching);
 
   return (LeADAS_b_DM_StateComplete);
 }
