@@ -779,7 +779,7 @@ const double K_ADAS_DM_DriveTimeShort = 4.5;
 const double K_ADAS_DM_DriveTimeLong = 5.5;
 
 /* K_ADAS_DM_DriveFWD_Pct: This is the default drive forward Pct. [Pct] */
-const double K_ADAS_DM_DriveFWD_Pct = 0.2;
+const double K_ADAS_DM_DriveFWD_Pct = -0.3;
 
 /* K_ADAS_DM_DriveREV_Pct: This is the default drive in reverse Pct. [Pct] */
 const double K_ADAS_DM_DriveREV_Pct = -0.2;
@@ -794,7 +794,7 @@ const double K_ADAS_DM_RotateDeadbandAngle = 1.8;
 const double K_ADAS_DM_XY_Deadband = 0.1;
 
 /* KeADAS_Deg_DM_AutoBalanceDb: This is the deband angle for the DM auto balance state. [degrees] */
-const double KeADAS_Deg_DM_AutoBalanceDb = 5.0;
+const double KeADAS_Deg_DM_AutoBalanceDb = 10.0;
 
 /* KeADAS_t_DM_AutoBalanceDb: This is the debounce time for the DM auto balance state. [seconds] */
 const double KeADAS_t_DM_AutoBalanceDb = 0.06;
@@ -812,8 +812,8 @@ const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.02,       // P Gx
                                                             -0.03,      // I LL
                                                               0.5,       // D UL
                                                              -0.5,       // D LL
-                                                              0.30,       // Max upper
-                                                             -0.30};      // Max lower
+                                                              1.0,       // Max upper
+                                                             -1.0};      // Max lower
 
 /* KeADAS_k_DM_AutoBalanceSlowPID: This is the PID gains for the auto balance. */
 const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.002,       // P Gx

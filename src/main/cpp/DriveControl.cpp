@@ -296,6 +296,7 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
                       bool                 L_JoyStick1Button3, // auto rotate to 0 degrees
                       bool                 L_JoyStick1_ResetDesiredAngle, // auto correct reset angle
                       bool                 LeDRC_b_X_ModeReq,  // When requested, move all wheels into an X configuration, meant to hold robot still
+                      bool                 LeDRC_b_X_ModeReqTeleop,
                       T_ADAS_ActiveFeature LeDRC_e_ADAS_ActiveFeature,
                       double               L_ADAS_Pct_SD_FwdRev,
                       double               L_ADAS_Pct_SD_Strafe,
@@ -358,6 +359,7 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
     L_FWD = -L_JoyStick1Axis1Y;
     L_STR = L_JoyStick1Axis1X;
     L_RCW = L_JoyStick1Axis2X;
+    LeDRC_b_X_ModeReqActive = LeDRC_b_X_ModeReqTeleop;
 
     // if (L_JoyStick1Button3 == true && VeDRC_b_AutoCenterLatch == false && VeDRC_b_AutoCenterLatch == VeDRC_b_AutoCenterLatchPrev)
     //   {

@@ -298,21 +298,22 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
   }
 
   // code for cone/cube detection:
-  PieceCamResult = Cam2.GetLatestResult();
-  if (PieceCamResult.HasTargets())
-  {
-    PieceCamTarget = PieceCamResult.GetBestTarget();
-    PieceCamPitch = PieceCamTarget.GetPitch();
-    PieceCamYaw = PieceCamTarget.GetYaw();
-    PieceCamSkew = PieceCamTarget.GetSkew();
-  }
-  else
-  {
+  Cam2.SetDriverMode(true);
+  // PieceCamResult = Cam2.GetLatestResult();
+  // if (PieceCamResult.HasTargets())
+  // {
+  //   PieceCamTarget = PieceCamResult.GetBestTarget();
+  //   PieceCamPitch = PieceCamTarget.GetPitch();
+  //   PieceCamYaw = PieceCamTarget.GetYaw();
+  //   PieceCamSkew = PieceCamTarget.GetSkew();
+  // }
+  // else
+  // {
 
-    PieceCamPitch = 0.0;
-    PieceCamYaw = 0.0;
-    PieceCamSkew = 0.0;
-  }
-}
+  //   PieceCamPitch = 0.0;
+  //   PieceCamYaw = 0.0;
+  //   PieceCamSkew = 0.0;
+  // }
+ }
 
 #endif
