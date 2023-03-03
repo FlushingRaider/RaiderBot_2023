@@ -328,6 +328,7 @@ void Robot::RobotPeriodic()
                    VsCONT_s_DriverInput.b_SwerveRotateTo0,     // auto rotate to 0 degrees
                    VsCONT_s_DriverInput.b_ZeroGyro,
                    VeADAS_b_X_Mode, // X mode req from ADAS
+                   VsCONT_s_DriverInput.b_X_Mode,
                    V_ADAS_ActiveFeature,
                    V_ADAS_Pct_SD_FwdRev,
                    V_ADAS_Pct_SD_Strafe,

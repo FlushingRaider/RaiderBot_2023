@@ -820,9 +820,11 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
 
   /* Exit criteria: */
   if (fabs(LeADAS_Deg_RollError) <= KeADAS_Deg_DM_AutoBalanceDb &&
-      VeADAS_t_DM_AutoBalanceDbTm < KeADAS_t_DM_AutoBalanceDb)
+      (VeADAS_t_DM_AutoBalanceDbTm < KeADAS_t_DM_AutoBalanceDb))
   {
     VeADAS_t_DM_AutoBalanceDbTm += C_ExeTime;
+    VeADAS_Deg_DM_AutoBalanceErrorPrev = 0.0;
+    VeADAS_Deg_DM_AutoBalanceIntegral = 0.0;
   }
   else if (fabs(LeADAS_Deg_RollError) > KeADAS_Deg_DM_AutoBalanceDb)
   {
@@ -835,6 +837,8 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
     LeADAS_b_DM_StateComplete = true;
     VeADAS_t_DM_AutoBalanceDbTm = 0;
     VeADAS_t_DM_AutoBalanceHoldTm += C_ExeTime;
+    VeADAS_Deg_DM_AutoBalanceErrorPrev = 0.0;
+    VeADAS_Deg_DM_AutoBalanceIntegral = 0.0;
   }
 
   if (LeADAS_b_DM_StateComplete == false)

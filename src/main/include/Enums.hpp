@@ -251,6 +251,7 @@ struct RobotUserInput
   bool                  b_ConeAlign;
   bool                  b_VisionButton;
   bool                  b_ArmDown;  //back pickup
+  bool                  b_X_Mode;  //back pickup
 };
 
 struct TeMAN_MotorControl

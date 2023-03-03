@@ -34,6 +34,7 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
   {
   double                LeCONT_Pct_AxisTotal         = 0;
   bool                  LeCONT_b_JoystickActive      = false;
+  bool                  LeCONT_b_X_Mode              = false;
 
   VsCONT_s_DriverInput.b_ZeroGyro                      = (LeCONT_b_Driver1ButtonBack || LeCONT_b_Driver1ButtonStart);     //Controller 1, Back button (7), (robot.cpp, gyro.cpp) zeroes out the gyro  
   VsCONT_s_DriverInput.pct_SwerveForwardBack           = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftAxisY);  // Scale the axis, also used for debouncing
@@ -49,12 +50,27 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
    
   LeCONT_Pct_AxisTotal = (fabs(VsCONT_s_DriverInput.pct_SwerveStrafe) + fabs(VsCONT_s_DriverInput.deg_SwerveRotate) + fabs(VsCONT_s_DriverInput.v_SwerveSpeed));
   
-  if (LeCONT_Pct_AxisTotal > 0)
+  if (LeCONT_Pct_AxisTotal > 0.1)
     {
     LeCONT_b_JoystickActive = true;
     }
 
   VsCONT_s_DriverInput.b_JoystickActive = LeCONT_b_JoystickActive;
+  
+  if (LeCONT_Deg_Driver1POV == 0)
+    {
+    }
+  else if (LeCONT_Deg_Driver1POV == 180)
+    {
+    LeCONT_b_X_Mode = true;
+    }
+  else if (LeCONT_Deg_Driver1POV == 270)
+    {
+    }
+  else if (LeCONT_Deg_Driver1POV == 90)
+    {
+    }
+  VsCONT_s_DriverInput.b_X_Mode = LeCONT_b_X_Mode;
   }
 
 /******************************************************************************

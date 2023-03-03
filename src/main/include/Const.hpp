@@ -779,7 +779,7 @@ const double K_ADAS_DM_DriveTimeShort = 4.5;
 const double K_ADAS_DM_DriveTimeLong = 5.5;
 
 /* K_ADAS_DM_DriveFWD_Pct: This is the default drive forward Pct. [Pct] */
-const double K_ADAS_DM_DriveFWD_Pct = 0.2;
+const double K_ADAS_DM_DriveFWD_Pct = -0.3;
 
 /* K_ADAS_DM_DriveREV_Pct: This is the default drive in reverse Pct. [Pct] */
 const double K_ADAS_DM_DriveREV_Pct = -0.2;
@@ -812,8 +812,8 @@ const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.09,       // P Gx
                                                             -0.03,      // I LL
                                                               0.5,       // D UL
                                                              -0.5,       // D LL
-                                                              0.30,       // Max upper
-                                                             -0.30};      // Max lower
+                                                              1.0,       // Max upper
+                                                             -1.0};      // Max lower
 
 /* KeADAS_k_DM_AutoBalanceSlowPID: This is the PID gains for the auto balance. */
 const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.05,       // P Gx
