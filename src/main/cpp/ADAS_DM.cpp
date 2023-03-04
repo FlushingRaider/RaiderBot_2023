@@ -49,6 +49,8 @@ double VeADAS_t_DM_AutoBalanceHoldTm = 0.0;
 double VeADAS_Deg_DM_AutoBalanceErrorPrev = 0;
 double VeADAS_Deg_DM_AutoBalanceIntegral = 0;
 
+double VeADAS_t_DM_AutoMountDbTime = 0;
+
 double VeADAS_t_DM_DebounceTime = 0;
 
 double V_TargetAngle;
@@ -144,6 +146,7 @@ void ADAS_DM_Reset(void)
   VeADAS_t_DM_AutoBalanceHoldTm = 0.0;
   VeADAS_Deg_DM_AutoBalanceErrorPrev = 0;
   VeADAS_Deg_DM_AutoBalanceIntegral = 0;
+  VeADAS_t_DM_AutoMountDbTime = 0.0;
 }
 
 /******************************************************************************
@@ -785,6 +788,7 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
       VeADAS_b_DM_AutoBalancePositive = false;
     }
     VeADAS_b_DM_AutoBalanceFastSearch = true;
+    // VeADAS_b_DM_AutoBalanceInit = true;  // This is intended on being here, but need to verify if this will break the PID....
   }
 
   /* Detect roll over here: */
@@ -899,6 +903,67 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
 
   return (LeADAS_b_DM_StateComplete);
 }
+
+
+
+
+/******************************************************************************
+ * Function:     ADAS_DM_DriveOntoStation
+ *
+ * Description:  Drive onBalance on the charge station
+ ******************************************************************************/
+bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
+                              double *L_Pct_Strafe,
+                              double *L_Pct_Rotate,
+                              bool   *L_SD_RobotOriented,
+                              bool   *LeADAS_b_X_Mode,
+                              double  LeADAS_Deg_GyroRoll)
+{
+  bool LeADAS_b_DM_StateComplete = false;
+
+  /* Look up the desired target location point: */
+
+  /* Capture some of the things we need to save for this state control: */
+
+
+  /* Exit criteria: */
+  if (fabs(LeADAS_Deg_GyroRoll) >= KeADAS_Deg_DM_AutoMountDetect &&
+      (VeADAS_t_DM_AutoMountDbTime < KeADAS_t_DM_AutoMountDb))
+  {
+    VeADAS_t_DM_AutoMountDbTime += C_ExeTime;
+  }
+  else if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_Deg_DM_AutoBalanceDb)
+  {
+    /* Reset the timer, we have gone out of bounds */
+    VeADAS_t_DM_AutoMountDbTime = 0;
+    LeADAS_b_DM_StateComplete = true;
+  }
+
+  if (LeADAS_b_DM_StateComplete == false)
+  {
+    *L_Pct_FwdRev = KeADAS_Pct_DM_AutoMountPwr;
+    *L_Pct_Strafe = 0;
+    *L_Pct_Rotate = 0;
+    *L_SD_RobotOriented = true;
+    *LeADAS_b_X_Mode = false;
+  }
+  else
+  {
+    /* We have been at the correct location for the set amount of time. */
+    *L_Pct_FwdRev = 0;
+    *L_Pct_Strafe = 0;
+    *L_Pct_Rotate = 0;
+    *L_SD_RobotOriented = false;
+    *LeADAS_b_X_Mode = false;
+    VeADAS_t_DM_AutoMountDbTime = 0;
+    LeADAS_b_DM_StateComplete = true;
+  }
+
+  return (LeADAS_b_DM_StateComplete);
+}
+
+
+
 
 /******************************************************************************
  * Function:     ADAS_DM_MoveToTag

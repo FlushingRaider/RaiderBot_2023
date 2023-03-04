@@ -92,8 +92,8 @@ void DtrmnSwerveBotLocation(double LeODO_Rad_Gyro,
 void DtrmTagOffset(int L_TagID)
 {
 
-double L_OffsetX;
-double L_OffsetY;
+double L_OffsetX = 0;
+double L_OffsetY = 0;
 
   if (L_TagID == 1 || L_TagID == 2 || L_TagID == 3)
   {

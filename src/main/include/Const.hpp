@@ -831,6 +831,15 @@ const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.05,       // P Gx
 /* KeADAS_t_DM_TagCenteringDb: This is the deband position for the DM drive state auto centering. [sec] */
 const double KeADAS_t_DM_TagCenteringDb = 0.1;
 
+/* KeADAS_Deg_DM_AutoMountDetect: Amount of angle to indicate when bot has mounted onto the charge station. [degrees] */
+const double KeADAS_Deg_DM_AutoMountDetect = 5;
+
+/* KeADAS_t_DM_AutoMountDb: Debounce time for auto mount. [sec] */
+const double KeADAS_t_DM_AutoMountDb = 3;
+
+/* KeADAS_Pct_DM_AutoMountPwr: Power command when in auto mount. [pct] */
+const double KeADAS_Pct_DM_AutoMountPwr = 0.6;
+
 /* Motion profiles for DM: */
 #include "MotionProfiles/Red1Ang.hpp"
 #include "MotionProfiles/Red1T.hpp"
