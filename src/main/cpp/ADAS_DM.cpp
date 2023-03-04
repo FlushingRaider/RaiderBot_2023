@@ -497,6 +497,39 @@ bool ADAS_DM_DriveStraight(double *L_Pct_FwdRev,
 }
 
 /******************************************************************************
+ * Function:     ADAS_DM_DriveRevStraight
+ *
+ * Description:  Like drive straight control, but in reverse!
+ ******************************************************************************/
+bool ADAS_DM_DriveRevStraight(double *L_Pct_FwdRev,
+                              double *L_Pct_Strafe,
+                              double *L_Pct_Rotate,
+                              bool   *L_SD_RobotOriented)
+{
+  bool L_ADAS_DM_StateComplete = false;
+
+  *L_SD_RobotOriented = false;
+  /* Next, let's set all the other items we aren't trying to control to off: */
+  *L_Pct_Strafe = 0;
+  *L_Pct_Rotate = 0;
+
+  V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
+
+  if (V_ADAS_DM_DebounceTime <= KeADAS_t_DM_RevDriveTime) // check that we are still in the time we have given ourselves
+  {
+    *L_Pct_FwdRev = KeADAS_Pct_DM_RevDrive; // set our strafe percent to this constant
+  }
+  else
+  {
+    *L_Pct_FwdRev = 0; // reset all the variables a driver state
+    *L_SD_RobotOriented = false;
+    V_ADAS_DM_DebounceTime = 0;
+    L_ADAS_DM_StateComplete = true;
+  }
+  return (L_ADAS_DM_StateComplete);
+}
+
+/******************************************************************************
  * Function:     ADAS_DM_ReverseAndIntake
  *
  * Description:  Drive in reverse and turn on intake.

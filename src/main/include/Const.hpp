@@ -781,6 +781,12 @@ const double K_ADAS_DM_DriveTimeLong = 5.5;
 /* K_ADAS_DM_DriveFWD_Pct: This is the default drive forward Pct. [Pct] */
 const double K_ADAS_DM_DriveFWD_Pct = -0.3;
 
+/* KeADAS_t_DM_RevDriveTime: Time to drive in reverse. [Seconds] */
+const double KeADAS_t_DM_RevDriveTime = 2;
+
+/* KeADAS_Pct_DM_RevDrive: This is the reverse drive  Pct. [Pct] */
+const double KeADAS_Pct_DM_RevDrive = 0.5;
+
 /* K_ADAS_DM_DriveREV_Pct: This is the default drive in reverse Pct. [Pct] */
 const double K_ADAS_DM_DriveREV_Pct = -0.2;
 

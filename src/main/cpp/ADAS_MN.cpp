@@ -226,6 +226,7 @@ bool ADAS_MN_Main(T_RobotState         L_RobotState,
   case E_ADAS_DM_AutoBalance:
   case E_ADAS_MoveOffsetTag:
   case E_ADAS_DM_DriveStraight:
+  case E_ADAS_DM_DriveRevStraight:
   default:
     LeADAS_b_MN_Complete = ManipulatorScheduelerAuton();
   break;

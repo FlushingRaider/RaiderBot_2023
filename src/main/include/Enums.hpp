@@ -136,6 +136,7 @@ typedef enum T_ADAS_ActiveFeature // These are the sub features in ADAS.  These 
   E_ADAS_BT_AutoBallTarget,
   E_ADAS_DM_BlindLaunch,
   E_ADAS_DM_DriveStraight,
+  E_ADAS_DM_DriveRevStraight,
   E_ADAS_DM_ReverseAndIntake,
   E_ADAS_DM_Rotate180,
   E_ADAS_DM_RotateFieldOriented,
@@ -169,6 +170,7 @@ typedef enum T_ADAS_ActiveAutonFeature  // This is the high level feature, calle
   E_ADAS_AutonDriveAndShootAuto3,// Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
   E_ADAS_AutonDriveStraight,
   E_ADAS_AutonDriveOverRampAutoBal,
+  E_ADAS_AutonDriveOverRampAutoBalV2,
   E_ADAS_AutonDrivePath1
 } T_ADAS_ActiveAutonFeature;
 
