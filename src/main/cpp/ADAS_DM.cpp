@@ -50,6 +50,7 @@ double VeADAS_Deg_DM_AutoBalanceErrorPrev = 0;
 double VeADAS_Deg_DM_AutoBalanceIntegral = 0;
 
 double VeADAS_t_DM_AutoMountDbTime = 0;
+TeADAS_DM_DriveOverStation VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_FwdFlat1;
 
 double VeADAS_t_DM_DebounceTime = 0;
 
@@ -147,6 +148,7 @@ void ADAS_DM_Reset(void)
   VeADAS_Deg_DM_AutoBalanceErrorPrev = 0;
   VeADAS_Deg_DM_AutoBalanceIntegral = 0;
   VeADAS_t_DM_AutoMountDbTime = 0.0;
+  VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_FwdFlat1;
 }
 
 /******************************************************************************
@@ -788,13 +790,13 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
       VeADAS_b_DM_AutoBalancePositive = false;
     }
     VeADAS_b_DM_AutoBalanceFastSearch = true;
-    // VeADAS_b_DM_AutoBalanceInit = true;  // This is intended on being here, but need to verify if this will break the PID....
+    VeADAS_b_DM_AutoBalanceInit = true;  // This is intended on being here, but need to verify if this will break the PID....
   }
 
   /* Detect roll over here: */
   if (VeADAS_b_DM_AutoBalanceFastSearch == true &&
-      (((VeADAS_b_DM_AutoBalancePositive == true) && (LeADAS_Deg_GyroRoll > 0)) ||
-       ((VeADAS_b_DM_AutoBalancePositive == false) && (LeADAS_Deg_GyroRoll < 0))))
+      (((VeADAS_b_DM_AutoBalancePositive == true) && (LeADAS_Deg_GyroRoll < 0)) ||
+       ((VeADAS_b_DM_AutoBalancePositive == false) && (LeADAS_Deg_GyroRoll > 0))))
   {
     VeADAS_b_DM_AutoBalanceFastSearch = false;
   }
@@ -905,12 +907,10 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
 }
 
 
-
-
 /******************************************************************************
  * Function:     ADAS_DM_DriveOntoStation
  *
- * Description:  Drive onBalance on the charge station
+ * Description:  Drive over the charge station, reverse and mount
  ******************************************************************************/
 bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
                               double *L_Pct_Strafe,
@@ -920,31 +920,77 @@ bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
                               double  LeADAS_Deg_GyroRoll)
 {
   bool LeADAS_b_DM_StateComplete = false;
+  double LeADAS_Pct_Drive = 0.0;
 
   /* Look up the desired target location point: */
 
   /* Capture some of the things we need to save for this state control: */
 
+  if (VeADAS_e_DM_AutoMountState == E_ADAS_DM_DriveOS_FwdFlat1)
+    {
+      LeADAS_Pct_Drive = KeADAS_Pct_DM_AutoMountPwr;
+
+      if (LeADAS_Deg_GyroRoll > KeADAS_Deg_DM_AutoMountDetect)  // need to verify direction
+        {
+          VeADAS_t_DM_AutoMountDbTime += C_ExeTime;
+        }
+      if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_t_DM_AutoMountDb)
+        {
+          VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_FwdRampUp;
+          VeADAS_t_DM_AutoMountDbTime = 0.0;
+        }
+    }
+  else if (VeADAS_e_DM_AutoMountState == E_ADAS_DM_DriveOS_FwdRampUp)
+    {
+      LeADAS_Pct_Drive = KeADAS_Pct_DM_AutoMountPwr;
+      
+      if (LeADAS_Deg_GyroRoll < -KeADAS_Deg_DM_AutoMountDetect)  // need to verify direction
+        {
+          VeADAS_t_DM_AutoMountDbTime += C_ExeTime;
+        }
+      if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_t_DM_AutoMountDb)
+        {
+          VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_FwdRampDwn;
+          VeADAS_t_DM_AutoMountDbTime = 0.0;
+        }
+    }
+  else if (VeADAS_e_DM_AutoMountState == E_ADAS_DM_DriveOS_FwdRampDwn)
+    {
+      LeADAS_Pct_Drive = KeADAS_Pct_DM_AutoMountPwr;
+
+      if ((LeADAS_Deg_GyroRoll > -KeADAS_Deg_DM_AutoMountDetect) && (LeADAS_Deg_GyroRoll < KeADAS_Deg_DM_AutoMountDetect)) // need to verify direction
+        {
+          VeADAS_t_DM_AutoMountDbTime += C_ExeTime;
+        }
+      if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_t_DM_AutoMountDb)
+        {
+          VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_RevRampUp;
+          VeADAS_t_DM_AutoMountDbTime = 0.0;
+        }
+    }
+  else if (VeADAS_e_DM_AutoMountState == E_ADAS_DM_DriveOS_RevRampUp)
+    {
+      LeADAS_Pct_Drive = -KeADAS_Pct_DM_AutoMountPwr;
+
+      if (LeADAS_Deg_GyroRoll < -KeADAS_Deg_DM_AutoMountDetect) // need to verify direction
+        {
+          VeADAS_t_DM_AutoMountDbTime += C_ExeTime;
+        }
+      if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_t_DM_AutoMountDb)
+        {
+          VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_Complete;
+          VeADAS_t_DM_AutoMountDbTime = 0.0;
+          LeADAS_b_DM_StateComplete = true;
+        }
+    }
 
   /* Exit criteria: */
-  if (fabs(LeADAS_Deg_GyroRoll) >= KeADAS_Deg_DM_AutoMountDetect &&
-      (VeADAS_t_DM_AutoMountDbTime < KeADAS_t_DM_AutoMountDb))
-  {
-    VeADAS_t_DM_AutoMountDbTime += C_ExeTime;
-  }
-  else if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_Deg_DM_AutoBalanceDb)
-  {
-    /* Reset the timer, we have gone out of bounds */
-    VeADAS_t_DM_AutoMountDbTime = 0;
-    LeADAS_b_DM_StateComplete = true;
-  }
-
   if (LeADAS_b_DM_StateComplete == false)
   {
-    *L_Pct_FwdRev = KeADAS_Pct_DM_AutoMountPwr;
+    *L_Pct_FwdRev = LeADAS_Pct_Drive;
     *L_Pct_Strafe = 0;
     *L_Pct_Rotate = 0;
-    *L_SD_RobotOriented = true;
+    *L_SD_RobotOriented = false;
     *LeADAS_b_X_Mode = false;
   }
   else
@@ -956,7 +1002,6 @@ bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
     *L_SD_RobotOriented = false;
     *LeADAS_b_X_Mode = false;
     VeADAS_t_DM_AutoMountDbTime = 0;
-    LeADAS_b_DM_StateComplete = true;
   }
 
   return (LeADAS_b_DM_StateComplete);

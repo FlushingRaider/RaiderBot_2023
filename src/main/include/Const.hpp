@@ -803,7 +803,7 @@ const double KeADAS_t_DM_AutoBalanceDb = 0.06;
 const double KeADAS_t_DM_AutoBalanceHold = 10;
 
 /* KeADAS_k_DM_AutoBalanceFastPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.07,       // P Gx
+const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.09,       // P Gx
                                                              0.000001,    // I Gx
                                                              0.00001,      // D Gx
                                                              0.8,       // P UL
@@ -816,17 +816,17 @@ const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.07,       // P Gx
                                                              -1.0};      // Max lower
 
 /* KeADAS_k_DM_AutoBalanceSlowPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.05,       // P Gx
-                                                             0.0000001,    // I Gx
-                                                             0.0000,      // D Gx
+const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.07,       // P Gx
+                                                             0.000001,    // I Gx
+                                                             0.00001,      // D Gx
                                                              0.8,       // P UL
                                                             -0.8,       // P LL
-                                                             0.02,      // I UL
-                                                            -0.02,      // I LL
+                                                             0.03,      // I UL
+                                                            -0.03,      // I LL
                                                               0.5,       // D UL
                                                              -0.5,       // D LL
-                                                              0.30,       // Max upper
-                                                             -0.35};      // Max lower
+                                                              1.00,       // Max upper
+                                                             -1.00};      // Max lower
 
 /* KeADAS_t_DM_TagCenteringDb: This is the deband position for the DM drive state auto centering. [sec] */
 const double KeADAS_t_DM_TagCenteringDb = 0.1;
@@ -835,7 +835,7 @@ const double KeADAS_t_DM_TagCenteringDb = 0.1;
 const double KeADAS_Deg_DM_AutoMountDetect = 5;
 
 /* KeADAS_t_DM_AutoMountDb: Debounce time for auto mount. [sec] */
-const double KeADAS_t_DM_AutoMountDb = 3;
+const double KeADAS_t_DM_AutoMountDb = 0.5;
 
 /* KeADAS_Pct_DM_AutoMountPwr: Power command when in auto mount. [pct] */
 const double KeADAS_Pct_DM_AutoMountPwr = 0.6;

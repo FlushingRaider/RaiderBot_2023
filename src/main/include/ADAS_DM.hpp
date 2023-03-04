@@ -116,6 +116,13 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
                          bool *LeADAS_b_X_Mode,
                          double LeADAS_Deg_GyroRoll);
 
+bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
+                              double *L_Pct_Strafe,
+                              double *L_Pct_Rotate,
+                              bool   *L_SD_RobotOriented,
+                              bool   *LeADAS_b_X_Mode,
+                              double  LeADAS_Deg_GyroRoll);
+
 bool MoveWithOffsetTag(double *L_Pct_FwdRev,
                        double *L_Pct_Strafe,
                        double *L_Pct_Rotate,

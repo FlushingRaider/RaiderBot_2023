@@ -123,12 +123,13 @@ typedef enum T_ADAS_BT_BallTarget /* aka GetDaBalls */
   E_ADAS_BT_IntakeAndRun
 } T_ADAS_BT_BallTarget;
 
-typedef enum T_ADAS_ActiveFeature
+typedef enum T_ADAS_ActiveFeature // These are the sub features in ADAS.  These can be called in teleop and/or auton
 {
   E_ADAS_Disabled,
   E_ADAS_DM_CubeAlign,
   E_ADAS_DM_ConeAlign,
   E_ADAS_DM_AutoBalance,
+  E_ADAS_DM_MountDismountRamp,
   
   E_ADAS_MoveOffsetTag,
   E_ADAS_MoveGlobalTag,
@@ -167,8 +168,19 @@ typedef enum T_ADAS_ActiveAutonFeature  // This is the high level feature, calle
   E_ADAS_AutonDriveAndShootAuto2,      // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
   E_ADAS_AutonDriveAndShootAuto3,// Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
   E_ADAS_AutonDriveStraight,
-  E_ADAS_AutonDrivePath1      
+  E_ADAS_AutonDriveOverRampAutoBal,
+  E_ADAS_AutonDrivePath1
 } T_ADAS_ActiveAutonFeature;
+
+
+typedef enum TeADAS_DM_DriveOverStation  // This is the states of the low level feature "Drive over station"
+{
+  E_ADAS_DM_DriveOS_FwdFlat1,
+  E_ADAS_DM_DriveOS_FwdRampUp,
+  E_ADAS_DM_DriveOS_FwdRampDwn,
+  E_ADAS_DM_DriveOS_RevRampUp,
+  E_ADAS_DM_DriveOS_Complete
+} TeADAS_DM_DriveOverStation;
 
 typedef enum TeMAN_e_ManipulatorActuator
 {
