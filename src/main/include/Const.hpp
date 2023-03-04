@@ -295,7 +295,7 @@ const double KaMAN_Deg_TurretDb[E_MAN_State_Sz] = {6.0,  // Init
 const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                         0.0,  // Driving
                                                         103.60,  // Positioning High Cube
-                                                        115.45,  // Positioning High Cone
+                                                        117.0,  // Positioning High Cone
                                                         55.60,  // Positioning Low Cube
                                                         95.89,  // Positioning Low Cone
                                                         -3.45,  // Mid Transition
