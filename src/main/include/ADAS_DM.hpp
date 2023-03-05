@@ -12,6 +12,8 @@
 
 extern double V_ADAS_DM_InitGyroAngle;
 extern double V_ADAS_DM_Rotate180TargetAngle;
+extern double VeADAS_t_DM_AutoMountDbTime;
+extern TeADAS_DM_DriveOverStation VeADAS_e_DM_AutoMountState;
 
 
 extern bool wantToStopX;

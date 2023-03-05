@@ -995,7 +995,7 @@ bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
         {
           VeADAS_t_DM_AutoMountDbTime += C_ExeTime;
         }
-      if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_t_DM_AutoMountDb)
+      if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_t_DM_AutoMountRevDb)
         {
           VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_RevRampUp;
           VeADAS_t_DM_AutoMountDbTime = 0.0;
@@ -1036,6 +1036,7 @@ bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
     *LeADAS_b_X_Mode = false;
     VeADAS_t_DM_AutoMountDbTime = 0;
   }
+frc::SmartDashboard::PutNumber("VeADAS_e_DM_AutoMountState", VeADAS_e_DM_AutoMountState);
 
   return (LeADAS_b_DM_StateComplete);
 }

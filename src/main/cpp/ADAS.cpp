@@ -217,6 +217,8 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
           (VeADAS_b_StateComplete == false) &&
           (V_ADAS_AutonOncePerTrigger == false))
       {
+       VeADAS_t_DM_AutoMountDbTime = 0.0;
+       VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_FwdFlat1;
         LeADAS_e_ActiveFeature = E_ADAS_DM_MountDismountRamp;
       }
       else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountDismountRamp) &&
