@@ -278,14 +278,4 @@ struct TeMAN_MotorControl
   double                k_MotorTestPower[E_MAN_Sz];
 };
 
-struct TeADAS_Controls
-{
-  TeMAN_ManipulatorStates e_MAN_State;
-  bool                    b_MAN_DropObject;
-  double                  Pct_SD_FwdRev;
-  double                  Pct_SD_Strafe;
-  double                  Pct_SD_Rotate;
-  double                  b_SD_RobotOriented;
-};
-
 #endif

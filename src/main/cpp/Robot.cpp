@@ -299,7 +299,6 @@ void Robot::RobotPeriodic()
   V_ADAS_ActiveFeature = ADAS_ControlMain(&V_ADAS_Pct_SD_FwdRev,
                                           &V_ADAS_Pct_SD_Strafe,
                                           &V_ADAS_Pct_SD_Rotate,
-                                          &V_ADAS_Pct_BH_Intake,
                                           &V_ADAS_SD_RobotOriented,
                                           &VeADAS_b_X_Mode,
                                           &V_ADAS_Vision_RequestedTargeting,
@@ -352,21 +351,6 @@ void Robot::RobotPeriodic()
                    &VeLC_Cmd_VanityLightCmnd);
 
 #ifdef NewVision
-  // FakeButton =frc::SmartDashboard::GetBoolean("Fake auto target buton", false);
-  // FakeButton = false;
-  if (VeROBO_e_RobotState == E_Teleop){
-  VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
-  }
-  // if (VsCONT_s_DriverInput.b_ConeAlign || VsCONT_s_DriverInput.b_CubeAlign)
-  // {
-  //   // V_ADAS_ActiveFeature = E_ADAS_MoveOffsetTag;
-  //       V_ADAS_ActiveFeature = E_ADAS_MoveGlobalTag;
-  // }
-  // }
-  else if (VeROBO_e_RobotState == E_Auton){
-    VisionRun(false, true);
-  }
-  // VisionRun(false, true);
   frc::SmartDashboard::PutBoolean("Vision Button Cube", VsCONT_s_DriverInput.b_CubeAlign);
   
 
@@ -453,6 +437,7 @@ void Robot::AutonomousInit()
  ******************************************************************************/
 void Robot::AutonomousPeriodic()
 {
+  VisionRun(false, true);
   RobotMotorCommands();
 }
 
@@ -483,6 +468,7 @@ void Robot::TeleopInit()
  ******************************************************************************/
 void Robot::TeleopPeriodic()
 {
+  VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
   RobotMotorCommands();
 }
 

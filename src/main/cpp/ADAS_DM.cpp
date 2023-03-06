@@ -667,7 +667,6 @@ bool ADAS_DM_BlindShot(double *L_Pct_FwdRev,
 bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
                           double *L_Pct_Strafe,
                           double *L_Pct_Rotate,
-                          double *L_Pct_Intake,
                           bool *L_SD_RobotOriented,
                           double L_L_X_FieldPos,
                           double L_L_Y_FieldPos,
@@ -689,7 +688,6 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
 
   /* Set the things we are not using to off: */
   *L_SD_RobotOriented = false;
-  *L_Pct_Intake = 0;
 
   /* Look up the desired target location point: */
   L_timeEND = DesiredAutonLocation2(V_ADAS_DM_StateTimer,
@@ -790,7 +788,6 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
     // ADAS_DM_FieldOrientRotate(L_Pct_FwdRev,
     //                           L_Pct_Strafe,
     //                           L_Pct_Rotate,
-    //                           L_Pct_Intake,
     //                           L_SD_RobotOriented,
     //                           L_Deg_GyroAngleDeg,
     //                           L_Deg_RotateTarget);

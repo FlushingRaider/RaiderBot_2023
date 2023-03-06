@@ -15,11 +15,7 @@ extern T_ADAS_ActiveFeature V_ADAS_ActiveFeature;
 extern double V_ADAS_Pct_SD_FwdRev;
 extern double V_ADAS_Pct_SD_Strafe;
 extern double V_ADAS_Pct_SD_Rotate;
-#ifdef unused
-extern double V_ADAS_RPM_BH_Launcher;
-#endif
-extern double V_ADAS_Pct_BH_Intake;
-extern double V_ADAS_Pct_BH_Elevator;
+
 extern bool V_ADAS_CameraUpperLightCmndOn;
 extern bool V_ADAS_CameraLowerLightCmndOn;
 extern bool V_ADAS_SD_RobotOriented;
@@ -39,7 +35,6 @@ void ADAS_DetermineMode(void);
 T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Strafe,
                                       double *L_Pct_Rotate,
-                                      double *L_Pct_Intake,
                                       bool *L_SD_RobotOriented,
                                       bool *LeADAS_b_X_Mode,
                                       bool *L_VisionTargetingRequest,

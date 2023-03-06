@@ -41,7 +41,7 @@ T_ADAS_ActiveFeature V_ADAS_ActiveFeature = E_ADAS_Disabled;
 T_ADAS_ActiveAutonFeature VeADAS_e_DriverRequestedAutonFeature = E_ADAS_AutonDisabled;
 frc::SendableChooser<T_ADAS_ActiveAutonFeature> V_ADAS_AutonChooser;
 bool VeADAS_b_StateComplete = false;
-bool V_ADAS_AutonOncePerTrigger = false;
+bool VeADAS_b_AutonOncePerTrigger = false;
 T_ADAS_Auton1 V_ADAS_Auton1State;
 int V_ADAS_PathNum;
 std::string V_ADAS_Auto_PathName;
@@ -51,13 +51,7 @@ double V_ADAS_Pct_SD_FwdRev = 0;
 double V_ADAS_Pct_SD_Strafe = 0;
 double V_ADAS_Pct_SD_Rotate = 0;
 
-TeADAS_Controls VsADAS_h_ActuatorCmnd;
 
-#ifdef unused
-double V_ADAS_RPM_BH_Launcher = 0;
-#endif
-double V_ADAS_Pct_BH_Intake = 0;
-double V_ADAS_Pct_BH_Elevator = 0;
 bool V_ADAS_CameraUpperLightCmndOn = false;
 bool V_ADAS_CameraLowerLightCmndOn = false;
 bool V_ADAS_SD_RobotOriented = false;
@@ -117,22 +111,13 @@ void ADAS_Main_Reset(void)
   V_ADAS_Pct_SD_Strafe = 0;
   V_ADAS_Pct_SD_Rotate = 0;
 
-  VsADAS_h_ActuatorCmnd.b_MAN_DropObject = false;
-  VsADAS_h_ActuatorCmnd.b_SD_RobotOriented = false;
-  VsADAS_h_ActuatorCmnd.e_MAN_State = E_MAN_Driving;
-  VsADAS_h_ActuatorCmnd.Pct_SD_FwdRev = 0.0;
-  VsADAS_h_ActuatorCmnd.Pct_SD_Rotate = 0.0;
-  VsADAS_h_ActuatorCmnd.Pct_SD_Strafe = 0.0;
-
-  V_ADAS_Pct_BH_Intake = 0;
-  V_ADAS_Pct_BH_Elevator = 0;
   V_ADAS_CameraUpperLightCmndOn = false;
   V_ADAS_CameraLowerLightCmndOn = false;
   V_ADAS_SD_RobotOriented = false;
   V_ADAS_Vision_RequestedTargeting = false;
   VeADAS_e_DriverRequestedAutonFeature = E_ADAS_AutonDisabled;
   VeADAS_b_StateComplete = false;
-  V_ADAS_AutonOncePerTrigger = false;
+  VeADAS_b_AutonOncePerTrigger = false;
   V_ADAS_DriveTime = 0;
   V_ADAS_Deg_TargetAngle = 0;
 
@@ -150,7 +135,6 @@ void ADAS_Main_Reset(void)
 T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Strafe,
                                       double *L_Pct_Rotate,
-                                      double *L_Pct_Intake,
                                       bool *L_SD_RobotOriented,
                                       bool *LeADAS_b_X_Mode,
                                       bool *L_VisionTargetingRequest,
@@ -199,7 +183,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     {
       if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
           (VeADAS_b_StateComplete == false) &&
-          (V_ADAS_AutonOncePerTrigger == false))
+          (VeADAS_b_AutonOncePerTrigger == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_DriveStraight;
       }
@@ -208,14 +192,14 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
       {
         LeADAS_e_ActiveFeature = E_ADAS_Disabled;
         VeADAS_b_StateComplete = true;
-        V_ADAS_AutonOncePerTrigger = true;
+        VeADAS_b_AutonOncePerTrigger = true;
       }
     }
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDropCubeDriveFwd)
     {
       if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
           (VeADAS_b_StateComplete == false) &&
-          (V_ADAS_AutonOncePerTrigger == false))
+          (VeADAS_b_AutonOncePerTrigger == false))
       {
        LeADAS_e_ActiveFeature = E_ADAS_DM_DriveRevStraight;
       }
@@ -229,14 +213,14 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
       {
         LeADAS_e_ActiveFeature = E_ADAS_Disabled;
         VeADAS_b_StateComplete = true;
-        V_ADAS_AutonOncePerTrigger = true;
+        VeADAS_b_AutonOncePerTrigger = true;
       }
     }
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDriveOverRampAutoBalV2)
     {
       if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
           (VeADAS_b_StateComplete == false) &&
-          (V_ADAS_AutonOncePerTrigger == false))
+          (VeADAS_b_AutonOncePerTrigger == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_DriveRevStraight;   // Backup to push cube into goal
       }
@@ -255,13 +239,13 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
       {
         LeADAS_e_ActiveFeature = E_ADAS_Disabled;
         VeADAS_b_StateComplete = true;
-        V_ADAS_AutonOncePerTrigger = true;
+        VeADAS_b_AutonOncePerTrigger = true;
       }
     }
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDeployCone) // Auton code for deplying Cones
     {
       // Step 1 - Place Cone
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false))
+      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_AutonDeployCone;
       }
@@ -274,7 +258,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDeployCube) // Auton code for deplying Cubes
     {
       // Step 1 - Place Cube
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (V_ADAS_AutonOncePerTrigger == false))
+      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_AutonDeployCube;
       }
@@ -459,7 +443,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     VeADAS_b_StateComplete = ADAS_DM_PathFollower(L_Pct_FwdRev,
                                                   L_Pct_Strafe,
                                                   L_Pct_Rotate,
-                                                  L_Pct_Intake,
                                                   L_SD_RobotOriented,
                                                   L_L_X_FieldPos,
                                                   L_L_Y_FieldPos,
