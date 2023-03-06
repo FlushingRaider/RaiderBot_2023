@@ -173,10 +173,10 @@ void Robot::RobotInit()
   m_TurretRotate.ConfigNominalOutputReverse(0, KeROBO_t_MotorTimeoutMs);
   m_TurretRotate.ConfigPeakOutputForward(1, KeROBO_t_MotorTimeoutMs);
   m_TurretRotate.ConfigPeakOutputReverse(-1, KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.Config_kF(0, KaMAN_k_TurretPID_Gx[E_kFF], KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.Config_kP(0, KaMAN_k_TurretPID_Gx[E_kP], KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.Config_kI(0, KaMAN_k_TurretPID_Gx[E_kI], KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.Config_kD(0, KaMAN_k_TurretPID_Gx[E_kD], KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.Config_kF(0, KaMAN_k_TurretHoldPID_Gx[E_kFF], KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.Config_kP(0, KaMAN_k_TurretHoldPID_Gx[E_kP], KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.Config_kI(0, KaMAN_k_TurretHoldPID_Gx[E_kI], KeROBO_t_MotorTimeoutMs);
+  m_TurretRotate.Config_kD(0, KaMAN_k_TurretHoldPID_Gx[E_kD], KeROBO_t_MotorTimeoutMs);
 
   m_LinearSlide.ConfigFactoryDefault();
   m_LinearSlide.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, KeROBO_t_MotorTimeoutMs);
@@ -296,12 +296,11 @@ void Robot::RobotPeriodic()
 
   ADAS_DetermineMode();
 
-  V_ADAS_ActiveFeature = ADAS_ControlMain(&V_ADAS_Pct_SD_FwdRev,
-                                          &V_ADAS_Pct_SD_Strafe,
-                                          &V_ADAS_Pct_SD_Rotate,
-                                          &V_ADAS_SD_RobotOriented,
+  VeADAS_e_ActiveFeature = ADAS_ControlMain(&VeADAS_Pct_SD_FwdRev,
+                                          &VeADAS_Pct_SD_Strafe,
+                                          &VeADAS_Pct_SD_Rotate,
+                                          &VeADAS_b_SD_RobotOriented,
                                           &VeADAS_b_X_Mode,
-                                          &V_ADAS_Vision_RequestedTargeting,
                                           VsCONT_s_DriverInput.b_JoystickActive,
                                           VsCONT_s_DriverInput.b_SwerveGoalAutoCenter,
                                           VeGRY_Deg_GyroYawAngleDegrees,
@@ -309,7 +308,7 @@ void Robot::RobotPeriodic()
                                           VeODO_In_RobotDisplacementY,
                                           VeVIS_b_TagHasTarget,
                                           VeROBO_e_RobotState,
-                                          V_ADAS_ActiveFeature,
+                                          VeADAS_e_ActiveFeature,
                                           V_TagID,
                                           V_TagCentered, // comes from Vision
                                           V_TagYaw,
@@ -329,11 +328,11 @@ void Robot::RobotPeriodic()
                    VsCONT_s_DriverInput.b_ZeroGyro,
                    VeADAS_b_X_Mode, // X mode req from ADAS
                    VsCONT_s_DriverInput.b_X_Mode,
-                   V_ADAS_ActiveFeature,
-                   V_ADAS_Pct_SD_FwdRev,
-                   V_ADAS_Pct_SD_Strafe,
-                   V_ADAS_Pct_SD_Rotate,
-                   V_ADAS_SD_RobotOriented,
+                   VeADAS_e_ActiveFeature,
+                   VeADAS_Pct_SD_FwdRev,
+                   VeADAS_Pct_SD_Strafe,
+                   VeADAS_Pct_SD_Rotate,
+                   VeADAS_b_SD_RobotOriented,
                    VeGRY_Deg_GyroYawAngleDegrees,
                    VeGRY_Rad_GyroYawAngleRad,
                    &VaENC_Deg_WheelAngleFwd[0],
@@ -344,9 +343,9 @@ void Robot::RobotPeriodic()
   LightControlMain(VeROBO_t_MatchTimeRemaining,
                    VeROBO_e_AllianceColor,
                    VsCONT_s_DriverInput.b_CameraLight,
-                   V_ADAS_ActiveFeature,
-                   V_ADAS_CameraUpperLightCmndOn,
-                   V_ADAS_CameraLowerLightCmndOn,
+                   VeADAS_e_ActiveFeature,
+                   false,
+                   false,
                    &VeLC_b_CameraLightCmndOn,
                    &VeLC_Cmd_VanityLightCmnd);
 
@@ -405,9 +404,9 @@ void Robot::RobotPeriodic()
   // frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
   // frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
 
-  frc::SmartDashboard::PutNumber("Y power", V_ADAS_Pct_SD_Strafe);
-  frc::SmartDashboard::PutNumber("X power", V_ADAS_Pct_SD_FwdRev);
-  // frc::SmartDashboard::PutNumber("rotate power", V_ADAS_Pct_SD_Rotate);
+  frc::SmartDashboard::PutNumber("Y power", VeADAS_Pct_SD_Strafe);
+  frc::SmartDashboard::PutNumber("X power", VeADAS_Pct_SD_FwdRev);
+  // frc::SmartDashboard::PutNumber("rotate power", VeADAS_Pct_SD_Rotate);
 }
 
 /******************************************************************************

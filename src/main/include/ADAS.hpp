@@ -10,16 +10,13 @@
   2022-02-25 -> Beta
  */
 
-extern T_ADAS_ActiveFeature V_ADAS_ActiveFeature;
+extern T_ADAS_ActiveFeature VeADAS_e_ActiveFeature;
 
-extern double V_ADAS_Pct_SD_FwdRev;
-extern double V_ADAS_Pct_SD_Strafe;
-extern double V_ADAS_Pct_SD_Rotate;
+extern double VeADAS_Pct_SD_FwdRev;
+extern double VeADAS_Pct_SD_Strafe;
+extern double VeADAS_Pct_SD_Rotate;
 
-extern bool V_ADAS_CameraUpperLightCmndOn;
-extern bool V_ADAS_CameraLowerLightCmndOn;
-extern bool V_ADAS_SD_RobotOriented;
-extern bool V_ADAS_Vision_RequestedTargeting;
+extern bool VeADAS_b_SD_RobotOriented;
 extern bool VeADAS_b_X_Mode;
 
 extern double VeADAS_in_OffsetRequestX;
@@ -37,7 +34,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Rotate,
                                       bool *L_SD_RobotOriented,
                                       bool *LeADAS_b_X_Mode,
-                                      bool *L_VisionTargetingRequest,
                                       bool LeADAS_b_Driver1_JoystickActive,
                                       bool L_Driver_SwerveGoalAutoCenter,
                                       double L_Deg_GyroAngleDeg,

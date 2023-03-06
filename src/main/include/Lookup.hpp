@@ -44,7 +44,7 @@ extern void DesiredAutonLocation(double  LeLU_s_AutonTime,
 
 bool DesiredAutonLocation2(double  LeLU_s_AutonTime,
                            int     LeLU_Int_AutonSelection,
-                           std::string V_ADAS_Auto_PathName,
+                           std::string VeADAS_Str_AutoPathName,
                            double *LeLU_Cmd_L_X_Location,
                            double *LeLU_Cmd_L_Y_Location,
                            double *LeLU_Cmd_Deg_Angle);

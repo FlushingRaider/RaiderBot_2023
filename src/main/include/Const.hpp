@@ -235,18 +235,44 @@ const double KaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz] = { 0.00070,  // k
                                                                  55.0,      // kMaxAcc
                                                                   0.0};     // kAllErr
 
-/* KaMAN_k_TurretPID_Gx: PID gains for the turret control. */
-const double KaMAN_k_TurretPID_Gx[E_PID_CalSz] = { 0.045,      // P Gx
-                                                   0.00007,  // I Gx
-                                                   0.000000, // D Gx 
-                                                   0.3,       // P UL
-                                                  -0.3,       // P LL
-                                                   0.15,      // I UL
-                                                  -0.15,      // I LL
-                                                   0.2,       // D UL
-                                                  -0.2,       // D LL
-                                                   0.3,       // Max upper
-                                                  -0.3};      // Max lower
+/* KaMAN_k_TurretMainIntakePID_Gx: PID gains for the turret control when in main intake.  Intent is to have loose control to allow it to "flop" around. */
+const double KaMAN_k_TurretMainIntakePID_Gx[E_PID_CalSz] = { 0.045,      // P Gx
+                                                             0.00007,  // I Gx
+                                                             0.000000, // D Gx 
+                                                             0.3,       // P UL
+                                                            -0.3,       // P LL
+                                                             0.15,      // I UL
+                                                            -0.15,      // I LL
+                                                             0.2,       // D UL
+                                                            -0.2,       // D LL
+                                                             0.3,       // Max upper
+                                                            -0.3};      // Max lower
+
+/* KaMAN_k_TurretRotatePID_Gx: PID gains for the turret control when rotating. */
+const double KaMAN_k_TurretRotatePID_Gx[E_PID_CalSz] = { 0.045,      // P Gx
+                                                         0.00007,  // I Gx
+                                                         0.000000, // D Gx 
+                                                         0.3,       // P UL
+                                                        -0.3,       // P LL
+                                                         0.15,      // I UL
+                                                        -0.15,      // I LL
+                                                         0.2,       // D UL
+                                                        -0.2,       // D LL
+                                                         0.3,       // Max upper
+                                                        -0.3};      // Max lower
+
+/* KaMAN_k_TurretHoldPID_Gx: PID gains for the turret control when attempting to hold still. */
+const double KaMAN_k_TurretHoldPID_Gx[E_PID_CalSz] = { 0.045,      // P Gx
+                                                       0.00007,  // I Gx
+                                                       0.000000, // D Gx 
+                                                       0.3,       // P UL
+                                                      -0.3,       // P LL
+                                                       0.15,      // I UL
+                                                      -0.15,      // I LL
+                                                       0.2,       // D UL
+                                                      -0.2,       // D LL
+                                                       0.3,       // Max upper
+                                                      -0.3};      // Max lower
 
 /* KaMAN_k_LinearSlidePID_Gx: PID gains for the linear slide control. */
 const double KaMAN_k_LinearSlidePID_Gx[E_PID_CalSz] = { 0.45,     // P Gx

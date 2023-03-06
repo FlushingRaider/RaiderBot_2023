@@ -37,28 +37,21 @@
 #include "VisionV2.hpp"
 
 /* ADAS control state variables */
-T_ADAS_ActiveFeature V_ADAS_ActiveFeature = E_ADAS_Disabled;
+T_ADAS_ActiveFeature VeADAS_e_ActiveFeature = E_ADAS_Disabled;
 T_ADAS_ActiveAutonFeature VeADAS_e_DriverRequestedAutonFeature = E_ADAS_AutonDisabled;
-frc::SendableChooser<T_ADAS_ActiveAutonFeature> V_ADAS_AutonChooser;
+frc::SendableChooser<T_ADAS_ActiveAutonFeature> VeADAS_e_AutonChooser;
 bool VeADAS_b_StateComplete = false;
 bool VeADAS_b_AutonOncePerTrigger = false;
-T_ADAS_Auton1 V_ADAS_Auton1State;
-int V_ADAS_PathNum;
-std::string V_ADAS_Auto_PathName;
+
+int VeADAS_i_PathNum;
+std::string VeADAS_Str_AutoPathName;
 
 /* ADAS output control variables */
-double V_ADAS_Pct_SD_FwdRev = 0;
-double V_ADAS_Pct_SD_Strafe = 0;
-double V_ADAS_Pct_SD_Rotate = 0;
-
-
-bool V_ADAS_CameraUpperLightCmndOn = false;
-bool V_ADAS_CameraLowerLightCmndOn = false;
-bool V_ADAS_SD_RobotOriented = false;
-bool V_ADAS_Vision_RequestedTargeting = false;
-double V_ADAS_DriveTime = 0;
-double V_ADAS_Deg_TargetAngle = 0;
-bool VeADAS_b_X_Mode = false;
+double VeADAS_Pct_SD_FwdRev = 0;
+double VeADAS_Pct_SD_Strafe = 0;
+double VeADAS_Pct_SD_Rotate = 0;
+bool   VeADAS_b_SD_RobotOriented = false;
+bool   VeADAS_b_X_Mode = false;
 
 double VeADAS_in_OffsetRequestX;
 double VeADAS_in_OffsetRequestY;
@@ -75,14 +68,14 @@ bool toggle;
  ******************************************************************************/
 void ADAS_Main_Init(void)
 {
-  std::string_view L_AutonSelectorName = "Auton";
-  V_ADAS_AutonChooser.AddOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
-  V_ADAS_AutonChooser.AddOption("Drive Straight", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveStraight);
-  V_ADAS_AutonChooser.AddOption("Drop Cube Drive FWD", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDropCubeDriveFwd);
-  V_ADAS_AutonChooser.AddOption("Charge Station Auto Bal Goal", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveOverRampAutoBalV2);
-  V_ADAS_AutonChooser.AddOption("Test Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
-  V_ADAS_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
-  frc::SmartDashboard::PutData(L_AutonSelectorName, &V_ADAS_AutonChooser);
+  std::string_view LeADAS_Str_AutonSelectorName = "Auton";
+  VeADAS_e_AutonChooser.AddOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
+  VeADAS_e_AutonChooser.AddOption("Drive Straight", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveStraight);
+  VeADAS_e_AutonChooser.AddOption("Drop Cube Drive FWD", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDropCubeDriveFwd);
+  VeADAS_e_AutonChooser.AddOption("Charge Station Auto Bal Goal", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveOverRampAutoBalV2);
+  VeADAS_e_AutonChooser.AddOption("Test Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
+  VeADAS_e_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
+  frc::SmartDashboard::PutData(LeADAS_Str_AutonSelectorName, &VeADAS_e_AutonChooser);
 
   // frc::SmartDashboard::PutBoolean("movetotag", toggle);
 }
@@ -95,7 +88,7 @@ void ADAS_Main_Init(void)
  ******************************************************************************/
 void ADAS_DetermineMode(void)
 {
-  VeADAS_e_DriverRequestedAutonFeature = V_ADAS_AutonChooser.GetSelected();
+  VeADAS_e_DriverRequestedAutonFeature = VeADAS_e_AutonChooser.GetSelected();
   frc::SmartDashboard::PutNumber("Requested Auton", float(VeADAS_e_DriverRequestedAutonFeature));
 }
 
@@ -106,20 +99,15 @@ void ADAS_DetermineMode(void)
  ******************************************************************************/
 void ADAS_Main_Reset(void)
 {
-  V_ADAS_ActiveFeature = E_ADAS_Disabled;
-  V_ADAS_Pct_SD_FwdRev = 0;
-  V_ADAS_Pct_SD_Strafe = 0;
-  V_ADAS_Pct_SD_Rotate = 0;
+  VeADAS_e_ActiveFeature = E_ADAS_Disabled;
+  VeADAS_Pct_SD_FwdRev = 0;
+  VeADAS_Pct_SD_Strafe = 0;
+  VeADAS_Pct_SD_Rotate = 0;
 
-  V_ADAS_CameraUpperLightCmndOn = false;
-  V_ADAS_CameraLowerLightCmndOn = false;
-  V_ADAS_SD_RobotOriented = false;
-  V_ADAS_Vision_RequestedTargeting = false;
+  VeADAS_b_SD_RobotOriented = false;
   VeADAS_e_DriverRequestedAutonFeature = E_ADAS_AutonDisabled;
   VeADAS_b_StateComplete = false;
   VeADAS_b_AutonOncePerTrigger = false;
-  V_ADAS_DriveTime = 0;
-  V_ADAS_Deg_TargetAngle = 0;
 
   /* Trigger the resets for all of the sub tasks/functions as well: */
   ADAS_DM_Reset();
@@ -137,7 +125,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Rotate,
                                       bool *L_SD_RobotOriented,
                                       bool *LeADAS_b_X_Mode,
-                                      bool *L_VisionTargetingRequest,
                                       bool LeADAS_b_Driver1_JoystickActive,
                                       bool L_Driver_SwerveGoalAutoCenter,
                                       double L_Deg_GyroAngleDeg,
@@ -273,7 +260,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
       if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_PathFollower;
-        V_ADAS_PathNum = 4;
+        VeADAS_i_PathNum = 4;
       }
     }
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_MoveOffsetTag)
@@ -447,8 +434,8 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                   L_L_X_FieldPos,
                                                   L_L_Y_FieldPos,
                                                   L_Deg_GyroAngleDeg,
-                                                  V_ADAS_PathNum,
-                                                  V_ADAS_Auto_PathName);
+                                                  VeADAS_i_PathNum,
+                                                  VeADAS_Str_AutoPathName);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
     break;
@@ -473,7 +460,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     *L_Pct_Strafe = 0;
     *L_Pct_Rotate = 0;
     *LeADAS_b_X_Mode = false;
-    *L_VisionTargetingRequest = false;
     break;
   }
 

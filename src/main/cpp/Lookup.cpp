@@ -306,7 +306,7 @@ double LookUp2D_Table(double const *LKeLU_Cmd_XAxis,
  ******************************************************************************/
 bool DesiredAutonLocation2(double LeLU_s_AutonTime,
                            int LeLU_Int_AutonSelection,
-                           std::string V_ADAS_Auto_PathName,
+                           std::string VeADAS_Str_AutoPathName,
                            double *LeLU_Cmd_L_X_Location,
                            double *LeLU_Cmd_L_Y_Location,
                            double *LeLU_Cmd_Deg_Angle)
@@ -325,7 +325,7 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
   switch (LeLU_Int_AutonSelection)
   {
   case 99: // Auto load path from json files BROKEN!!!!
-    path = PathLoader(V_ADAS_Auto_PathName);
+    path = PathLoader(VeADAS_Str_AutoPathName);
 
     // Path is a struct that contains vectors. Vectors will not return the correct size with sizeof() but .size() will.
     LeLU_Int_X_AxisSize = (int)(sizeof(path.time.size()) / sizeof(path.x[0]));
