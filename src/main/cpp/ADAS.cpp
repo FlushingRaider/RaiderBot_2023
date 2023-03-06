@@ -84,7 +84,7 @@ void ADAS_Main_Init(void)
   std::string_view L_AutonSelectorName = "Auton";
   V_ADAS_AutonChooser.AddOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
   V_ADAS_AutonChooser.AddOption("Drive Straight", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveStraight);
-  V_ADAS_AutonChooser.AddOption("Charge Station Auto Bal", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveOverRampAutoBal);
+  V_ADAS_AutonChooser.AddOption("Drop Cube Drive FWD", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDropCubeDriveFwd);
   V_ADAS_AutonChooser.AddOption("Charge Station Auto Bal Goal", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveOverRampAutoBalV2);
   V_ADAS_AutonChooser.AddOption("Test Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
   V_ADAS_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
@@ -211,22 +211,20 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         V_ADAS_AutonOncePerTrigger = true;
       }
     }
-    else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDriveOverRampAutoBal)
+    else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDropCubeDriveFwd)
     {
       if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
           (VeADAS_b_StateComplete == false) &&
           (V_ADAS_AutonOncePerTrigger == false))
       {
-       VeADAS_t_DM_AutoMountDbTime = 0.0;
-       VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_FwdFlat1;
-        LeADAS_e_ActiveFeature = E_ADAS_DM_MountDismountRamp;
+       LeADAS_e_ActiveFeature = E_ADAS_DM_DriveRevStraight;
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountDismountRamp) &&
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevStraight) &&
                (VeADAS_b_StateComplete == true))
       {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance;
+        LeADAS_e_ActiveFeature = E_ADAS_DM_DriveStraightFar;
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_AutoBalance) &&
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveStraightFar) &&
                (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_Disabled;
@@ -416,6 +414,17 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                    L_Pct_Strafe,
                                                    L_Pct_Rotate,
                                                    L_SD_RobotOriented);
+
+    VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
+  break;
+    case E_ADAS_DM_DriveStraightFar:
+    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
+                                           E_ADAS_DM_DriveStraightFar);
+
+    LeADAS_b_State2Complete = ADAS_DM_DriveStraightFar(L_Pct_FwdRev,
+                                                      L_Pct_Strafe,
+                                                      L_Pct_Rotate,
+                                                      L_SD_RobotOriented);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
   break;

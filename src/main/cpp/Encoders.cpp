@@ -123,10 +123,10 @@ void Encoders_Drive_CompBot(double                       LeENC_Cnt_EncoderWheelA
   {
   T_RobotCorner LeENC_e_Index;
 
-  VaENC_Deg_WheelAngleConverted[E_FrontLeft]  = std::fmod((LeENC_Cnt_EncoderWheelAngleFrontLeftRaw  * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_FrontLeft];
-  VaENC_Deg_WheelAngleConverted[E_FrontRight] = std::fmod((LeENC_Cnt_EncoderWheelAngleFrontRightRaw * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_FrontRight];
-  VaENC_Deg_WheelAngleConverted[E_RearLeft]   = std::fmod((LeENC_Cnt_EncoderWheelAngleRearLeftRaw   * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_RearLeft];
-  VaENC_Deg_WheelAngleConverted[E_RearRight]  = std::fmod((LeENC_Cnt_EncoderWheelAngleRearRightRaw  * KeENC_k_EncoderToAngle), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_RearRight];
+  VaENC_Deg_WheelAngleConverted[E_FrontLeft]  = std::fmod((LeENC_Cnt_EncoderWheelAngleFrontLeftRaw), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_FrontLeft];
+  VaENC_Deg_WheelAngleConverted[E_FrontRight] = std::fmod((LeENC_Cnt_EncoderWheelAngleFrontRightRaw), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_FrontRight];
+  VaENC_Deg_WheelAngleConverted[E_RearLeft]   = std::fmod((LeENC_Cnt_EncoderWheelAngleRearLeftRaw), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_RearLeft];
+  VaENC_Deg_WheelAngleConverted[E_RearRight]  = std::fmod((LeENC_Cnt_EncoderWheelAngleRearRightRaw), 360) - KeENC_Deg_SD_WheelOffsetAngle[E_RearRight];
 
   VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontLeft]  = m_encoderFrontLeftDrive.GetPosition();
   VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontRight] = m_encoderFrontRightDrive.GetPosition();
@@ -187,10 +187,10 @@ void Encoders_Drive_PracticeBot(double                       LeENC_Cnt_EncoderWh
   {
   T_RobotCorner LeENC_e_Index;
 
-  VaENC_Deg_WheelAngleConverted[E_FrontLeft]  = EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleFrontLeftRawPracticeBot,  KeENC_k_VoltageToAngle, KeENC_k_WheelOffsetAnglePractieBot[E_FrontLeft],  180);
-  VaENC_Deg_WheelAngleConverted[E_FrontRight] = EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleFrontRightRawPracticeBot, KeENC_k_VoltageToAngle, KeENC_k_WheelOffsetAnglePractieBot[E_FrontRight], 180);
-  VaENC_Deg_WheelAngleConverted[E_RearLeft]   = EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleRearLeftRawPracticeBot,   KeENC_k_VoltageToAngle, KeENC_k_WheelOffsetAnglePractieBot[E_RearLeft],   180);
-  VaENC_Deg_WheelAngleConverted[E_RearRight]  = EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleRearRightRawPracticeBot,  KeENC_k_VoltageToAngle, KeENC_k_WheelOffsetAnglePractieBot[E_RearRight],  180);
+  VaENC_Deg_WheelAngleConverted[E_FrontLeft]  = EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleFrontLeftRawPracticeBot,  KeENC_k_SD_VoltageToAngle, KeENC_k_WheelOffsetAnglePractieBot[E_FrontLeft],  180);
+  VaENC_Deg_WheelAngleConverted[E_FrontRight] = EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleFrontRightRawPracticeBot, KeENC_k_SD_VoltageToAngle, KeENC_k_WheelOffsetAnglePractieBot[E_FrontRight], 180);
+  VaENC_Deg_WheelAngleConverted[E_RearLeft]   = EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleRearLeftRawPracticeBot,   KeENC_k_SD_VoltageToAngle, KeENC_k_WheelOffsetAnglePractieBot[E_RearLeft],   180);
+  VaENC_Deg_WheelAngleConverted[E_RearRight]  = EncoderAngleLimit(-LeENC_Cnt_EncoderWheelAngleRearRightRawPracticeBot,  KeENC_k_SD_VoltageToAngle, KeENC_k_WheelOffsetAnglePractieBot[E_RearRight],  180);
 
   VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontLeft]  = m_encoderFrontLeftDrive.GetPosition();
   VaENC_Cnt_WheelDeltaDistanceCurr[E_FrontRight] = m_encoderFrontRightDrive.GetPosition();
@@ -250,7 +250,8 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        double                       LeENC_Deg_EncoderTurretRotate,
                        T_MotorControlType           LeENC_e_IntakeCmnd,
                        bool                         LeENC_b_WristForwardLimit,
-                       bool                         LeENC_b_WristReverseLimit)
+                       bool                         LeENC_b_WristReverseLimit,
+                       double                       LeENC_v_TurretExternal)
   {
   bool LeENC_b_IntakeExtended = false;
   bool LeENC_b_ObjectDetected = false;
@@ -263,7 +264,9 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
 
   VsMAN_s_Sensors.Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
 
-  VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_EncoderTurretRotate * KeENC_k_TurretEncoderScaler;
+  // VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_EncoderTurretRotate * KeENC_k_TurretEncoderScaler;  // Relative encoder in gearbox
+
+  VsMAN_s_Sensors.Deg_Turret = (LeENC_v_TurretExternal * KeENC_k_TurretVoltageToAng) - KeENC_Deg_TurretOffset;
 
   VsMAN_s_Sensors.In_LinearSlide = LeENC_Deg_LinearSlide * KeENC_k_LinearSlideEncoderScaler;
 

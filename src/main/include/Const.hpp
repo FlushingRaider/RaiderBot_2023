@@ -34,7 +34,8 @@ const double C_PI = 3.14159265358979;
 const double C_Tau = 6.28318530717958647;
 
 static const double KeENC_k_EncoderToAngle = 1; // Raw output of PWM encoder to degrees
-static const double KeENC_k_VoltageToAngle = 72.0; // Gain that converts the measured voltage of the absolute encoder to an equivalent angle in degrees. (practice bot only)
+
+
 
 
  const double C_Tag1Y = 1.071626 * C_MeterToIn; // all these come in meters, we need them in inches to match odometry
@@ -129,8 +130,16 @@ const int KeGRY_ms_GyroTimeoutMs = 30; //Waits and reports to DS if fails
 const double KeENC_k_ReductionRatio = 8.33; //Reduction ratio for swerve drive module
 const double KeENC_In_WheelCircumfrence = 12.566; // Circumferance of wheel, in inches (4in nominal diameter)
 
+/* KeENC_k_SD_VoltageToAngle: Gain that converts the measured voltage of the absolute encoder for the swerve drive angle measurement to an equivalent angle in degrees. (practice bot only) */
+static const double KeENC_k_SD_VoltageToAngle = 72.0;
 
 // Turret cals
+/* KeENC_k_TurretVoltageToAng: Scalar multiplied against the encoder voltage output to translate to degrees. */
+const double KeENC_k_TurretVoltageToAng = 72.0;
+
+/* KeENC_Deg_TurretOffset: Offset of the absolute encoder used on the turret. */
+const double KeENC_Deg_TurretOffset = 0.0;
+
 /* KeROBO_t_MotorTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */
 const double KeROBO_t_MotorTimeoutMs = 30;
 
@@ -780,6 +789,12 @@ const double K_ADAS_DM_DriveTimeLong = 5.5;
 
 /* K_ADAS_DM_DriveFWD_Pct: This is the default drive forward Pct. [Pct] */
 const double K_ADAS_DM_DriveFWD_Pct = -0.3;
+
+/* KeADAS_t_DM_DriveTimeFar: This is the drive far time. [Seconds] */
+const double KeADAS_t_DM_DriveTimeFar = 5.5;
+
+/* KeADAS_Pct_DM_DriveFWD_Far: This is the default drive forward Pct. [Pct] */
+const double KeADAS_Pct_DM_DriveFWD_Far = -0.7;
 
 /* KeADAS_t_DM_RevDriveTime: Time to drive in reverse. [Seconds] */
 const double KeADAS_t_DM_RevDriveTime = 2;

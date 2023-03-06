@@ -149,3 +149,8 @@ bool MoveWithGlobalCoords(double *L_Pct_FwdRev,
                           double L_CurrentOdomY,
                           double L_RequestedCoordX,
                           double L_RequestedCoordY);
+
+bool ADAS_DM_DriveStraightFar(double *L_Pct_FwdRev,
+                              double *L_Pct_Strafe,
+                              double *L_Pct_Rotate,
+                              bool   *L_SD_RobotOriented);

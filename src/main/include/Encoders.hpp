@@ -58,4 +58,5 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        double                       LeENC_Deg_EncoderTurretRotate,
                        T_MotorControlType           LeENC_e_IntakeCmnd,
                        bool                         LeENC_b_WristForwardLimit,
-                       bool                         LeENC_b_WristReverseLimit);
+                       bool                         LeENC_b_WristReverseLimit,
+                       double                       LeENC_v_TurretExternal);

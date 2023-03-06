@@ -269,7 +269,8 @@ void Robot::RobotPeriodic()
                    m_TurretRotate.GetSelectedSensorPosition(),
                    VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm],
                    m_WristforwardLimit.Get(),
-                   m_WristreverseLimit.Get());
+                   m_WristreverseLimit.Get(),
+                   a_encoderTurret.GetVoltage());
 #else
   Encoders_Drive_PracticeBot(a_encoderFrontLeftSteer.GetVoltage(),
                              a_encoderFrontRightSteer.GetVoltage(),

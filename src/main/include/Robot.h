@@ -50,6 +50,7 @@ class Robot : public frc::TimedRobot {
   
   //DIO - Inputs / Outputs
   #ifdef CompBot
+  frc::AnalogInput      a_encoderTurret{0};
   WPI_CANCoder          m_encoderWheelAngleCAN_FL     {KeEnc_i_WheelAngleFL, "rio"};
   WPI_CANCoder          m_encoderWheelAngleCAN_FR     {KeEnc_i_WheelAngleFR, "rio"};
   WPI_CANCoder          m_encoderWheelAngleCAN_RL     {KeEnc_i_WheelAngleRL, "rio"};
