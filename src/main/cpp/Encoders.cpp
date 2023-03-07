@@ -255,6 +255,8 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   {
   bool LeENC_b_IntakeExtended = false;
   bool LeENC_b_ObjectDetected = false;
+  double LeENC_Deg_TurretDegSensor = 0.0;
+  double LeENC_Deg_TurretTemp = 0.0;
 
   VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_ArmPivot;
 
@@ -264,9 +266,10 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
 
   VsMAN_s_Sensors.Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
 
-  // VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_EncoderTurretRotate * KeENC_k_TurretEncoderScaler;  // Relative encoder in gearbox
+  LeENC_Deg_TurretDegSensor = LeENC_Deg_EncoderTurretRotate * KeENC_k_TurretEncoderScaler;  // Relative encoder in gearbox
 
-  VsMAN_s_Sensors.Deg_Turret = (LeENC_v_TurretExternal * KeENC_k_TurretVoltageToAng) - KeENC_Deg_TurretOffset;
+  // LeENC_Deg_TurretTemp = (LeENC_v_TurretExternal * KeENC_k_TurretVoltageToAng) - KeENC_Deg_TurretOffset;
+  VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretDegSensor;
 
   VsMAN_s_Sensors.In_LinearSlide = LeENC_Deg_LinearSlide * KeENC_k_LinearSlideEncoderScaler;
 
@@ -296,4 +299,5 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   frc::SmartDashboard::PutBoolean("GripObjDetected", VsMAN_s_Sensors.b_GripperObjDetected);
   frc::SmartDashboard::PutBoolean("FwdLim",         LeENC_b_WristForwardLimit);
   frc::SmartDashboard::PutBoolean("RevLim",         LeENC_b_WristReverseLimit);
+  frc::SmartDashboard::PutNumber("Turret Sensor Things",         LeENC_Deg_TurretDegSensor);
   }

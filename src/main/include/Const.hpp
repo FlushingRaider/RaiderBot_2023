@@ -135,10 +135,10 @@ static const double KeENC_k_SD_VoltageToAngle = 72.0;
 
 // Turret cals
 /* KeENC_k_TurretVoltageToAng: Scalar multiplied against the encoder voltage output to translate to degrees. */
-const double KeENC_k_TurretVoltageToAng = 72.0;
+const double KeENC_k_TurretVoltageToAng = 51.11; //72
 
 /* KeENC_Deg_TurretOffset: Offset of the absolute encoder used on the turret. */
-const double KeENC_Deg_TurretOffset = 0.0;
+const double KeENC_Deg_TurretOffset = 36.1;
 
 /* KeROBO_t_MotorTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */
 const double KeROBO_t_MotorTimeoutMs = 30;
@@ -249,9 +249,9 @@ const double KaMAN_k_TurretMainIntakePID_Gx[E_PID_CalSz] = { 0.045,      // P Gx
                                                             -0.3};      // Max lower
 
 /* KaMAN_k_TurretRotatePID_Gx: PID gains for the turret control when rotating. */
-const double KaMAN_k_TurretRotatePID_Gx[E_PID_CalSz] = { 0.045,      // P Gx
-                                                         0.00007,  // I Gx
-                                                         0.000000, // D Gx 
+const double KaMAN_k_TurretRotatePID_Gx[E_PID_CalSz] = { 0.045,      // P Gx  .02
+                                                         0.00002,  // I Gx
+                                                         0.000001, // D Gx 
                                                          0.3,       // P UL
                                                         -0.3,       // P LL
                                                          0.15,      // I UL
@@ -262,9 +262,9 @@ const double KaMAN_k_TurretRotatePID_Gx[E_PID_CalSz] = { 0.045,      // P Gx
                                                         -0.3};      // Max lower
 
 /* KaMAN_k_TurretHoldPID_Gx: PID gains for the turret control when attempting to hold still. */
-const double KaMAN_k_TurretHoldPID_Gx[E_PID_CalSz] = { 0.045,      // P Gx
-                                                       0.00007,  // I Gx
-                                                       0.000000, // D Gx 
+const double KaMAN_k_TurretHoldPID_Gx[E_PID_CalSz] = { 0.07,      // P Gx
+                                                       0.00001,  // I Gx
+                                                       0.0000025, // D Gx 
                                                        0.3,       // P UL
                                                       -0.3,       // P LL
                                                        0.15,      // I UL
@@ -300,10 +300,10 @@ const double KaMAN_Deg_TurretAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                       0.0};  // Mid Intake
 
 /* KeMAN_DegS_TurretRate: Fast rate that is used in transition for the turret */
-const double KeMAN_DegS_TurretRateFast = 1.35;
+const double KeMAN_DegS_TurretRateFast = 1.8;
 
 /* KeMAN_DegS_TurretRateSlow: Slow rate that is used in transition for the turret */
-const double KeMAN_DegS_TurretRateSlow = 0.1;
+const double KeMAN_DegS_TurretRateSlow = 1.1;
 
 /* KeMAN_DegS_TurretRate: Deadband used to switch to slow ramp rate */
 const double KeMAN_Deg_TurretRateDb = 10;
@@ -417,7 +417,7 @@ const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {1.0,  // Init
 const double KeMAN_DegS_GripperRate = 1.0;
 
 /* KeMAN_k_GripperRelease: Sets Gripper release power */
-const double KeMAN_k_GripperRelease = 0.15;
+const double KeMAN_k_GripperRelease = 1.00;
 
 /* KeMAN_k_GripperIntake: Sets Gripper intake power */
 const double KeMAN_k_GripperIntake = -0.5;

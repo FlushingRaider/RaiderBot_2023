@@ -519,9 +519,9 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState,
         }
      }
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(KaMAN_Deg_TurretAngle[LeMAN_e_CmndState], // / KeENC_k_TurretEncoderScaler, 
-                                                         VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
-                                                         KeMAN_DegS_TurretRateFast);
+  //  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo(KaMAN_Deg_TurretAngle[LeMAN_e_CmndState], // / KeENC_k_TurretEncoderScaler, 
+  //                                                        VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
+  //                                                        KeMAN_DegS_TurretRateFast);
 
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret] = RampTo_2Ramp(KaMAN_Deg_TurretAngle[LeMAN_e_CmndState],
                                                                VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Turret],
@@ -529,9 +529,9 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState,
                                                                KeMAN_DegS_TurretRateSlow,
                                                                KeMAN_Deg_TurretRateDb);
 
-  //  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] / KeENC_k_ArmPivot, 
-  //                                                          VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
-  //                                                          KeMAN_DegS_ArmPivotRate);
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] / KeENC_k_ArmPivot, 
+                                                           VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
+                                                           KeMAN_DegS_ArmPivotRate);
 
    if (LeMAN_e_CmndState == E_MAN_MainIntake)
      {
@@ -580,8 +580,10 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
       LeMAN_b_AllowedReleaseState = true;
      }
 
-   if ((LeMAN_b_ReleaseObj == true) && 
-       (LeMAN_b_AllowedReleaseState == true))
+  //  if ((LeMAN_b_ReleaseObj == true) && 
+  //      (LeMAN_b_AllowedReleaseState == true))
+
+   if ((LeMAN_b_ReleaseObj == true))
      {
      LeMAN_k_TempCmnd = KeMAN_k_GripperRelease;
      }
