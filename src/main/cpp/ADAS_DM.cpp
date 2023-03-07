@@ -1074,153 +1074,6 @@ frc::SmartDashboard::PutNumber("VeADAS_e_DM_AutoMountState", VeADAS_e_DM_AutoMou
 
 
 
-/******************************************************************************
- * Function:     ADAS_DM_MoveToTag
- * Author: Carson
- * Description: Moves to the closest tag scanned
- ******************************************************************************/
-bool ADAS_DM_MoveToTag(double *L_Pct_FwdRev,
-                       double *L_Pct_Strafe,
-                       double *L_Pct_Rotate,
-                       bool L_OdomCentered,
-                       int L_TagID,
-                       double L_OdometryX,
-                       double L_OdometryY,
-                       bool *L_VisionTargetingRequest,
-                       double L_VisionTopTargetAquired,
-                       double L_TagYawDegrees,
-                       frc::DriverStation::Alliance LeLC_e_AllianceColor,
-                       bool L_CubeAlignCmd,
-                       bool L_ConeAlignCmd)
-{
-
-  bool LeADAS_b_DM_StateComplete = false;
-
-  // *L_Pct_FwdRev = 0.0;
-  // *L_Pct_Strafe = 0.0;
-  /* Next, let's set all the other items we aren't trying to control to off: */
-  double L_ChosenX;
-  double L_ChosenY;
-  double L_ErrorCalcYaw;
-  int L_ClosestTag;
-
-  // all 3 tags are directly across from each other
-
-  // coord of tag ID 1 and 8
-
-  // double L_Tag1YError;
-  // double L_Tag2YError;
-  // double L_Tag3YError;
-
-  if (L_OdomCentered) // don't do any of this if we haven't centered our Odometry based on the tag
-  {
-    VeADAS_t_DM_DebounceTime += C_ExeTime;
-
-    // pick the right side of tags to look at for our alliance
-
-    if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
-    {
-      L_ChosenX = C_TagXred; // all 3 tags on the red alliance have the same X
-      if (L_TagID == 1)
-      {
-        L_ChosenY = C_Tag1Y;
-      }
-      else if (L_TagID == 2)
-      {
-        L_ChosenY = C_Tag2Y;
-      }
-      else if (L_TagID == 3)
-      {
-        L_ChosenY = C_Tag3Y;
-      }
-    }
-    else
-    {
-      L_ChosenX = C_TagXblue; // x coord of all blue tags
-      if (L_TagID == 8)
-      {
-        L_ChosenY = C_Tag1Y;
-      }
-      else if (L_TagID == 7)
-      {
-        L_ChosenY = C_Tag2Y;
-      }
-      else if (L_TagID == 6)
-      {
-        L_ChosenY = C_Tag3Y;
-      }
-    }
-
-    // find the closest tag and our error to it:
-
-    // // check if Error 1 is the largest
-    // if (L_Tag1YError >= L_Tag2YError && L_Tag1YError >= L_Tag3YError)
-    // {
-    //   L_ChosenY = LC_Tag1Y;
-    // }
-    // // check if Error 2 is the largest number
-    // else if (L_Tag2YError >= L_Tag1YError && L_Tag2YError >= L_Tag3YError)
-    // {
-    //   L_ChosenY = LC_Tag2Y;
-    // }
-    // // if neither n1 nor n2 are the largest, Error 3 is the largest
-    // else
-    // {
-    //   L_ChosenY = LC_Tag3Y;
-    // }
-
-    L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
-    if (VeADAS_t_DM_DebounceTime <= KeADAS_t_DM_TagCenteringDb) // make sure we're still in the time we've given ourselves
-    {
-      if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
-      {
-        *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
-      }
-      if (L_OdometryX < L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX < L_ChosenX - K_MoveToTagMovementDeadband)
-      {
-        // V_MoveToTagStep = "fwdrev+";
-        *L_Pct_Strafe = 0.1 * (L_OdometryX - L_ChosenX);
-      }
-      else if (L_OdometryX > L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX > L_ChosenX - K_MoveToTagMovementDeadband)
-      {
-        // V_MoveToTagStep = "fwdrev-";
-        *L_Pct_Strafe = -0.1 * (L_OdometryX - L_ChosenX);
-      }
-      else
-      {
-        *L_Pct_Strafe = 0.0;
-      }
-      if (L_OdometryY < L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY < L_ChosenY - K_MoveToTagMovementDeadband)
-      {
-        *L_Pct_FwdRev = 0.2 * (L_OdometryY - L_ChosenY);
-      }
-      else if (L_OdometryY > L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY > L_ChosenY - K_MoveToTagMovementDeadband)
-      {
-        *L_Pct_FwdRev = -0.2 * (L_OdometryY - L_ChosenY);
-      }
-      else
-      {
-        *L_Pct_FwdRev = 0.0;
-      }
-    }
-    else if (VeADAS_t_DM_DebounceTime >= 0.3)
-    {
-      VeADAS_t_DM_DebounceTime = 0;
-      *L_Pct_FwdRev = 0.0;
-      *L_Pct_Strafe = 0.0;
-    }
-    if (L_OdometryX <= L_ChosenX + K_MoveToTagMovementDeadband || L_OdometryX >= L_ChosenX - K_MoveToTagMovementDeadband)
-    {
-      if (L_OdometryY <= L_ChosenY + K_MoveToTagMovementDeadband || L_OdometryY >= L_ChosenY - K_MoveToTagMovementDeadband)
-      {
-        LeADAS_b_DM_StateComplete = true;
-      }
-    }
-  }
-
-  return (LeADAS_b_DM_StateComplete);
-}
-
 bool MoveWithOffsetTag(double *L_Pct_FwdRev,
                        double *L_Pct_Strafe,
                        double *L_Pct_Rotate,
@@ -1236,36 +1089,36 @@ bool MoveWithOffsetTag(double *L_Pct_FwdRev,
   if (L_OdomCentered)
   {
 
-    L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
+    L_ErrorCalcYaw = -0.18 - L_TagYawDegrees; // -.18 is just what it happened to be idk
 
     if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
     {
       *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
     }
 
-    if (L_OdomOffsetX > L_RequestedOffsetX + K_MoveToTagMovementDeadband || L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadband)
+    if (L_OdomOffsetX > L_RequestedOffsetX + K_MoveToTagMovementDeadbandX || L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadbandX)
     {
-      *L_Pct_FwdRev = -0.05 * (L_OdomOffsetX - L_RequestedOffsetX);
+      *L_Pct_FwdRev = -C_TagAlignBasePower * (L_OdomOffsetX - L_RequestedOffsetX);
     }
     // else if (L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadband)
     // {
     //   *L_Pct_FwdRev = 0.2 * (L_OdomOffsetX - L_RequestedOffsetX);
     // }
 
-    if (L_OdomOffsetY > L_RequestedOffsetY + K_MoveToTagMovementDeadband || L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadband)
+    if (L_OdomOffsetY > L_RequestedOffsetY + K_MoveToTagMovementDeadbandY || L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadbandY)
     {
-      *L_Pct_Strafe = -0.05 * (L_OdomOffsetY - L_RequestedOffsetY);
+      *L_Pct_Strafe = -C_TagAlignBasePower * (L_OdomOffsetY - L_RequestedOffsetY);
     }
     // else if (L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadband)
     // {
     //   *L_Pct_Strafe = -0.2 * (L_OdomOffsetY - L_RequestedOffsetY);
     // }
 
-    if (L_OdomOffsetX <= L_RequestedOffsetX + K_MoveToTagMovementDeadband && L_OdomOffsetX >= L_RequestedOffsetX - K_MoveToTagMovementDeadband)
+    if (L_OdomOffsetX <= L_RequestedOffsetX + K_MoveToTagMovementDeadbandX && L_OdomOffsetX >= L_RequestedOffsetX - K_MoveToTagMovementDeadbandX)
     {
       *L_Pct_FwdRev = 0.0;
     }
-    if (L_OdomOffsetY <= L_RequestedOffsetY + K_MoveToTagMovementDeadband && L_OdomOffsetY >= L_RequestedOffsetY - K_MoveToTagMovementDeadband)
+    if (L_OdomOffsetY <= L_RequestedOffsetY + K_MoveToTagMovementDeadbandY && L_OdomOffsetY >= L_RequestedOffsetY - K_MoveToTagMovementDeadbandY)
     {
       *L_Pct_Strafe = 0.0;
     }
@@ -1301,12 +1154,12 @@ bool MoveWithGlobalCoords(double *L_Pct_FwdRev,
       *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
     }
 
-    if (L_CurrentOdomX > L_RequestedCoordX + K_MoveToTagMovementDeadband || L_CurrentOdomX < L_RequestedCoordX - K_MoveToTagMovementDeadband)
+    if (L_CurrentOdomX > L_RequestedCoordX + K_MoveToTagMovementDeadbandX || L_CurrentOdomX < L_RequestedCoordX - K_MoveToTagMovementDeadbandX)
     {
       *L_Pct_FwdRev = 0.0001 * (L_CurrentOdomX - L_RequestedCoordX);
     }
 
-    if (L_CurrentOdomY > L_RequestedCoordY + K_MoveToTagMovementDeadband || L_CurrentOdomY < L_RequestedCoordY - K_MoveToTagMovementDeadband)
+    if (L_CurrentOdomY > L_RequestedCoordY + K_MoveToTagMovementDeadbandY || L_CurrentOdomY < L_RequestedCoordY - K_MoveToTagMovementDeadbandY)
     {
       *L_Pct_Strafe = 0.0001 * (L_CurrentOdomY - L_RequestedCoordY);
     }

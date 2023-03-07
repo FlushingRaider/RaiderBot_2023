@@ -72,7 +72,7 @@ void Robot::RobotMotorCommands()
   m_ArmPivotPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot], rev::ControlType::kPosition);
   m_WristPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist], rev::ControlType::kPosition);
   // m_GripperPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper], rev::ControlType::kVelocity);
-  m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]);   // This puts the gripper into a power control setup, not speed/postion
+  m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]); // This puts the gripper into a power control setup, not speed/postion
   // m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
   m_IntakeRollers.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers]);
   m_TurretRotate.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
@@ -88,14 +88,13 @@ void Robot::RobotMotorCommands()
   frc::SmartDashboard::PutNumber("VeMAN_e_AttndState", (double)VeMAN_e_AttndState);
   frc::SmartDashboard::PutNumber("VeMAN_e_CmndState", (double)VeMAN_e_CmndState);
   frc::SmartDashboard::PutNumber("VeADAS_e_MAN_SchedState", (double)VeADAS_e_MAN_SchedState);
-  
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
-   {
-   LeROBO_b_IntakeArmExtend = true;
-   }
-frc::SmartDashboard::PutBoolean("b_IntakeArmIn", VsCONT_s_DriverInput.b_IntakeArmIn);
-frc::SmartDashboard::PutBoolean("b_DrivingPosition", VsCONT_s_DriverInput.b_DrivingPosition);
+  {
+    LeROBO_b_IntakeArmExtend = true;
+  }
+  frc::SmartDashboard::PutBoolean("b_IntakeArmIn", VsCONT_s_DriverInput.b_IntakeArmIn);
+  frc::SmartDashboard::PutBoolean("b_DrivingPosition", VsCONT_s_DriverInput.b_DrivingPosition);
 
   m_PCM_Valve.Set(LeROBO_b_IntakeArmExtend);
 #endif
@@ -289,7 +288,9 @@ void Robot::RobotPeriodic()
                          &VaENC_In_WheelDeltaDistance[0],
                          VsCONT_s_DriverInput.b_ZeroGyro);
 
-  DtrmTagOffset(V_TagID);
+  DtrmTagOffset(V_TagID,
+                VeVIS_b_TagHasTarget,
+                V_TagCentered);
 
   frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
   frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
@@ -297,28 +298,28 @@ void Robot::RobotPeriodic()
   ADAS_DetermineMode();
 
   VeADAS_e_ActiveFeature = ADAS_ControlMain(&VeADAS_Pct_SD_FwdRev,
-                                          &VeADAS_Pct_SD_Strafe,
-                                          &VeADAS_Pct_SD_Rotate,
-                                          &VeADAS_b_SD_RobotOriented,
-                                          &VeADAS_b_X_Mode,
-                                          VsCONT_s_DriverInput.b_JoystickActive,
-                                          VsCONT_s_DriverInput.b_SwerveGoalAutoCenter,
-                                          VeGRY_Deg_GyroYawAngleDegrees,
-                                          VeODO_In_RobotDisplacementX,
-                                          VeODO_In_RobotDisplacementY,
-                                          VeVIS_b_TagHasTarget,
-                                          VeROBO_e_RobotState,
-                                          VeADAS_e_ActiveFeature,
-                                          V_TagID,
-                                          V_TagCentered, // comes from Vision
-                                          V_TagYaw,
-                                          VeROBO_e_AllianceColor,
-                                          V_OffsetXOut,
-                                          V_OffsetYOut,
-                                          VeADAS_in_GlobalRequestX,
-                                          VeADAS_in_GlobalRequestY,
-                                          VeADAS_in_OffsetRequestX,
-                                          VeADAS_in_OffsetRequestY);
+                                            &VeADAS_Pct_SD_Strafe,
+                                            &VeADAS_Pct_SD_Rotate,
+                                            &VeADAS_b_SD_RobotOriented,
+                                            &VeADAS_b_X_Mode,
+                                            VsCONT_s_DriverInput.b_JoystickActive,
+                                            VsCONT_s_DriverInput.b_SwerveGoalAutoCenter,
+                                            VeGRY_Deg_GyroYawAngleDegrees,
+                                            VeODO_In_RobotDisplacementX,
+                                            VeODO_In_RobotDisplacementY,
+                                            VeVIS_b_TagHasTarget,
+                                            VeROBO_e_RobotState,
+                                            VeADAS_e_ActiveFeature,
+                                            V_TagID,
+                                            V_TagCentered, // comes from Vision
+                                            V_TagYaw,
+                                            VeROBO_e_AllianceColor,
+                                            V_OffsetXOut,
+                                            V_OffsetYOut,
+                                            VeADAS_in_GlobalRequestX,
+                                            VeADAS_in_GlobalRequestY,
+                                            VeADAS_in_OffsetRequestX,
+                                            VeADAS_in_OffsetRequestY);
 
   DriveControlMain(VsCONT_s_DriverInput.pct_SwerveForwardBack, // swerve control forward/back
                    VsCONT_s_DriverInput.pct_SwerveStrafe,      // swerve control strafe
@@ -351,20 +352,22 @@ void Robot::RobotPeriodic()
 
 #ifdef NewVision
   frc::SmartDashboard::PutBoolean("Vision Button Cube", VsCONT_s_DriverInput.b_CubeAlign);
-  
 
   VeADAS_in_GlobalRequestX = 530.0;
   VeADAS_in_GlobalRequestY = 50.0;
 
-  VeADAS_in_OffsetRequestX = 36.0;
-  VeADAS_in_OffsetRequestY = 18.0;
+  // VeADAS_in_OffsetRequestX = 36.0;
+  // VeADAS_in_OffsetRequestY = 18.0;
+
+  frc::SmartDashboard::PutNumber("GoalOffsetX", VeADAS_in_OffsetRequestX);
+  frc::SmartDashboard::PutNumber("GoalOffsetY", VeADAS_in_OffsetRequestY);
 
   frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
   frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
   frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
 
   frc::SmartDashboard::PutBoolean("Want to stop X", wantToStopX);
-    frc::SmartDashboard::PutBoolean("Want to stop Y", wantToStopY);
+  frc::SmartDashboard::PutBoolean("Want to stop Y", wantToStopY);
 
   // frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
   // frc::SmartDashboard::PutNumber("TagID ", V_TagID);
@@ -372,7 +375,8 @@ void Robot::RobotPeriodic()
   // frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
   frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
   // frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
-  // frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
+  frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
+
 #endif
 
   /* These function calls are for test mode calibration. */
@@ -399,8 +403,6 @@ void Robot::RobotPeriodic()
   frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
   frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
 
-
-  
   // frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
   // frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
 
@@ -467,6 +469,18 @@ void Robot::TeleopInit()
  ******************************************************************************/
 void Robot::TeleopPeriodic()
 {
+
+  if (VsCONT_s_DriverInput.b_CubeAlign && VeADAS_b_CubeAlignButtonPrevious == false)
+  {
+    VeADAS_b_CubeAlignButtonPrevious = VeADAS_b_CubeAlignButtonRequest;
+    VeADAS_b_CubeAlignButtonRequest = true;
+  }
+  else if (VsCONT_s_DriverInput.b_CubeAlign && VeADAS_b_CubeAlignButtonPrevious == true)
+  {
+    VeADAS_b_CubeAlignButtonPrevious = VeADAS_b_CubeAlignButtonRequest;
+
+    VeADAS_b_CubeAlignButtonRequest = false;
+  }
   VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
   RobotMotorCommands();
 }

@@ -22,4 +22,6 @@ void DtrmnSwerveBotLocation(double L_Rad_Gyro,
                             double *LeODO_In_DeltaWheelDistance,
                             bool LeODO_b_ResetButton);
 
-void DtrmTagOffset(int L_TagID);
+void DtrmTagOffset(int L_TagID,
+                   bool L_HasTarget,
+                   bool L_VisionCentered);

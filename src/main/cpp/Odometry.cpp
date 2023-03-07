@@ -19,6 +19,8 @@ double VeODO_In_RobotDisplacementY = 0; // Displacement in the Y direction, whic
 double V_OffsetXOut;
 double V_OffsetYOut;
 
+int V_PrevTagID;
+
 /******************************************************************************
  * Function:     OdometryInitToArgs
  *
@@ -84,51 +86,58 @@ void DtrmnSwerveBotLocation(double LeODO_Rad_Gyro,
 
   VeODO_In_RobotDisplacementX += LeODO_In_TotalDeltaX;
   VeODO_In_RobotDisplacementY += LeODO_In_TotalDeltaY;
-
-
-  
 }
 
-void DtrmTagOffset(int L_TagID)
+void DtrmTagOffset(int L_TagID,
+                   bool L_HasTarget,
+                   bool L_VisionCentered)
 {
 
-double L_OffsetX = 0;
-double L_OffsetY = 0;
-
-  if (L_TagID == 1 || L_TagID == 2 || L_TagID == 3)
-  {
-    L_OffsetX =  C_TagXred - VeODO_In_RobotDisplacementY;
-    if (L_TagID == 1)
-    {
-      L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementX;
-    }
-    else if (L_TagID == 2)
-    {
-      L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementX;
-    }
-    else if (L_TagID == 3)
-    {
-      L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementX;
-    }
+  double L_OffsetX;
+  double L_OffsetY;
+  if (L_TagID > 0){
+  V_PrevTagID = L_TagID;
   }
-  else
-  {
-    L_OffsetX = C_TagXblue - VeODO_In_RobotDisplacementX;
-    if (L_TagID == 8)
-    {
-      L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementX;
-    }
-    else if (L_TagID == 7)
-    {
-      L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementX;
-    }
-    else if (L_TagID == 6)
-    {
-      L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementX;
-    }
+  else if (L_TagID == 0){
+    L_TagID = V_PrevTagID;
   }
-  V_OffsetXOut = L_OffsetX;
-  V_OffsetYOut = L_OffsetY;
 
+  if ( L_VisionCentered)
+  {
+    if (L_TagID == 1 || L_TagID == 2 || L_TagID == 3)
+    {
+      L_OffsetX = C_TagXred - VeODO_In_RobotDisplacementY;
+      if (L_TagID == 1)
+      {
+        L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementX;
+      }
+      else if (L_TagID == 2)
+      {
+        L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementX;
+      }
+      else if (L_TagID == 3)
+      {
+        L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementX;
+      }
+    }
+    else
+    {
+      L_OffsetX = C_TagXblue - VeODO_In_RobotDisplacementX;
+      if (L_TagID == 8)
+      {
+        L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementX;
+      }
+      else if (L_TagID == 7)
+      {
+        L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementX;
+      }
+      else if (L_TagID == 6)
+      {
+        L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementX;
+      }
+    }
 
+    V_OffsetXOut = L_OffsetX;
+    V_OffsetYOut = L_OffsetY;
+  }
 }
