@@ -136,6 +136,7 @@ const int KeGRY_ms_GyroTimeoutMs = 30; //Waits and reports to DS if fails
 // Encoder / speed calculation related cals
 const double KeENC_k_ReductionRatio = 8.33; //Reduction ratio for swerve drive module
 const double KeENC_In_WheelCircumfrence = 12.566; // Circumferance of wheel, in inches (4in nominal diameter)
+const double KeEnc_Deg_InvalDelta = 7;
 
 /* KeENC_k_SD_VoltageToAngle: Gain that converts the measured voltage of the absolute encoder for the swerve drive angle measurement to an equivalent angle in degrees. (practice bot only) */
 static const double KeENC_k_SD_VoltageToAngle = 72.0;
