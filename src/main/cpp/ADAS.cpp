@@ -354,7 +354,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
   // {
   //   LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
   // }
-  frc::SmartDashboard::PutNumber("current feature", (int)LeADAS_e_ActiveFeature);
+  // frc::SmartDashboard::PutNumber("current feature", (int)LeADAS_e_ActiveFeature);
 
   switch (LeADAS_e_ActiveFeature)
   {

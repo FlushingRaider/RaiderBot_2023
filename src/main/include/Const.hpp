@@ -314,13 +314,7 @@ const double KeMAN_DegS_TurretRateFast = 1.8;
 const double KeMAN_DegS_TurretRateSlow = 1.1;
 
 /* KeMAN_DegS_TurretRate: Deadband used to switch to slow ramp rate */
-const double KeMAN_Deg_TurretRateDb = 10;
-
-/* KeMAN_Deg_TurretHighGx: Error angles greater than this will have the large proportional gain */
-const double KeMAN_Deg_TurretHighGx = 90;
-
-/* KeMAN_Deg_TurretLowGxMult: When error is less than KeMAN_Deg_TurretHighGx, multiply the gain against this. */
-const double KeMAN_Deg_TurretLowGxMult = 0.25;
+const double KeMAN_Deg_TurretRateDb = 35;
 
 /* KaMAN_Deg_TurretDb: Sets turret dead band */
 const double KaMAN_Deg_TurretDb[E_MAN_State_Sz] = {6.0,  // Init
