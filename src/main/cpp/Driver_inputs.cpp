@@ -44,7 +44,7 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
   VsCONT_s_DriverInput.b_AutoBalance                   = LeCONT_b_Driver1ButtonA;
   //VsCONT_s_DriverInput.b_MidIntakeOut                  = LeCONT_b_Driver1ButtonX;
  // VsCONT_s_DriverInput.b_SwerveRotateTo90            = LeCONT_b_Driver1ButtonY;
-  VsCONT_s_DriverInput.b_CubeAlign                     = LeCONT_b_Driver1ButtonRB;    //Aligns the robot to score a cone
+  VsCONT_s_DriverInput.b_CubeAlign                     = LeCONT_b_Driver1ButtonRB;    //Aligns the robot to score a cube
 //  VsCONT_s_DriverInput.b_AutoIntake                  = LeCONT_b_Driver1ButtonB;
   VsCONT_s_DriverInput.b_ConeAlign                     = LeCONT_b_Driver1ButtonLB;   //Aligns the robot to score a cone
    

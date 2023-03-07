@@ -6,7 +6,7 @@
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
 #define COMP
 // Define the bot type: CompBot, PracticeBot
-#define CompBot
+#define PracticeBot
 
 #define NewVision // NewVision or OldVision
 
@@ -16,7 +16,10 @@ const double C_VisOffsetX = 2.0;
 
 #endif
 
-
+#ifdef CompBot
+const double C_VisOffsetY = 3.125;
+const double C_VisOffsetX = 13.5;
+#endif
 
 
 // RoboRio controller execution time
@@ -46,6 +49,8 @@ static const double KeENC_k_EncoderToAngle = 1; // Raw output of PWM encoder to 
  const double C_TagXred = 15.513558 * C_MeterToIn;
 const  double C_TagXblue = 1.02743 * C_MeterToIn;
 
+
+const double C_TagAlignBasePower = 0.02;
 const double C_TagScoreOffset = 16.0; //that little space our bumper is against to score cubes
 
 // CAN Device IDs:
@@ -81,7 +86,9 @@ static const int C_VanityLight_ID = 0;
 
 
 // Vision Cals:
-const double K_MoveToTagMovementDeadband = 1.0; // inches
+const double K_MoveToTagMovementDeadbandX = 0.5; // inches
+const double K_MoveToTagMovementDeadbandY = 0.05; // inches
+
 // const double K_MoveToTagRotationDeadband = 2.0; // degrees
 
 // cals for top target cam
