@@ -563,6 +563,36 @@ bool ADAS_DM_DriveRevStraight(double *L_Pct_FwdRev,
 }
 
 /******************************************************************************
+ * Function:     ADAS_DM_DriveRevStraight
+ *
+ * Description:  Like drive straight control, but in reverse!
+ ******************************************************************************/
+bool ADAS_DM_Stop(double *L_Pct_FwdRev,
+                  double *L_Pct_Strafe,
+                  double *L_Pct_Rotate,
+                  bool   *L_SD_RobotOriented,
+                  double  LeADAS_t_StopTime)
+{
+  bool L_ADAS_DM_StateComplete = false;
+
+  *L_SD_RobotOriented = false;
+  *L_Pct_Strafe = 0;
+  *L_Pct_FwdRev = 0;
+  *L_Pct_Rotate = 0;
+  
+
+  V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
+
+  if (V_ADAS_DM_DebounceTime >= LeADAS_t_StopTime)
+  {
+    L_ADAS_DM_StateComplete = true;
+    V_ADAS_DM_DebounceTime = 0;
+  }
+
+  return (L_ADAS_DM_StateComplete);
+}
+
+/******************************************************************************
  * Function:     ADAS_DM_ReverseAndIntake
  *
  * Description:  Drive in reverse and turn on intake.
@@ -1072,8 +1102,69 @@ frc::SmartDashboard::PutNumber("VeADAS_e_DM_AutoMountState", VeADAS_e_DM_AutoMou
 }
 
 
+/******************************************************************************
+ * Function:     ADAS_DM_MountStation
+ *
+ * Description:  Drive onto the the charge station
+ ******************************************************************************/
+bool ADAS_DM_MountStation(double *L_Pct_FwdRev,
+                          double *L_Pct_Strafe,
+                          double *L_Pct_Rotate,
+                          bool   *L_SD_RobotOriented,
+                          bool   *LeADAS_b_X_Mode,
+                          double  LeADAS_Deg_GyroRoll)
+{
+  bool LeADAS_b_DM_StateComplete = false;
+  double LeADAS_Pct_Drive = 0.0;
+
+  /* Look up the desired target location point: */
+
+  /* Capture some of the things we need to save for this state control: */
+
+  if (VeADAS_e_DM_AutoMountState == E_ADAS_DM_DriveOS_FwdFlat1)
+    {
+      LeADAS_Pct_Drive = KeADAS_Pct_DM_AutoMountPwr;
+
+      if (LeADAS_Deg_GyroRoll > KeADAS_Deg_DM_AutoMountDetect)  // need to verify direction
+        {
+          VeADAS_t_DM_AutoMountDbTime += C_ExeTime;
+        }
+      if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_t_DM_AutoMountOnlyDb)
+        {
+          VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_Complete;
+          VeADAS_t_DM_AutoMountDbTime = 0.0;
+        }
+    }
+
+  /* Exit criteria: */
+  if (LeADAS_b_DM_StateComplete == false)
+  {
+    *L_Pct_FwdRev = LeADAS_Pct_Drive;
+    *L_Pct_Strafe = 0;
+    *L_Pct_Rotate = 0;
+    *L_SD_RobotOriented = false;
+    *LeADAS_b_X_Mode = false;
+  }
+  else
+  {
+    /* We have been at the correct location for the set amount of time. */
+    *L_Pct_FwdRev = 0;
+    *L_Pct_Strafe = 0;
+    *L_Pct_Rotate = 0;
+    *L_SD_RobotOriented = false;
+    *LeADAS_b_X_Mode = false;
+    VeADAS_t_DM_AutoMountDbTime = 0;
+  }
+
+  return (LeADAS_b_DM_StateComplete);
+}
 
 
+/******************************************************************************
+ * Function:     MoveWithOffsetTag
+ *
+ * Description:  TBD
+ ******************************************************************************/
 bool MoveWithOffsetTag(double *L_Pct_FwdRev,
                        double *L_Pct_Strafe,
                        double *L_Pct_Rotate,

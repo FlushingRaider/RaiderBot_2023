@@ -25,21 +25,13 @@
 
 
 TeMAN_ManipulatorStates VeADAS_e_MAN_SchedState = E_MAN_Init; //State Scheduled in relation to driver input. Used for non-linear state machines
-bool                    VeADAS_b_MAN_DropObject = false;
+bool                    VeADAS_b_MAN_DropObjectSlow = false;
+bool                    VeADAS_b_MAN_DropObjectFast = false;
 
 double                  VeADAS_t_MAN_DropObjectTm = 0.0;  // Timer that will keep rollers on for a specific amount of time
 
-double V_ADAS_MN_DebounceTime = 0;
-double V_ADAS_MN_RotateErrorPrev = 0;
-double V_ADAS_MN_LauncherSpeedPrev = 0;
-bool V_ADAS_MN_TargetAquiredPrev = false;
-
 /* Configuration cals: */
-double KV_ADAS_MN_LostTargetGx;
-double KV_ADAS_MN_NoTargetError;
-double KV_ADAS_MN_DebounceTime;
-double KV_ADAS_MN_RotateDeadbandAngle;
-double KV_ADAS_MN_TargetVisionAngle;
+
 
 /******************************************************************************
  * Function:     ADAS_MN_ConfigsInit
@@ -50,19 +42,11 @@ void ADAS_MN_ConfigsInit()
 {
   // set coefficients
  
-  // KV_ADAS_MN_LightDelayTIme = K_ADAS_MN_LightDelayTime;
-  // KV_ADAS_MN_LostTargetGx = K_ADAS_MN_LostTargetGx;
-  // KV_ADAS_MN_NoTargetError = K_ADAS_MN_NoTargetError;
-  // KV_ADAS_MN_DebounceTime = K_ADAS_MN_DebounceTime;
-  // KV_ADAS_MN_RotateDeadbandAngle = K_ADAS_MN_RotateDeadbandAngle;
-  // KV_ADAS_MN_TargetVisionAngle = K_ADAS_MN_TargetVisionAngle;
-
 #ifdef ADAS_MN_Test
   // display coefficients on SmartDashboard
   frc::SmartDashboard::PutNumber("KV_ADAS_MN_LightDelayTIme", KV_ADAS_MN_LightDelayTIme);
   frc::SmartDashboard::PutNumber("KV_ADAS_MN_LostTargetGx", KV_ADAS_MN_LostTargetGx);
   frc::SmartDashboard::PutNumber("KV_ADAS_MN_NoTargetError", KV_ADAS_MN_NoTargetError);
-  frc::SmartDashboard::PutNumber("KV_ADAS_MN_DebounceTime", KV_ADAS_MN_DebounceTime);
   frc::SmartDashboard::PutNumber("KV_ADAS_MN_AllowedLauncherError", KV_ADAS_MN_AllowedLauncherError);
   frc::SmartDashboard::PutNumber("KV_ADAS_MN_AllowedLauncherTime", KV_ADAS_MN_AllowedLauncherTime);
   frc::SmartDashboard::PutNumber("KV_ADAS_MN_RotateDeadbandAngle", KV_ADAS_MN_RotateDeadbandAngle);
@@ -83,7 +67,6 @@ void ADAS_MN_ConfigsCal()
   KV_ADAS_MN_LightDelayTIme = frc::SmartDashboard::GetNumber("KV_ADAS_MN_LightDelayTIme", KV_ADAS_MN_LightDelayTIme);
   KV_ADAS_MN_LostTargetGx = frc::SmartDashboard::GetNumber("KV_ADAS_MN_LostTargetGx", KV_ADAS_MN_LostTargetGx);
   KV_ADAS_MN_NoTargetError = frc::SmartDashboard::GetNumber("KV_ADAS_MN_NoTargetError", KV_ADAS_MN_NoTargetError);
-  KV_ADAS_MN_DebounceTime = frc::SmartDashboard::GetNumber("KV_ADAS_MN_DebounceTime", KV_ADAS_MN_DebounceTime);
   KV_ADAS_MN_AllowedLauncherError = frc::SmartDashboard::GetNumber("KV_ADAS_MN_AllowedLauncherError", KV_ADAS_MN_AllowedLauncherError);
   KV_ADAS_MN_AllowedLauncherTime = frc::SmartDashboard::GetNumber("KV_ADAS_MN_AllowedLauncherTime", KV_ADAS_MN_AllowedLauncherTime);
   KV_ADAS_MN_RotateDeadbandAngle = frc::SmartDashboard::GetNumber("KV_ADAS_MN_RotateDeadbandAngle", KV_ADAS_MN_RotateDeadbandAngle);
@@ -99,10 +82,7 @@ void ADAS_MN_ConfigsCal()
 void ADAS_MN_Reset(void)
 {
   TeMAN_ManipulatorStates VeADAS_e_AttndState = E_MAN_Init;
-  V_ADAS_MN_DebounceTime = 0;
-  V_ADAS_MN_RotateErrorPrev = 0;
-  V_ADAS_MN_LauncherSpeedPrev = 0;
-  V_ADAS_MN_TargetAquiredPrev = false;
+  VeADAS_t_MAN_DropObjectTm = 0.0;
 }
 
 /******************************************************************************
@@ -112,7 +92,8 @@ void ADAS_MN_Reset(void)
  ******************************************************************************/
  bool ManipulatorScheduelerTeleop (void)
   {
-  bool                    LeADAS_b_MAN_DropObject = false;
+  bool                    LeADAS_b_MAN_DropObjectSlow = false;
+  bool                    LeADAS_b_MAN_DropObjectFast = false;
   bool                    LeADAS_b_MAN_StateComplete = false;
 
   if (VsCONT_s_DriverInput.b_MainIntakeOut == true)
@@ -155,21 +136,36 @@ void ADAS_MN_Reset(void)
     {
       VeADAS_e_MAN_SchedState = E_MAN_Init;
     }
+  else if (VsCONT_s_DriverInput.b_MidPositionCube == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_PositioningMidCube;
+    }
   else
     {
       /* No updates */
     }
 
-  if ((VsCONT_s_DriverInput.b_DropGamePiece == true) ||
-       ((VeADAS_t_MAN_DropObjectTm > 0) &&
-        (VeADAS_t_MAN_DropObjectTm <= KeMAN_t_GripperOnTm)))
+  if (VsCONT_s_DriverInput.b_DropGamePieceFast == true)
     {
-      LeADAS_b_MAN_DropObject = true;
+      LeADAS_b_MAN_DropObjectFast = true;
+      VeADAS_t_MAN_DropObjectTm = C_ExeTime;
+    }
+  else if (VsCONT_s_DriverInput.b_DropGamePieceSlow == true)
+    {
+      LeADAS_b_MAN_DropObjectSlow = true;
+      VeADAS_t_MAN_DropObjectTm = C_ExeTime;
+    }
+  else if ((VeADAS_t_MAN_DropObjectTm > 0) &&
+           (VeADAS_t_MAN_DropObjectTm <= KeMAN_t_GripperOnTm))
+    {
+      LeADAS_b_MAN_DropObjectSlow = VeADAS_b_MAN_DropObjectSlow;
+      LeADAS_b_MAN_DropObjectFast = VeADAS_b_MAN_DropObjectFast;
       VeADAS_t_MAN_DropObjectTm += C_ExeTime;
     }
   else
     {
-      LeADAS_b_MAN_DropObject = false;
+      LeADAS_b_MAN_DropObjectSlow = false;
+      LeADAS_b_MAN_DropObjectFast = false;
       VeADAS_t_MAN_DropObjectTm = 0.0;
     }
 
@@ -178,28 +174,82 @@ void ADAS_MN_Reset(void)
       LeADAS_b_MAN_StateComplete = true;
     }
 
-    VeADAS_b_MAN_DropObject = LeADAS_b_MAN_DropObject;
+  VeADAS_b_MAN_DropObjectSlow = LeADAS_b_MAN_DropObjectSlow;
+  VeADAS_b_MAN_DropObjectFast = LeADAS_b_MAN_DropObjectFast;
 
-    return(LeADAS_b_MAN_StateComplete);
+  return(LeADAS_b_MAN_StateComplete);
   }
 
 
 /******************************************************************************
- * Function:    ManipulatorScheduelerAuton
+ * Function:    ManipulatorScheduelerAutonBasic
  * Made By:     Jay L 2/21/2023
  * Description: Determines scheduled state of the manipulator in auton.
  ******************************************************************************/
- bool ManipulatorScheduelerAuton(void)
+ bool ManipulatorScheduelerAutonBasic(void)
   {
     bool LeADAS_b_MAN_StateComplete = false;
     TeMAN_ManipulatorStates LeADAS_e_MAN_State = E_MAN_Driving;
 
     VeADAS_e_MAN_SchedState = LeADAS_e_MAN_State;
-    VeADAS_b_MAN_DropObject = false;
+    VeADAS_b_MAN_DropObjectSlow = false;
+    VeADAS_b_MAN_DropObjectFast = false;
 
     if (LeADAS_e_MAN_State == VeMAN_e_AttndState)
       {
         LeADAS_b_MAN_StateComplete = true;
+      }
+    return(LeADAS_b_MAN_StateComplete);
+  }
+
+/******************************************************************************
+ * Function:    ManipulatorScheduelerAutonAction
+ * Made By:     Jay L 2/21/2023
+ * Description: Determines scheduled state of the manipulator in auton.
+ ******************************************************************************/
+ bool ManipulatorScheduelerAutonAction(TeADAS_AutonManipulatorStates LeADAS_e_MAN_StateReq)
+  {
+    bool LeADAS_b_MAN_StateComplete = false;
+    TeMAN_ManipulatorStates LeADAS_e_MAN_State = E_MAN_Driving;
+    bool LeADAS_b_MAN_DropSlow = false;
+    bool LeADAS_b_MAN_DropFast = false;
+    bool LeADAS_b_MAN_DropCmplt = false;
+
+    if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_Driving)
+      {
+        LeADAS_e_MAN_State = E_MAN_Driving;
+        LeADAS_b_MAN_DropCmplt = true;
+      }
+    else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MidDropPosition)
+      {
+        LeADAS_e_MAN_State = E_MAN_PositioningMidCube;
+        LeADAS_b_MAN_DropCmplt = true;
+      }
+    else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MidDropOff)
+      {
+        LeADAS_e_MAN_State = E_MAN_PositioningMidCube;
+        LeADAS_b_MAN_DropFast = true;
+        VeADAS_t_MAN_DropObjectTm += C_ExeTime;
+
+        if (VeADAS_t_MAN_DropObjectTm >= KeMAN_t_GripperOnTm)
+          {
+            LeADAS_b_MAN_DropCmplt = true;
+          }
+      }
+    else
+      {
+        LeADAS_b_MAN_DropCmplt = true;
+      }
+
+    VeADAS_e_MAN_SchedState = LeADAS_e_MAN_State;
+    VeADAS_b_MAN_DropObjectSlow = LeADAS_b_MAN_DropSlow;
+    VeADAS_b_MAN_DropObjectFast = LeADAS_b_MAN_DropFast;
+
+    if ((LeADAS_e_MAN_State == VeMAN_e_AttndState) &&
+        (LeADAS_b_MAN_DropCmplt == true))
+      {
+        LeADAS_b_MAN_StateComplete = true;
+        VeADAS_t_MAN_DropObjectTm = 0;
       }
     return(LeADAS_b_MAN_StateComplete);
   }
@@ -211,7 +261,8 @@ void ADAS_MN_Reset(void)
  * Description:  Manages and controls the manipulator controls.
  ******************************************************************************/
 bool ADAS_MN_Main(T_RobotState         L_RobotState,
-                  T_ADAS_ActiveFeature LeADAS_e_ActiveFeature)
+                  T_ADAS_ActiveFeature LeADAS_e_ActiveFeature,
+                  TeADAS_AutonManipulatorStates LeADAS_e_MAN_ReqAction)
 {
   bool LeADAS_b_MN_Complete = false;
 
@@ -220,7 +271,9 @@ bool ADAS_MN_Main(T_RobotState         L_RobotState,
   case E_ADAS_Disabled:
     LeADAS_b_MN_Complete = ManipulatorScheduelerTeleop();
   break;
-
+  case E_ADAS_DM_DriveRevDeployArm:
+    LeADAS_b_MN_Complete = ManipulatorScheduelerAutonAction(LeADAS_e_MAN_ReqAction);
+  break;
   case E_ADAS_DM_CubeAlign:
   case E_ADAS_DM_ConeAlign:
   case E_ADAS_DM_AutoBalance:
@@ -229,7 +282,7 @@ bool ADAS_MN_Main(T_RobotState         L_RobotState,
   case E_ADAS_DM_DriveRevStraight:
   case E_ADAS_DM_DriveStraightFar:
   default:
-    LeADAS_b_MN_Complete = ManipulatorScheduelerAuton();
+    LeADAS_b_MN_Complete = ManipulatorScheduelerAutonBasic();
   break;
   }
 

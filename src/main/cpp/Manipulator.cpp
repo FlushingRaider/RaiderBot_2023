@@ -123,14 +123,12 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
-  VsMAN_s_Motors.k_MotorRampRate[E_MAN_IntakeRollers] = KeMAN_RPMS_IntakeRate;
 
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRateFast;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers] = KeMAN_RPMS_IntakeRate;
 
   VaMAN_Deg_TurretAngleError = 0.0;
   VaMAN_k_TurretAngleIntegral = 0.0;
@@ -218,7 +216,6 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   frc::SmartDashboard::PutNumber("KeMAN_InS_LinearSlideRate", KeMAN_InS_LinearSlideRate);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_WristRate", KeMAN_DegS_WristRate);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_GripperRate", KeMAN_DegS_GripperRate);
-  frc::SmartDashboard::PutNumber("KeMAN_RPMS_IntakeRate", KeMAN_RPMS_IntakeRate);
 
   // display target positions/speeds
   frc::SmartDashboard::PutNumber("Set Position Gripper", 0);
@@ -351,8 +348,7 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("KeMAN_InS_LinearSlideRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("KeMAN_DegS_WristRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = frc::SmartDashboard::GetNumber("KeMAN_DegS_GripperRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper]);
-  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers] = frc::SmartDashboard::GetNumber("KeMAN_RPMS_IntakeRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers]);
-  #endif
+   #endif
   }
 
 /******************************************************************************
@@ -362,8 +358,6 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
  ******************************************************************************/
 void ManipulatorControlInit()
   {
-  TeMAN_e_ManipulatorActuator LeMAN_i_Index;
-
   VeMAN_e_CmndState  = E_MAN_Init;
   VeMAN_e_AttndState = E_MAN_Init;
 
@@ -560,9 +554,10 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState,
  *
  * Description:  Updates the gripper roller control
  ******************************************************************************/
-void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
+void UpdateGripperActuator(TeMAN_ManipulatorStates      LeMAN_e_CmndState,
                                 TeMAN_ManipulatorStates LeMAN_e_AttndState,
-                                bool                    LeMAN_b_ReleaseObj,
+                                bool                    LeMAN_b_DropObjectSlow,
+                                bool                    LeMAN_b_DropObjectFast,
                                 bool                    LeMAN_b_ObjDetected)
   {
    double LeMAN_k_TempCmnd = 0.0;
@@ -580,12 +575,13 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
       LeMAN_b_AllowedReleaseState = true;
      }
 
-  //  if ((LeMAN_b_ReleaseObj == true) && 
-  //      (LeMAN_b_AllowedReleaseState == true))
-
-   if ((LeMAN_b_ReleaseObj == true))
+   if ((LeMAN_b_DropObjectSlow == true) && (LeMAN_b_AllowedReleaseState == true))
      {
-     LeMAN_k_TempCmnd = KeMAN_k_GripperRelease;
+     LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseSlow;
+     }
+   else if ((LeMAN_b_DropObjectFast == true) && (LeMAN_b_AllowedReleaseState == true))
+     {
+     LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseFast;
      }
    else if ((LeMAN_b_ObjDetected == false) &&
             (((LeMAN_e_AttndState == E_MAN_MainIntake) && (LeMAN_e_CmndState  == E_MAN_MainIntake)) ||
@@ -605,7 +601,8 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
  ******************************************************************************/
 void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                             bool                    LeMAN_b_TestPowerOverride,
-                            bool                    LeMAN_b_DropObject)
+                            bool                    LeMAN_b_DropObjectSlow,
+                            bool                    LeMAN_b_DropObjectFast)
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
   double LeMAN_Deg_Error = 0.0;
@@ -663,7 +660,8 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
 
     UpdateGripperActuator(VeMAN_e_CmndState,
                           VeMAN_e_AttndState,
-                          LeMAN_b_DropObject,
+                          LeMAN_b_DropObjectSlow,
+                          LeMAN_b_DropObjectFast,
                           VsMAN_s_Sensors.b_GripperObjDetected);  // Need to come up with object detected
 
     if ((LeMAN_e_SchedState != VeMAN_e_CmndState) ||

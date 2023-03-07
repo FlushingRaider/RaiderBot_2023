@@ -387,7 +387,8 @@ void Robot::RobotPeriodic()
 #ifdef CompBot
   ManipulatorControlMain(VeADAS_e_MAN_SchedState,
                          VeROBO_b_TestState,
-                         VeADAS_b_MAN_DropObject);
+                         VeADAS_b_MAN_DropObjectSlow,
+                         VeADAS_b_MAN_DropObjectFast);
 
   ManipulatorMotorConfigsCal(m_ArmPivotPID,
                              m_WristPID,

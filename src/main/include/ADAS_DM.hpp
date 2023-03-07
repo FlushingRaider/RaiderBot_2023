@@ -46,6 +46,12 @@ bool ADAS_DM_ReverseAndIntake(double *L_Pct_FwdRev,
                               bool *L_SD_RobotOriented,
                               double L_DriveTime);
 
+bool ADAS_DM_Stop(double *L_Pct_FwdRev,
+                  double *L_Pct_Strafe,
+                  double *L_Pct_Rotate,
+                  bool   *L_SD_RobotOriented,
+                  double  LeADAS_t_StopTime);
+
 bool ADAS_DM_DriveStraight(double *L_Pct_FwdRev,
                            double *L_Pct_Strafe,
                            double *L_Pct_Rotate,
@@ -128,6 +134,13 @@ bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
                               bool   *L_SD_RobotOriented,
                               bool   *LeADAS_b_X_Mode,
                               double  LeADAS_Deg_GyroRoll);
+
+bool ADAS_DM_MountStation(double *L_Pct_FwdRev,
+                          double *L_Pct_Strafe,
+                          double *L_Pct_Rotate,
+                          bool   *L_SD_RobotOriented,
+                          bool   *LeADAS_b_X_Mode,
+                          double  LeADAS_Deg_GyroRoll);
 
 bool MoveWithOffsetTag(double *L_Pct_FwdRev,
                        double *L_Pct_Strafe,
