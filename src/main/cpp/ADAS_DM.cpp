@@ -76,26 +76,6 @@ void ADAS_DM_ConfigsInit()
 {
 
   // set coefficients
-  // KV_ADAS_UT_LightDelayTime = K_ADAS_UT_LightDelayTIme;
-  // KV_ADAS_UT_LostTargetGx = K_ADAS_UT_LostTargetGx;
-  // KV_ADAS_UT_NoTargetError = K_ADAS_UT_NoTargetError;
-  // KV_ADAS_UT_DebounceTime = K_ADAS_UT_DebounceTime;
-  // KV_ADAS_UT_AllowedLauncherError = K_ADAS_UT_AllowedLauncherError;
-  // KV_ADAS_UT_AllowedLauncherTime = K_ADAS_UT_AllowedLauncherTime;
-  // KV_ADAS_UT_RotateDeadbandAngle = K_ADAS_UT_RotateDeadbandAngle;
-  // KV_ADAS_UT_TargetVisionAngle = K_ADAS_UT_TargetVisionAngle;
-
-  // #ifdef ADAS_DM_Test
-  // // display coefficients on SmartDashboard
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_LightDelayTime", KV_ADAS_UT_LightDelayTime);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_LostTargetGx", KV_ADAS_UT_LostTargetGx);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_NoTargetError", KV_ADAS_UT_NoTargetError);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_DebounceTime", KV_ADAS_UT_DebounceTime);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_AllowedLauncherError", KV_ADAS_UT_AllowedLauncherError);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_AllowedLauncherTime", KV_ADAS_UT_AllowedLauncherTime);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_RotateDeadbandAngle", KV_ADAS_UT_RotateDeadbandAngle);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_TargetVisionAngle", KV_ADAS_UT_TargetVisionAngle);
-  // #endif
 }
 
 /******************************************************************************
@@ -108,14 +88,7 @@ void ADAS_DM_ConfigsCal()
 {
 // read coefficients from SmartDashboard
 #ifdef ADAS_DM_Test
-// KV_ADAS_UT_LightDelayTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LightDelayTime", KV_ADAS_UT_LightDelayTime);
-// KV_ADAS_UT_LostTargetGx = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LostTargetGx", KV_ADAS_UT_LostTargetGx);
-// KV_ADAS_UT_NoTargetError = frc::SmartDashboard::GetNumber("KV_ADAS_UT_NoTargetError", KV_ADAS_UT_NoTargetError);
-// KV_ADAS_UT_DebounceTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_DebounceTime", KV_ADAS_UT_DebounceTime);
-// KV_ADAS_UT_AllowedLauncherError = frc::SmartDashboard::GetNumber("KV_ADAS_UT_AllowedLauncherError", KV_ADAS_UT_AllowedLauncherError);
-// KV_ADAS_UT_AllowedLauncherTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_AllowedLauncherTime", KV_ADAS_UT_AllowedLauncherTime);
-// KV_ADAS_UT_RotateDeadbandAngle = frc::SmartDashboard::GetNumber("KV_ADAS_UT_RotateDeadbandAngle", KV_ADAS_UT_RotateDeadbandAngle);
-// KV_ADAS_UT_TargetVisionAngle = frc::SmartDashboard::GetNumber("KV_ADAS_UT_TargetVisionAngle", KV_ADAS_UT_TargetVisionAngle);
+
 #endif
 }
 
@@ -837,17 +810,6 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
     V_ADAS_DM_Y_TargetStartPosition = 0;
   }
 
-  // frc::SmartDashboard::PutBoolean("State Complete", L_ADAS_DM_StateComplete);
-  // frc::SmartDashboard::PutNumber("L_Pct_Strafe", *L_Pct_Strafe);
-  // frc::SmartDashboard::PutNumber("L_Pct_FwdRev", *L_Pct_FwdRev);
-  // frc::SmartDashboard::PutNumber("L_i_PathNum", L_i_PathNum);
-
-  // frc::SmartDashboard::PutNumber("L_L_TargetPositionX", L_L_TargetPositionX);
-  // frc::SmartDashboard::PutNumber("L_L_RelativePosX", L_L_RelativePosX);
-
-  // frc::SmartDashboard::PutNumber("L_L_TargetPositionY", L_L_TargetPositionY);
-  // frc::SmartDashboard::PutNumber("L_L_RelativePosY", L_L_RelativePosY);
-
   return (L_ADAS_DM_StateComplete);
 }
 
@@ -914,9 +876,6 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
   }
   
   LeADAS_Deg_RollError = LeADAS_Deg_GyroRoll;
-  frc::SmartDashboard::PutBoolean("VeADAS_b_DM_AutoBalanceFastSearch", VeADAS_b_DM_AutoBalanceFastSearch);
-  frc::SmartDashboard::PutNumber("LeADAS_Deg_RollError", LeADAS_Deg_RollError);
-
 
   /* Exit criteria: */
   if (fabs(LeADAS_Deg_RollError) <= KeADAS_Deg_DM_AutoBalanceDb &&
@@ -992,9 +951,6 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
     LeADAS_b_DM_StateComplete = true;
     VeADAS_b_DM_AutoBalanceInit = false;
   }
-
-  frc::SmartDashboard::PutBoolean("LeADAS_b_DM_StateComplete", LeADAS_b_DM_StateComplete);
-  frc::SmartDashboard::PutBoolean("LeADAS_b_Searching", LeADAS_b_Searching);
 
   return (LeADAS_b_DM_StateComplete);
 }
@@ -1096,8 +1052,6 @@ bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
     *LeADAS_b_X_Mode = false;
     VeADAS_t_DM_AutoMountDbTime = 0;
   }
-frc::SmartDashboard::PutNumber("VeADAS_e_DM_AutoMountState", VeADAS_e_DM_AutoMountState);
-
   return (LeADAS_b_DM_StateComplete);
 }
 

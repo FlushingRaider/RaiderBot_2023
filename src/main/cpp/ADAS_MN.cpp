@@ -44,13 +44,7 @@ void ADAS_MN_ConfigsInit()
  
 #ifdef ADAS_MN_Test
   // display coefficients on SmartDashboard
-  frc::SmartDashboard::PutNumber("KV_ADAS_MN_LightDelayTIme", KV_ADAS_MN_LightDelayTIme);
-  frc::SmartDashboard::PutNumber("KV_ADAS_MN_LostTargetGx", KV_ADAS_MN_LostTargetGx);
-  frc::SmartDashboard::PutNumber("KV_ADAS_MN_NoTargetError", KV_ADAS_MN_NoTargetError);
-  frc::SmartDashboard::PutNumber("KV_ADAS_MN_AllowedLauncherError", KV_ADAS_MN_AllowedLauncherError);
-  frc::SmartDashboard::PutNumber("KV_ADAS_MN_AllowedLauncherTime", KV_ADAS_MN_AllowedLauncherTime);
-  frc::SmartDashboard::PutNumber("KV_ADAS_MN_RotateDeadbandAngle", KV_ADAS_MN_RotateDeadbandAngle);
-  frc::SmartDashboard::PutNumber("KV_ADAS_MN_TargetVisionAngle", KV_ADAS_MN_TargetVisionAngle);
+
 #endif
 }
 
@@ -64,13 +58,7 @@ void ADAS_MN_ConfigsCal()
 {
 // read coefficients from SmartDashboard
 #ifdef ADAS_MN_Test
-  KV_ADAS_MN_LightDelayTIme = frc::SmartDashboard::GetNumber("KV_ADAS_MN_LightDelayTIme", KV_ADAS_MN_LightDelayTIme);
-  KV_ADAS_MN_LostTargetGx = frc::SmartDashboard::GetNumber("KV_ADAS_MN_LostTargetGx", KV_ADAS_MN_LostTargetGx);
-  KV_ADAS_MN_NoTargetError = frc::SmartDashboard::GetNumber("KV_ADAS_MN_NoTargetError", KV_ADAS_MN_NoTargetError);
-  KV_ADAS_MN_AllowedLauncherError = frc::SmartDashboard::GetNumber("KV_ADAS_MN_AllowedLauncherError", KV_ADAS_MN_AllowedLauncherError);
-  KV_ADAS_MN_AllowedLauncherTime = frc::SmartDashboard::GetNumber("KV_ADAS_MN_AllowedLauncherTime", KV_ADAS_MN_AllowedLauncherTime);
-  KV_ADAS_MN_RotateDeadbandAngle = frc::SmartDashboard::GetNumber("KV_ADAS_MN_RotateDeadbandAngle", KV_ADAS_MN_RotateDeadbandAngle);
-  KV_ADAS_MN_TargetVisionAngle = frc::SmartDashboard::GetNumber("KV_ADAS_MN_TargetVisionAngle", KV_ADAS_MN_TargetVisionAngle);
+
 #endif
 }
 
