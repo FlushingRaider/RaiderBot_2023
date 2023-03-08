@@ -1092,6 +1092,7 @@ bool ADAS_DM_MountStation(double *L_Pct_FwdRev,
         {
           VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_Complete;
           VeADAS_t_DM_AutoMountDbTime = 0.0;
+          LeADAS_b_DM_StateComplete = true;
         }
     }
 
