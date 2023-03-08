@@ -76,26 +76,6 @@ void ADAS_DM_ConfigsInit()
 {
 
   // set coefficients
-  // KV_ADAS_UT_LightDelayTime = K_ADAS_UT_LightDelayTIme;
-  // KV_ADAS_UT_LostTargetGx = K_ADAS_UT_LostTargetGx;
-  // KV_ADAS_UT_NoTargetError = K_ADAS_UT_NoTargetError;
-  // KV_ADAS_UT_DebounceTime = K_ADAS_UT_DebounceTime;
-  // KV_ADAS_UT_AllowedLauncherError = K_ADAS_UT_AllowedLauncherError;
-  // KV_ADAS_UT_AllowedLauncherTime = K_ADAS_UT_AllowedLauncherTime;
-  // KV_ADAS_UT_RotateDeadbandAngle = K_ADAS_UT_RotateDeadbandAngle;
-  // KV_ADAS_UT_TargetVisionAngle = K_ADAS_UT_TargetVisionAngle;
-
-  // #ifdef ADAS_DM_Test
-  // // display coefficients on SmartDashboard
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_LightDelayTime", KV_ADAS_UT_LightDelayTime);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_LostTargetGx", KV_ADAS_UT_LostTargetGx);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_NoTargetError", KV_ADAS_UT_NoTargetError);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_DebounceTime", KV_ADAS_UT_DebounceTime);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_AllowedLauncherError", KV_ADAS_UT_AllowedLauncherError);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_AllowedLauncherTime", KV_ADAS_UT_AllowedLauncherTime);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_RotateDeadbandAngle", KV_ADAS_UT_RotateDeadbandAngle);
-  // frc::SmartDashboard::PutNumber("KV_ADAS_UT_TargetVisionAngle", KV_ADAS_UT_TargetVisionAngle);
-  // #endif
 }
 
 /******************************************************************************
@@ -108,14 +88,7 @@ void ADAS_DM_ConfigsCal()
 {
 // read coefficients from SmartDashboard
 #ifdef ADAS_DM_Test
-// KV_ADAS_UT_LightDelayTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LightDelayTime", KV_ADAS_UT_LightDelayTime);
-// KV_ADAS_UT_LostTargetGx = frc::SmartDashboard::GetNumber("KV_ADAS_UT_LostTargetGx", KV_ADAS_UT_LostTargetGx);
-// KV_ADAS_UT_NoTargetError = frc::SmartDashboard::GetNumber("KV_ADAS_UT_NoTargetError", KV_ADAS_UT_NoTargetError);
-// KV_ADAS_UT_DebounceTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_DebounceTime", KV_ADAS_UT_DebounceTime);
-// KV_ADAS_UT_AllowedLauncherError = frc::SmartDashboard::GetNumber("KV_ADAS_UT_AllowedLauncherError", KV_ADAS_UT_AllowedLauncherError);
-// KV_ADAS_UT_AllowedLauncherTime = frc::SmartDashboard::GetNumber("KV_ADAS_UT_AllowedLauncherTime", KV_ADAS_UT_AllowedLauncherTime);
-// KV_ADAS_UT_RotateDeadbandAngle = frc::SmartDashboard::GetNumber("KV_ADAS_UT_RotateDeadbandAngle", KV_ADAS_UT_RotateDeadbandAngle);
-// KV_ADAS_UT_TargetVisionAngle = frc::SmartDashboard::GetNumber("KV_ADAS_UT_TargetVisionAngle", KV_ADAS_UT_TargetVisionAngle);
+
 #endif
 }
 
@@ -563,6 +536,36 @@ bool ADAS_DM_DriveRevStraight(double *L_Pct_FwdRev,
 }
 
 /******************************************************************************
+ * Function:     ADAS_DM_DriveRevStraight
+ *
+ * Description:  Like drive straight control, but in reverse!
+ ******************************************************************************/
+bool ADAS_DM_Stop(double *L_Pct_FwdRev,
+                  double *L_Pct_Strafe,
+                  double *L_Pct_Rotate,
+                  bool   *L_SD_RobotOriented,
+                  double  LeADAS_t_StopTime)
+{
+  bool L_ADAS_DM_StateComplete = false;
+
+  *L_SD_RobotOriented = false;
+  *L_Pct_Strafe = 0;
+  *L_Pct_FwdRev = 0;
+  *L_Pct_Rotate = 0;
+  
+
+  V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
+
+  if (V_ADAS_DM_DebounceTime >= LeADAS_t_StopTime)
+  {
+    L_ADAS_DM_StateComplete = true;
+    V_ADAS_DM_DebounceTime = 0;
+  }
+
+  return (L_ADAS_DM_StateComplete);
+}
+
+/******************************************************************************
  * Function:     ADAS_DM_ReverseAndIntake
  *
  * Description:  Drive in reverse and turn on intake.
@@ -807,17 +810,6 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
     V_ADAS_DM_Y_TargetStartPosition = 0;
   }
 
-  // frc::SmartDashboard::PutBoolean("State Complete", L_ADAS_DM_StateComplete);
-  // frc::SmartDashboard::PutNumber("L_Pct_Strafe", *L_Pct_Strafe);
-  // frc::SmartDashboard::PutNumber("L_Pct_FwdRev", *L_Pct_FwdRev);
-  // frc::SmartDashboard::PutNumber("L_i_PathNum", L_i_PathNum);
-
-  // frc::SmartDashboard::PutNumber("L_L_TargetPositionX", L_L_TargetPositionX);
-  // frc::SmartDashboard::PutNumber("L_L_RelativePosX", L_L_RelativePosX);
-
-  // frc::SmartDashboard::PutNumber("L_L_TargetPositionY", L_L_TargetPositionY);
-  // frc::SmartDashboard::PutNumber("L_L_RelativePosY", L_L_RelativePosY);
-
   return (L_ADAS_DM_StateComplete);
 }
 
@@ -884,9 +876,6 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
   }
   
   LeADAS_Deg_RollError = LeADAS_Deg_GyroRoll;
-  frc::SmartDashboard::PutBoolean("VeADAS_b_DM_AutoBalanceFastSearch", VeADAS_b_DM_AutoBalanceFastSearch);
-  frc::SmartDashboard::PutNumber("LeADAS_Deg_RollError", LeADAS_Deg_RollError);
-
 
   /* Exit criteria: */
   if (fabs(LeADAS_Deg_RollError) <= KeADAS_Deg_DM_AutoBalanceDb &&
@@ -962,9 +951,6 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
     LeADAS_b_DM_StateComplete = true;
     VeADAS_b_DM_AutoBalanceInit = false;
   }
-
-  frc::SmartDashboard::PutBoolean("LeADAS_b_DM_StateComplete", LeADAS_b_DM_StateComplete);
-  frc::SmartDashboard::PutBoolean("LeADAS_b_Searching", LeADAS_b_Searching);
 
   return (LeADAS_b_DM_StateComplete);
 }
@@ -1066,14 +1052,73 @@ bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
     *LeADAS_b_X_Mode = false;
     VeADAS_t_DM_AutoMountDbTime = 0;
   }
-frc::SmartDashboard::PutNumber("VeADAS_e_DM_AutoMountState", VeADAS_e_DM_AutoMountState);
+  return (LeADAS_b_DM_StateComplete);
+}
+
+
+/******************************************************************************
+ * Function:     ADAS_DM_MountStation
+ *
+ * Description:  Drive onto the the charge station
+ ******************************************************************************/
+bool ADAS_DM_MountStation(double *L_Pct_FwdRev,
+                          double *L_Pct_Strafe,
+                          double *L_Pct_Rotate,
+                          bool   *L_SD_RobotOriented,
+                          bool   *LeADAS_b_X_Mode,
+                          double  LeADAS_Deg_GyroRoll)
+{
+  bool LeADAS_b_DM_StateComplete = false;
+  double LeADAS_Pct_Drive = 0.0;
+
+  /* Look up the desired target location point: */
+
+  /* Capture some of the things we need to save for this state control: */
+
+  if (VeADAS_e_DM_AutoMountState == E_ADAS_DM_DriveOS_FwdFlat1)
+    {
+      LeADAS_Pct_Drive = KeADAS_Pct_DM_AutoMountPwr;
+
+      if (LeADAS_Deg_GyroRoll > KeADAS_Deg_DM_AutoMountDetect)  // need to verify direction
+        {
+          VeADAS_t_DM_AutoMountDbTime += C_ExeTime;
+        }
+      if (VeADAS_t_DM_AutoMountDbTime >= KeADAS_t_DM_AutoMountOnlyDb)
+        {
+          VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_Complete;
+          VeADAS_t_DM_AutoMountDbTime = 0.0;
+        }
+    }
+
+  /* Exit criteria: */
+  if (LeADAS_b_DM_StateComplete == false)
+  {
+    *L_Pct_FwdRev = LeADAS_Pct_Drive;
+    *L_Pct_Strafe = 0;
+    *L_Pct_Rotate = 0;
+    *L_SD_RobotOriented = false;
+    *LeADAS_b_X_Mode = false;
+  }
+  else
+  {
+    /* We have been at the correct location for the set amount of time. */
+    *L_Pct_FwdRev = 0;
+    *L_Pct_Strafe = 0;
+    *L_Pct_Rotate = 0;
+    *L_SD_RobotOriented = false;
+    *LeADAS_b_X_Mode = false;
+    VeADAS_t_DM_AutoMountDbTime = 0;
+  }
 
   return (LeADAS_b_DM_StateComplete);
 }
 
 
-
-
+/******************************************************************************
+ * Function:     MoveWithOffsetTag
+ *
+ * Description:  TBD
+ ******************************************************************************/
 bool MoveWithOffsetTag(double *L_Pct_FwdRev,
                        double *L_Pct_Strafe,
                        double *L_Pct_Rotate,

@@ -33,4 +33,5 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput);
 
 void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                             bool                    LeMAN_b_TestPowerOverride,
-                            bool                    LeADAS_b_MAN_DropObject);
+                            bool                    LeADAS_b_MAN_DropObjectSlow,
+                            bool                    LeADAS_b_MAN_DropObjectFast);

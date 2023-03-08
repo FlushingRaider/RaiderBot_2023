@@ -80,11 +80,6 @@ void Robot::RobotMotorCommands()
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
   // m_LinearSlide.Set(ControlMode::PercentOutput, 0.0);
 
-  frc::SmartDashboard::PutNumber("LinearCmnd1", VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_LinearSlide]);
-  frc::SmartDashboard::PutNumber("LinearCmnd2", VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide]);
-  frc::SmartDashboard::PutNumber("LinearCmnd3", VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
-  frc::SmartDashboard::PutNumber("LinearCmndSensor", VsMAN_s_Sensors.In_LinearSlide);
-  frc::SmartDashboard::PutNumber("LinearError", VaMAN_In_LinearSlideError);
   frc::SmartDashboard::PutNumber("VeMAN_e_AttndState", (double)VeMAN_e_AttndState);
   frc::SmartDashboard::PutNumber("VeMAN_e_CmndState", (double)VeMAN_e_CmndState);
   frc::SmartDashboard::PutNumber("VeADAS_e_MAN_SchedState", (double)VeADAS_e_MAN_SchedState);
@@ -93,8 +88,6 @@ void Robot::RobotMotorCommands()
   {
     LeROBO_b_IntakeArmExtend = true;
   }
-  frc::SmartDashboard::PutBoolean("b_IntakeArmIn", VsCONT_s_DriverInput.b_IntakeArmIn);
-  frc::SmartDashboard::PutBoolean("b_DrivingPosition", VsCONT_s_DriverInput.b_DrivingPosition);
 
   m_PCM_Valve.Set(LeROBO_b_IntakeArmExtend);
 #endif
@@ -112,8 +105,8 @@ void Robot::RobotInit()
   VeROBO_t_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
   VeROBO_b_TestState = false;
 
-  frc::SmartDashboard::PutNumber("Goal Global X", VeADAS_in_GlobalRequestX);
-  frc::SmartDashboard::PutNumber("Goal Global Y", VeADAS_in_GlobalRequestY);
+  // frc::SmartDashboard::PutNumber("Goal Global X", VeADAS_in_GlobalRequestX);
+  // frc::SmartDashboard::PutNumber("Goal Global Y", VeADAS_in_GlobalRequestY);
 
 #ifdef CompBot
   bool CompressorEnable = m_pcmCompressor.Enabled();
@@ -292,8 +285,8 @@ void Robot::RobotPeriodic()
                 VeVIS_b_TagHasTarget,
                 V_TagCentered);
 
-  frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
-  frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
+  // frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
+  // frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
 
   ADAS_DetermineMode();
 
@@ -351,7 +344,7 @@ void Robot::RobotPeriodic()
                    &VeLC_Cmd_VanityLightCmnd);
 
 #ifdef NewVision
-  frc::SmartDashboard::PutBoolean("Vision Button Cube", VsCONT_s_DriverInput.b_CubeAlign);
+  // frc::SmartDashboard::PutBoolean("Vision Button Cube", VsCONT_s_DriverInput.b_CubeAlign);
 
   VeADAS_in_GlobalRequestX = 530.0;
   VeADAS_in_GlobalRequestY = 50.0;
@@ -359,23 +352,23 @@ void Robot::RobotPeriodic()
   // VeADAS_in_OffsetRequestX = 36.0;
   // VeADAS_in_OffsetRequestY = 18.0;
 
-  frc::SmartDashboard::PutNumber("GoalOffsetX", VeADAS_in_OffsetRequestX);
-  frc::SmartDashboard::PutNumber("GoalOffsetY", VeADAS_in_OffsetRequestY);
+  // frc::SmartDashboard::PutNumber("GoalOffsetX", VeADAS_in_OffsetRequestX);
+  // frc::SmartDashboard::PutNumber("GoalOffsetY", VeADAS_in_OffsetRequestY);
 
-  frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
-  frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
-  frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
+  // frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
+  // frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
+  // frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
 
-  frc::SmartDashboard::PutBoolean("Want to stop X", wantToStopX);
-  frc::SmartDashboard::PutBoolean("Want to stop Y", wantToStopY);
+  // frc::SmartDashboard::PutBoolean("Want to stop X", wantToStopX);
+  // frc::SmartDashboard::PutBoolean("Want to stop Y", wantToStopY);
 
   // frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
   // frc::SmartDashboard::PutNumber("TagID ", V_TagID);
   // frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
   // frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
-  frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
+  // frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
   // frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
-  frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
+  // frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
 
 #endif
 
@@ -387,7 +380,8 @@ void Robot::RobotPeriodic()
 #ifdef CompBot
   ManipulatorControlMain(VeADAS_e_MAN_SchedState,
                          VeROBO_b_TestState,
-                         VeADAS_b_MAN_DropObject);
+                         VeADAS_b_MAN_DropObjectSlow,
+                         VeADAS_b_MAN_DropObjectFast);
 
   ManipulatorMotorConfigsCal(m_ArmPivotPID,
                              m_WristPID,
@@ -400,15 +394,11 @@ void Robot::RobotPeriodic()
 #endif
 
   /* Output all of the content to the dashboard here: */
-  frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
-  frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
+  // frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
+  // frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
 
   // frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
   // frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
-
-  frc::SmartDashboard::PutNumber("Y power", VeADAS_Pct_SD_Strafe);
-  frc::SmartDashboard::PutNumber("X power", VeADAS_Pct_SD_FwdRev);
-  // frc::SmartDashboard::PutNumber("rotate power", VeADAS_Pct_SD_Rotate);
 }
 
 /******************************************************************************

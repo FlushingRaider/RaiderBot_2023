@@ -94,6 +94,13 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   {
   double LeCONT_Pct_TurretTestCmnd = 0.0;
   double LeCONT_Pct_IntakeRollerTestCmnd = 0.0;
+  double LeCONT_Pct_ArmPivotTest = 0.0;
+  double LeCONT_Pct_LinearSlideTest = 0.0;
+  bool LeCONT_b_HighPositionCone = false;
+  bool LeCONT_b_LowPositionCone = false;
+  bool LeCONT_b_MidPositionCube = false;
+  bool LeCONT_b_DropGamePieceFast = false;
+  bool LeCONT_b_InitState = false;
 
   VsCONT_s_DriverInput.b_MainIntakeOut                  = LeCONT_b_Driver2ButtonA;      //Controller 2, A button Will be used to bring intake out COMPETION BUTTON
   VsCONT_s_DriverInput.b_DrivingPosition                = LeCONT_b_Driver2ButtonB;     //Controller 2, B button Will be used to bring Everything into their position for when the robot is moving COMPETION BUTTON
@@ -103,12 +110,12 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   VsCONT_s_DriverInput.b_IntakeRollersTest              = LeCONT_b_Driver2ButtonX;     //Controller 2 Tests the intake rollers.  For test only.
   VsCONT_s_DriverInput.b_LowPositionCube                = LeCONT_b_Driver2ButtonX;
   VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
-  VsCONT_s_DriverInput.b_DropGamePiece                  = LeCONT_b_Driver2ButtonStart;
+  VsCONT_s_DriverInput.b_DropGamePieceSlow              = LeCONT_b_Driver2ButtonStart;
   VsCONT_s_DriverInput.Pct_WristTest                    = LeCONT_Pct_Driver2RightAxisX;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
-  //VsCONT_s_DriverInput.b_VisionButton                   = LeCONT_b_Driver2ButtonLB;    // Vision button for Carson uses, might keep for comp might end up being just for testing
+  VsCONT_s_DriverInput.b_InitState                      = LeCont_Pct_Driver2AxisRB;   
   VsCONT_s_DriverInput.b_ArmDown                        = LeCONT_b_Driver2ButtonRB;   // This will bring the arm down to pickup game pieces behind the robot
   VsCONT_s_DriverInput.b_MidIntakeOut                   = LeCONT_b_Driver2ButtonLB;
-  VsCONT_s_DriverInput.b_InitState                      = LeCONT_b_Driver2ButtonBack;
+  VsCONT_s_DriverInput.b_DropGamePieceFast              = LeCONT_b_Driver2ButtonBack;
 
   if (LeCONT_b_Driver2ButtonRB == true)
     {
@@ -125,6 +132,7 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   if (LeCont_Pct_Driver2AxisRB > 0.1) // Deadband
     {
     LeCONT_Pct_IntakeRollerTestCmnd += -LeCont_Pct_Driver2AxisRB;
+    LeCONT_b_InitState = true;
     }
 
   if (LeCont_Pct_Driver2AxisLB > 0.1) // Deadband
@@ -134,28 +142,31 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
 
   VsCONT_s_DriverInput.pct_IntakeRollerTest = LeCONT_Pct_IntakeRollerTestCmnd;
 
-
-  VsCONT_s_DriverInput.Pct_ArmPivotTest = 0.0;
-  VsCONT_s_DriverInput.Pct_LinearSlideTest = 0.0;
-  VsCONT_s_DriverInput.b_HighPositionCone = false;
-  VsCONT_s_DriverInput.b_LowPositionCone = false;
-
   if (LeCONT_Deg_Driver2POV == 0)
     {
-    VsCONT_s_DriverInput.Pct_ArmPivotTest = 1.0;
-    VsCONT_s_DriverInput.b_HighPositionCone = true;
+    LeCONT_Pct_ArmPivotTest = 1.0;
+    LeCONT_b_HighPositionCone = true;
     }
   else if (LeCONT_Deg_Driver2POV == 180)
     {
-    VsCONT_s_DriverInput.Pct_ArmPivotTest = -1.0;
-    VsCONT_s_DriverInput.b_LowPositionCone = true;
+    LeCONT_Pct_ArmPivotTest = -1.0;
+    LeCONT_b_LowPositionCone = true;
     }
   else if (LeCONT_Deg_Driver2POV == 270)
     {
-    VsCONT_s_DriverInput.Pct_LinearSlideTest = 1.0;
+    LeCONT_Pct_LinearSlideTest = 1.0;
+    LeCONT_b_MidPositionCube = true;
     }
   else if (LeCONT_Deg_Driver2POV == 90)
     {
-    VsCONT_s_DriverInput.Pct_LinearSlideTest = -1.0;
+    LeCONT_Pct_LinearSlideTest = -1.0;
     }
+
+  VsCONT_s_DriverInput.Pct_ArmPivotTest = LeCONT_Pct_ArmPivotTest;
+  VsCONT_s_DriverInput.Pct_LinearSlideTest = LeCONT_Pct_LinearSlideTest;
+  VsCONT_s_DriverInput.b_HighPositionCone = LeCONT_b_HighPositionCone;
+  VsCONT_s_DriverInput.b_LowPositionCone = LeCONT_b_LowPositionCone;
+  VsCONT_s_DriverInput.b_MidPositionCube = LeCONT_b_MidPositionCube;
+  VsCONT_s_DriverInput.b_DropGamePieceFast = LeCONT_b_DropGamePieceFast;
+  VsCONT_s_DriverInput.b_InitState = LeCONT_b_InitState;
   }

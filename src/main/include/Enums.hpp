@@ -90,9 +90,28 @@ typedef enum TeMAN_ManipulatorStates
  E_MAN_MainIntake,
  E_MAN_FloorIntake,
  E_MAN_MidIntake,
+ E_MAN_PositioningMidCube,
  E_MAN_State_Sz
 } TeMAN_ManipulatorStates;
- 
+
+/* TeADAS_AutonManipulatorStates: States of the manipulator for the 2023 game. */
+typedef enum TeADAS_AutonManipulatorStates
+{
+ E_ADAS_MAN_Driving,
+ E_ADAS_MAN_MidDropPosition,
+ E_ADAS_MAN_MidDropOff,
+ E_ADAS_MAN_State_Sz
+} TeADAS_AutonManipulatorStates;
+
+/* TeADAS_Auton1_DeployMAN_DriveOnStation: States of the manipulator for the 2023 game. */
+typedef enum TeADAS_Auton1_DeployMAN_DriveOnStation
+{
+ E_ADAS_Auton1_DriveRevDplyMAN,
+ E_ADAS_Auton1_StopDplyCube,
+ E_ADAS_Auton1_FwdMountStationRetractMAN,
+ E_ADAS_Auton1_AutoBal,
+ E_ADAS_Auton1_Sz
+} TeADAS_Auton1_DeployMAN_DriveOnStation;
 
 typedef enum T_RobotState
 {
@@ -130,6 +149,9 @@ typedef enum T_ADAS_ActiveFeature // These are the sub features in ADAS.  These 
   E_ADAS_DM_ConeAlign,
   E_ADAS_DM_AutoBalance,
   E_ADAS_DM_MountDismountRamp,
+  E_ADAS_DM_MountRamp,
+  E_ADAS_DM_DriveRevDeployArm,
+  E_ADAS_DM_StopDeployCube,
   
   E_ADAS_MoveOffsetTag,
   E_ADAS_MoveGlobalTag,
@@ -165,13 +187,10 @@ typedef enum T_ADAS_Auton1
 typedef enum T_ADAS_ActiveAutonFeature  // This is the high level feature, called by the driver station
 {
   E_ADAS_AutonDisabled,
-  E_ADAS_AutonDriveAndShootBlind1,     // Shoot preloaded ball, drive straight, robot oriented
-  E_ADAS_AutonDriveAndShootBlind2,     // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
-  E_ADAS_AutonDriveAndShootAuto2,      // Drive into preplaced ball, intake, rotate 180*, shoot 2 balls
-  E_ADAS_AutonDriveAndShootAuto3,// Drive into preplaced ball, intake, rotate 180*, shoot 2 balls, pickup 3rd and shoot
   E_ADAS_AutonDriveStraight,
   E_ADAS_AutonDropCubeDriveFwd,
   E_ADAS_AutonDriveOverRampAutoBalV2,
+  E_ADAS_AutonDeliverCubeDriveOnRampAutoBal,
   E_ADAS_AutonDrivePath1
 } T_ADAS_ActiveAutonFeature;
 
@@ -257,10 +276,12 @@ struct RobotUserInput
   bool                  b_InitState;
   bool                  b_DrivingPosition;
   bool                  b_LowPositionCube;
+  bool                  b_MidPositionCube;
   bool                  b_HighPositionCube;
   bool                  b_LowPositionCone;
   bool                  b_HighPositionCone;
-  bool                  b_DropGamePiece;
+  bool                  b_DropGamePieceSlow;
+  bool                  b_DropGamePieceFast;
   bool                  b_AutoBalance;
   bool                  b_CubeAlign;
   bool                  b_ConeAlign;
