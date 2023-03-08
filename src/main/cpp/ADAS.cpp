@@ -64,6 +64,10 @@ double VeADAS_in_GlobalRequestY;
 bool VeADAS_b_CubeAlignButtonRequest;
 bool VeADAS_b_CubeAlignButtonPrevious;
 
+bool VeADAS_b_ConeAlignButtonRequest;
+bool VeADAS_b_ConeAlignButtonPrevious;
+
+
 bool toggle;
 
 /******************************************************************************
@@ -161,19 +165,35 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     {
       LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance;
     }
-    else if (VeADAS_b_CubeAlignButtonRequest && V_TagCentered)
+    else if (VeADAS_b_CubeAlignButtonRequest && V_TagCentered )
     {
 
       if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue)
       {
-        VeADAS_in_OffsetRequestX = C_TagScoreOffset;
+        VeADAS_in_OffsetRequestX = C_TagScoreOffsetXCube;
       }
       else if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
       {
-        VeADAS_in_OffsetRequestX = C_TagScoreOffset;
+        VeADAS_in_OffsetRequestX = C_TagScoreOffsetXCube;
       }
 
-    VeADAS_in_OffsetRequestY = 0.0;
+    VeADAS_in_OffsetRequestY = C_TagScoreOffsetYCube;
+
+      LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
+    }
+    else if (VeADAS_b_ConeAlignButtonRequest && V_TagCentered)
+    {
+
+      if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue)
+      {
+        VeADAS_in_OffsetRequestX = C_TagScoreOffsetXCone;
+      }
+      else if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
+      {
+        VeADAS_in_OffsetRequestX = C_TagScoreOffsetXCone;
+      }
+
+    VeADAS_in_OffsetRequestY = C_TagScoreOffsetYCone;
 
       // if (V_TagID == 1 || V_TagID == 8)
       // {
@@ -404,6 +424,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     {
       V_TagCentered = false;// we did what we needed with that tag snapshot, allow ourselves to take another later
       VeADAS_b_CubeAlignButtonRequest = false; 
+      VeADAS_b_ConeAlignButtonRequest = false;
     }
     // frc::SmartDashboard::PutString("movetotagstep", V_MoveToTagStep);
 
