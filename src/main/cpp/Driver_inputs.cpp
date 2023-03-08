@@ -167,6 +167,5 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   VsCONT_s_DriverInput.b_HighPositionCone = LeCONT_b_HighPositionCone;
   VsCONT_s_DriverInput.b_LowPositionCone = LeCONT_b_LowPositionCone;
   VsCONT_s_DriverInput.b_MidPositionCube = LeCONT_b_MidPositionCube;
-  VsCONT_s_DriverInput.b_DropGamePieceFast = LeCONT_b_DropGamePieceFast;
   VsCONT_s_DriverInput.b_InitState = LeCONT_b_InitState;
   }

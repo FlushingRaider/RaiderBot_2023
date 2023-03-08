@@ -278,16 +278,23 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
 
   LeENC_Deg_TurretTemp = (LeENC_v_TurretExternal * KeENC_k_TurretVoltageToAng) - KeENC_Deg_TurretOffset;
   
- LeENC_Deg_Encoderdiff = fabs (LeENC_Deg_TurretDegSensor - LeENC_Deg_TurretTemp);
+  LeENC_Deg_Encoderdiff = fabs(LeENC_Deg_TurretInternalSensor - LeENC_Deg_TurretExternalSensor);
 
-if (LeENC_Deg_Encoderdiff >= KeEnc_Deg_InvalDelta)
-{VeEnc_b_FaultCensor = true;}
+  if (LeENC_Deg_Encoderdiff >= KeEnc_Deg_InvalDelta)
+    {
+      VeEnc_b_FaultCensor = true;
+    }
 
-if (VeEnc_b_FaultCensor == true)
-{LeENC_Deg_TurretFeedback = LeENC_Deg_TurretDegSensor;}
-else
-{LeENC_Deg_TurretFeedback = LeENC_Deg_TurretTemp;}
-VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretFeedback;
+  if (VeEnc_b_FaultCensor == true)
+    {
+      LeENC_Deg_TurretFeedback = LeENC_Deg_TurretInternalSensor;
+    }
+  else
+    {
+      LeENC_Deg_TurretFeedback = LeENC_Deg_TurretExternalSensor;
+    }
+
+  VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretFeedback;
 
   VsMAN_s_Sensors.In_LinearSlide = LeENC_Deg_LinearSlide * KeENC_k_LinearSlideEncoderScaler;
 
@@ -311,7 +318,7 @@ VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretFeedback;
   frc::SmartDashboard::PutNumber("IntakeRollers",  VsMAN_s_Sensors.RPM_IntakeRollers);
   frc::SmartDashboard::PutNumber("Gripper",        VsMAN_s_Sensors.RPM_Gripper);
   frc::SmartDashboard::PutNumber("Wrist",          VsMAN_s_Sensors.Deg_Wrist);
-  frc::SmartDashboard::PutNumber("Turret",         VsMAN_s_Sensors.Deg_Turret);
+  frc::SmartDashboard::PutNumber("Turret",         LeENC_Deg_TurretInternalSensor);
   frc::SmartDashboard::PutNumber("LinearSlide",    VsMAN_s_Sensors.In_LinearSlide);
   frc::SmartDashboard::PutBoolean("IntakeExtended",  VsMAN_s_Sensors.b_IntakeArmExtended);
   frc::SmartDashboard::PutBoolean("GripObjDetected", VsMAN_s_Sensors.b_GripperObjDetected);

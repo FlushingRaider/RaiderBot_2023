@@ -510,7 +510,8 @@ bool ADAS_DM_DriveStraightFar(double *L_Pct_FwdRev,
 bool ADAS_DM_DriveRevStraight(double *L_Pct_FwdRev,
                               double *L_Pct_Strafe,
                               double *L_Pct_Rotate,
-                              bool   *L_SD_RobotOriented)
+                              bool   *L_SD_RobotOriented,
+                              bool    LeADAS_b_CompletePrev)
 {
   bool L_ADAS_DM_StateComplete = false;
 
@@ -518,10 +519,14 @@ bool ADAS_DM_DriveRevStraight(double *L_Pct_FwdRev,
   /* Next, let's set all the other items we aren't trying to control to off: */
   *L_Pct_Strafe = 0;
   *L_Pct_Rotate = 0;
+  
+  if (LeADAS_b_CompletePrev == false)
+  {
+    V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
+  }
+  
 
-  V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
-
-  if (V_ADAS_DM_DebounceTime <= KeADAS_t_DM_RevDriveTime) // check that we are still in the time we have given ourselves
+  if ((V_ADAS_DM_DebounceTime <= KeADAS_t_DM_RevDriveTime) && (LeADAS_b_CompletePrev == false)) // check that we are still in the time we have given ourselves
   {
     *L_Pct_FwdRev = KeADAS_Pct_DM_RevDrive; // set our strafe percent to this constant
   }

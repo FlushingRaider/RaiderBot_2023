@@ -143,11 +143,11 @@ static const double KeENC_k_SD_VoltageToAngle = 72.0;
 
 // Turret cals
 /* KeENC_k_TurretVoltageToAng: Scalar multiplied against the encoder voltage output to translate to degrees. */
-const double KeENC_k_TurretVoltageToAng = 51.11; //72
+const double KeENC_k_TurretVoltageToAng = 75.28; //72
 
 /* KeENC_Deg_TurretOffset: Offset of the absolute encoder used on the turret. */
-const double KeENC_Deg_TurretOffset = 36.1;
-
+// const double KeENC_Deg_TurretOffset = 127.872;
+const double KeENC_Deg_TurretOffset = 135.65; //temp
 /* KeROBO_t_MotorTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */
 const double KeROBO_t_MotorTimeoutMs = 30;
 
@@ -167,7 +167,7 @@ const double K_t_TurretDebounceTimeout = 0.5;
 const double K_t_TurretOL_Timeout = 5.0;
 
 /* KeENC_k_ArmPivot: Scalar multiplied against the encoder. */
-const double KeENC_k_ArmPivot = 2.9605;
+const double KeENC_k_ArmPivot = 3.44;  
 
 /* KeENC_RPM_IntakeROllers: Finds the speed of the intake rollers. */
 const double KeENC_RPM_IntakeRollers = 1.0;
@@ -270,9 +270,9 @@ const double KaMAN_k_TurretRotatePID_Gx[E_PID_CalSz] = { 0.045,      // P Gx  .0
                                                         -0.3};      // Max lower
 
 /* KaMAN_k_TurretHoldPID_Gx: PID gains for the turret control when attempting to hold still. */
-const double KaMAN_k_TurretHoldPID_Gx[E_PID_CalSz] = { 0.07,      // P Gx
+const double KaMAN_k_TurretHoldPID_Gx[E_PID_CalSz] = { 0.05,      // P Gx
                                                        0.00001,  // I Gx
-                                                       0.0000025, // D Gx 
+                                                       0.0000015, // D Gx 
                                                        0.3,       // P UL
                                                       -0.3,       // P LL
                                                        0.15,      // I UL
@@ -341,7 +341,7 @@ const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Init
                                                         30.00,  // Main Intake
                                                         -3.24, // Floor Intake
                                                         99.42,  // Mid Intake
-                                                        99.42}; // Positioning Mid Cube
+                                                        105.90 }; // Positioning Mid Cube
 
 /* KeMAN_DegS_ArmPivotRate: Sets Arm Pivot transition rate. */
 const double KeMAN_DegS_ArmPivotRate = 0.15;
@@ -370,7 +370,7 @@ const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,   // Init
                                                                2.7,   // Main Intake
                                                               13.6,   // Floor Intake
                                                                7.0,   // Mid Intake
-                                                               7.0}; // Positioning Mid Cube
+                                                               13.513}; // Positioning Mid Cube
 
 /* KeMAN_t_StateTimeOUt: Sets transition time out. */
 const double KeMAN_t_StateTimeOut = 5.0; // Drop-off
@@ -400,12 +400,12 @@ const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {  0.00,  // Init
                                                      -10.26,  // Positioning High Cube
                                                       -6.29,  // Positioning High Cone
                                                       11.35,  // Positioning Low Cube
-                                                       2.34,  // Positioning Low Cone
+                                                      2.34,  // Positioning Low Cone
                                                       90.00,  // Mid Transition
                                                       18.11,  // Main Intake
                                                       71.96,  // Floor Intake
                                                       3.0,  // Mid Intake
-                                                     -5.0}; // Positioning Mid Cube
+                                                      5}; // Positioning Mid Cube
 
 /* KeMAN_DegS_WristRate: Sets Wrist transition rate. */
 const double KeMAN_DegS_WristRate = 0.45;
@@ -427,16 +427,19 @@ const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {1.0,  // Init
 const double KeMAN_DegS_GripperRate = 1.0;
 
 /* KeMAN_k_GripperReleaseFast: Sets Gripper release fast power */
-const double KeMAN_k_GripperReleaseFast = 1.00;
+const double KeMAN_k_GripperReleaseFast = .70;
 
 /* KeMAN_k_GripperReleaseSlow: Sets Gripper release slow power */
-const double KeMAN_k_GripperReleaseSlow = 0.4;
+const double KeMAN_k_GripperReleaseSlow = 0.15;
 
 /* KeMAN_k_GripperIntake: Sets Gripper intake power */
-const double KeMAN_k_GripperIntake = -0.5;
+const double KeMAN_k_GripperIntake = -0.6;
+
+/* KeMAN_k_GripperIntakehold: Sets Gripper intake hold */
+const double KeMAN_k_GripperIntakehold = -0.2; 
 
 /* KeMAN_t_GripperOnTm: Amount of time gripper will remain on after it is initially commanded on. */
-const double KeMAN_t_GripperOnTm = 2.0;
+const double KeMAN_t_GripperOnTm = 0.5;
 
 /* KaMAN_RPM_IntakePower: sets Intake power for each state */
 const double KaMAN_RPM_IntakePower[E_MAN_State_Sz] = {  0.0,  // Init
@@ -469,13 +472,13 @@ const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_MAN_State_Sz][E_MAN_Sta
   {
     {E_MAN_Init,    E_MAN_Init,               E_MAN_PositioningHighCube, E_MAN_PositioningHighCone, E_MAN_PositioningLowCube,  E_MAN_PositioningLowCone,  E_MAN_MidTransition,       E_MAN_MainIntake, E_MAN_FloorIntake,         E_MAN_MidIntake,          E_MAN_Driving},           // Sched - Init
     {E_MAN_Driving, E_MAN_Driving,            E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,             E_MAN_Driving,    E_MAN_MidTransition,       E_MAN_Driving,            E_MAN_Driving},           // Sched - Driving
-    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_Driving,    E_MAN_PositioningHighCube, E_MAN_MidTransition,      E_MAN_Driving},           // Sched - Positioning High Cube
-    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_Driving,    E_MAN_PositioningHighCone, E_MAN_MidTransition,      E_MAN_Driving},           // Sched - Positioning High Cone
-    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_Driving,    E_MAN_PositioningLowCube,  E_MAN_MidTransition,      E_MAN_Driving},           // Sched - Positioning Low Cube
-    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_Driving,    E_MAN_PositioningLowCone,  E_MAN_MidTransition,      E_MAN_Driving},           // Sched - Positioning Low Cone
-    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,    E_MAN_MidTransition,       E_MAN_MidTransition,      E_MAN_Driving},           // Sched - Mid Transition
+    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_PositioningHighCube, E_MAN_Driving,    E_MAN_PositioningHighCube, E_MAN_Driving,            E_MAN_Driving},           // Sched - Positioning High Cube
+    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_PositioningHighCone, E_MAN_Driving,    E_MAN_PositioningHighCone, E_MAN_Driving,            E_MAN_Driving},           // Sched - Positioning High Cone
+    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_PositioningLowCube,  E_MAN_Driving,    E_MAN_PositioningLowCube,  E_MAN_Driving,            E_MAN_Driving},           // Sched - Positioning Low Cube
+    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_PositioningLowCone,  E_MAN_Driving,    E_MAN_PositioningLowCone,  E_MAN_Driving,            E_MAN_Driving},           // Sched - Positioning Low Cone
+    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,    E_MAN_MidTransition,       E_MAN_Driving,            E_MAN_Driving},           // Sched - Mid Transition
     {E_MAN_Driving, E_MAN_MainIntake,         E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,             E_MAN_MainIntake, E_MAN_MidTransition,       E_MAN_Driving,            E_MAN_Driving},           // Sched - Main Intake
-    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_Driving,    E_MAN_FloorIntake,         E_MAN_MidTransition,      E_MAN_Driving},           // Sched - Floor Intake
+    {E_MAN_Driving, E_MAN_MidTransition,      E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_FloorIntake,         E_MAN_Driving,    E_MAN_FloorIntake,         E_MAN_Driving,            E_MAN_Driving},           // Sched - Floor Intake
     {E_MAN_Driving, E_MAN_MidIntake,          E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,             E_MAN_Driving,    E_MAN_MidTransition,       E_MAN_MidIntake,          E_MAN_MidIntake},         // Sched - Mid Intake
     {E_MAN_Driving, E_MAN_PositioningMidCube, E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_MidTransition,       E_MAN_Driving,             E_MAN_Driving,    E_MAN_MidTransition,       E_MAN_PositioningMidCube, E_MAN_PositioningMidCube} // Sched - Positioning Mid Cube
   };
@@ -812,7 +815,7 @@ const double KeADAS_t_DM_DriveTimeFar = 5.5;
 const double KeADAS_Pct_DM_DriveFWD_Far = -0.7;
 
 /* KeADAS_t_DM_RevDriveTime: Time to drive in reverse. [Seconds] */
-const double KeADAS_t_DM_RevDriveTime = 2;
+const double KeADAS_t_DM_RevDriveTime = .45;
 
 /* KeADAS_Pct_DM_RevDrive: This is the reverse drive  Pct. [Pct] */
 const double KeADAS_Pct_DM_RevDrive = 0.5;
@@ -883,7 +886,7 @@ const double KeADAS_t_DM_AutoMountRevDb = 0.85;
 const double KeADAS_Pct_DM_AutoMountPwr = -0.95;
 
 /* KeADAS_t_DM_StopTm: Amount of time to have the robot stopped. [sec] */
-const double KeADAS_t_DM_StopTm = 1.0;
+const double KeADAS_t_DM_StopTm = 1.5;
 
 /* Motion profiles for DM: */
 #include "MotionProfiles/Red1Ang.hpp"

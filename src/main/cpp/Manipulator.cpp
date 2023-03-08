@@ -570,6 +570,7 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates      LeMAN_e_CmndState,
         (LeMAN_e_AttndState == E_MAN_PositioningHighCone)  ||
         (LeMAN_e_AttndState == E_MAN_PositioningLowCone) ||
         (LeMAN_e_AttndState == E_MAN_MainIntake) ||
+        (LeMAN_e_AttndState == E_MAN_PositioningMidCube) ||
         (LeMAN_e_AttndState == E_MAN_FloorIntake)))
      {
       LeMAN_b_AllowedReleaseState = true;
@@ -590,6 +591,8 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates      LeMAN_e_CmndState,
      {
      LeMAN_k_TempCmnd = KeMAN_k_GripperIntake;
      }
+     else if (LeMAN_b_ObjDetected == true)
+     {LeMAN_k_TempCmnd = KeMAN_k_GripperIntakehold;}
 
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = LeMAN_k_TempCmnd;
   }

@@ -53,6 +53,8 @@ double VeADAS_Pct_SD_Rotate = 0;
 bool VeADAS_b_SD_RobotOriented = false;
 bool VeADAS_b_X_Mode = false;
 
+bool VeADAS_b_CompletePrev = false;
+
 double VeADAS_in_OffsetRequestX;
 double VeADAS_in_OffsetRequestY;
 
@@ -438,7 +440,8 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_DriveRevStraight(L_Pct_FwdRev,
                                                        L_Pct_Strafe,
                                                        L_Pct_Rotate,
-                                                       L_SD_RobotOriented);
+                                                       L_SD_RobotOriented,
+                                                       VeADAS_b_CompletePrev);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
   break;
@@ -492,9 +495,19 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_DriveRevStraight(L_Pct_FwdRev,
                                                        L_Pct_Strafe,
                                                        L_Pct_Rotate,
-                                                       L_SD_RobotOriented);
+                                                       L_SD_RobotOriented,
+                                                       VeADAS_b_CompletePrev);
 
+    if (LeADAS_b_State2Complete == true)
+      {
+        VeADAS_b_CompletePrev = true;
+      }
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
+    
+    if (VeADAS_b_StateComplete == true)
+      {
+        VeADAS_b_CompletePrev = false;
+      }
     break;    
   case E_ADAS_DM_PathFollower:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,

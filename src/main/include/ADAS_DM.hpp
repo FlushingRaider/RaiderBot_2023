@@ -60,7 +60,8 @@ bool ADAS_DM_DriveStraight(double *L_Pct_FwdRev,
 bool ADAS_DM_DriveRevStraight(double *L_Pct_FwdRev,
                               double *L_Pct_Strafe,
                               double *L_Pct_Rotate,
-                              bool   *L_SD_RobotOriented);
+                              bool   *L_SD_RobotOriented,
+                              bool    LeADAS_b_CompletePrev);
 
 bool ADAS_DM_Rotate180(double *L_Pct_FwdRev,
                        double *L_Pct_Strafe,
