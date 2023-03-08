@@ -481,6 +481,20 @@ void Robot::TeleopPeriodic()
 
     VeADAS_b_CubeAlignButtonRequest = false;
   }
+
+
+if (VsCONT_s_DriverInput.b_ConeAlign && VeADAS_b_ConeAlignButtonPrevious == false)
+  {
+    VeADAS_b_ConeAlignButtonPrevious = VeADAS_b_ConeAlignButtonRequest;
+    VeADAS_b_ConeAlignButtonRequest = true;
+  }
+  else if (VsCONT_s_DriverInput.b_ConeAlign && VeADAS_b_ConeAlignButtonPrevious == true)
+  {
+    VeADAS_b_ConeAlignButtonPrevious = VeADAS_b_ConeAlignButtonRequest;
+
+    VeADAS_b_ConeAlignButtonRequest = false;
+  }
+
   VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
   RobotMotorCommands();
 }

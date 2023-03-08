@@ -28,6 +28,9 @@ extern double VeADAS_in_GlobalRequestY;
 extern bool VeADAS_b_CubeAlignButtonRequest;
 extern bool VeADAS_b_CubeAlignButtonPrevious;
 
+extern bool VeADAS_b_ConeAlignButtonRequest;
+extern bool VeADAS_b_ConeAlignButtonPrevious;
+
 void ADAS_Main_Reset(void);
 void ADAS_Main_Init(void);
 void ADAS_DetermineMode(void);

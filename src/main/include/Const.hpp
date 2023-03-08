@@ -51,7 +51,11 @@ const  double C_TagXblue = 1.02743 * C_MeterToIn;
 
 
 const double C_TagAlignBasePower = 0.02;
-const double C_TagScoreOffset = 16.0; //that little space our bumper is against to score cubes
+const double C_TagScoreOffsetXCube = 34.0; //that little space our bumper is against to score cubes
+const double C_TagScoreOffsetYCube = 5.0;  
+
+const double C_TagScoreOffsetXCone = 35.5; //that little space our bumper is against to score cubes
+const double C_TagScoreOffsetYCone = 29.0 ;  
 
 // CAN Device IDs:
 static const int C_PDP_ID = 21;

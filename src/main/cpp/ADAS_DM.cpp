@@ -1089,7 +1089,7 @@ bool MoveWithOffsetTag(double *L_Pct_FwdRev,
   if (L_OdomCentered)
   {
 
-    L_ErrorCalcYaw = -0.18 - L_TagYawDegrees; // -.18 is just what it happened to be idk
+    L_ErrorCalcYaw = 0.18 - L_TagYawDegrees; // -.18 is just what it happened to be idk
 
     if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
     {
