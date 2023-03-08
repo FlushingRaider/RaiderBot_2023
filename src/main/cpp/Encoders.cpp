@@ -261,6 +261,8 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   double LeENC_Deg_TurretTemp = 0.0;
   double LeENC_Deg_Encoderdiff = 0.0;
   double LeENC_Deg_TurretFeedback = 0.0;
+  double LeENC_Deg_TurretInternalSensor = 0.0;
+  double LeENC_Deg_TurretExternalSensor = 0.0;
 
   VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_ArmPivot;
 
@@ -314,4 +316,5 @@ VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretFeedback;
   frc::SmartDashboard::PutBoolean("IntakeExtended",  VsMAN_s_Sensors.b_IntakeArmExtended);
   frc::SmartDashboard::PutBoolean("GripObjDetected", VsMAN_s_Sensors.b_GripperObjDetected);
   frc::SmartDashboard::PutNumber("Turret External Sensor", LeENC_Deg_TurretExternalSensor);
+  frc::SmartDashboard::PutBoolean("Turret Encoder Fault",  VeEnc_b_FaultCensor);
   }
