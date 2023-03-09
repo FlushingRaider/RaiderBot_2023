@@ -111,12 +111,12 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   VsCONT_s_DriverInput.b_IntakeRollersTest              = LeCONT_b_Driver2ButtonX;     //Controller 2 Tests the intake rollers.  For test only.
   VsCONT_s_DriverInput.b_BackLowCube                    = LeCONT_b_Driver2ButtonX;
   VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
-  VsCONT_s_DriverInput.b_DropGamePieceSlow              = LeCONT_b_Driver2ButtonStart;
+  VsCONT_s_DriverInput.b_DropGamePieceFast              = LeCONT_b_Driver2ButtonStart;
   VsCONT_s_DriverInput.Pct_WristTest                    = LeCONT_Pct_Driver2RightAxisX;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
   VsCONT_s_DriverInput.b_InitState                      = LeCont_Pct_Driver2AxisRB;   
   VsCONT_s_DriverInput.b_ArmDown                        = LeCONT_b_Driver2ButtonRB;   // This will bring the arm down to pickup game pieces behind the robot
   VsCONT_s_DriverInput.b_MidIntakeOut                   = LeCONT_b_Driver2ButtonLB;
-  VsCONT_s_DriverInput.b_DropGamePieceFast              = LeCONT_b_Driver2ButtonBack;
+  VsCONT_s_DriverInput.b_DropGamePieceSlow              = LeCONT_b_Driver2ButtonBack;
 
   if (LeCONT_b_Driver2ButtonRB == true)
     {
