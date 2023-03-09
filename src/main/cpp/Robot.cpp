@@ -108,10 +108,8 @@ void Robot::RobotInit()
   // frc::SmartDashboard::PutNumber("Goal Global X", VeADAS_in_GlobalRequestX);
   // frc::SmartDashboard::PutNumber("Goal Global Y", VeADAS_in_GlobalRequestY);
 
-#ifdef CompBot
-  bool CompressorEnable = m_pcmCompressor.Enabled();
-// frc::CameraServer::StartAutomaticCapture();  // For connecting a single USB camera directly to RIO
-#endif
+  // frc::CameraServer::StartAutomaticCapture();  // For connecting a single USB camera directly to RIO
+
   EncodersInitCommon(m_encoderFrontRightSteer,
                      m_encoderFrontLeftSteer,
                      m_encoderRearRightSteer,
@@ -125,6 +123,8 @@ void Robot::RobotInit()
                    m_WristEncoder,
                    m_GripperEncoder,
                    m_IntakeRollersEncoder);
+
+  bool CompressorEnable = m_pcmCompressor.Enabled();
 #endif
 
   GyroInit();
@@ -160,7 +160,7 @@ void Robot::RobotInit()
   m_TurretRotate.ConfigFactoryDefault();
   m_TurretRotate.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, KeROBO_t_MotorTimeoutMs);
   m_TurretRotate.SetSensorPhase(true);
-  m_TurretRotate.SetSelectedSensorPosition(0);
+  // m_TurretRotate.SetSelectedSensorPosition(0);
   m_TurretRotate.ConfigNominalOutputForward(0, KeROBO_t_MotorTimeoutMs);
   m_TurretRotate.ConfigNominalOutputReverse(0, KeROBO_t_MotorTimeoutMs);
   m_TurretRotate.ConfigPeakOutputForward(1, KeROBO_t_MotorTimeoutMs);
@@ -174,7 +174,7 @@ void Robot::RobotInit()
   m_LinearSlide.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, KeROBO_t_MotorTimeoutMs);
   m_LinearSlide.SetSensorPhase(true);
   m_LinearSlide.SetInverted(true);
-  m_LinearSlide.SetSelectedSensorPosition(0);
+  // m_LinearSlide.SetSelectedSensorPosition(0);
   m_LinearSlide.ConfigNominalOutputForward(0, KeROBO_t_MotorTimeoutMs);
   m_LinearSlide.ConfigNominalOutputReverse(0, KeROBO_t_MotorTimeoutMs);
   m_LinearSlide.ConfigPeakOutputForward(1, KeROBO_t_MotorTimeoutMs);
