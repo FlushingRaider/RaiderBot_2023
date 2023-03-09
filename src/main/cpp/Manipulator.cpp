@@ -571,6 +571,7 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates      LeMAN_e_CmndState,
         (LeMAN_e_AttndState == E_MAN_BackLowCone) ||
         (LeMAN_e_AttndState == E_MAN_MainIntake) ||
         (LeMAN_e_AttndState == E_MAN_FrontHighCube) ||
+        (LeMAN_e_AttndState == E_MAN_FrontLowCube) ||  
         (LeMAN_e_AttndState == E_MAN_FloorIntake)))
      {
       LeMAN_b_AllowedReleaseState = true;
