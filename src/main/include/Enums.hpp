@@ -82,15 +82,16 @@ typedef enum TeMAN_ManipulatorStates
 {
  E_MAN_Init,
  E_MAN_Driving,
- E_MAN_PositioningHighCube,
- E_MAN_PositioningHighCone,
- E_MAN_PositioningLowCube,
- E_MAN_PositioningLowCone,
+ E_MAN_BackHighCube,
+ E_MAN_BackHighCone,
+ E_MAN_BackLowCube,
+ E_MAN_BackLowCone,
  E_MAN_MidTransition,
  E_MAN_MainIntake,
  E_MAN_FloorIntake,
  E_MAN_MidIntake,
- E_MAN_PositioningMidCube,
+ E_MAN_FrontHighCube,
+ E_MAN_FrontLowCube,
  E_MAN_State_Sz
 } TeMAN_ManipulatorStates;
 
@@ -275,11 +276,12 @@ struct RobotUserInput
   bool                  b_MidIntakeOut;
   bool                  b_InitState;
   bool                  b_DrivingPosition;
-  bool                  b_LowPositionCube;
-  bool                  b_MidPositionCube;
-  bool                  b_HighPositionCube;
-  bool                  b_LowPositionCone;
-  bool                  b_HighPositionCone;
+  bool                  b_FrontHighCube;
+  bool                  b_FrontLowCube;
+  bool                  b_BackHigCube;
+  bool                  b_BackHighCone;
+  bool                  b_BackLowCone;
+  bool                  b_BackLowCube;
   bool                  b_DropGamePieceSlow;
   bool                  b_DropGamePieceFast;
   bool                  b_AutoBalance;
