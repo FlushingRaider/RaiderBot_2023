@@ -300,12 +300,12 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
       else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_StopDeployCube) &&
                (VeADAS_b_StateComplete == true))
       {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_MountRamp;
+        LeADAS_e_ActiveFeature = E_ADAS_DM_MountDismountRamp; // Drive forward and over ramp
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountRamp) &&
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountDismountRamp) &&
                (VeADAS_b_StateComplete == true))
       {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance;
+        LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance; // With the bot semi mounted, auto balance
       }
       else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_AutoBalance) &&
                (VeADAS_b_StateComplete == true))

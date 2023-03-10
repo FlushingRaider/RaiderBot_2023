@@ -274,30 +274,30 @@ const double KaMAN_k_TurretRotatePID_Gx[E_PID_CalSz] = { 0.05,      // P Gx  .02
                                                         -0.3};      // Max lower
 
 /* KaMAN_k_TurretHoldPID_Gx: PID gains for the turret control when attempting to hold still. */
-const double KaMAN_k_TurretHoldPID_Gx[E_PID_CalSz] = { 0.05,      // P Gx  .02
+const double KaMAN_k_TurretHoldPID_Gx[E_PID_CalSz] = { 0.07,      // P Gx  .02
                                                          0.00002,  // I Gx
                                                          0.000002, // D Gx 
-                                                         0.3,       // P UL
-                                                        -0.3,       // P LL
+                                                         0.4,       // P UL
+                                                        -0.4,       // P LL
                                                          0.15,      // I UL
                                                         -0.15,      // I LL
                                                          0.2,       // D UL
                                                         -0.2,       // D LL
-                                                         0.3,       // Max upper
-                                                        -0.3};      // Max lower
+                                                         0.4,       // Max upper
+                                                        -0.4};      // Max lower
 
 /* KaMAN_k_LinearSlidePID_Gx: PID gains for the linear slide control. */
-const double KaMAN_k_LinearSlidePID_Gx[E_PID_CalSz] = { 0.45,     // P Gx
+const double KaMAN_k_LinearSlidePID_Gx[E_PID_CalSz] = { 0.70,     // P Gx 45
                                                         0.0000010,  // I Gx
                                                         0.000000, // D Gx 
-                                                        0.6,       // P UL
-                                                       -0.6,       // P LL
+                                                        0.85,       // P UL
+                                                       -0.85,       // P LL
                                                         0.05,      // I UL
                                                        -0.05,      // I LL
                                                         0.2,       // D UL
                                                        -0.2,       // D LL
-                                                        0.6,       // Max upper
-                                                       -0.6};      // Max lower
+                                                        0.85,       // Max upper
+                                                       -0.85};      // Max lower
 
 /* KaMAN_Deg_TurretAngle: sets turret final positons for each state */
 const double KaMAN_Deg_TurretAngle[E_MAN_State_Sz] = {0.0,    // Init
@@ -348,7 +348,7 @@ const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,    // Init
                                                         -3.24,  // Floor Intake
                                                         107.08,  // Mid Intake
                                                         115.90, // Front High Cube
-                                                        80.00}; // Front Low Cube
+                                                        85.00}; // Front Low Cube
 
 /* KeMAN_DegS_ArmPivotRate: Sets Arm Pivot transition rate. */
 const double KeMAN_DegS_ArmPivotRate = 0.15;
@@ -461,7 +461,7 @@ const double KaMAN_RPM_IntakePower[E_MAN_State_Sz] = {  0.0,  // Init
                                                         0.0,  // Back Low Cube
                                                         0.0,  // Back Low Cone
                                                         0.0,  // Mid Transition
-                                                       -0.35, // Main Intake
+                                                       -0.45, // Main Intake
                                                         0.0,  // Floor Intake
                                                         0.0,  // Mid Intake
                                                         0.0,  // Front High Cube
@@ -895,13 +895,13 @@ const double KeADAS_t_DM_AutoMountDb = 0.5;
 const double KeADAS_t_DM_AutoMountOnlyDb = 1.0;
 
 /* KeADAS_t_DM_AutoMountRevDb: Debounce time for auto mount. [sec] */
-const double KeADAS_t_DM_AutoMountRevDb = 0.85;
+const double KeADAS_t_DM_AutoMountRevDb = 0.75;
 
 /* KeADAS_Pct_DM_AutoMountPwr: Power command when in auto mount. [pct] */
-const double KeADAS_Pct_DM_AutoMountPwr = -0.95;
+const double KeADAS_Pct_DM_AutoMountPwr = -0.99;
 
 /* KeADAS_t_DM_StopTm: Amount of time to have the robot stopped. [sec] */
-const double KeADAS_t_DM_StopTm = 1.5;
+const double KeADAS_t_DM_StopTm = 0.1;
 
 /* Motion profiles for DM: */
 #include "MotionProfiles/Red1Ang.hpp"

@@ -214,12 +214,12 @@ void ADAS_MN_Reset(void)
       }
     else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MidDropPosition)
       {
-        LeADAS_e_MAN_State = E_MAN_FrontHighCube;
+        LeADAS_e_MAN_State = E_MAN_FrontLowCube;
         LeADAS_b_MAN_DropCmplt = true;
       }
     else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MidDropOff)
       {
-        LeADAS_e_MAN_State = E_MAN_FrontHighCube;
+        LeADAS_e_MAN_State = E_MAN_FrontLowCube;
         LeADAS_b_MAN_DropFast = true;
         VeADAS_t_MAN_DropObjectTm += C_ExeTime;
 
