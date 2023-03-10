@@ -133,12 +133,12 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   if (LeCont_Pct_Driver2AxisRB > 0.1) // Deadband
     {
     LeCONT_Pct_IntakeRollerTestCmnd += -LeCont_Pct_Driver2AxisRB;
-    LeCONT_b_InitState = true;
     }
 
   if (LeCont_Pct_Driver2AxisLB > 0.1) // Deadband
     {
     LeCONT_Pct_IntakeRollerTestCmnd += LeCont_Pct_Driver2AxisLB;
+    LeCONT_b_InitState = true;
     }
 
   VsCONT_s_DriverInput.pct_IntakeRollerTest = LeCONT_Pct_IntakeRollerTestCmnd;

@@ -210,6 +210,7 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   // frc::SmartDashboard::PutNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
 
   // display secondary coefficients
+  frc::SmartDashboard::PutNumber("KeMAN_Deg_TurretRateDb", KeMAN_Deg_TurretRateDb);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRateSlow", KeMAN_DegS_TurretRateSlow);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRateFast", KeMAN_DegS_TurretRateFast);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_ArmPivotRate", KeMAN_DegS_ArmPivotRate);

@@ -294,7 +294,9 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
       LeENC_Deg_TurretFeedback = LeENC_Deg_TurretExternalSensor;
     }
 
-  VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretFeedback;
+  // VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretFeedback;
+
+  VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretInternalSensor;
 
   VsMAN_s_Sensors.In_LinearSlide = LeENC_Deg_LinearSlide * KeENC_k_LinearSlideEncoderScaler;
 
