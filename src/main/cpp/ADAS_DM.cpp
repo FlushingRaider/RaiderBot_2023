@@ -1137,6 +1137,7 @@ bool MoveWithOffsetTag(double *L_Pct_FwdRev,
 {
   bool LeADAS_b_DM_StateComplete = false;
   double L_ErrorCalcYaw;
+  
   if (L_OdomCentered)
   {
 

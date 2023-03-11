@@ -160,7 +160,7 @@ void Robot::RobotInit()
   m_TurretRotate.ConfigFactoryDefault();
   m_TurretRotate.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, KeROBO_t_MotorTimeoutMs);
   m_TurretRotate.SetSensorPhase(true);
-  // m_TurretRotate.SetSelectedSensorPosition(0);
+  m_TurretRotate.SetSelectedSensorPosition(0);
   m_TurretRotate.ConfigNominalOutputForward(0, KeROBO_t_MotorTimeoutMs);
   m_TurretRotate.ConfigNominalOutputReverse(0, KeROBO_t_MotorTimeoutMs);
   m_TurretRotate.ConfigPeakOutputForward(1, KeROBO_t_MotorTimeoutMs);
@@ -285,8 +285,8 @@ void Robot::RobotPeriodic()
                 VeVIS_b_TagHasTarget,
                 V_TagCentered);
 
-  // frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
-  // frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
+  frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
+  frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
 
   ADAS_DetermineMode();
 
@@ -355,7 +355,7 @@ void Robot::RobotPeriodic()
   // frc::SmartDashboard::PutNumber("GoalOffsetX", VeADAS_in_OffsetRequestX);
   // frc::SmartDashboard::PutNumber("GoalOffsetY", VeADAS_in_OffsetRequestY);
 
-  // frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
+  frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
   // frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
   // frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
 

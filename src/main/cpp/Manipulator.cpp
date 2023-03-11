@@ -119,13 +119,13 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   VeMAN_DegS_TurretRampSlow = KeMAN_DegS_TurretRateSlow;
   VeMAN_Deg_TurretRateDb = KeMAN_Deg_TurretRateDb;
 
-  VsMAN_s_Motors.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
+  VsMAN_s_Motors.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotSlowRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
   VsMAN_s_Motors.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
 
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Turret] = KeMAN_DegS_TurretRateFast;
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotRate;
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotSlowRate;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
   VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = KeMAN_DegS_GripperRate;
@@ -213,7 +213,7 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   frc::SmartDashboard::PutNumber("KeMAN_Deg_TurretRateDb", KeMAN_Deg_TurretRateDb);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRateSlow", KeMAN_DegS_TurretRateSlow);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_TurretRateFast", KeMAN_DegS_TurretRateFast);
-  frc::SmartDashboard::PutNumber("KeMAN_DegS_ArmPivotRate", KeMAN_DegS_ArmPivotRate);
+  frc::SmartDashboard::PutNumber("KeMAN_DegS_ArmPivotSlowRate", KeMAN_DegS_ArmPivotSlowRate);
   frc::SmartDashboard::PutNumber("KeMAN_InS_LinearSlideRate", KeMAN_InS_LinearSlideRate);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_WristRate", KeMAN_DegS_WristRate);
   frc::SmartDashboard::PutNumber("KeMAN_DegS_GripperRate", KeMAN_DegS_GripperRate);
@@ -345,7 +345,7 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   VeMAN_DegS_TurretRampFast = frc::SmartDashboard::GetNumber("KeMAN_DegS_TurretRateFast", VeMAN_DegS_TurretRampFast);
   VeMAN_DegS_TurretRampSlow = frc::SmartDashboard::GetNumber("KeMAN_DegS_TurretRateSlow", VeMAN_DegS_TurretRampSlow);
   VeMAN_Deg_TurretRateDb = frc::SmartDashboard::GetNumber("KeMAN_Deg_TurretRateDb", VeMAN_Deg_TurretRateDb);
-  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("KeMAN_DegS_ArmPivotRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
+  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("KeMAN_DegS_ArmPivotSlowRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("KeMAN_InS_LinearSlideRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("KeMAN_DegS_WristRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = frc::SmartDashboard::GetNumber("KeMAN_DegS_GripperRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper]);
@@ -490,6 +490,7 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState,
   {
    double    LeMAN_InS_LinearSlideRate = 0.0;
    T_PID_Cal LeMAN_i_Index = E_P_Gx;
+   double    LeMAN_k_ArmPivotRate = 0;
 
    
    for (LeMAN_i_Index = E_P_Gx;
@@ -524,9 +525,24 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState,
                                                                KeMAN_DegS_TurretRateSlow,
                                                                KeMAN_Deg_TurretRateDb);
 
+  if (LeMAN_e_AttndState == E_MAN_BackHighCube ||
+      LeMAN_e_AttndState == E_MAN_BackHighCone ||
+      LeMAN_e_AttndState == E_MAN_BackLowCube ||
+      LeMAN_e_AttndState == E_MAN_BackLowCone  ||
+      LeMAN_e_AttndState == E_MAN_FrontHighCube ||
+      LeMAN_e_AttndState == E_MAN_FrontLowCube ||
+      LeMAN_e_AttndState == E_MAN_MidIntake)
+    {
+      LeMAN_k_ArmPivotRate = KeMAN_DegS_ArmPivotSlowRate;
+    }
+  else
+    {
+      LeMAN_k_ArmPivotRate = KeMAN_DegS_ArmPivotFastRate;
+    }
+
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] / KeENC_k_ArmPivot, 
                                                            VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
-                                                           KeMAN_DegS_ArmPivotRate);
+                                                           LeMAN_k_ArmPivotRate);
 
    if (LeMAN_e_CmndState == E_MAN_MainIntake)
      {
