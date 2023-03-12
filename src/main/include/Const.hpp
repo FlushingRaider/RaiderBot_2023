@@ -264,14 +264,14 @@ const double KaMAN_k_TurretMainIntakePID_Gx[E_PID_CalSz] = { 0.05,      // P Gx
 const double KaMAN_k_TurretRotatePID_Gx[E_PID_CalSz] = { 0.05,      // P Gx  .02
                                                          0.00002,  // I Gx
                                                          0.000002, // D Gx 
-                                                         0.3,       // P UL
-                                                        -0.3,       // P LL
+                                                         0.5,       // P UL
+                                                        -0.5,       // P LL
                                                          0.15,      // I UL
                                                         -0.15,      // I LL
                                                          0.2,       // D UL
                                                         -0.2,       // D LL
-                                                         0.3,       // Max upper
-                                                        -0.3};      // Max lower
+                                                         0.5,       // Max upper
+                                                        -0.5};      // Max lower
 
 /* KaMAN_k_TurretHoldPID_Gx: PID gains for the turret control when attempting to hold still. */
 const double KaMAN_k_TurretHoldPID_Gx[E_PID_CalSz] = { 0.05,      // P Gx  .02
@@ -385,7 +385,7 @@ const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,   // Init
                                                                9.93};  // Front Low Cube
 
 /* KeMAN_t_StateTimeOUt: Sets transition time out. */
-const double KeMAN_t_StateTimeOut = 5.0; // Drop-off
+const double KeMAN_t_StateTimeOut = 1.5; // Drop-off
 
 /* KeMAN_InS_LinearSlideRate: Sets Linear Slide transition rate. */
 const double KeMAN_InS_LinearSlideRate = 9.0; // Drop-off
@@ -827,10 +827,10 @@ const double K_ADAS_DM_DriveTimeLong = 5.5;
 const double K_ADAS_DM_DriveFWD_Pct = -0.3;
 
 /* KeADAS_t_DM_DriveTimeFar: This is the drive far time. [Seconds] */
-const double KeADAS_t_DM_DriveTimeFar = 5.5;
+const double KeADAS_t_DM_DriveTimeFar = 11.5;
 
 /* KeADAS_Pct_DM_DriveFWD_Far: This is the default drive forward Pct. [Pct] */
-const double KeADAS_Pct_DM_DriveFWD_Far = -0.7;
+const double KeADAS_Pct_DM_DriveFWD_Far = -0.5;
 
 /* KeADAS_t_DM_RevDriveTime: Time to drive in reverse. [Seconds] */
 const double KeADAS_t_DM_RevDriveTime = 1.0;
