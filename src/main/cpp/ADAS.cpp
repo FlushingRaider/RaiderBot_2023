@@ -67,7 +67,6 @@ bool VeADAS_b_CubeAlignButtonPrevious;
 bool VeADAS_b_ConeAlignButtonRequest;
 bool VeADAS_b_ConeAlignButtonPrevious;
 
-
 bool toggle;
 
 /******************************************************************************
@@ -165,7 +164,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     {
       LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance;
     }
-    else if (VeADAS_b_CubeAlignButtonRequest && V_TagCentered )
+    else if (VeADAS_b_CubeAlignButtonRequest && V_TagCentered)
     {
 
       if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue)
@@ -177,7 +176,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         VeADAS_in_OffsetRequestX = C_TagScoreOffsetXCube;
       }
 
-    VeADAS_in_OffsetRequestY = C_TagScoreOffsetYCube;
+      VeADAS_in_OffsetRequestY = C_TagScoreOffsetYCube;
 
       LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
     }
@@ -193,7 +192,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         VeADAS_in_OffsetRequestX = C_TagScoreOffsetXCone;
       }
 
-    VeADAS_in_OffsetRequestY = C_TagScoreOffsetYCone;
+      VeADAS_in_OffsetRequestY = C_TagScoreOffsetYCone;
 
       // if (V_TagID == 1 || V_TagID == 8)
       // {
@@ -349,7 +348,24 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         VeADAS_i_PathNum = 4;
       }
     }
-
+    #ifdef unused
+    else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_TestVisionAuton)
+    {
+      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false))
+      {
+        if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
+        {
+          VeADAS_in_GlobalRequestX = C_TagXred - C_TagScoreOffsetXCube;
+        }
+        else
+        {
+          VeADAS_in_GlobalRequestX = C_TagXblue +  C_TagScoreOffsetXCube;
+        }
+        VeADAS_in_GlobalRequestY = C_Tag1Y;
+        LeADAS_e_ActiveFeature = E_ADAS_MoveGlobalTag;
+      }
+    }
+    #endif
     else
     {
       /* No auton requested. */
@@ -422,8 +438,8 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
 
     if (VeADAS_b_StateComplete)
     {
-      V_TagCentered = false;// we did what we needed with that tag snapshot, allow ourselves to take another later
-      VeADAS_b_CubeAlignButtonRequest = false; 
+      V_TagCentered = false; // we did what we needed with that tag snapshot, allow ourselves to take another later
+      VeADAS_b_CubeAlignButtonRequest = false;
       VeADAS_b_ConeAlignButtonRequest = false;
     }
     // frc::SmartDashboard::PutString("movetotagstep", V_MoveToTagStep);
@@ -465,7 +481,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                        VeADAS_b_CompletePrev);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-  break;
+    break;
   case E_ADAS_DM_StopDeployCube:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            E_ADAS_DM_StopDeployCube,
@@ -478,7 +494,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                            KeADAS_t_DM_StopTm);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-  break;
+    break;
   case E_ADAS_DM_MountDismountRamp:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            E_ADAS_DM_MountDismountRamp,
@@ -492,7 +508,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                        VeGRY_Deg_GyroRollAngleDegrees);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-  break;
+    break;
   case E_ADAS_DM_MountRamp:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            E_ADAS_DM_MountRamp,
@@ -506,9 +522,9 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                    VeGRY_Deg_GyroRollAngleDegrees);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-  break;
+    break;
   case E_ADAS_DM_DriveRevDeployArm:
-    
+
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            E_ADAS_DM_DriveRevDeployArm,
                                            E_ADAS_MAN_MidDropPosition);
@@ -520,16 +536,16 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                        VeADAS_b_CompletePrev);
 
     if (LeADAS_b_State2Complete == true)
-      {
-        VeADAS_b_CompletePrev = true;
-      }
+    {
+      VeADAS_b_CompletePrev = true;
+    }
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-    
+
     if (VeADAS_b_StateComplete == true)
-      {
-        VeADAS_b_CompletePrev = false;
-      }
-    break;    
+    {
+      VeADAS_b_CompletePrev = false;
+    }
+    break;
   case E_ADAS_DM_PathFollower:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            E_ADAS_DM_PathFollower,
