@@ -50,13 +50,11 @@ class Robot : public frc::TimedRobot {
   
   //DIO - Inputs / Outputs
   #ifdef CompBot
-  // frc::AnalogInput      a_encoderTurret{1};
   WPI_CANCoder          m_encoderWheelAngleCAN_FL     {KeEnc_i_WheelAngleFL, "rio"};
   WPI_CANCoder          m_encoderWheelAngleCAN_FR     {KeEnc_i_WheelAngleFR, "rio"};
   WPI_CANCoder          m_encoderWheelAngleCAN_RL     {KeEnc_i_WheelAngleRL, "rio"};
   WPI_CANCoder          m_encoderWheelAngleCAN_RR     {KeEnc_i_WheelAngleRR, "rio"};
   
-  // frc::DigitalInput     di_TurrentLimitSwitch {C_TurretSensorID};
   // frc::DigitalOutput    do_CameraLightControl {C_CameraLightControl_ID};
   #endif
 
@@ -92,7 +90,6 @@ class Robot : public frc::TimedRobot {
   rev::SparkMaxLimitSwitch                   m_WristforwardLimit   = m_Wrist.GetForwardLimitSwitch(rev::SparkMaxLimitSwitch::Type::kNormallyClosed);
   rev::SparkMaxLimitSwitch                   m_WristreverseLimit   = m_Wrist.GetReverseLimitSwitch(rev::SparkMaxLimitSwitch::Type::kNormallyClosed);
 
-  // WPI_TalonSRX                               m_TurretRotate         {KeMAN_i_TurretRotate};
   WPI_TalonSRX                               m_LinearSlide          {KeMAN_i_LinearSlide};
 
   frc::Compressor                            m_pcmCompressor          {KeINT_i_PCM, frc::PneumaticsModuleType::CTREPCM};

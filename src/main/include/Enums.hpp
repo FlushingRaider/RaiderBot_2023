@@ -279,7 +279,6 @@ struct RobotUserInput
   bool                  b_ResetManipulatorEnocders; // 21
   bool                  b_IntakeArmIn;  // 21
   bool                  b_IntakeArmOutTest;
-  double                Pct_TurretTest;
   double                Pct_WristTest;
   double                Pct_ArmPivotTest;
   double                Pct_LinearSlideTest;

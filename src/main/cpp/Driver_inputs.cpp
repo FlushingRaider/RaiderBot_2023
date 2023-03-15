@@ -92,7 +92,6 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
                              double  LeCont_Pct_Driver2AxisRB,
                              double  LeCont_Pct_Driver2AxisLB)
   {
-  double LeCONT_Pct_TurretTestCmnd = 0.0;
   double LeCONT_Pct_IntakeRollerTestCmnd = 0.0;
   double LeCONT_Pct_ArmPivotTest = 0.0;
   double LeCONT_Pct_LinearSlideTest = 0.0;
@@ -117,15 +116,11 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
 
   if (LeCONT_b_Driver2ButtonRB == true)
     {
-    LeCONT_Pct_TurretTestCmnd += 1.0;
     }
 
   if (LeCONT_b_Driver2ButtonLB == true)
     {
-    LeCONT_Pct_TurretTestCmnd += -1.0;
     }
-
-  VsCONT_s_DriverInput.Pct_TurretTest = LeCONT_Pct_TurretTestCmnd;
 
   if (LeCont_Pct_Driver2AxisRB > 0.1) // Deadband
     {

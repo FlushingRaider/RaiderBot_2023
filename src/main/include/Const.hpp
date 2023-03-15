@@ -31,7 +31,6 @@ const double C_Tau = 6.28318530717958647;
 static const int C_PDP_ID = 21;
 static const int frontLeftSteerDeviceID = 1, frontLeftDriveDeviceID = 2, frontRightSteerDeviceID = 4, frontRightDriveDeviceID = 3;
 static const int rearLeftSteerDeviceID  = 5, rearLeftDriveDeviceID  = 6, rearRightSteerDeviceID  = 7, rearRightDriveDeviceID  = 8;
-static const int KeMAN_i_TurretRotate = 9; 
 static const int KeMAN_i_LinearSlide = 10;
 static const int KeMAN_i_ArmPivot = 11;
 static const int KeMAN_i_Wrist = 12;
@@ -52,7 +51,6 @@ static const int C_MagEncoderFL_ID = 2, C_MagEncoderFR_ID = 1, C_MagEncoderRL_ID
 // DIO IDs:
 static const int C_XY_LimitSwitch_ID = 4, C_XD_LimitSwitch_ID = 6, C_IR_Sensor_ID = 3, C_CameraLightControl_ID = 7;
 static const int C_LowerBallSensorID = 5;
-static const int C_TurretSensorID = 10;
 
 
 // PWM IDs:
