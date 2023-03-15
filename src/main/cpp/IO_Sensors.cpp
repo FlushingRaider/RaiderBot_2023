@@ -28,7 +28,6 @@ void IO_SensorsInit()
   VsRobotSensors.b_BallDetectedLower = false;
   VsRobotSensors.b_XD_LimitDetected = false;
   VsRobotSensors.b_XY_LimitDetected = false;
-  VsRobotSensors.b_TurretZero = false;
   }
 
 /******************************************************************************
@@ -74,7 +73,6 @@ void ReadLimitSwitchs(bool L_XD_LimitSwitch,
   {
     VsRobotSensors.b_XD_LimitDetected = L_XD_LimitSwitch;
     VsRobotSensors.b_XY_LimitDetected = L_YD_LimitSwitch;
-    VsRobotSensors.b_TurretZero = !L_TurretLimitDetected; // Invert switch
   }
 
 

@@ -75,8 +75,6 @@ void Robot::RobotMotorCommands()
   m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]); // This puts the gripper into a power control setup, not speed/postion
   // m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
   m_IntakeRollers.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers]);
-  m_TurretRotate.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_Turret]);
-  // m_TurretRotate.Set(ControlMode::PercentOutput, 0.0);
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
   // m_LinearSlide.Set(ControlMode::PercentOutput, 0.0);
 
@@ -148,27 +146,14 @@ void Robot::RobotInit()
 #ifdef CompBot
   m_ArmPivot.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_Wrist.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_Wrist.SetSmartCurrentLimit(KeMAN_k_ManipulatorNeoCurrentLim);
+  m_Wrist.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLim);
   m_Gripper.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_Gripper.SetSmartCurrentLimit(KeMAN_k_ManipulatorNeoCurrentLim);
+  m_Gripper.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLim);
   m_IntakeRollers.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_IntakeRollers.SetSmartCurrentLimit(KeMAN_k_ManipulatorNeoCurrentLim);
+  m_IntakeRollers.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLim);
 
   m_WristforwardLimit.EnableLimitSwitch(false);
   m_WristreverseLimit.EnableLimitSwitch(false);
-
-  m_TurretRotate.ConfigFactoryDefault();
-  m_TurretRotate.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.SetSensorPhase(true);
-  m_TurretRotate.SetSelectedSensorPosition(0);
-  m_TurretRotate.ConfigNominalOutputForward(0, KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.ConfigNominalOutputReverse(0, KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.ConfigPeakOutputForward(1, KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.ConfigPeakOutputReverse(-1, KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.Config_kF(0, KaMAN_k_TurretHoldPID_Gx[E_kFF], KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.Config_kP(0, KaMAN_k_TurretHoldPID_Gx[E_kP], KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.Config_kI(0, KaMAN_k_TurretHoldPID_Gx[E_kI], KeROBO_t_MotorTimeoutMs);
-  m_TurretRotate.Config_kD(0, KaMAN_k_TurretHoldPID_Gx[E_kD], KeROBO_t_MotorTimeoutMs);
 
   m_LinearSlide.ConfigFactoryDefault();
   m_LinearSlide.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, KeROBO_t_MotorTimeoutMs);
@@ -258,11 +243,9 @@ void Robot::RobotPeriodic()
                    m_GripperEncoder,
                    m_WristEncoder,
                    m_LinearSlide.GetSelectedSensorPosition(),
-                   m_TurretRotate.GetSelectedSensorPosition(),
                    VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm],
                    m_WristforwardLimit.Get(),
-                   m_WristreverseLimit.Get(),
-                   a_encoderTurret.GetVoltage());
+                   m_WristreverseLimit.Get());
 #else
   Encoders_Drive_PracticeBot(a_encoderFrontLeftSteer.GetVoltage(),
                              a_encoderFrontRightSteer.GetVoltage(),
@@ -536,8 +519,6 @@ void Robot::TestPeriodic()
   m_Wrist.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_Wrist]);
   m_Gripper.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_Gripper]);
   m_IntakeRollers.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeRollers]);
-
-  m_TurretRotate.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorTestPower[E_MAN_Turret]);
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide]);
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)

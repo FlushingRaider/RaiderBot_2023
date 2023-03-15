@@ -22,8 +22,6 @@ double VaENC_In_WheelDeltaDistance[E_RobotCornerSz]; // Distance wheel moved, lo
 double VaENC_Cnt_WheelDeltaDistanceCurr[E_RobotCornerSz]; // Current distance wheel moved, loop to loop, in Counts
 double VaENC_Cnt_WheelDeltaDistancePrev[E_RobotCornerSz]; // Prev distance wheel moved, loop to loop, in Counts
 
-bool VeEnc_b_FaultCensor = false;
-
 /******************************************************************************
  * Function:     EncodersInitCommon
  *
@@ -249,20 +247,12 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        rev::SparkMaxRelativeEncoder m_GripperEncoder,
                        rev::SparkMaxRelativeEncoder m_WristEncoder,
                        double                       LeENC_Deg_LinearSlide,
-                       double                       LeENC_Deg_EncoderTurretRotate,
                        T_MotorControlType           LeENC_e_IntakeCmnd,
                        bool                         LeENC_b_WristForwardLimit,
-                       bool                         LeENC_b_WristReverseLimit,
-                       double                       LeENC_v_TurretExternal)
+                       bool                         LeENC_b_WristReverseLimit)
   {
   bool LeENC_b_IntakeExtended = false;
   bool LeENC_b_ObjectDetected = false;
-  double LeENC_Deg_TurretDegSensor = 0.0;
-  double LeENC_Deg_TurretTemp = 0.0;
-  double LeENC_Deg_Encoderdiff = 0.0;
-  double LeENC_Deg_TurretFeedback = 0.0;
-  double LeENC_Deg_TurretInternalSensor = 0.0;
-  double LeENC_Deg_TurretExternalSensor = 0.0;
 
   VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_ArmPivot;
 
@@ -271,32 +261,6 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   VsMAN_s_Sensors.RPM_Gripper = m_GripperEncoder.GetVelocity() * KeENC_RPM_Gripper;
 
   VsMAN_s_Sensors.Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
-
-  LeENC_Deg_TurretInternalSensor = LeENC_Deg_EncoderTurretRotate * KeENC_k_TurretEncoderScaler;  // Relative encoder in gearbox
-
-  LeENC_Deg_TurretExternalSensor = (LeENC_v_TurretExternal * KeENC_k_TurretVoltageToAng) - KeENC_Deg_TurretOffset;
-
-  LeENC_Deg_TurretTemp = (LeENC_v_TurretExternal * KeENC_k_TurretVoltageToAng) - KeENC_Deg_TurretOffset;
-  
-  LeENC_Deg_Encoderdiff = fabs(LeENC_Deg_TurretInternalSensor - LeENC_Deg_TurretExternalSensor);
-
-  if (LeENC_Deg_Encoderdiff >= KeEnc_Deg_InvalDelta)
-    {
-      VeEnc_b_FaultCensor = true;
-    }
-
-  if (VeEnc_b_FaultCensor == true)
-    {
-      LeENC_Deg_TurretFeedback = LeENC_Deg_TurretInternalSensor;
-    }
-  else
-    {
-      LeENC_Deg_TurretFeedback = LeENC_Deg_TurretExternalSensor;
-    }
-
-  // VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretFeedback;
-
-  VsMAN_s_Sensors.Deg_Turret = LeENC_Deg_TurretInternalSensor;
 
   VsMAN_s_Sensors.In_LinearSlide = LeENC_Deg_LinearSlide * KeENC_k_LinearSlideEncoderScaler;
 
@@ -320,10 +284,7 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   frc::SmartDashboard::PutNumber("IntakeRollers",  VsMAN_s_Sensors.RPM_IntakeRollers);
   frc::SmartDashboard::PutNumber("Gripper",        VsMAN_s_Sensors.RPM_Gripper);
   frc::SmartDashboard::PutNumber("Wrist",          VsMAN_s_Sensors.Deg_Wrist);
-  frc::SmartDashboard::PutNumber("Turret",         LeENC_Deg_TurretInternalSensor);
   frc::SmartDashboard::PutNumber("LinearSlide",    VsMAN_s_Sensors.In_LinearSlide);
   frc::SmartDashboard::PutBoolean("IntakeExtended",  VsMAN_s_Sensors.b_IntakeArmExtended);
   frc::SmartDashboard::PutBoolean("GripObjDetected", VsMAN_s_Sensors.b_GripperObjDetected);
-  frc::SmartDashboard::PutNumber("Turret External Sensor", LeENC_Deg_TurretExternalSensor);
-  frc::SmartDashboard::PutBoolean("Turret Encoder Fault",  VeEnc_b_FaultCensor);
   }

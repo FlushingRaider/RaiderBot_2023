@@ -92,45 +92,13 @@ void ADAS_MN_Reset(void)
     {
       VeADAS_e_MAN_SchedState = E_MAN_Driving;
     }
-  else if (VsCONT_s_DriverInput.b_BackHigCube == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_BackHighCube;
-    }
-  else if (VsCONT_s_DriverInput.b_BackLowCube == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_BackLowCube;
-    }
-  else if (VsCONT_s_DriverInput.b_BackHighCone == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_BackHighCone;
-    }
-  else if (VsCONT_s_DriverInput.b_BackLowCone == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_BackLowCone;
-    }
   else if (VsCONT_s_DriverInput.b_IntakeArmIn == true)
     {
       VeADAS_e_MAN_SchedState = E_MAN_Driving;
     }
-  else if (VsCONT_s_DriverInput.b_ArmDown == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_FloorIntake;
-    }
-  else if (VsCONT_s_DriverInput.b_MidIntakeOut == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_MidIntake;
-    }
   else if (VsCONT_s_DriverInput.b_InitState == true)
     {
       VeADAS_e_MAN_SchedState = E_MAN_Init;
-    }
-  else if (VsCONT_s_DriverInput.b_FrontHighCube == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_FrontHighCube;
-    }
-  else if (VsCONT_s_DriverInput.b_FrontLowCube == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_FrontLowCube;
     }
   else
     {
@@ -214,12 +182,12 @@ void ADAS_MN_Reset(void)
       }
     else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MidDropPosition)
       {
-        LeADAS_e_MAN_State = E_MAN_FrontLowCube;
+        LeADAS_e_MAN_State = E_MAN_LowCubeDrop;
         LeADAS_b_MAN_DropCmplt = true;
       }
     else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MidDropOff)
       {
-        LeADAS_e_MAN_State = E_MAN_FrontLowCube;
+        LeADAS_e_MAN_State = E_MAN_LowCubeDrop;
         LeADAS_b_MAN_DropFast = true;
         VeADAS_t_MAN_DropObjectTm += C_ExeTime;
 

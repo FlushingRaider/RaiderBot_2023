@@ -14,7 +14,6 @@
  extern double VaENC_Deg_WheelAngleRev[E_RobotCornerSz];
  extern double VaENC_Deg_WheelAngleConverted[E_RobotCornerSz];
  extern double VaENC_In_WheelDeltaDistance[E_RobotCornerSz];
- extern double VeENC_Deg_TurretPosition;
  
  void Encoders_Drive_CompBot(double                       LeENC_Cnt_EncoderWheelAngleFrontLeftRaw,
                              double                       LeENC_Cnt_EncoderWheelAngleFrontRightRaw,
@@ -55,8 +54,6 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        rev::SparkMaxRelativeEncoder m_GripperEncoder,
                        rev::SparkMaxRelativeEncoder m_WristEncoder,
                        double                       LeENC_Deg_LinearSlide,
-                       double                       LeENC_Deg_EncoderTurretRotate,
                        T_MotorControlType           LeENC_e_IntakeCmnd,
                        bool                         LeENC_b_WristForwardLimit,
-                       bool                         LeENC_b_WristReverseLimit,
-                       double                       LeENC_v_TurretExternal);
+                       bool                         LeENC_b_WristReverseLimit);

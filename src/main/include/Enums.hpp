@@ -82,18 +82,34 @@ typedef enum TeMAN_ManipulatorStates
 {
  E_MAN_Init,
  E_MAN_Driving,
- E_MAN_BackHighCube,
- E_MAN_BackHighCone,
- E_MAN_BackLowCube,
- E_MAN_BackLowCone,
- E_MAN_MidTransition,
  E_MAN_MainIntake,
- E_MAN_FloorIntake,
- E_MAN_MidIntake,
- E_MAN_FrontHighCube,
- E_MAN_FrontLowCube,
+ E_MAN_FloorConeIntake,
+ E_MAN_MidCubeIntake,
+ E_MAN_MidConeIntake,
+ E_MAN_HighCubeDrop,
+ E_MAN_LowCubeDrop,
+ E_MAN_HighConeDrop,
+ E_MAN_LowConeDrop,
  E_MAN_State_Sz
 } TeMAN_ManipulatorStates;
+
+// /* TeMAN_ManipulatorStates: States of the manipulator for the 2023 game. */
+// typedef enum TeMAN_ManipulatorStates
+// {
+//  E_MAN_Init,
+//  E_MAN_Driving,
+//  E_MAN_BackHighCube,
+//  E_MAN_BackHighCone,
+//  E_MAN_BackLowCube,
+//  E_MAN_BackLowCone,
+//  E_MAN_MidTransition,
+//  E_MAN_MainIntake,
+//  E_MAN_FloorIntake,
+//  E_MAN_MidIntake,
+//  E_MAN_FrontHighCube,
+//  E_MAN_FrontLowCube,
+//  E_MAN_State_Sz
+// } TeMAN_ManipulatorStates;
 
 /* TeADAS_AutonManipulatorStates: States of the manipulator for the 2023 game. */
 typedef enum TeADAS_AutonManipulatorStates
@@ -207,7 +223,6 @@ typedef enum TeADAS_DM_DriveOverStation  // This is the states of the low level 
 
 typedef enum TeMAN_e_ManipulatorActuator
 {
-  E_MAN_Turret,
   E_MAN_ArmPivot,
   E_MAN_LinearSlide,
   E_MAN_Wrist,
@@ -229,8 +244,6 @@ typedef enum T_MotorControlType
 
 struct TsMAN_Sensor 
 {
-  bool   b_TurretZero;
-  double Deg_Turret; // Position of the turret rotation
   double Deg_ArmPivot; // Posistion of the Arm Angle
   double RPM_IntakeRollers; // Speed of the intake rollers
   double In_LinearSlide;
@@ -242,7 +255,6 @@ struct TsMAN_Sensor
 
 struct TsRobotSensor 
 {
-  bool b_TurretZero;
   bool b_XD_LimitDetected;
   bool b_XY_LimitDetected;
   bool b_BallDetectedLower;
