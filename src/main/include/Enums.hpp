@@ -290,18 +290,15 @@ struct RobotUserInput
   bool                  b_DrivingPosition;
   bool                  b_FrontHighCube;
   bool                  b_FrontLowCube;
-  bool                  b_BackHigCube;
-  bool                  b_BackHighCone;
-  bool                  b_BackLowCone;
-  bool                  b_BackLowCube;
+  bool                  b_FrontHighCone;
+  bool                  b_FrontLowCone;
   bool                  b_DropGamePieceSlow;
   bool                  b_DropGamePieceFast;
   bool                  b_AutoBalance;
   bool                  b_CubeAlign;
   bool                  b_ConeAlign;
   bool                  b_VisionButton;
-  bool                  b_ArmDown;  //back pickup
-  bool                  b_X_Mode;  //back pickup
+  bool                  b_X_Mode;
 };
 
 struct TeMAN_MotorControl

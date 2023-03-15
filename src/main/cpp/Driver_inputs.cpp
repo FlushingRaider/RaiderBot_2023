@@ -96,26 +96,23 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   double LeCONT_Pct_IntakeRollerTestCmnd = 0.0;
   double LeCONT_Pct_ArmPivotTest = 0.0;
   double LeCONT_Pct_LinearSlideTest = 0.0;
-  bool LeCONT_b_BackHighCone = false;
-  bool LeCONT_b_BackLowCone = false;
-  bool LeCONT_b_FrontHighCube = false;
+  bool LeCONT_b_FrontHighCone = false;
+  bool LeCONT_b_FrontLowCone = false;
   bool LeCONT_b_DropGamePieceFast = false;
   bool LeCONT_b_InitState = false;
-  bool LeCONT_b_FrontLowCube = false;
 
   VsCONT_s_DriverInput.b_MainIntakeOut                  = LeCONT_b_Driver2ButtonA;      //Controller 2, A button Will be used to bring intake out COMPETION BUTTON
   VsCONT_s_DriverInput.b_DrivingPosition                = LeCONT_b_Driver2ButtonB;     //Controller 2, B button Will be used to bring Everything into their position for when the robot is moving COMPETION BUTTON
   VsCONT_s_DriverInput.b_IntakeArmOutTest               = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button (2), (robot.cpp) intake out TEST BUTTON
   VsCONT_s_DriverInput.b_IntakeArmIn                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) intake in TEST BUTTON
-  VsCONT_s_DriverInput.b_BackHigCube                    = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button, Tells robot that we are scoring the gamepiece high COMPETION BUTTON
+  VsCONT_s_DriverInput.b_FrontHighCube                  = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button, Tells robot that we are scoring the gamepiece high COMPETION BUTTON
   VsCONT_s_DriverInput.b_IntakeRollersTest              = LeCONT_b_Driver2ButtonX;     //Controller 2 Tests the intake rollers.  For test only.
-  VsCONT_s_DriverInput.b_BackLowCube                    = LeCONT_b_Driver2ButtonX;
+  VsCONT_s_DriverInput.b_FrontLowCube                   = LeCONT_b_Driver2ButtonX;
   VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
   VsCONT_s_DriverInput.b_DropGamePieceFast              = LeCONT_b_Driver2ButtonStart;
   VsCONT_s_DriverInput.Pct_WristTest                    = LeCONT_Pct_Driver2RightAxisX;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
   VsCONT_s_DriverInput.b_InitState                      = LeCont_Pct_Driver2AxisRB;   
-  VsCONT_s_DriverInput.b_ArmDown                        = LeCONT_b_Driver2ButtonRB;   // This will bring the arm down to pickup game pieces behind the robot
-  VsCONT_s_DriverInput.b_MidIntakeOut                   = LeCONT_b_Driver2ButtonLB;
+  VsCONT_s_DriverInput.b_MidIntakeOut                   = LeCONT_b_Driver2ButtonRB;   // This will bring the arm down to pickup game pieces behind the robot
   VsCONT_s_DriverInput.b_DropGamePieceSlow              = LeCONT_b_Driver2ButtonBack;
 
   if (LeCONT_b_Driver2ButtonRB == true)
@@ -146,29 +143,25 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   if (LeCONT_Deg_Driver2POV == 0)
     {
     LeCONT_Pct_ArmPivotTest = 1.0;
-    LeCONT_b_BackHighCone = true;
+    LeCONT_b_FrontHighCone = true;
     }
   else if (LeCONT_Deg_Driver2POV == 180)
     {
     LeCONT_Pct_ArmPivotTest = -1.0;
-    LeCONT_b_BackLowCone = true;
+    LeCONT_b_FrontLowCone = true;
     }
   else if (LeCONT_Deg_Driver2POV == 270)
     {
     LeCONT_Pct_LinearSlideTest = 1.0;
-    LeCONT_b_FrontHighCube = true;
     }
   else if (LeCONT_Deg_Driver2POV == 90)
     {
     LeCONT_Pct_LinearSlideTest = -1.0;
-    LeCONT_b_FrontLowCube = true;
     }
 
   VsCONT_s_DriverInput.Pct_ArmPivotTest = LeCONT_Pct_ArmPivotTest;
   VsCONT_s_DriverInput.Pct_LinearSlideTest = LeCONT_Pct_LinearSlideTest;
-  VsCONT_s_DriverInput.b_BackHighCone = LeCONT_b_BackHighCone;
-  VsCONT_s_DriverInput.b_BackLowCone = LeCONT_b_BackLowCone;
-  VsCONT_s_DriverInput.b_FrontHighCube = LeCONT_b_FrontHighCube;
-  VsCONT_s_DriverInput.b_FrontLowCube = LeCONT_b_FrontLowCube;
+  VsCONT_s_DriverInput.b_FrontHighCone = LeCONT_b_FrontHighCone;
+  VsCONT_s_DriverInput.b_FrontLowCone = LeCONT_b_FrontLowCone;
   VsCONT_s_DriverInput.b_InitState = LeCONT_b_InitState;
   }
