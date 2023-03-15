@@ -1138,8 +1138,8 @@ bool MoveWithOffsetTag(double *L_Pct_FwdRev,
   bool LeADAS_b_DM_StateComplete = false;
   double L_ErrorCalcYaw;
   
-  if (L_OdomCentered)
-  {
+  // if (L_OdomCentered)
+  // {
 
     L_ErrorCalcYaw = 0.18 - L_TagYawDegrees; // -.18 is just what it happened to be idk
 
@@ -1179,7 +1179,7 @@ bool MoveWithOffsetTag(double *L_Pct_FwdRev,
     {
       LeADAS_b_DM_StateComplete = true;
     }
-  }
+  // }
   return (LeADAS_b_DM_StateComplete);
 }
 
@@ -1193,38 +1193,38 @@ bool MoveWithGlobalCoords(double *L_Pct_FwdRev,
                           double L_RequestedCoordX,
                           double L_RequestedCoordY)
 {
-
   bool LeADAS_b_DM_StateComplete = false;
-
-  double L_ErrorCalcYaw = 0.0 - L_TagYawDegrees;
-
+  double L_ErrorCalcYaw;
+  
   if (L_OdomCentered)
   {
+
+    L_ErrorCalcYaw = 0.18 - L_TagYawDegrees; // -.18 is just what it happened to be idk
 
     if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
     {
       *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
     }
 
-    if (L_CurrentOdomX > L_RequestedCoordX + K_MoveToTagMovementDeadbandX || L_CurrentOdomX < L_RequestedCoordX - K_MoveToTagMovementDeadbandX)
+    if (L_CurrentOdomX > L_RequestedCoordX || L_CurrentOdomX < L_RequestedCoordX)
     {
-      *L_Pct_FwdRev = 0.0001 * (L_CurrentOdomX - L_RequestedCoordX);
+      *L_Pct_FwdRev = -C_TagAlignBasePower * (L_CurrentOdomX - L_RequestedCoordX);
     }
+
 
     if (L_CurrentOdomY > L_RequestedCoordY + K_MoveToTagMovementDeadbandY || L_CurrentOdomY < L_RequestedCoordY - K_MoveToTagMovementDeadbandY)
     {
-      *L_Pct_Strafe = 0.0001 * (L_CurrentOdomY - L_RequestedCoordY);
+      *L_Pct_Strafe = -C_TagAlignBasePower * (L_CurrentOdomY - L_RequestedCoordY);
     }
 
-    if (L_CurrentOdomX <= L_RequestedCoordX + 10 && L_CurrentOdomX >= L_RequestedCoordX - 10)
+
+    if (L_CurrentOdomX <= L_RequestedCoordX + K_MoveToTagMovementDeadbandX && L_CurrentOdomX >= L_RequestedCoordX - K_MoveToTagMovementDeadbandX)
     {
       *L_Pct_FwdRev = 0.0;
-      wantToStopX = true;
     }
-    if (L_CurrentOdomY <= L_RequestedCoordY + 10 && L_CurrentOdomY >= L_RequestedCoordY - 10)
+    if (L_CurrentOdomY <= L_RequestedCoordY + K_MoveToTagMovementDeadbandY && L_CurrentOdomY >= L_RequestedCoordY - K_MoveToTagMovementDeadbandY)
     {
       *L_Pct_Strafe = 0.0;
-      wantToStopY = true;
     }
 
     if (*L_Pct_Strafe == 0.0 && *L_Pct_FwdRev == 0.0)
@@ -1233,4 +1233,6 @@ bool MoveWithGlobalCoords(double *L_Pct_FwdRev,
     }
   }
   return (LeADAS_b_DM_StateComplete);
+
 }
+

@@ -272,16 +272,18 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
     V_Tagx = V_Tagx * C_MeterToIn;
     V_Tagy = V_Tagy * C_MeterToIn;
 
+    // if (L_ButtonCmdCone || L_ButtonCmdCube)
+    // {
+    // if (V_TagCentered != true)
 
-    if (L_ButtonCmdCone || L_ButtonCmdCube)
+    if ((VeODO_In_RobotDisplacementX > V_Tagx + 0.1 || VeODO_In_RobotDisplacementX < V_Tagx - 0.1) &&
+        (VeODO_In_RobotDisplacementY > V_Tagy + 0.1 || VeODO_In_RobotDisplacementY < V_Tagy - 0.1))
     {
-      if (V_TagCentered != true)
-      {
-        OdometryInitToArgs(V_Tagy, V_Tagx); // flipped for odom for some reason
-        V_TagCentered = true;
-      }
 
+      OdometryInitToArgs(V_Tagy, V_Tagx); // flipped for odom for some reason
+      // V_TagCentered = true;
     }
+    // }
   }
   else
   {
@@ -314,6 +316,6 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
   //   PieceCamYaw = 0.0;
   //   PieceCamSkew = 0.0;
   // }
- }
+}
 
 #endif

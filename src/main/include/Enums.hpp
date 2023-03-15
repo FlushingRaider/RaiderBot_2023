@@ -208,7 +208,8 @@ typedef enum T_ADAS_ActiveAutonFeature  // This is the high level feature, calle
   E_ADAS_AutonDropCubeDriveFwd,
   E_ADAS_AutonDriveOverRampAutoBalV2,
   E_ADAS_AutonDeliverCubeDriveOnRampAutoBal,
-  E_ADAS_AutonDrivePath1
+  E_ADAS_AutonDrivePath1,
+  E_ADAS_TestVisionAuton
 } T_ADAS_ActiveAutonFeature;
 
 
