@@ -56,7 +56,8 @@ bool VeMAN_b_TestState = false;
 void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
                                  rev::SparkMaxPIDController m_WristPID,
                                  rev::SparkMaxPIDController m_GripperPID,
-                                 rev::SparkMaxPIDController m_IntakeRollersPID)
+                                 rev::SparkMaxPIDController m_IntakeRollersPID,
+                                 rev::SparkMaxPIDController m_LinearSlidePID)
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
   T_PID_Cal LeMAN_i_Index3 = E_P_Gx;
@@ -89,6 +90,13 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   m_IntakeRollersPID.SetIZone(KaMAN_k_IntakeRollersPID_Gx[E_kIz]);
   m_IntakeRollersPID.SetFF(KaMAN_k_IntakeRollersPID_Gx[E_kFF]);
   m_IntakeRollersPID.SetOutputRange(KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput], KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
+
+  m_LinearSlidePID.SetP(KaMAN_k_LinearSlidePID_Gx[E_kP]);
+  m_LinearSlidePID.SetI(KaMAN_k_LinearSlidePID_Gx[E_kI]);
+  m_LinearSlidePID.SetD(KaMAN_k_LinearSlidePID_Gx[E_kD]);
+  m_LinearSlidePID.SetIZone(KaMAN_k_LinearSlidePID_Gx[E_kIz]);
+  m_LinearSlidePID.SetFF(KaMAN_k_LinearSlidePID_Gx[E_kFF]);
+  m_LinearSlidePID.SetOutputRange(KaMAN_k_LinearSlidePID_Gx[E_kMinOutput], KaMAN_k_LinearSlidePID_Gx[E_kMaxOutput]);
 
   for (LeMAN_i_Index = E_MAN_ArmPivot;
        LeMAN_i_Index < E_MAN_Sz;
@@ -209,7 +217,8 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
 void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
                                 rev::SparkMaxPIDController m_WristPID,
                                 rev::SparkMaxPIDController m_GripperPID,
-                                rev::SparkMaxPIDController m_IntakeRollersPID)
+                                rev::SparkMaxPIDController m_IntakeRollersPID,
+                                rev::SparkMaxPIDController m_LinearSlidePID)
   {
   // read PID coefficients from SmartDashboard
   #ifdef Manipulator_Test
@@ -595,21 +604,7 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
     /* Final output to the motor command that will be sent to the motor controller: */
     VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot];
 
-    VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide] =  -Control_PID( VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
-                                                                  VsMAN_s_Sensors.In_LinearSlide,
-                                                                 &VaMAN_In_LinearSlideError,
-                                                                 &VaMAN_k_LinearSlideIntegral,
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_P_Gx],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_I_Gx],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_D_Gx],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_P_Ul],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_P_Ll],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_I_Ul],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_I_Ll],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_D_Ul],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_D_Ll],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_Max_Ul],
-                                                                  KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide];
 
     VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist];
 

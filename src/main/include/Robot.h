@@ -81,16 +81,16 @@ class Robot : public frc::TimedRobot {
   rev::CANSparkMax                           m_Wrist               {KeMAN_i_Wrist,           rev::CANSparkMax::MotorType::kBrushless};        
   rev::CANSparkMax                           m_Gripper             {KeMAN_i_Gripper,         rev::CANSparkMax::MotorType::kBrushless};
   rev::CANSparkMax                           m_IntakeRollers       {KeINT_i_IntakeRollers,   rev::CANSparkMax::MotorType::kBrushless};
+  rev::CANSparkMax                           m_LinearSlide         {KeMAN_i_LinearSlide,     rev::CANSparkMax::MotorType::kBrushless};
 
   rev::SparkMaxPIDController                 m_ArmPivotPID         = m_ArmPivot.GetPIDController();
   rev::SparkMaxPIDController                 m_WristPID            = m_Wrist.GetPIDController();
   rev::SparkMaxPIDController                 m_GripperPID          = m_Gripper.GetPIDController();
   rev::SparkMaxPIDController                 m_IntakeRollersPID    = m_IntakeRollers.GetPIDController();
+  rev::SparkMaxPIDController                 m_LinearSlidePID      = m_LinearSlide.GetPIDController();
 
   rev::SparkMaxLimitSwitch                   m_WristforwardLimit   = m_Wrist.GetForwardLimitSwitch(rev::SparkMaxLimitSwitch::Type::kNormallyClosed);
   rev::SparkMaxLimitSwitch                   m_WristreverseLimit   = m_Wrist.GetReverseLimitSwitch(rev::SparkMaxLimitSwitch::Type::kNormallyClosed);
-
-  WPI_TalonSRX                               m_LinearSlide          {KeMAN_i_LinearSlide};
 
   frc::Compressor                            m_pcmCompressor          {KeINT_i_PCM, frc::PneumaticsModuleType::CTREPCM};
   frc::Solenoid                              m_PCM_Valve              {KeINT_i_PCM, frc::PneumaticsModuleType::CTREPCM, 0};
@@ -117,6 +117,7 @@ class Robot : public frc::TimedRobot {
   rev::SparkMaxRelativeEncoder               m_WristEncoder           = m_Wrist.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_GripperEncoder         = m_Gripper.GetEncoder();
   rev::SparkMaxRelativeEncoder               m_IntakeRollersEncoder   = m_IntakeRollers.GetEncoder();
+  rev::SparkMaxRelativeEncoder               m_LinearSlideEncoder     = m_LinearSlide.GetEncoder();
   #endif
 
   // Driver Inputs

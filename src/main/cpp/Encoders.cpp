@@ -72,7 +72,8 @@ void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
 void EncodersInitComp(rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                       rev::SparkMaxRelativeEncoder m_WristEncoder,
                       rev::SparkMaxRelativeEncoder m_GripperEncoder,
-                      rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder)
+                      rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
+                      rev::SparkMaxRelativeEncoder m_LinearSlideEncoder)
   {
     m_ArmPivotEncoder.SetPosition(0);
     m_WristEncoder.SetPosition(0);
@@ -246,7 +247,7 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                        rev::SparkMaxRelativeEncoder m_GripperEncoder,
                        rev::SparkMaxRelativeEncoder m_WristEncoder,
-                       double                       LeENC_Deg_LinearSlide,
+                       rev::SparkMaxRelativeEncoder m_LinearSlideEncoder,
                        T_MotorControlType           LeENC_e_IntakeCmnd,
                        bool                         LeENC_b_WristForwardLimit,
                        bool                         LeENC_b_WristReverseLimit)
@@ -262,7 +263,7 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
 
   VsMAN_s_Sensors.Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
 
-  VsMAN_s_Sensors.In_LinearSlide = LeENC_Deg_LinearSlide * KeENC_k_LinearSlideEncoderScaler;
+  VsMAN_s_Sensors.In_LinearSlide = m_LinearSlideEncoder.GetPosition() * KeENC_k_LinearSlideEncoderScaler;
 
   if (LeENC_e_IntakeCmnd == E_MotorExtend)
     {
