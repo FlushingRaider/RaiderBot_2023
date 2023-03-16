@@ -319,20 +319,29 @@ const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {1.0,  // Sched - Init
                                                   1.0,  // Sched - High Cone Drop
                                                   1.0}; // Sched - Low Cone Drop
 
-/* KeMAN_DegS_GripperRate: Sets Gripper transition rate */
-const double KeMAN_DegS_GripperRate = 1.0;
+/* KeMAN_k_GripperReleaseConeFast: Sets Gripper fast release for cone.  Must be between -1 and 1. */
+const double KeMAN_k_GripperReleaseConeFast = 0.95;
 
-/* KeMAN_k_GripperReleaseFast: Sets Gripper release fast power */
-const double KeMAN_k_GripperReleaseFast = 0.95;
+/* KeMAN_k_GripperReleaseCubeFast: Sets Gripper fast release for cube.  Must be between -1 and 1. Cube is reverse of cone direction. */
+const double KeMAN_k_GripperReleaseCubeFast = -0.95;
 
-/* KeMAN_k_GripperReleaseSlow: Sets Gripper release slow power */
-const double KeMAN_k_GripperReleaseSlow = 0.15;
+/* KeMAN_k_GripperReleaseConeSlow: Sets Gripper slow release for cone.  Must be between -1 and 1. */
+const double KeMAN_k_GripperReleaseConeSlow = 0.15;
 
-/* KeMAN_k_GripperIntake: Sets Gripper intake power */
-const double KeMAN_k_GripperIntake = -0.3; //.39
+/* KeMAN_k_GripperReleaseCubeSlow: Sets Gripper slow release for cube.  Must be between -1 and 1. Cube is reverse of cone direction. */
+const double KeMAN_k_GripperReleaseCubeSlow = -0.15;
 
-/* KeMAN_k_GripperIntakehold: Sets Gripper intake hold */
-const double KeMAN_k_GripperIntakehold = -0.0; 
+/* KeMAN_k_GripperIntakeCone: Sets Gripper cone intake power */
+const double KeMAN_k_GripperIntakeCone = -0.3;
+
+/* KeMAN_k_GripperIntakeCube: Sets Gripper cube intake power */
+const double KeMAN_k_GripperIntakeCube = 0.3;
+
+/* KeMAN_k_GripperIntakeholdCone: Sets Gripper intake hold */
+const double KeMAN_k_GripperIntakeholdCone = -0.05; 
+
+/* KeMAN_k_GripperIntakeholdCube: Sets Gripper intake hold */
+const double KeMAN_k_GripperIntakeholdCube = 0.05; 
 
 /* KeMAN_t_GripperOnTm: Amount of time gripper will remain on after it is initially commanded on. */
 const double KeMAN_t_GripperOnTm = 0.5;
