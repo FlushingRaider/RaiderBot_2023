@@ -64,12 +64,10 @@ void BallDetectionSensor(bool L_IR_SensorDetect,
  *
  * Description:  Limit switches for the following indications:
  *               - end of travel for XD/YD Manipulators
- *               - end of travel for turret
  *
  ******************************************************************************/
 void ReadLimitSwitchs(bool L_XD_LimitSwitch,
-                      bool L_YD_LimitSwitch,
-                      bool L_TurretLimitDetected)
+                      bool L_YD_LimitSwitch)
   {
     VsRobotSensors.b_XD_LimitDetected = L_XD_LimitSwitch;
     VsRobotSensors.b_XY_LimitDetected = L_YD_LimitSwitch;
@@ -85,13 +83,11 @@ void ReadLimitSwitchs(bool L_XD_LimitSwitch,
 void Read_IO_Sensors(bool L_IR_SensorDetect,
                      bool L_BallSensorLower,
                      bool L_XD_LimitSwitch,
-                     bool L_XY_LimitSwitch,
-                     bool L_TurretLimitDetected)
+                     bool L_XY_LimitSwitch)
   {
     BallDetectionSensor(L_IR_SensorDetect,
                         L_BallSensorLower);
 
     ReadLimitSwitchs(L_XD_LimitSwitch,
-                     L_XY_LimitSwitch,
-                     L_TurretLimitDetected);
+                     L_XY_LimitSwitch);
   }
