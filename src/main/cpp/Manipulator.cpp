@@ -472,7 +472,7 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState,
       LeMAN_InS_LinearSlideRate = KeMAN_InS_LinearSlideRate;
      }
 
-   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState],  // / KeENC_k_LinearSlideEncoderScaler
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] / KeENC_k_LinearSlideEncoderScaler,  // / KeENC_k_LinearSlideEncoderScaler
                                                               VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
                                                               LeMAN_InS_LinearSlideRate);
 
@@ -606,7 +606,7 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                                                              VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
                                                              VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
 
-     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_LinearSlide], 
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_LinearSlide] / VaMAN_k_PositionToEncoder[E_MAN_LinearSlide], 
                                                                 VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
                                                                 VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
 

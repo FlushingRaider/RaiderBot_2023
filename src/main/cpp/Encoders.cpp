@@ -75,8 +75,8 @@ void EncodersInitComp(rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                       rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                       rev::SparkMaxRelativeEncoder m_LinearSlideEncoder)
   {
-    m_ArmPivotEncoder.SetPosition(0);
-    m_WristEncoder.SetPosition(0);
+    // m_ArmPivotEncoder.SetPosition(0);
+    // m_WristEncoder.SetPosition(0);
     m_GripperEncoder.SetPosition(0);
     m_IntakeRollersEncoder.SetPosition(0);
   }
