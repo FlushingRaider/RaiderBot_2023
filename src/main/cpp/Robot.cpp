@@ -22,7 +22,6 @@
 #include "LightControl.hpp"
 #include "VisionV2.hpp"
 #include "ADAS.hpp"
-#include "ADAS_BT.hpp"
 #include "ADAS_DM.hpp"
 #include "ADAS_MN.hpp"
 
