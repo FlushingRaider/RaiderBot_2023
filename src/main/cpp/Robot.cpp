@@ -290,6 +290,7 @@ void Robot::RobotPeriodic()
                    VsCONT_s_DriverInput.deg_SwerveRotate,      // rotate the robot joystick
                    VsCONT_s_DriverInput.v_SwerveSpeed,         // extra speed trigger
                    VsCONT_s_DriverInput.b_SwerveRotateTo0,     // auto rotate to 0 degrees
+                   VsCONT_s_DriverInput.b_SwerveRotateTo180,   // auto rotate to 180 degrees
                    VsCONT_s_DriverInput.b_ZeroGyro,
                    VeADAS_b_X_Mode, // X mode req from ADAS
                    VsCONT_s_DriverInput.b_X_Mode,

@@ -271,9 +271,8 @@ struct RobotUserInput
   double                v_SwerveSpeed;
   bool                  b_SwerveGoalAutoCenter;
   bool                  b_SwerveRotateTo0;
-  bool                  b_SwerveRotateTo90;
+  bool                  b_SwerveRotateTo180;
   bool                  b_CameraLight;
-  bool                  b_AutoIntake;
   bool                  b_JoystickActive;
   bool                  b_VisionDriverModeOverride;
   bool                  b_IntakeRollersTest; //21
