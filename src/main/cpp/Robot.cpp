@@ -19,7 +19,6 @@
 #include "Odometry.hpp"
 #include "DriveControl.hpp"
 #include "Manipulator.hpp"
-#include "BallHandler.hpp"
 #include "LightControl.hpp"
 #include "VisionV2.hpp"
 #include "ADAS.hpp"
@@ -387,7 +386,6 @@ void Robot::AutonomousInit()
   VeROBO_b_TestState = false;
   GyroInit();
   DriveControlInit();
-  BallHandlerInit();
   // ManipulatorControlInit();
   ADAS_Main_Reset();
   OdometryInit();
@@ -420,7 +418,6 @@ void Robot::TeleopInit()
 
   ADAS_Main_Reset();
   DriveControlInit();
-  BallHandlerInit();
   // ManipulatorControlInit();
   OdometryInit();
 }
