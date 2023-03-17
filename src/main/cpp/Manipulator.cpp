@@ -590,10 +590,6 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
                             bool                    LeMAN_b_DropObjectSlow,
                             bool                    LeMAN_b_DropObjectFast)
   {
-  double LeMAN_Deg_Error = 0.0;
-  double LeMAN_k_P_Gain = 0.0;
-
-  // LeMAN_b_TestPowerOverride = false;
 
   if (LeMAN_b_TestPowerOverride == true)
     {
