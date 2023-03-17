@@ -386,60 +386,6 @@ const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_MAN_State_Sz][E_MAN_Sta
     {E_MAN_Driving, E_MAN_LowConeDrop,     E_MAN_Driving,     E_MAN_LowConeDrop,      E_MAN_LowConeDrop,     E_MAN_LowConeDrop,     E_MAN_LowConeDrop,     E_MAN_LowConeDrop,     E_MAN_LowConeDrop,     E_MAN_LowConeDrop}      // Sched - Low Cone Drop
   };
 
-/* Ball handler (BH) cals: */
-/* K_BH_IntakePower: Amount of power to apply to intake wheels.  Must be 0 to 1. */
-const double K_BH_IntakePower = 0.7;
-
-/* K_BH_ElevatorPowerUp: Amount of power to apply to elevator band when commanded up.  Must be 0 to 1. */
-const double K_BH_ElevatorPowerUp = 0.9;
-
-/* K_BH_ElevatorPowerDwn: Amount of power to apply to elevator band when commanded down.  Must be -1 to 0. */
-const double K_BH_ElevatorPowerDwn = -0.9;
-
-/* K_BH_LauncherMinCmndSpd: Min speed for launcher control.  Below this speed, launcher will transition to 0 power.  Also 
-   acts as the indicator for allowing the elevator to run.  If the commanded launcher speed is above this threshold, then 
-   we will use the upper ball sensor to determine when to allow the elevator to proceed based on launcher RPM deadband.  */
-const double K_BH_LauncherMinCmndSpd = 10;
-
-/* K_BH_LauncherPID_Gx: PID gains for the launcher. */
-const double K_BH_LauncherPID_Gx[E_PID_SparkMaxCalSz] = { 0.00055,  // kP
-                                                          0.000001, // kI
-                                                          0.0,      // kD
-                                                          0.0,      // kIz
-                                                          0.0,      // kFF
-                                                          1.0,      // kMaxOutput
-                                                         -1.0,      // kMinOutput
-                                                          0.0,      // kMaxVel
-                                                          0.0,      // kMinVel
-                                                         55.0,      // kMaxAcc
-                                                          0.0};     // kAllErr
-
-/* K_BH_LauncherSpeedAxis: Launcher speed axis for K_BH_LauncherSpeed.  Distance is in the unit from the camera.  Comments reflect actual measured distance. */
-const double K_BH_LauncherSpeedAxis[4] = {2.52,  // 6 ft 6in
-                                          3.60,  // 8 ft 6in
-                                          4.51,  // 10 ft 6in
-                                          13.5}; // 17 ft
-
-/* K_BH_LauncherSpeed: Launcher speed necessary for ball to reach target based on the estimated distance from the camera. */
-const double K_BH_LauncherSpeed[4] = {2000,  // 6 ft 6in 3300
-                                      2300,  // 8 ft 6in 3650
-                                      2600,  // 10 ft 6in 3900
-                                      3200}; // 17 ft 5000
-
-/* K_BH_LauncherManualDb: Deadband around the manual ball launcher axis. */
-const double K_BH_LauncherManualDb = 0.1;
-
-/* K_BH_LauncherManualHi: Manual speed single point.4600 */
-const double K_BH_LauncherManualHi = 3300;
-
-/* K_BH_LauncherManualLo: Manual speed single point. */
-const double K_BH_LauncherManualLo = 1600;
-
-/* K_BH_LauncherSpeedDb: Deadband around the commanded launcher speed (in RPM).  
-                         Used to indicate when a ball can be launched. */
-const double K_BH_LauncherSpeedDb = 40;
-
-
 
 // Constants and cals for Swerve Drive (SD) control:
 /* C_SD_L: Robot wheelbase. [meters] */

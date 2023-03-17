@@ -556,48 +556,6 @@ double ScaleJoystickAxis(double LeLU_Cmd_JoystickAxis)
   return LeLU_RPM_DesiredDriveSpeed;
 }
 
-/****************************************************************************
- * Function:     DtrmnAutoLauncherSpeed
- *
- * Description:  Function to determine the desired launcher speed based on
- *               estimated distance from taget from vision.
- ******************************************************************************/
-double DtrmnAutoLauncherSpeed(double LeLU_Cmd_TargetDistance)
-{
-  double LeLU_RPM_DesiredLaunchSpeed = 0.0; // may or may not be RPM
-  int LeLU_Int_AxisSize = (int)(sizeof(K_BH_LauncherSpeedAxis) / sizeof(K_BH_LauncherSpeed[0]));
-  int LaLU_CalArraySize = (int)(sizeof(K_BH_LauncherSpeed) / sizeof(K_BH_LauncherSpeed[0]));
-
-  LeLU_RPM_DesiredLaunchSpeed = LookUp1D_Table(&K_BH_LauncherSpeedAxis[0],
-                                               &K_BH_LauncherSpeed[0],
-                                               LeLU_Int_AxisSize,
-                                               LaLU_CalArraySize,
-                                               LeLU_Cmd_TargetDistance);
-
-  return LeLU_RPM_DesiredLaunchSpeed;
-}
-
-/******************************************************************************
- * Function:     DtrmnTimeToDriveToCaptureBall
- *
- * Description:  Function to determine the amount of time to drive forward to
- *               capture the ball.
- ******************************************************************************/
-double DtrmnTimeToDriveToCaptureBall(double LeLU_Cmd_EstTargetDistance)
-{
-  double LeLU_s_DesiredDriveTime = 0.0; // may or may not be seconds
-  int LeLU_Int_AxisSize = (int)(sizeof(K_ADAS_BT_DriveTimeAxis) / sizeof(K_ADAS_BT_DriveTime[0]));
-  int LaLU_CalArraySize = (int)(sizeof(K_ADAS_BT_DriveTime) / sizeof(K_ADAS_BT_DriveTime[0]));
-
-  LeLU_s_DesiredDriveTime = LookUp1D_Table(&K_ADAS_BT_DriveTimeAxis[0],
-                                           &K_ADAS_BT_DriveTime[0],
-                                           LeLU_Int_AxisSize,
-                                           LaLU_CalArraySize,
-                                           LeLU_Cmd_EstTargetDistance);
-
-  return LeLU_s_DesiredDriveTime;
-}
-
 /******************************************************************************
  * Function:     DesiredRotateSpeed
  *
