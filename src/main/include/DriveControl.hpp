@@ -25,12 +25,13 @@ void SwerveDriveMotorConfigsCal(rev::SparkMaxPIDController m_frontLeftDrivePID,
 
 void DriveControlInit(void);
 
-void DriveControlMain(double              L_JoyStick1Axis1Y,  // swerve control forward/back
-                      double              L_JoyStick1Axis1X,  // swerve control strafe
-                      double              L_JoyStick1Axis2X,  // rotate the robot joystick
-                      double              L_JoyStick1Axis3,   // extra speed trigger
-                      bool                L_JoyStick1Button3, // auto rotate to 0 degrees
-                      bool                L_JoyStick1Button4, // auto rotate to 90 degrees
+void DriveControlMain(double              L_JoyStick1Axis1Y,   // swerve control forward/back
+                      double              L_JoyStick1Axis1X,   // swerve control strafe
+                      double              L_JoyStick1Axis2X,   // rotate the robot joystick
+                      double              L_JoyStick1Axis3,    // extra speed trigger
+                      bool                LeDRC_b_RotateTo0,   // auto rotate to 0 degrees
+                      bool                LeDRC_b_RotateTo180, // auto rotate to 180 degrees
+                      bool                LeDRC_b_ZeroGyro,    // zero gyro
                       bool                LeDRC_b_X_ModeReq,
                       bool                LeDRC_b_X_ModeReqTeleop,
                       T_ADAS_ActiveFeature LeDRC_e_ADAS_ActiveFeature,

@@ -26,9 +26,9 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
                              double  LeCONT_Cmd_Driver1LeftTriggerAxis,
                              bool    LeCONT_b_Driver1ButtonA,
                              bool    LeCONT_b_Driver1ButtonX,
-                             bool    LeCONT_b_Driver1ButtonY,
+                             bool    LeCONT_b_Driver1ButtonY, ///
                              bool    LeCONT_b_Driver1ButtonRB,
-                             bool    LeCONT_b_Driver1ButtonB,
+                             bool    LeCONT_b_Driver1ButtonB,  ///  
                              bool    LeCONT_b_Driver1ButtonLB,
                              int     LeCONT_Deg_Driver1POV)
   {
@@ -43,9 +43,9 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
   VsCONT_s_DriverInput.v_SwerveSpeed                   = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftTriggerAxis);  // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.b_AutoBalance                   = LeCONT_b_Driver1ButtonA;
   //VsCONT_s_DriverInput.b_MidIntakeOut                  = LeCONT_b_Driver1ButtonX;
- // VsCONT_s_DriverInput.b_SwerveRotateTo90            = LeCONT_b_Driver1ButtonY;
+  VsCONT_s_DriverInput.b_SwerveRotateTo180             = LeCONT_b_Driver1ButtonY;   // Auto align to 180 degrees
+  VsCONT_s_DriverInput.b_SwerveRotateTo0               = LeCONT_b_Driver1ButtonB;   // Auto align to 0 degrees
   VsCONT_s_DriverInput.b_CubeAlign                     = LeCONT_b_Driver1ButtonRB;    //Aligns the robot to score a cube
-//  VsCONT_s_DriverInput.b_AutoIntake                  = LeCONT_b_Driver1ButtonB;
   VsCONT_s_DriverInput.b_ConeAlign                     = LeCONT_b_Driver1ButtonLB;   //Aligns the robot to score a cone
    
   LeCONT_Pct_AxisTotal = (fabs(VsCONT_s_DriverInput.pct_SwerveStrafe) + fabs(VsCONT_s_DriverInput.deg_SwerveRotate) + fabs(VsCONT_s_DriverInput.v_SwerveSpeed));
