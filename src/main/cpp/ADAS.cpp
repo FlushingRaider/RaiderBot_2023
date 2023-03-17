@@ -28,7 +28,6 @@
 
 #include "Const.hpp"
 #include "ADAS_DM.hpp"
-#include "ADAS_ARM.hpp"
 #include "ADAS_MN.hpp"
 #include "Driver_inputs.hpp"
 #include "Gyro.hpp"
