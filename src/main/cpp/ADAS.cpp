@@ -83,6 +83,7 @@ void ADAS_Main_Init(void)
   VeADAS_e_AutonChooser.AddOption("Charge Station Auto Bal Goal", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveOverRampAutoBalV2);
   VeADAS_e_AutonChooser.AddOption("Deliver Cube Drive On Charge Station Auto Bal", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDeliverCubeDriveOnRampAutoBal);
   VeADAS_e_AutonChooser.AddOption("Test Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
+  VeADAS_e_AutonChooser.AddOption("Test Vision Auto", T_ADAS_ActiveAutonFeature::E_ADAS_TestVisionAuton);
   VeADAS_e_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
   frc::SmartDashboard::PutData(LeADAS_Str_AutonSelectorName, &VeADAS_e_AutonChooser);
 

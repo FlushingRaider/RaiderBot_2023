@@ -43,6 +43,9 @@ bool   VeMAN_b_CriteriaMet = false;
 bool   VeMAN_b_Paused = false; //Checks to see if paused (for testing)
 bool   VeMAN_b_ConeHold = false;  // Used for the holding power.  If cone, use cone cal, otherwise use cube.
 
+bool VeMAN_b_ReadyToGrab;
+bool VeMAN_b_HasObject;
+
 #ifdef Manipulator_Test
 bool   VeMAN_b_TestState = true; // temporary, we don't want to use the manual overrides
 #else
@@ -493,13 +496,31 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState,
 void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
                            TeMAN_ManipulatorStates LeMAN_e_AttndState,
                            bool                    LeMAN_b_DropObjectSlow,
-                           bool                    LeMAN_b_DropObjectFast,
-                           bool                    LeMAN_b_ObjDetected)
+                           bool                    LeMAN_b_DropObjectFast)
   {
    double LeMAN_k_TempCmnd = 0.0;
    bool   LeMAN_b_AllowedReleaseState = false;
    bool   LeMAN_b_ConeState = false;
    bool   LeMAN_b_CubeState = false;
+
+  if (fabs(VsMAN_s_Sensors.RPM_Gripper) > C_GripperRPMThreshold){
+    VeMAN_b_ReadyToGrab = true;
+  }
+  else{
+    VeMAN_b_ReadyToGrab = false;
+  }
+
+
+   if ((fabs(VsMAN_s_Sensors.RPM_Gripper) <= C_GripperRPMThreshold) && (VeMAN_b_ReadyToGrab) &&
+    (LeMAN_e_CmndState == E_MAN_MidCubeIntake || 
+    LeMAN_e_CmndState == E_MAN_MidConeIntake ||
+    LeMAN_e_CmndState == E_MAN_FloorConeIntake ||
+    LeMAN_e_CmndState == E_MAN_MainIntake)){
+      VeMAN_b_HasObject = true;
+   }
+   else{
+      VeMAN_b_HasObject = false;
+   }
 
    /* Determine if we are attempting to drop a cube or cone: */
    if ((LeMAN_e_AttndState == E_MAN_HighCubeDrop) ||
@@ -554,18 +575,18 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
         LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseConeFast;
        }
      }
-   else if ((LeMAN_b_ObjDetected == false) &&
+   else if ((VeMAN_b_HasObject == false) &&
             (((LeMAN_e_AttndState == E_MAN_MainIntake) && (LeMAN_e_CmndState  == E_MAN_MainIntake)) ||
              ((LeMAN_e_AttndState == E_MAN_MidCubeIntake) && (LeMAN_e_CmndState  == E_MAN_MidCubeIntake))))
      {
      LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeCube;
      }
-   else if ((LeMAN_b_ObjDetected == false) &&
+   else if ((VeMAN_b_HasObject == false) &&
              ((LeMAN_e_AttndState == E_MAN_MidConeIntake) && (LeMAN_e_CmndState  == E_MAN_MidConeIntake)))
      {
      LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeCone;
      }
-   else if (LeMAN_b_ObjDetected == true)
+   else if (VeMAN_b_HasObject == true)
      {
       if (VeMAN_b_ConeHold == true)
        {
@@ -576,6 +597,8 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
         LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeholdCube;
        }
      }
+
+  
 
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = LeMAN_k_TempCmnd;
   }
@@ -635,8 +658,7 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
     UpdateGripperActuator(VeMAN_e_CmndState,
                           VeMAN_e_AttndState,
                           LeMAN_b_DropObjectSlow,
-                          LeMAN_b_DropObjectFast,
-                          VsMAN_s_Sensors.b_GripperObjDetected);  // Need to come up with object detected
+                          LeMAN_b_DropObjectFast);  // Need to come up with object detected
 
     if ((LeMAN_e_SchedState != VeMAN_e_CmndState) ||
         (LeMAN_e_SchedState != VeMAN_e_AttndState))

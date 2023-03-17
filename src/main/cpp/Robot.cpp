@@ -445,8 +445,7 @@ void Robot::TeleopPeriodic()
     VeADAS_b_CubeAlignButtonRequest = false;
   }
 
-
-if (VsCONT_s_DriverInput.b_ConeAlign && VeADAS_b_ConeAlignButtonPrevious == false)
+  if (VsCONT_s_DriverInput.b_ConeAlign && VeADAS_b_ConeAlignButtonPrevious == false)
   {
     VeADAS_b_ConeAlignButtonPrevious = VeADAS_b_ConeAlignButtonRequest;
     VeADAS_b_ConeAlignButtonRequest = true;
@@ -511,6 +510,7 @@ void Robot::TestPeriodic()
   m_Gripper.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_Gripper]);
   m_IntakeRollers.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeRollers]);
   m_LinearSlide.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide]);
+
 
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
   {

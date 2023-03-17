@@ -2,6 +2,7 @@
 #include <units/time.h>
 #include <units/angle.h>
 #include <units/length.h>
+#include "rev/CANSparkMax.h"
 
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
 #define COMP
@@ -10,10 +11,8 @@
 
 #define NewVision // NewVision or OldVision
 
-
-
 // RoboRio controller execution time
-const double C_ExeTime = 0.02; // Set to match the the default controller loop time of 20 ms
+const double C_ExeTime = 0.02;              // Set to match the the default controller loop time of 20 ms
 const units::second_t C_ExeTime_t = 0.02_s; // Set to match the the default controller loop time of 20 ms
 
 // Amount of time for end game
@@ -26,11 +25,10 @@ const double C_MeterToIn = 39.37008;
 const double C_PI = 3.14159265358979;
 const double C_Tau = 6.28318530717958647;
 
-
 // CAN Device IDs:
 static const int C_PDP_ID = 21;
 static const int frontLeftSteerDeviceID = 1, frontLeftDriveDeviceID = 2, frontRightSteerDeviceID = 4, frontRightDriveDeviceID = 3;
-static const int rearLeftSteerDeviceID  = 5, rearLeftDriveDeviceID  = 6, rearRightSteerDeviceID  = 7, rearRightDriveDeviceID  = 8;
+static const int rearLeftSteerDeviceID = 5, rearLeftDriveDeviceID = 6, rearRightSteerDeviceID = 7, rearRightDriveDeviceID = 8;
 static const int KeMAN_i_LinearSlide = 10;
 static const int KeMAN_i_ArmPivot = 11;
 static const int KeMAN_i_Wrist = 12;
@@ -44,7 +42,6 @@ static const int KeEnc_i_WheelAngleRL = 19;
 static const int KeEnc_i_WheelAngleRR = 20;
 static const int KeINT_i_PCM = 22;
 
-
 // Analog IDs:
 static const int C_MagEncoderFL_ID = 2, C_MagEncoderFR_ID = 1, C_MagEncoderRL_ID = 3, C_MagEncoderRR_ID = 0;
 
@@ -52,10 +49,8 @@ static const int C_MagEncoderFL_ID = 2, C_MagEncoderFR_ID = 1, C_MagEncoderRL_ID
 static const int C_XY_LimitSwitch_ID = 4, C_XD_LimitSwitch_ID = 6, C_IR_Sensor_ID = 3, C_CameraLightControl_ID = 7;
 static const int C_LowerBallSensorID = 5;
 
-
 // PWM IDs:
 static const int C_VanityLight_ID = 0;
-
 
 // Vision Cals:
 #ifdef PracticeBot
@@ -68,20 +63,20 @@ const double C_VisOffsetX = 2.0;
 const double C_VisOffsetY = 3.125;
 const double C_VisOffsetX = 13.5;
 #endif
- const double C_Tag1Y = 1.071626 * C_MeterToIn; // all these come in meters, we need them in inches to match odometry
-  // coord of tag ID 2 and 7
- const double C_Tag2Y = 2.748026 * C_MeterToIn;
-  // coord of tag ID 3 and 6
- const double C_Tag3Y = 4.424426 * C_MeterToIn;
- const double C_TagXred = 15.513558 * C_MeterToIn;
-const  double C_TagXblue = 1.02743 * C_MeterToIn;
+const double C_Tag1Y = 1.071626 * C_MeterToIn; // all these come in meters, we need them in inches to match odometry
+                                               // coord of tag ID 2 and 7
+const double C_Tag2Y = 2.748026 * C_MeterToIn;
+// coord of tag ID 3 and 6
+const double C_Tag3Y = 4.424426 * C_MeterToIn;
+const double C_TagXred = 15.513558 * C_MeterToIn;
+const double C_TagXblue = 1.02743 * C_MeterToIn;
 const double C_TagAlignBasePower = 0.02;
-const double C_TagScoreOffsetXCube = 34.0; //that little space our bumper is against to score cubes
-const double C_TagScoreOffsetYCube = 0.0;  
-const double C_TagScoreOffsetXCone = 35.5; //that little space our bumper is against to score cubes
-const double C_TagScoreOffsetYCone = 29.0 ; 
+const double C_TagScoreOffsetXCube = 34.0; // that little space our bumper is against to score cubes
+const double C_TagScoreOffsetYCube = 0.0;
+const double C_TagScoreOffsetXCone = 35.5; // that little space our bumper is against to score cubes
+const double C_TagScoreOffsetYCone = 29.0;
 
-const double K_MoveToTagMovementDeadbandX = 0.5; // inches
+const double K_MoveToTagMovementDeadbandX = 0.5;  // inches
 const double K_MoveToTagMovementDeadbandY = 0.05; // inches
 
 // const double K_MoveToTagRotationDeadband = 2.0; // degrees
@@ -93,8 +88,6 @@ const double K_VisionYawLagFilter[E_CamLocSz] = {0.05,  // -> top
 /* K_VisionTargetDistLagFilter: First order lag filter coefficents for distance calculation. */
 const double K_VisionTargetDistLagFilter[E_CamLocSz] = {0.5,  // -> top
                                                         0.5}; // -> bottom
-
-
 
 // Cals / constants for Light Control
 /* K_CameraLightDelay: Delay time between enabling the camera light and allowing the data feed to be used. [seconds] */
@@ -118,13 +111,12 @@ const double C_BlinkinLED_LightChaseGray = -0.27;
 /* C_BlinkinLED_RainbowWithGlitter: Constant for the Blinkin to command rainbow with glitter.  */
 const double C_BlinkinLED_RainbowWithGlitter = -0.89;
 
-
 // Gyro cals
 /* KeGRY_ms_GyroTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */
-const int KeGRY_ms_GyroTimeoutMs = 30; //Waits and reports to DS if fails
+const int KeGRY_ms_GyroTimeoutMs = 30; // Waits and reports to DS if fails
 
 // Encoder / speed calculation related cals
-const double KeENC_k_ReductionRatio = 8.33; //Reduction ratio for swerve drive module
+const double KeENC_k_ReductionRatio = 8.33;       // Reduction ratio for swerve drive module
 const double KeENC_In_WheelCircumfrence = 12.566; // Circumferance of wheel, in inches (4in nominal diameter)
 
 /* KeENC_k_SD_VoltageToAngle: Gain that converts the measured voltage of the absolute encoder for the swerve drive angle measurement to an equivalent angle in degrees. (practice bot only) */
@@ -138,13 +130,16 @@ const double KeROBO_t_MotorTimeoutMs = 30;
 const double KeENC_k_LinearSlideEncoderScaler = 0.001218;
 
 /* KeENC_k_ArmPivot: Scalar multiplied against the encoder. */
-const double KeENC_k_ArmPivot = 3.44;  
+const double KeENC_k_ArmPivot = 3.44;
 
 /* KeENC_RPM_IntakeROllers: Finds the speed of the intake rollers. */
 const double KeENC_RPM_IntakeRollers = 1.0;
 
 /* KeENC_RPM_Gripper: Finds the speed of the gripper. */
 const double KeENC_RPM_Gripper = 1.0;
+
+// the rpm where under it we consider the gripper holding something
+const double C_GripperRPMThreshold = 1.0;
 
 /* KeENC_Deg_Wrist: Actual position of the wrist, how much we've rotated. */
 const double KeENC_Deg_Wrist = -1.16883;
@@ -157,93 +152,92 @@ const double KeMAN_A_ManipulatorNeoCurrentLim = 20;
 const double KaMAN_k_ManipulatorTestPower[E_MAN_Sz] = {0.08,  // E_MAN_ArmPivot
                                                        0.25,  // E_MAN_LinearSlide
                                                        0.05,  // E_MAN_Wrist
-                                                       -0.15,  // E_MAN_Gripper
-                                                       -0.25,  // E_MAN_IntakeRollers
-                                                       1.0}; // E_MAN_IntakeArm
+                                                       -0.15, // E_MAN_Gripper
+                                                       -0.25, // E_MAN_IntakeRollers
+                                                       1.0};  // E_MAN_IntakeArm
 
 /* KaMAN_k_ArmPivotPID_Gx: PID gains for the Arm Pivot control. */
-const double KaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
-                                                             0.000001, // kI
-                                                             0.002000, // kD
-                                                             0.0,      // kIz
-                                                             0.0,      // kFF
-                                                             1.0,      // kMaxOut
-                                                            -1.0,      // kMinOut
-                                                             1.05,     // kMaxVel
-                                                             0.5,      // kMinVel
-                                                             0.0,      // kMaxAcc
-                                                             0.0};     // kAllErr
-
-/* KaMAN_k_WristPID_Gx: PID gains for the Wrist control. */
-const double KaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
-                                                          0.000001, // kI
-                                                          0.002000, // kD
-                                                          0.0,      // kIz
-                                                          0.0,      // kFF
-                                                          1.0,      // kMaxOut
-                                                         -1.0,      // kMinOut
-                                                          1.05,     // kMaxVel
-                                                          0.5,      // kMinVel
-                                                          0.0,      // kMaxAcc
-                                                          0.0};     // kAllErr
-
-/* KaMAN_k_GripperPID_Gx: PID gains for the Gripper control. */
-const double KaMAN_k_GripperPID_Gx[E_PID_SparkMaxCalSz] = { 0.1,      // kP
+const double KaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz] = {0.1,      // kP
                                                             0.000001, // kI
                                                             0.002000, // kD
                                                             0.0,      // kIz
                                                             0.0,      // kFF
                                                             1.0,      // kMaxOut
-                                                           -1.0,      // kMinOut
+                                                            -1.0,     // kMinOut
                                                             1.05,     // kMaxVel
                                                             0.5,      // kMinVel
                                                             0.0,      // kMaxAcc
                                                             0.0};     // kAllErr
 
-/* KaMAN_k_IntakeRollersPID_Gx: PID gains for the Intake Rollers control. */
-const double KaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz] = { 0.00070,  // kP
-                                                                  0.000001, // kI
-                                                                  0.0,      // kD
-                                                                  0.0,      // kIz
-                                                                  0.0,      // kFF
-                                                                  1.0,      // kMaxOut
-                                                                 -1.0,      // kMinOut
-                                                                  0.0,      // kMaxVel
-                                                                  0.0,      // kMinVel
-                                                                 55.0,      // kMaxAcc
-                                                                  0.0};     // kAllErr
+/* KaMAN_k_WristPID_Gx: PID gains for the Wrist control. */
+const double KaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz] = {0.1,      // kP
+                                                         0.000001, // kI
+                                                         0.002000, // kD
+                                                         0.0,      // kIz
+                                                         0.0,      // kFF
+                                                         1.0,      // kMaxOut
+                                                         -1.0,     // kMinOut
+                                                         1.05,     // kMaxVel
+                                                         0.5,      // kMinVel
+                                                         0.0,      // kMaxAcc
+                                                         0.0};     // kAllErr
 
+/* KaMAN_k_GripperPID_Gx: PID gains for the Gripper control. */
+const double KaMAN_k_GripperPID_Gx[E_PID_SparkMaxCalSz] = {0.1,      // kP
+                                                           0.000001, // kI
+                                                           0.002000, // kD
+                                                           0.0,      // kIz
+                                                           0.0,      // kFF
+                                                           1.0,      // kMaxOut
+                                                           -1.0,     // kMinOut
+                                                           1.05,     // kMaxVel
+                                                           0.5,      // kMinVel
+                                                           0.0,      // kMaxAcc
+                                                           0.0};     // kAllErr
+
+/* KaMAN_k_IntakeRollersPID_Gx: PID gains for the Intake Rollers control. */
+const double KaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz] = {0.00070,  // kP
+                                                                 0.000001, // kI
+                                                                 0.0,      // kD
+                                                                 0.0,      // kIz
+                                                                 0.0,      // kFF
+                                                                 1.0,      // kMaxOut
+                                                                 -1.0,     // kMinOut
+                                                                 0.0,      // kMaxVel
+                                                                 0.0,      // kMinVel
+                                                                 55.0,     // kMaxAcc
+                                                                 0.0};     // kAllErr
 
 /* KaMAN_k_LinearSlidePID_Gx: PID gains for the linear slide control. */
-const double KaMAN_k_LinearSlidePID_Gx[E_PID_CalSz] = { 0.7,       // P Gx 45
-                                                        0.0000010, // I Gx
-                                                        0.000000,  // D Gx 
-                                                        0.80,      // P UL
-                                                       -0.80,      // P LL
-                                                        0.05,      // I UL
-                                                       -0.05,      // I LL
-                                                        0.2,       // D UL
-                                                       -0.2,       // D LL
-                                                        0.80,      // Max upper
-                                                       -0.80};     // Max lower
+const double KaMAN_k_LinearSlidePID_Gx[E_PID_CalSz] = {0.7,       // P Gx 45
+                                                       0.0000010, // I Gx
+                                                       0.000000,  // D Gx
+                                                       0.80,      // P UL
+                                                       -0.80,     // P LL
+                                                       0.05,      // I UL
+                                                       -0.05,     // I LL
+                                                       0.2,       // D UL
+                                                       -0.2,      // D LL
+                                                       0.80,      // Max upper
+                                                       -0.80};    // Max lower
 
 /* KaMAN_Deg_ArmPivotAngle: sets Arm Pivot final positons for each state */
-const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,   // Sched - Init
-                                                        0.0,   // Sched - Driving
-                                                        0.0,   // Sched - Main Intake
-                                                        0.0,   // Sched - Floor Cone Intake
-                                                        0.0,   // Sched - Mid Cube Intake
-                                                        0.0,   // Sched - Mid Cone Intake
-                                                        0.0,   // Sched - High Cube Drop
-                                                        0.0,   // Sched - Low Cube Drop
-                                                        0.0,   // Sched - High Cone Drop
-                                                        0.0};  // Sched - Low Cone Drop
+const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Sched - Init
+                                                        0.0,  // Sched - Driving
+                                                        0.0,  // Sched - Main Intake
+                                                        0.0,  // Sched - Floor Cone Intake
+                                                        0.0,  // Sched - Mid Cube Intake
+                                                        0.0,  // Sched - Mid Cone Intake
+                                                        0.0,  // Sched - High Cube Drop
+                                                        0.0,  // Sched - Low Cube Drop
+                                                        0.0,  // Sched - High Cone Drop
+                                                        0.0}; // Sched - Low Cone Drop
 
 /* KeMAN_DegS_ArmPivotFastRate: Sets Arm Pivot transition rate. */
-const double KeMAN_DegS_ArmPivotFastRate = 0.28;  // 0.15
+const double KeMAN_DegS_ArmPivotFastRate = 0.28; // 0.15
 
 /* KeMAN_DegS_ArmPivotSlowRate: Sets Arm Pivot transition rate. */
-const double KeMAN_DegS_ArmPivotSlowRate = 0.15;  // 0.15
+const double KeMAN_DegS_ArmPivotSlowRate = 0.15; // 0.15
 
 /* KaMAN_Deg_ArmPivotDb: Sets Arm Pivot dead bandl */
 const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {4.0,  // Sched - Init
@@ -258,16 +252,16 @@ const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {4.0,  // Sched - Init
                                                      4.0}; // Sched - Low Cone Drop
 
 /* KaMAN_In_LinearSlidePosition: sets LInear Slide final positons for each state */
-const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,     // Sched - Init
-                                                             -14.0,     // Sched - Driving
-                                                              2.7,      // Sched - Main Intake
-                                                              0.0,      // Sched - Floor Cone Intake
-                                                             -2.0,      // Sched - Mid Cube Intake
-                                                             -2.0,      // Sched - Mid Cone Intake
-                                                             13.513,    // Sched - High Cube Drop
-                                                              9.93,     // Sched - Low Cube Drop
-                                                              13.513,   // Sched - High Cone Drop
-                                                              9.93};    // Sched - Low Cone Drop
+const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {0.0,    // Sched - Init
+                                                             -14.0,  // Sched - Driving
+                                                             2.7,    // Sched - Main Intake
+                                                             0.0,    // Sched - Floor Cone Intake
+                                                             -2.0,   // Sched - Mid Cube Intake
+                                                             -2.0,   // Sched - Mid Cone Intake
+                                                             13.513, // Sched - High Cube Drop
+                                                             9.93,   // Sched - Low Cube Drop
+                                                             13.513, // Sched - High Cone Drop
+                                                             9.93};  // Sched - Low Cone Drop
 
 /* KeMAN_t_StateTimeOUt: Sets transition time out. */
 const double KeMAN_t_StateTimeOut = 1.5; // Drop-off
@@ -290,19 +284,17 @@ const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.5,  // Sched - Init
                                                        0.5,  // Sched - High Cone Drop
                                                        0.5}; // Sched - Low Cone Drop
 
-
 /* KaMAN_Deg_WristAngle: sets Wrist final angle for each state */
-const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {  0.00,  // Sched - Init
-                                                      90.00,  // Sched - Driving
-                                                      18.11,  // Sched - Main Intake
-                                                       0.0,   // Sched - Floor Cone Intake
-                                                      -10.30, // Sched - Mid Cube Intake
-                                                      -10.30, // Sched - Mid Cone Intake
-                                                      -10.0,  // Sched - High Cube Drop
-                                                     -0.6,    // Sched - Low Cube Drop
-                                                      -10.0,  // Sched - High Cone Drop
-                                                      -0.6};  // Sched - Low Cone Drop
- 
+const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {0.00,   // Sched - Init
+                                                     90.00,  // Sched - Driving
+                                                     18.11,  // Sched - Main Intake
+                                                     0.0,    // Sched - Floor Cone Intake
+                                                     -10.30, // Sched - Mid Cube Intake
+                                                     -10.30, // Sched - Mid Cone Intake
+                                                     -10.0,  // Sched - High Cube Drop
+                                                     -0.6,   // Sched - Low Cube Drop
+                                                     -10.0,  // Sched - High Cone Drop
+                                                     -0.6};  // Sched - Low Cone Drop
 
 /* KeMAN_DegS_WristRate: Sets Wrist transition rate. */
 const double KeMAN_DegS_WristRate = 0.45;
@@ -338,26 +330,25 @@ const double KeMAN_k_GripperIntakeCone = -0.3;
 const double KeMAN_k_GripperIntakeCube = 0.3;
 
 /* KeMAN_k_GripperIntakeholdCone: Sets Gripper intake hold */
-const double KeMAN_k_GripperIntakeholdCone = -0.05; 
+const double KeMAN_k_GripperIntakeholdCone = -0.05;
 
 /* KeMAN_k_GripperIntakeholdCube: Sets Gripper intake hold */
-const double KeMAN_k_GripperIntakeholdCube = 0.05; 
+const double KeMAN_k_GripperIntakeholdCube = 0.05;
 
 /* KeMAN_t_GripperOnTm: Amount of time gripper will remain on after it is initially commanded on. */
 const double KeMAN_t_GripperOnTm = 0.5;
 
 /* KaMAN_RPM_IntakePower: sets Intake power for each state */
-const double KaMAN_RPM_IntakePower[E_MAN_State_Sz] = {  0.0,   // Sched - Init
-                                                        0.0,   // Sched - Driving
-                                                       -0.45,  // Sched - Main Intake
-                                                        0.0,   // Sched - Floor Cone Intake
-                                                        0.0,   // Sched - Mid Cube Intake
-                                                        0.0,   // Sched - Mid Cone Intake
-                                                        0.0,   // Sched - High Cube Drop
-                                                        0.0,   // Sched - Low Cube Drop
-                                                        0.0,   // Sched - High Cone Drop
-                                                        0.0};  // Sched - Low Cone Drop
-
+const double KaMAN_RPM_IntakePower[E_MAN_State_Sz] = {0.0,   // Sched - Init
+                                                      0.0,   // Sched - Driving
+                                                      -0.45, // Sched - Main Intake
+                                                      0.0,   // Sched - Floor Cone Intake
+                                                      0.0,   // Sched - Mid Cube Intake
+                                                      0.0,   // Sched - Mid Cone Intake
+                                                      0.0,   // Sched - High Cube Drop
+                                                      0.0,   // Sched - Low Cube Drop
+                                                      0.0,   // Sched - High Cone Drop
+                                                      0.0};  // Sched - Low Cone Drop
 
 /* KaMAN_e_IntakePneumatics: sets the Pneumatics either true (arm extended) or false (arm retracted) for each state */
 const T_MotorControlType KaMAN_e_IntakePneumatics[E_MAN_State_Sz] = {E_MotorRetract,  // Sched - Init
@@ -372,19 +363,19 @@ const T_MotorControlType KaMAN_e_IntakePneumatics[E_MAN_State_Sz] = {E_MotorRetr
                                                                      E_MotorRetract}; // Sched - Low Cone Drop
 
 /* KaMAN_e_ControllingTable: Table that contains the commanded state of the manipulator and intake based on the current attained state and schedueld state. */
-const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_MAN_State_Sz][E_MAN_State_Sz] =  // [Sched][Attnd]
-  {
-    {E_MAN_Init,    E_MAN_Init,            E_MAN_MainIntake,  E_MAN_FloorConeIntake,  E_MAN_MidCubeIntake,   E_MAN_MidConeIntake,   E_MAN_HighCubeDrop,    E_MAN_LowCubeDrop,     E_MAN_HighConeDrop,    E_MAN_LowConeDrop},     // Sched - Init
-    {E_MAN_Driving, E_MAN_Driving,         E_MAN_Driving,     E_MAN_Driving,          E_MAN_Driving,         E_MAN_Driving,         E_MAN_Driving,         E_MAN_Driving,         E_MAN_Driving,         E_MAN_Driving},         // Sched - Driving
-    {E_MAN_Driving, E_MAN_MainIntake,      E_MAN_MainIntake,  E_MAN_Driving,          E_MAN_Driving,         E_MAN_Driving,         E_MAN_Driving,         E_MAN_Driving,         E_MAN_Driving,         E_MAN_Driving},         // Sched - Main Intake
-    {E_MAN_Driving, E_MAN_FloorConeIntake, E_MAN_Driving,     E_MAN_FloorConeIntake,  E_MAN_FloorConeIntake, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake}, // Sched - Floor Cone Intake
-    {E_MAN_Driving, E_MAN_MidCubeIntake,   E_MAN_Driving,     E_MAN_MidCubeIntake,    E_MAN_MidCubeIntake,   E_MAN_MidCubeIntake,   E_MAN_MidCubeIntake,   E_MAN_MidCubeIntake,   E_MAN_MidCubeIntake,   E_MAN_MidCubeIntake},   // Sched - Mid Cube Intake
-    {E_MAN_Driving, E_MAN_MidConeIntake,   E_MAN_Driving,     E_MAN_MidConeIntake,    E_MAN_MidConeIntake,   E_MAN_MidConeIntake,   E_MAN_MidConeIntake,   E_MAN_Driving,         E_MAN_MidConeIntake,   E_MAN_MidConeIntake},   // Sched - Mid Cone Intake
-    {E_MAN_Driving, E_MAN_HighCubeDrop,    E_MAN_Driving,     E_MAN_HighCubeDrop,     E_MAN_HighCubeDrop,    E_MAN_HighCubeDrop,    E_MAN_HighCubeDrop,    E_MAN_HighCubeDrop,    E_MAN_HighCubeDrop,    E_MAN_HighCubeDrop},    // Sched - High Cube Drop
-    {E_MAN_Driving, E_MAN_LowCubeDrop,     E_MAN_Driving,     E_MAN_LowCubeDrop,      E_MAN_LowCubeDrop,     E_MAN_LowCubeDrop,     E_MAN_LowCubeDrop,     E_MAN_LowCubeDrop,     E_MAN_LowCubeDrop,     E_MAN_LowCubeDrop},     // Sched - Low Cube Drop
-    {E_MAN_Driving, E_MAN_HighConeDrop,    E_MAN_Driving,     E_MAN_HighConeDrop,     E_MAN_HighConeDrop,    E_MAN_HighConeDrop,    E_MAN_HighConeDrop,    E_MAN_HighConeDrop,    E_MAN_HighConeDrop,    E_MAN_HighConeDrop},    // Sched - High Cone Drop
-    {E_MAN_Driving, E_MAN_LowConeDrop,     E_MAN_Driving,     E_MAN_LowConeDrop,      E_MAN_LowConeDrop,     E_MAN_LowConeDrop,     E_MAN_LowConeDrop,     E_MAN_LowConeDrop,     E_MAN_LowConeDrop,     E_MAN_LowConeDrop}      // Sched - Low Cone Drop
-  };
+const TeMAN_ManipulatorStates KaMAN_e_ControllingTable[E_MAN_State_Sz][E_MAN_State_Sz] = // [Sched][Attnd]
+    {
+        {E_MAN_Init, E_MAN_Init, E_MAN_MainIntake, E_MAN_FloorConeIntake, E_MAN_MidCubeIntake, E_MAN_MidConeIntake, E_MAN_HighCubeDrop, E_MAN_LowCubeDrop, E_MAN_HighConeDrop, E_MAN_LowConeDrop},                              // Sched - Init
+        {E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving},                                                                 // Sched - Driving
+        {E_MAN_Driving, E_MAN_MainIntake, E_MAN_MainIntake, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving, E_MAN_Driving},                                                           // Sched - Main Intake
+        {E_MAN_Driving, E_MAN_FloorConeIntake, E_MAN_Driving, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake, E_MAN_FloorConeIntake}, // Sched - Floor Cone Intake
+        {E_MAN_Driving, E_MAN_MidCubeIntake, E_MAN_Driving, E_MAN_MidCubeIntake, E_MAN_MidCubeIntake, E_MAN_MidCubeIntake, E_MAN_MidCubeIntake, E_MAN_MidCubeIntake, E_MAN_MidCubeIntake, E_MAN_MidCubeIntake},                 // Sched - Mid Cube Intake
+        {E_MAN_Driving, E_MAN_MidConeIntake, E_MAN_Driving, E_MAN_MidConeIntake, E_MAN_MidConeIntake, E_MAN_MidConeIntake, E_MAN_MidConeIntake, E_MAN_Driving, E_MAN_MidConeIntake, E_MAN_MidConeIntake},                       // Sched - Mid Cone Intake
+        {E_MAN_Driving, E_MAN_HighCubeDrop, E_MAN_Driving, E_MAN_HighCubeDrop, E_MAN_HighCubeDrop, E_MAN_HighCubeDrop, E_MAN_HighCubeDrop, E_MAN_HighCubeDrop, E_MAN_HighCubeDrop, E_MAN_HighCubeDrop},                         // Sched - High Cube Drop
+        {E_MAN_Driving, E_MAN_LowCubeDrop, E_MAN_Driving, E_MAN_LowCubeDrop, E_MAN_LowCubeDrop, E_MAN_LowCubeDrop, E_MAN_LowCubeDrop, E_MAN_LowCubeDrop, E_MAN_LowCubeDrop, E_MAN_LowCubeDrop},                                 // Sched - Low Cube Drop
+        {E_MAN_Driving, E_MAN_HighConeDrop, E_MAN_Driving, E_MAN_HighConeDrop, E_MAN_HighConeDrop, E_MAN_HighConeDrop, E_MAN_HighConeDrop, E_MAN_HighConeDrop, E_MAN_HighConeDrop, E_MAN_HighConeDrop},                         // Sched - High Cone Drop
+        {E_MAN_Driving, E_MAN_LowConeDrop, E_MAN_Driving, E_MAN_LowConeDrop, E_MAN_LowConeDrop, E_MAN_LowConeDrop, E_MAN_LowConeDrop, E_MAN_LowConeDrop, E_MAN_LowConeDrop, E_MAN_LowConeDrop}                                  // Sched - Low Cone Drop
+};
 
 /* Ball handler (BH) cals: */
 /* K_BH_IntakePower: Amount of power to apply to intake wheels.  Must be 0 to 1. */
@@ -396,23 +387,23 @@ const double K_BH_ElevatorPowerUp = 0.9;
 /* K_BH_ElevatorPowerDwn: Amount of power to apply to elevator band when commanded down.  Must be -1 to 0. */
 const double K_BH_ElevatorPowerDwn = -0.9;
 
-/* K_BH_LauncherMinCmndSpd: Min speed for launcher control.  Below this speed, launcher will transition to 0 power.  Also 
-   acts as the indicator for allowing the elevator to run.  If the commanded launcher speed is above this threshold, then 
+/* K_BH_LauncherMinCmndSpd: Min speed for launcher control.  Below this speed, launcher will transition to 0 power.  Also
+   acts as the indicator for allowing the elevator to run.  If the commanded launcher speed is above this threshold, then
    we will use the upper ball sensor to determine when to allow the elevator to proceed based on launcher RPM deadband.  */
 const double K_BH_LauncherMinCmndSpd = 10;
 
 /* K_BH_LauncherPID_Gx: PID gains for the launcher. */
-const double K_BH_LauncherPID_Gx[E_PID_SparkMaxCalSz] = { 0.00055,  // kP
-                                                          0.000001, // kI
-                                                          0.0,      // kD
-                                                          0.0,      // kIz
-                                                          0.0,      // kFF
-                                                          1.0,      // kMaxOutput
-                                                         -1.0,      // kMinOutput
-                                                          0.0,      // kMaxVel
-                                                          0.0,      // kMinVel
-                                                         55.0,      // kMaxAcc
-                                                          0.0};     // kAllErr
+const double K_BH_LauncherPID_Gx[E_PID_SparkMaxCalSz] = {0.00055,  // kP
+                                                         0.000001, // kI
+                                                         0.0,      // kD
+                                                         0.0,      // kIz
+                                                         0.0,      // kFF
+                                                         1.0,      // kMaxOutput
+                                                         -1.0,     // kMinOutput
+                                                         0.0,      // kMaxVel
+                                                         0.0,      // kMinVel
+                                                         55.0,     // kMaxAcc
+                                                         0.0};     // kAllErr
 
 /* K_BH_LauncherSpeedAxis: Launcher speed axis for K_BH_LauncherSpeed.  Distance is in the unit from the camera.  Comments reflect actual measured distance. */
 const double K_BH_LauncherSpeedAxis[4] = {2.52,  // 6 ft 6in
@@ -435,11 +426,9 @@ const double K_BH_LauncherManualHi = 3300;
 /* K_BH_LauncherManualLo: Manual speed single point. */
 const double K_BH_LauncherManualLo = 1600;
 
-/* K_BH_LauncherSpeedDb: Deadband around the commanded launcher speed (in RPM).  
+/* K_BH_LauncherSpeedDb: Deadband around the commanded launcher speed (in RPM).
                          Used to indicate when a ball can be launched. */
 const double K_BH_LauncherSpeedDb = 40;
-
-
 
 // Constants and cals for Swerve Drive (SD) control:
 /* C_SD_L: Robot wheelbase. [meters] */
@@ -454,25 +443,25 @@ const double C_SD_R = 0.8441;
 /* K_SD_SteerMotorCurrentLimit: Max allowed current going to each swerve drive steer motor. */
 const double K_SD_SteerMotorCurrentLimit = 25;
 
-/* KeENC_Deg_SD_WheelOffsetAngle: Offset angle for each respective corder of the swerve drive wheel.  This is the angle 
+/* KeENC_Deg_SD_WheelOffsetAngle: Offset angle for each respective corder of the swerve drive wheel.  This is the angle
    reading from the absolute encoder that is indicated in order for the wheel to point straight. */
-const double KeENC_Deg_SD_WheelOffsetAngle[E_RobotCornerSz] = {152.578125,   // E_FrontLeft
-                                                               212.783203,   // E_FrontRight 
-                                                               118.740234,   // E_RearLeft
-                                                               76.289063};  // E_RearRight
+const double KeENC_Deg_SD_WheelOffsetAngle[E_RobotCornerSz] = {152.578125, // E_FrontLeft
+                                                               212.783203, // E_FrontRight
+                                                               118.740234, // E_RearLeft
+                                                               76.289063}; // E_RearRight
 
-/* KeENC_k_WheelOffsetAnglePractieBot: Offset angle for each respective corder of the swerve drive wheel.  This is the angle 
+/* KeENC_k_WheelOffsetAnglePractieBot: Offset angle for each respective corder of the swerve drive wheel.  This is the angle
    reading from the absolute encoder that is indicated in order for the wheel to point straight.  For practice bot only. */
-const double KeENC_k_WheelOffsetAnglePractieBot[E_RobotCornerSz] = { -179.4,  // E_FrontLeft 1.3  -176
+const double KeENC_k_WheelOffsetAnglePractieBot[E_RobotCornerSz] = {-179.4, // E_FrontLeft 1.3  -176
                                                                     -16.1,  // E_FrontRight 163.5
-                                                                     52.9,   // E_RearLeft 230.8  -127.1
-                                                                     96.9};  // E_RearRight 282.0
+                                                                    52.9,   // E_RearLeft 230.8  -127.1
+                                                                    96.9};  // E_RearRight 282.0
 
 /* K_SD_WheelGx: Gain multiplied by each calculated desired speed.  Intended to account for variation in wheel size. */
 const double K_SD_WheelGx[E_RobotCornerSz] = {-1.0,  // E_FrontLeft
-                                              -1.0,  // E_FrontRight 
+                                              -1.0,  // E_FrontRight
                                               -1.0,  // E_RearLeft // +
-                                              -1.0}; // E_RearRight 
+                                              -1.0}; // E_RearRight
 
 /* K_SD_MinGain: Min gain applied to the wheel speed for swerve drive. */
 const double K_SD_MinGain = 0.2;
@@ -480,19 +469,18 @@ const double K_SD_MinGain = 0.2;
 /* K_SD_MaxGain: Max gain allowed for swerve drive control. */
 const double K_SD_MaxGain = 0.7;
 
-
 /* Ke_SD_AutoCorrectPID_Gx: PID gains for the auto correct.  PID control is within the RoboRio.  */
-const double Ke_SD_AutoCorrectPID_Gx[E_PID_CalSz] = { 40.0,      // P Gx  75
-                                                       0.5,  // I Gx 0.03
-                                                       0.0005, // D Gx 0.0005
-                                                      300.0,       // P UL 0.6
-                                                     -300.0,       // P LL -0.4
-                                                     300.0,      // I UL 0.12
-                                                    -300.0,      // I LL -0.12
-                                                      1.0,       // D UL 0.5
-                                                     -1.0,       // D LL -0.5
-                                                     400.0,       // Max upper 0.9
-                                                    -400.0};      // Max lower -0.9
+const double Ke_SD_AutoCorrectPID_Gx[E_PID_CalSz] = {40.0,    // P Gx  75
+                                                     0.5,     // I Gx 0.03
+                                                     0.0005,  // D Gx 0.0005
+                                                     300.0,   // P UL 0.6
+                                                     -300.0,  // P LL -0.4
+                                                     300.0,   // I UL 0.12
+                                                     -300.0,  // I LL -0.12
+                                                     1.0,     // D UL 0.5
+                                                     -1.0,    // D LL -0.5
+                                                     400.0,   // Max upper 0.9
+                                                     -400.0}; // Max lower -0.9
 
 /* Ke_k_SD_AutoCorrectMaxWheelOffset: Max percent offset of wheelspeed.*/
 const double Ke_k_SD_AutoCorrectMaxWheelOffset = 0.8;
@@ -500,50 +488,49 @@ const double Ke_k_SD_AutoCorrectMaxWheelOffset = 0.8;
 /* K_SD_WheelMaxSpeed: Max RPM speed of the swerve drive wheel motor.*/
 const double K_SD_WheelMaxSpeed = 6000;
 
-/* Ke_RPM_SD_WheelMinCmndSpeed: Min RPM speed of the swerve drive wheel to keep it under PID control.  
-  If the absolute value of the command, wheels will transition to 0 power (but still in brake 
+/* Ke_RPM_SD_WheelMinCmndSpeed: Min RPM speed of the swerve drive wheel to keep it under PID control.
+  If the absolute value of the command, wheels will transition to 0 power (but still in brake
   mode).  There is a corresponding actual speed threshold. [RPM] */
 const double Ke_RPM_SD_WheelMinCmndSpeed = 0.2;
 
-
 /* K_SD_WheelSpeedPID_V2_Gx: PID gains for the driven wheels that is within the motor controllers. */
-const double K_SD_WheelSpeedPID_V2_Gx[E_PID_SparkMaxCalSz] = { 0.000350, // kP
-                                                               0.000001, // kI
-                                                               0.000001, // kD
-                                                               0.0,      // kIz
-                                                               0.0,      // kFF
-                                                               1.0,      // kMaxOutput
-                                                              -1.0,      // kMinOutput
-                                                               0.0,      // kMaxVel
-                                                               0.0,      // kMinVel
-                                                              150.0,     // kMaxAcc
-                                                               0.0};     // kAllErr
+const double K_SD_WheelSpeedPID_V2_Gx[E_PID_SparkMaxCalSz] = {0.000350, // kP
+                                                              0.000001, // kI
+                                                              0.000001, // kD
+                                                              0.0,      // kIz
+                                                              0.0,      // kFF
+                                                              1.0,      // kMaxOutput
+                                                              -1.0,     // kMinOutput
+                                                              0.0,      // kMaxVel
+                                                              0.0,      // kMinVel
+                                                              150.0,    // kMaxAcc
+                                                              0.0};     // kAllErr
 
 /* K_SD_WheelAnglePID_Gx: PID gains for the angle of the swerve drive wheels.  PID control is within the RoboRio.  */
-const double K_SD_WheelAnglePID_Gx[E_PID_CalSz] = { 0.0035,      // P Gx  0.002
-                                                               0.000001,  // I Gx 0.000001
-                                                               0.000005, // D Gx 0.0000005
-                                                               1.0,       // P UL 0.6
-                                                              -1.0,       // P LL -0.4
-                                                               0.15,      // I UL 0.12
-                                                              -0.15,      // I LL -0.12
-                                                               1.0,       // D UL 0.5
-                                                              -1.0,       // D LL -0.5
-                                                               1.0,       // Max upper 0.9
-                                                              -1.0};      // Max lower -0.9
+const double K_SD_WheelAnglePID_Gx[E_PID_CalSz] = {0.0035,   // P Gx  0.002
+                                                   0.000001, // I Gx 0.000001
+                                                   0.000005, // D Gx 0.0000005
+                                                   1.0,      // P UL 0.6
+                                                   -1.0,     // P LL -0.4
+                                                   0.15,     // I UL 0.12
+                                                   -0.15,    // I LL -0.12
+                                                   1.0,      // D UL 0.5
+                                                   -1.0,     // D LL -0.5
+                                                   1.0,      // Max upper 0.9
+                                                   -1.0};    // Max lower -0.9
 
 /* K_SD_WheelAnglePID_GxPracticeBot: PID gains for the angle of the swerve drive wheels on practice bot.  PID control is within the RoboRio.  */
-const double K_SD_WheelAnglePID_GxPracticeBot[E_PID_CalSz] = { 0.009,      // P Gx  0.002
-                                                               0.000001,  // I Gx 0.000001
-                                                               0.0000005, // D Gx 0.0000005
-                                                               0.9,       // P UL 0.6
-                                                              -0.9,       // P LL -0.4
-                                                               0.15,      // I UL 0.12
-                                                              -0.15,      // I LL -0.12
-                                                               0.7,       // D UL 0.5
-                                                              -0.7,       // D LL -0.5
-                                                               0.9,       // Max upper 0.9
-                                                              -0.9};      // Max lower -0.9
+const double K_SD_WheelAnglePID_GxPracticeBot[E_PID_CalSz] = {0.009,     // P Gx  0.002
+                                                              0.000001,  // I Gx 0.000001
+                                                              0.0000005, // D Gx 0.0000005
+                                                              0.9,       // P UL 0.6
+                                                              -0.9,      // P LL -0.4
+                                                              0.15,      // I UL 0.12
+                                                              -0.15,     // I LL -0.12
+                                                              0.7,       // D UL 0.5
+                                                              -0.7,      // D LL -0.5
+                                                              0.9,       // Max upper 0.9
+                                                              -0.9};     // Max lower -0.9
 
 /* K_SD_DesiredDriveSpeedAxis: Joystick scale axis for K_SD_DesiredDriveSpeed.  */
 const double K_SD_DesiredDriveSpeedAxis[20] = {-0.95,
@@ -556,56 +543,56 @@ const double K_SD_DesiredDriveSpeedAxis[20] = {-0.95,
                                                -0.25,
                                                -0.15,
                                                -0.10,
-                                                0.10,
-                                                0.15,
-                                                0.25,
-                                                0.35,
-                                                0.45,
-                                                0.55,
-                                                0.65,
-                                                0.75,
-                                                0.85,
-                                                0.95};
+                                               0.10,
+                                               0.15,
+                                               0.25,
+                                               0.35,
+                                               0.45,
+                                               0.55,
+                                               0.65,
+                                               0.75,
+                                               0.85,
+                                               0.95};
 
 /* K_SD_DesiredDriveSpeed: Joystick scaled output for swerve drive control.  Used as debouncing and to help limit speeds at lower joystick inputs values.  */
-const double K_SD_DesiredDriveSpeed[20] = {-1.00,  //-0.95
-                                           -0.88,  //-0.85
-                                           -0.77,  //-0.75
-                                           -0.66,  //-0.65
-                                           -0.55,  //-0.55
-                                           -0.44,  //-0.45
-                                           -0.33,  //-0.35
-                                           -0.22,  //-0.25
-                                           -0.11,  //-0.15
-                                            0.00,  //-0.10
-                                            0.00,  // 0.10
-                                            0.11,  // 0.15
-                                            0.22,  // 0.25
-                                            0.33,  // 0.35
-                                            0.44,  // 0.45
-                                            0.55,  // 0.55
-                                            0.66,  // 0.65
-                                            0.77,  // 0.75
-                                            0.88,  // 0.85
-                                            1.00}; // 0.95
+const double K_SD_DesiredDriveSpeed[20] = {-1.00, //-0.95
+                                           -0.88, //-0.85
+                                           -0.77, //-0.75
+                                           -0.66, //-0.65
+                                           -0.55, //-0.55
+                                           -0.44, //-0.45
+                                           -0.33, //-0.35
+                                           -0.22, //-0.25
+                                           -0.11, //-0.15
+                                           0.00,  //-0.10
+                                           0.00,  // 0.10
+                                           0.11,  // 0.15
+                                           0.22,  // 0.25
+                                           0.33,  // 0.35
+                                           0.44,  // 0.45
+                                           0.55,  // 0.55
+                                           0.66,  // 0.65
+                                           0.77,  // 0.75
+                                           0.88,  // 0.85
+                                           1.00}; // 0.95
 
 /* RotateDeadBand: Check Rotation value approx 0 */
-const double K_SD_RotateDeadBand = 0.05; 
+const double K_SD_RotateDeadBand = 0.05;
 
 /* Ke_k_SD_SignX: Determines sign of the calculation for the X component of the swerve drive offset. */
-const double Ke_k_SD_SignX[E_RobotCornerSz] = { 1.0,  // E_FrontLeft
-                                                1.0,  // E_FrontRight 
+const double Ke_k_SD_SignX[E_RobotCornerSz] = {1.0,   // E_FrontLeft
+                                               1.0,   // E_FrontRight
                                                -1.0,  // E_RearLeft
-                                               -1.0}; // E_RearRight 
+                                               -1.0}; // E_RearRight
 
 /* Ke_k_SD_SignY: Determines sign of the calculation for the Y component of the swerve drive offset. */
-const double Ke_k_SD_SignY[E_RobotCornerSz] = { 1.0,  // E_FrontLeft
-                                               -1.0,  // E_FrontRight 
-                                                1.0,  // E_RearLeft
-                                               -1.0}; // E_RearRight 
+const double Ke_k_SD_SignY[E_RobotCornerSz] = {1.0,   // E_FrontLeft
+                                               -1.0,  // E_FrontRight
+                                               1.0,   // E_RearLeft
+                                               -1.0}; // E_RearRight
 
 /* Ke_k_SD_CorrectionGx: Correction gain for swereve drive auto center. */
-const double Ke_k_SD_CorrectionGx = 1; 
+const double Ke_k_SD_CorrectionGx = 1;
 
 /* ADAS Cals */
 /* Upper Targeting Cals (UT) */
@@ -616,7 +603,7 @@ const double K_ADAS_UT_LightDelayTIme = 0.060;
    but multiplied against this gain so that we don't go too far before getting another good value. */
 const double K_ADAS_UT_LostTargetGx = 0.25;
 
-/* K_ADAS_UT_NoTargetError - When we haven't seen anything from the camera, take a guess.  This will 
+/* K_ADAS_UT_NoTargetError - When we haven't seen anything from the camera, take a guess.  This will
    be the percieved error value until we see something good. */
 const double K_ADAS_UT_NoTargetError = 2;
 
@@ -630,7 +617,7 @@ const double K_ADAS_UT_AllowedLauncherError = 100;
 const double K_ADAS_UT_AllowedLauncherTime = 2;
 
 /* K_ADAS_UT_RotateDeadbandAngle: Deadband angle for upper targeting */
-const double K_ADAS_UT_RotateDeadbandAngle = 1.2; //0.9
+const double K_ADAS_UT_RotateDeadbandAngle = 1.2; // 0.9
 
 /* K_ADAS_UT_TargetVisionAngle: This is the desired target angle for the auto vision targeting.  This is due to the offset of the camera. For 2020 - 3.3 */
 const double K_ADAS_UT_TargetVisionAngle = -5.0;
@@ -642,7 +629,7 @@ const double K_ADAS_BT_LightDelayTIme = 0.060;
    but multiplied against this gain so that we don't go too far before getting another good value. */
 const double K_ADAS_BT_LostTargetGx = 0.080;
 
-/* K_ADAS_BT_NoTargetError - When we haven't seen anything from the camera, take a guess.  This will 
+/* K_ADAS_BT_NoTargetError - When we haven't seen anything from the camera, take a guess.  This will
    be the percieved error value until we see something good. */
 const double K_ADAS_BT_NoTargetError = 1.2;
 
@@ -660,11 +647,11 @@ const double K_ADAS_BT_TargetVisionAngle = 2.0;
 
 /* K_ADAS_BT_DriveTimeAxis: This is the estimated distance from the camera that will be scaled against the drive time table K_ADAS_BT_DriveTime. [meters] */
 const double K_ADAS_BT_DriveTimeAxis[6] = {0,
-                                          1,
-                                          2,
-                                          3,
-                                          4,
-                                          5};
+                                           1,
+                                           2,
+                                           3,
+                                           4,
+                                           5};
 
 /* K_ADAS_BT_DriveTime: This is the amount of time to drive forward to capture the ball based on the estimated distance. [seconds] */
 const double K_ADAS_BT_DriveTime[6] = {1.5,
@@ -686,7 +673,6 @@ const double K_ADAS_BT_TimedOutDriveForward = 4.0;
 /* K_ADAS_BT_DriveForwardPct: This is the percent of swerve drive control to go forward to pickup the ball. */
 const double K_ADAS_BT_DriveForwardPct = -0.40;
 
-
 /* K_ADAS_DM_BlindShotTime: This is the amount of time to remain in blind shoot. [Seconds] */
 const double K_ADAS_DM_BlindShotTime = 4.0;
 
@@ -700,10 +686,10 @@ const double K_ADAS_DM_BlindShotIntake = 0.7;
 const double K_ADAS_DM_BlindShotLauncherLow = 1600;
 
 /* K_ADAS_DM_BlindShotLauncher: This is the speed the launcher will be shot at while in shoot. [RPM] */
-const double K_ADAS_DM_BlindShotLauncherHigh = 4000; //4000 is temporary make sure to tune later
+const double K_ADAS_DM_BlindShotLauncherHigh = 4000; // 4000 is temporary make sure to tune later
 
 /* K_ADAS_DM_DriveTimeShort: This is the short drive forward time. [Seconds] */
-const double K_ADAS_DM_DriveTimeShort = 4.5; 
+const double K_ADAS_DM_DriveTimeShort = 4.5;
 
 /* K_ADAS_DM_DriveTimeLong: This is the default drive forward time. [Seconds] */
 const double K_ADAS_DM_DriveTimeLong = 5.5;
@@ -745,30 +731,30 @@ const double KeADAS_t_DM_AutoBalanceDb = 0.06;
 const double KeADAS_t_DM_AutoBalanceHold = 10;
 
 /* KeADAS_k_DM_AutoBalanceFastPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = { 0.037,       // P Gx
-                                                             0.0000007,    // I Gx
-                                                             0.00001,      // D Gx
-                                                             0.8,       // P UL
-                                                            -0.8,       // P LL
-                                                             0.03,      // I UL
-                                                            -0.03,      // I LL
-                                                              0.5,       // D UL
-                                                             -0.5,       // D LL
-                                                              0.6,       // Max upper
-                                                             -0.6};      // Max lower
+const double KeADAS_k_DM_AutoBalanceFastPID[E_PID_CalSz] = {0.037,     // P Gx
+                                                            0.0000007, // I Gx
+                                                            0.00001,   // D Gx
+                                                            0.8,       // P UL
+                                                            -0.8,      // P LL
+                                                            0.03,      // I UL
+                                                            -0.03,     // I LL
+                                                            0.5,       // D UL
+                                                            -0.5,      // D LL
+                                                            0.6,       // Max upper
+                                                            -0.6};     // Max lower
 
 /* KeADAS_k_DM_AutoBalanceSlowPID: This is the PID gains for the auto balance. */
-const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.037,       // P Gx
-                                                             0.0000007,    // I Gx
-                                                             0.00001,      // D Gx
-                                                             0.8,       // P UL
-                                                            -0.8,       // P LL
-                                                             0.03,      // I UL
-                                                            -0.03,      // I LL
-                                                              0.5,       // D UL
-                                                             -0.5,       // D LL
-                                                              0.60,       // Max upper
-                                                             -0.60};      // Max lower
+const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = {0.037,     // P Gx
+                                                            0.0000007, // I Gx
+                                                            0.00001,   // D Gx
+                                                            0.8,       // P UL
+                                                            -0.8,      // P LL
+                                                            0.03,      // I UL
+                                                            -0.03,     // I LL
+                                                            0.5,       // D UL
+                                                            -0.5,      // D LL
+                                                            0.60,      // Max upper
+                                                            -0.60};    // Max lower
 
 /* KeADAS_t_DM_TagCenteringDb: This is the deband position for the DM drive state auto centering. [sec] */
 const double KeADAS_t_DM_TagCenteringDb = 0.1;
@@ -817,27 +803,27 @@ const double KeADAS_t_DM_StopTm = 0.1;
 /*  Rotation calibrations */
 /* K_DesiredRotateSpeedAxis - This is the effective command axis, function of error calculation, in degrees */
 const double K_DesiredRotateSpeedAxis[10] = {-20.0,
-                                              -4.0,
-                                              -2.0,
-                                              -1.0,
-                                              -0.2,
-                                               0.2,
-                                               1.0,
-                                               2.0,
-                                               4.0,
-                                              20.0};
+                                             -4.0,
+                                             -2.0,
+                                             -1.0,
+                                             -0.2,
+                                             0.2,
+                                             1.0,
+                                             2.0,
+                                             4.0,
+                                             20.0};
 
 /* K_DesiredRotateSpeed - This is the effective command, equivalent to the rotate joystick */
 const double K_DesiredRotateSpeed[10] = {-0.60,  // -20.0
                                          -0.12,  //  -4.0
                                          -0.035, //  -2.0
                                          -0.018, //  -1.0
-                                          0.02,  //  -0.2
-                                          0.02,  //   0.2
-                                          0.018, //   1.0
-                                          0.035, //   2.0
-                                          0.012, //   4.0
-                                          0.60}; //  20.0
+                                         0.02,   //  -0.2
+                                         0.02,   //   0.2
+                                         0.018,  //   1.0
+                                         0.035,  //   2.0
+                                         0.012,  //   4.0
+                                         0.60};  //  20.0
 
 /* K_DesiredAutoRotateSpeedAxis - This is the effective command axis, function of error calculation, in degrees */
 const double K_DesiredAutoRotateSpeedAxis[10] = {-4.0,
@@ -845,34 +831,33 @@ const double K_DesiredAutoRotateSpeedAxis[10] = {-4.0,
                                                  -2.0,
                                                  -1.0,
                                                  -0.2,
-                                                  0.2,
-                                                  1.0,
-                                                  2.0,
-                                                  3.0,
-                                                  4.0};
+                                                 0.2,
+                                                 1.0,
+                                                 2.0,
+                                                 3.0,
+                                                 4.0};
 
 /* K_DesiredRotateSpeed - This is the effective command, equivalent to the rotate joystick */
 const double K_DesiredAutoRotateSpeed[10] = {-0.15,  //  -4.0
                                              -0.02,  //  -3.0
                                              -0.008, //  -2.0
                                              -0.005, //  -1.0
-                                              0.00,  //  -0.2
-                                              0.00,  //   0.2
+                                             0.00,   //  -0.2
+                                             0.00,   //   0.2
                                              -0.005, //   1.0
-                                              0.008, //   2.0
-                                              0.02,  //   3.0
-                                              0.15}; //   4.0
-
+                                             0.008,  //   2.0
+                                             0.02,   //   3.0
+                                             0.15};  //   4.0
 
 /************************************************************************************************************************
- * 
- * 
- * 
+ *
+ *
+ *
  * Depricated cals below, needs to be cleaned up
- * 
- * 
- * 
-*************************************************************************************************************************/
+ *
+ *
+ *
+ *************************************************************************************************************************/
 
 // This is the desired target angle for the auto vision targeting.  This is due to the offset of the camera. For 2020 - 3.3
 const double K_TargetVisionAngleUpper = 0.0;
@@ -891,10 +876,6 @@ const double K_TargetVisionUpperRollerErrorMax = 200;
 
 const double K_TargetVisionLowerRollerErrorMax = 200;
 
-
-
-
-
 #define K_BallLauncherDistanceSz 5
 #define K_BallLauncherAngleSz 3
 
@@ -903,58 +884,53 @@ const double K_BallLauncherDistanceAxis[K_BallLauncherDistanceSz] = {400, 700, 9
 const double K_BallLauncherAngleAxis[K_BallLauncherAngleSz] = {-45, 0, 45};
 
 const double K_BallLauncherRobotAngle[K_BallLauncherDistanceSz][K_BallLauncherAngleSz] =
-  {
-    {45, 0, -45},
-    {45, 0, -45},
-    {45, 0, -45},
-    {45, 0, -45},
-    {45, 0, -45}
-  };
+    {
+        {45, 0, -45},
+        {45, 0, -45},
+        {45, 0, -45},
+        {45, 0, -45},
+        {45, 0, -45}};
 
 const double K_BallLauncherUpperSpeed[K_BallLauncherDistanceSz][K_BallLauncherAngleSz] =
-  {
-    {-1800, -1800, -1800},
-    {-1800, -1800, -1800},
-    {-1800, -1800, -1800},
-    {-2000, -2000, -2000},
-    {-2850, -2850, -2850}
-  };
+    {
+        {-1800, -1800, -1800},
+        {-1800, -1800, -1800},
+        {-1800, -1800, -1800},
+        {-2000, -2000, -2000},
+        {-2850, -2850, -2850}};
 
 const double K_BallLauncherLowerSpeed[K_BallLauncherDistanceSz][K_BallLauncherAngleSz] =
-  {
-    {-2100, -2100, -2100},
-    {-2100, -2100, -2100},
-    {-2100, -2100, -2100},
-    {-2500, -2500, -2500},
-    {-2900, -2900, -2900}
-  };
-
-
+    {
+        {-2100, -2100, -2100},
+        {-2100, -2100, -2100},
+        {-2100, -2100, -2100},
+        {-2500, -2500, -2500},
+        {-2900, -2900, -2900}};
 
 /* Auton specific cals */
-const double K_k_AutonX_PID_Gx[E_PID_CalSz] = { 0.18,       // P Gx
-                                                0.000001,    // I Gx
-                                                0.00012,      // D Gx
-                                                0.8,       // P UL
-                                               -0.8,       // P LL
-                                                0.05,      // I UL
-                                               -0.05,      // I LL
-                                                0.5,       // D UL
-                                               -0.5,       // D LL
-                                                1.0,       // Max upper
-                                               -1.0};      // Max lower
+const double K_k_AutonX_PID_Gx[E_PID_CalSz] = {0.18,     // P Gx
+                                               0.000001, // I Gx
+                                               0.00012,  // D Gx
+                                               0.8,      // P UL
+                                               -0.8,     // P LL
+                                               0.05,     // I UL
+                                               -0.05,    // I LL
+                                               0.5,      // D UL
+                                               -0.5,     // D LL
+                                               1.0,      // Max upper
+                                               -1.0};    // Max lower
 
-const double K_k_AutonY_PID_Gx[E_PID_CalSz] = { 0.18,       // P Gx
-                                                0.000001,    // I Gx
-                                                0.00012,      // D Gx
-                                                0.8,       // P UL
-                                               -0.8,       // P LL
-                                                0.05,      // I UL
-                                               -0.05,      // I LL
-                                                0.5,       // D UL
-                                               -0.5,       // D LL
-                                                1.0,       // Max upper
-                                               -1.0};      // Max lower
+const double K_k_AutonY_PID_Gx[E_PID_CalSz] = {0.18,     // P Gx
+                                               0.000001, // I Gx
+                                               0.00012,  // D Gx
+                                               0.8,      // P UL
+                                               -0.8,     // P LL
+                                               0.05,     // I UL
+                                               -0.05,    // I LL
+                                               0.5,      // D UL
+                                               -0.5,     // D LL
+                                               1.0,      // Max upper
+                                               -1.0};    // Max lower
 
 // #include "MotionProfiles/K_BarrelRacing_V55A25_T.hpp"
 // #include "MotionProfiles/K_BarrelRacing_V55A25_X.hpp"
@@ -988,7 +964,3 @@ const double K_k_AutonY_PID_Gx[E_PID_CalSz] = { 0.18,       // P Gx
 // #include "MotionProfiles/K_Slalom_V125A50_T.hpp"
 // #include "MotionProfiles/K_Slalom_V125A50_X.hpp"
 // #include "MotionProfiles/K_Slalom_V125A50_Y.hpp"
-
-
-
-
