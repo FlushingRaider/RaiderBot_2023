@@ -235,8 +235,7 @@ bool ADAS_MN_Main(T_RobotState         L_RobotState,
   case E_ADAS_DM_StopDeployCube:
     LeADAS_b_MN_Complete = ManipulatorScheduelerAutonAction(LeADAS_e_MAN_ReqAction);
   break;
-  case E_ADAS_DM_CubeAlign:
-  case E_ADAS_DM_ConeAlign:
+
   case E_ADAS_DM_AutoBalance:
   case E_ADAS_MoveOffsetTag:
   case E_ADAS_DM_DriveStraight:

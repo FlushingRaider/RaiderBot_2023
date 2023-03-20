@@ -221,14 +221,11 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
   {
     if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDriveStraight)
     {
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
-          (VeADAS_b_StateComplete == false) &&
-          (VeADAS_b_AutonOncePerTrigger == false))
+      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_DriveStraight;
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveStraight) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveStraight) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_Disabled;
         VeADAS_b_StateComplete = true;
@@ -237,19 +234,15 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     }
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDropCubeDriveFwd)
     {
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
-          (VeADAS_b_StateComplete == false) &&
-          (VeADAS_b_AutonOncePerTrigger == false))
+      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_DriveRevStraight;
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevStraight) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevStraight) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_DriveStraightFar;
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveStraightFar) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveStraightFar) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_Disabled;
         VeADAS_b_StateComplete = true;
@@ -258,24 +251,19 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     }
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDriveOverRampAutoBalV2)
     {
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
-          (VeADAS_b_StateComplete == false) &&
-          (VeADAS_b_AutonOncePerTrigger == false))
+      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_DriveRevStraight; // Backup to push cube into goal
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevStraight) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevStraight) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_MountDismountRamp; // Drive forward and over ramp
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountDismountRamp) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountDismountRamp) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance; // With the bot semi mounted, auto balance
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_AutoBalance) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_AutoBalance) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_Disabled;
         VeADAS_b_StateComplete = true;
@@ -284,29 +272,23 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     }
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDeliverCubeDriveOnRampAutoBal)
     {
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) &&
-          (VeADAS_b_StateComplete == false) &&
-          (VeADAS_b_AutonOncePerTrigger == false))
+      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_DriveRevDeployArm; // Backup and put maniuplator into mid cube drop position
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevDeployArm) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevDeployArm) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_StopDeployCube; // Stop and deploy cube
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_StopDeployCube) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_StopDeployCube) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_MountDismountRamp; // Drive forward and over ramp
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountDismountRamp) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountDismountRamp) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance; // With the bot semi mounted, auto balance
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_AutoBalance) &&
-               (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_AutoBalance) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_Disabled;
         VeADAS_b_StateComplete = true;
@@ -382,16 +364,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     ADAS_DM_Reset();
     VeADAS_b_StateComplete = false;
   }
-
-  // toggle = frc::SmartDashboard::GetBoolean("movetotag", false);
-  // testXOffset = frc::SmartDashboard::GetNumber("test x", 46.0);
-  // testYOffset = frc::SmartDashboard::GetNumber("test y", 3.0);
-
-  // if (toggle)
-  // {
-  //   LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
-  // }
-  // frc::SmartDashboard::PutNumber("current feature", (int)LeADAS_e_ActiveFeature);
 
   switch (LeADAS_e_ActiveFeature)
   {

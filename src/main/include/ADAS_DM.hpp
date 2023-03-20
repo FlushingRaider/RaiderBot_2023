@@ -25,27 +25,6 @@ void ADAS_DM_Reset(void);
 void ADAS_DM_ConfigsCal(void);
 void ADAS_DM_ConfigsInit(void);
 
-bool ADAS_DM_BlindShot(double *L_Pct_FwdRev,
-                       double *L_Pct_Strafe,
-                       double *L_Pct_Rotate,
-                       double *L_RPM_Launcher,
-                       double *L_Pct_Intake,
-                       double *L_Pct_Elevator,
-                       bool *L_CameraUpperLightCmndOn,
-                       bool *L_CameraLowerLightCmndOn,
-                       bool *L_SD_RobotOriented);
-
-bool ADAS_DM_ReverseAndIntake(double *L_Pct_FwdRev,
-                              double *L_Pct_Strafe,
-                              double *L_Pct_Rotate,
-                              double *L_RPM_Launcher,
-                              double *L_Pct_Intake,
-                              double *L_Pct_Elevator,
-                              bool *L_CameraUpperLightCmndOn,
-                              bool *L_CameraLowerLightCmndOn,
-                              bool *L_SD_RobotOriented,
-                              double L_DriveTime);
-
 bool ADAS_DM_Stop(double *L_Pct_FwdRev,
                   double *L_Pct_Strafe,
                   double *L_Pct_Rotate,

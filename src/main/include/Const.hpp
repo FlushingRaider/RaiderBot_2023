@@ -45,8 +45,7 @@ static const int KeINT_i_PCM = 22;
 static const int C_MagEncoderFL_ID = 2, C_MagEncoderFR_ID = 1, C_MagEncoderRL_ID = 3, C_MagEncoderRR_ID = 0;
 
 // DIO IDs:
-static const int C_XY_LimitSwitch_ID = 4, C_XD_LimitSwitch_ID = 6, C_IR_Sensor_ID = 3, C_CameraLightControl_ID = 7;
-static const int C_LowerBallSensorID = 5;
+
 
 // PWM IDs:
 static const int C_VanityLight_ID = 0;
@@ -55,7 +54,6 @@ static const int C_VanityLight_ID = 0;
 #ifdef PracticeBot
 const double C_VisOffsetY = 1.0;
 const double C_VisOffsetX = 2.0;
-
 #endif
 
 #ifdef CompBot
@@ -89,34 +87,37 @@ const double K_VisionTargetDistLagFilter[E_CamLocSz] = {0.5,  // -> top
                                                         0.5}; // -> bottom
 
 // Cals / constants for Light Control
-/* K_CameraLightDelay: Delay time between enabling the camera light and allowing the data feed to be used. [seconds] */
-const double K_CameraLightDelay = 0.01;
+/* KeLC_t_CameraLightDelay: Delay time between enabling the camera light and allowing the data feed to be used. [seconds] */
+const double KeLC_t_CameraLightDelay = 0.01;
 
-/* K_CameraLightMaxOnTime: Max amount of time to have the camera light enabled. [seconds] */
-const double K_CameraLightMaxOnTime = 30.0;
+/* KeLC_t_CameraLightMaxOnTime: Max amount of time to have the camera light enabled. [seconds] */
+const double KeLC_t_CameraLightMaxOnTime = 30.0;
 
-/* C_BlinkinLED_SolidWhite: Constant for the Blinkin to command solid white. */
-const double C_BlinkinLED_SolidWhite = 0.93;
+/* CeLC_k_BlinkinLED_SolidWhite: Constant for the Blinkin to command solid white. */
+const double CeLC_k_BlinkinLED_SolidWhite = 0.93;
 
-/* C_BlinkinLED_BreathRed: Constant for the Blinkin to command breath red.  */
-const double C_BlinkinLED_BreathRed = -0.17;
+/* CeLC_k_BlinkinLED_BreathRed: Constant for the Blinkin to command breath red.  */
+const double CeLC_k_BlinkinLED_BreathRed = -0.17;
 
-/* C_BlinkinLED_BreathBlue: Constant for the Blinkin to command breath blue.  */
-const double C_BlinkinLED_BreathBlue = -0.15;
+/* CeLC_k_BlinkinLED_BreathBlue: Constant for the Blinkin to command breath blue.  */
+const double CeLC_k_BlinkinLED_BreathBlue = -0.15;
 
-/* C_BlinkinLED_LightChaseGray: Constant for the Blinkin to command a light chase gray.  */
-const double C_BlinkinLED_LightChaseGray = -0.27;
+/* CeLC_k_BlinkinLED_LightChaseGray: Constant for the Blinkin to command a light chase gray.  */
+const double CeLC_k_BlinkinLED_LightChaseGray = -0.27;
 
-/* C_BlinkinLED_RainbowWithGlitter: Constant for the Blinkin to command rainbow with glitter.  */
-const double C_BlinkinLED_RainbowWithGlitter = -0.89;
+/* CeLC_k_BlinkinLED_RainbowWithGlitter: Constant for the Blinkin to command rainbow with glitter.  */
+const double CeLC_k_BlinkinLED_RainbowWithGlitter = -0.89;
 
 // Gyro cals
 /* KeGRY_ms_GyroTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */
 const int KeGRY_ms_GyroTimeoutMs = 30; // Waits and reports to DS if fails
 
 // Encoder / speed calculation related cals
-const double KeENC_k_ReductionRatio = 8.33;       // Reduction ratio for swerve drive module
-const double KeENC_In_WheelCircumfrence = 12.566; // Circumferance of wheel, in inches (4in nominal diameter)
+/* KeENC_k_ReductionRatio: Reduction ratio for swerve drive module. */
+const double KeENC_k_ReductionRatio = 8.33;
+
+/* KeENC_In_WheelCircumfrence: Circumferance of wheel, in inches (4in nominal diameter). */
+const double KeENC_In_WheelCircumfrence = 12.566;
 
 /* KeENC_k_SD_VoltageToAngle: Gain that converts the measured voltage of the absolute encoder for the swerve drive angle measurement to an equivalent angle in degrees. (practice bot only) */
 static const double KeENC_k_SD_VoltageToAngle = 72.0;
@@ -542,102 +543,6 @@ const double Ke_k_SD_SignY[E_RobotCornerSz] = { 1.0,  // E_FrontLeft
 const double Ke_k_SD_CorrectionGx = 1;
 
 /* ADAS Cals */
-/* Upper Targeting Cals (UT) */
-/* K_ADAS_UT_LightDelayTIme - Amount of time wait for the camera to have sufficent light before proceeding. [Seconds] */
-const double K_ADAS_UT_LightDelayTIme = 0.060;
-
-/* K_ADAS_UT_LostTargetGx - When the camera has lost the target, the previous error value will be used,
-   but multiplied against this gain so that we don't go too far before getting another good value. */
-const double K_ADAS_UT_LostTargetGx = 0.25;
-
-/* K_ADAS_UT_NoTargetError - When we haven't seen anything from the camera, take a guess.  This will
-   be the percieved error value until we see something good. */
-const double K_ADAS_UT_NoTargetError = 2;
-
-/* K_ADAS_UT_DebounceTime - Debounce time to hold a given state before preceding to next step. [Seconds] */
-const double K_ADAS_UT_DebounceTime = 0.030;
-
-/* K_ADAS_UT_AllowedLauncherError - Amount of error allowed in launcher speed before attempting to launch balls. [RPM] */
-const double K_ADAS_UT_AllowedLauncherError = 100;
-
-/* K_ADAS_UT_AllowedLauncherTime - Amount of time to remain in auto elevator mode.  For auton only.  Each time a ball is detected, this timer will reset. [Seconds] */
-const double K_ADAS_UT_AllowedLauncherTime = 2;
-
-/* K_ADAS_UT_RotateDeadbandAngle: Deadband angle for upper targeting */
-const double K_ADAS_UT_RotateDeadbandAngle = 1.2; // 0.9
-
-/* K_ADAS_UT_TargetVisionAngle: This is the desired target angle for the auto vision targeting.  This is due to the offset of the camera. For 2020 - 3.3 */
-const double K_ADAS_UT_TargetVisionAngle = -5.0;
-
-/* K_ADAS_BT_LightDelayTIme - Amount of time wait for the camera to have sufficent light before proceeding. [Seconds] */
-const double K_ADAS_BT_LightDelayTIme = 0.060;
-
-/* K_ADAS_BT_LostTargetGx - When the camera has lost the target, the previous error value will be used,
-   but multiplied against this gain so that we don't go too far before getting another good value. */
-const double K_ADAS_BT_LostTargetGx = 0.080;
-
-/* K_ADAS_BT_NoTargetError - When we haven't seen anything from the camera, take a guess.  This will
-   be the percieved error value until we see something good. */
-const double K_ADAS_BT_NoTargetError = 1.2;
-
-/* K_ADAS_BT_DebounceTime - Debounce time to hold a given state before preceding to next step. [Seconds] */
-const double K_ADAS_BT_DebounceTime = 0.020;
-
-/* K_ADAS_BT_TimeOut - If the ball can't be located in this amount of time, abort out of BT. [Seconds] */
-const double K_ADAS_BT_TimeOut = 1.5;
-
-/* K_ADAS_BT_RotateDeadbandAngle: Deadband angle for ball targeting */
-const double K_ADAS_BT_RotateDeadbandAngle = 1.8;
-
-/* K_ADAS_BT_TargetVisionAngle: This is the desired target angle for the auto ball vision targeting.  This is due to the offset of the camera. */
-const double K_ADAS_BT_TargetVisionAngle = 2.0;
-
-/* K_ADAS_BT_DriveTimeAxis: This is the estimated distance from the camera that will be scaled against the drive time table K_ADAS_BT_DriveTime. [meters] */
-const double K_ADAS_BT_DriveTimeAxis[6] = {0,
-                                           1,
-                                           2,
-                                           3,
-                                           4,
-                                           5};
-
-/* K_ADAS_BT_DriveTime: This is the amount of time to drive forward to capture the ball based on the estimated distance. [seconds] */
-const double K_ADAS_BT_DriveTime[6] = {1.5,
-                                       1.5,
-                                       1.5,
-                                       1.5,
-                                       1.5,
-                                       1.5};
-
-/* K_ADAS_BT_MaxTimeToWaitForCamera: This is the max amount of time we will wait for a valid distance from the camera. [Seconds] */
-const double K_ADAS_BT_MaxTimeToWaitForCamera = 0.8;
-
-/* K_ADAS_BT_SettleTimeBeforeDriveForward: This is the amount of time to allow for settling prior to driving forward to pickup the ball.  This MUST be below K_ADAS_BT_TimedOutDriveForward [Seconds] */
-const double K_ADAS_BT_SettleTimeBeforeDriveForward = 0.03;
-
-/* K_ADAS_BT_TimedOutDriveForward: This is the default drive forward time when we have waited too long for the camera. [Seconds] */
-const double K_ADAS_BT_TimedOutDriveForward = 4.0;
-
-/* K_ADAS_BT_DriveForwardPct: This is the percent of swerve drive control to go forward to pickup the ball. */
-const double K_ADAS_BT_DriveForwardPct = -0.40;
-
-/* K_ADAS_DM_BlindShotTime: This is the amount of time to remain in blind shoot. [Seconds] */
-const double K_ADAS_DM_BlindShotTime = 4.0;
-
-/* K_ADAS_DM_BlindShotElevator: This is the amount of time to remain in blind shoot. [Seconds] */
-const double K_ADAS_DM_BlindShotElevator = 0.7;
-
-/* K_ADAS_DM_BlindShotIntake: This is the amount of intake power to request when in blind shoot. [pct] */
-const double K_ADAS_DM_BlindShotIntake = 0.7;
-
-/* K_ADAS_DM_BlindShotLauncher: This is the speed the launcher will be shot at while in shoot. [RPM] */
-const double K_ADAS_DM_BlindShotLauncherLow = 1600;
-
-/* K_ADAS_DM_BlindShotLauncher: This is the speed the launcher will be shot at while in shoot. [RPM] */
-const double K_ADAS_DM_BlindShotLauncherHigh = 4000; // 4000 is temporary make sure to tune later
-
-/* K_ADAS_DM_DriveTimeShort: This is the short drive forward time. [Seconds] */
-const double K_ADAS_DM_DriveTimeShort = 4.5;
-
 /* K_ADAS_DM_DriveTimeLong: This is the default drive forward time. [Seconds] */
 const double K_ADAS_DM_DriveTimeLong = 5.5;
 
@@ -655,9 +560,6 @@ const double KeADAS_t_DM_RevDriveTime = 1.0;
 
 /* KeADAS_Pct_DM_RevDrive: This is the reverse drive  Pct. [Pct] */
 const double KeADAS_Pct_DM_RevDrive = 0.5;
-
-/* K_ADAS_DM_DriveREV_Pct: This is the default drive in reverse Pct. [Pct] */
-const double K_ADAS_DM_DriveREV_Pct = -0.2;
 
 /* K_ADAS_DM_RotateDebounceTime: This is the debounce time for the DM rotate state. [seconds] */
 const double K_ADAS_DM_RotateDebounceTime = 0.02;

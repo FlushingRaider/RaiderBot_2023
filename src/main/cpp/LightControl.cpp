@@ -18,7 +18,7 @@
 double VeLC_Cnt_CameraLightOnTime = 0;
 
 /* VeLC_Sec_CameraLightStatus: Indication of the camera light status. */
-T_CameraLightStatus VeLC_Sec_CameraLightStatus = VeLC_e_LightTurnedOff;
+T_CameraLightStatus VeLC_Sec_CameraLightStatus = E_LightTurnedOff;
 
 /* VeLC_b_CameraLightCmndOn: Commanded camera light on/off state. */
 bool VeLC_b_CameraLightCmndOn = false;
@@ -57,12 +57,12 @@ bool CameraLightControl(bool                 LeLC_b_Driver_CameraLight,
       }
 
     if ((LeLC_Cmd_CameraLightCmndOn == true) &&
-        (VeLC_Cnt_CameraLightOnTime < K_CameraLightMaxOnTime) &&
+        (VeLC_Cnt_CameraLightOnTime < KeLC_t_CameraLightMaxOnTime) &&
         (VeLC_Sec_CameraLightStatus != E_LightForcedOffDueToOvertime))
       {
       VeLC_Cnt_CameraLightOnTime += C_ExeTime;
 
-      if (VeLC_Cnt_CameraLightOnTime >= K_CameraLightDelay)
+      if (VeLC_Cnt_CameraLightOnTime >= KeLC_t_CameraLightDelay)
         {
         VeLC_Sec_CameraLightStatus = E_LightOnTargetingReady;
         }
@@ -72,7 +72,7 @@ bool CameraLightControl(bool                 LeLC_b_Driver_CameraLight,
         }
       }
     else if ((LeLC_Cmd_CameraLightCmndOn == true) &&
-             (VeLC_Cnt_CameraLightOnTime >= K_CameraLightMaxOnTime))
+             (VeLC_Cnt_CameraLightOnTime >= KeLC_t_CameraLightMaxOnTime))
       {
         LeLC_Cmd_CameraLightCmndOn = false; // turn light off, give time to cool down
         VeLC_b_CameraLightLatch = false;
@@ -84,7 +84,7 @@ bool CameraLightControl(bool                 LeLC_b_Driver_CameraLight,
       VeLC_Cnt_CameraLightOnTime = 0;
       LeLC_Cmd_CameraLightCmndOn = false;
       VeLC_b_CameraLightLatch = false;
-      VeLC_Sec_CameraLightStatus = VeLC_e_LightTurnedOff;
+      VeLC_Sec_CameraLightStatus = E_LightTurnedOff;
       }
   
   /* Flip the command as the camera light is inverted */
@@ -120,24 +120,24 @@ double VanityLightControl(double                       LeLC_Sec_MatchTimeRemaini
          (LeLC_b_ADASCameraLowerLightCmndOn == true)) ||
          (LeLC_b_Driver_CameraLight == true))
       {
-      LeLC_Cmd_LEDCommand = C_BlinkinLED_SolidWhite;
+      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_SolidWhite;
       }
     else if ((LeLC_Sec_MatchTimeRemaining <= C_End_game_time) &&
              (LeLC_Sec_MatchTimeRemaining > 0))
       {
-      LeLC_Cmd_LEDCommand = C_BlinkinLED_RainbowWithGlitter;
+      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_RainbowWithGlitter;
       }
     else if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
       {
-      LeLC_Cmd_LEDCommand = C_BlinkinLED_BreathRed;
+      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_BreathRed;
       }
     else if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue)
       {
-      LeLC_Cmd_LEDCommand = C_BlinkinLED_BreathBlue;
+      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_BreathBlue;
       }
     else
       {
-      LeLC_Cmd_LEDCommand = C_BlinkinLED_LightChaseGray;
+      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_LightChaseGray;
       }
 
     return(LeLC_Cmd_LEDCommand);
