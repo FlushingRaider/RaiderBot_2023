@@ -308,8 +308,10 @@ const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {1.0,  // Sched - Init
                                                   1.0,  // Sched - High Cone Drop
                                                   1.0}; // Sched - Low Cone Drop
 
-// the rpm where under it we consider the gripper holding something
-const double C_GripperRPMThreshold = 1.0;
+// // the rpm where under it we consider the gripper holding something
+// const double C_GripperRPMHoldingThreshold = 0.0;
+// const double C_GripperRPMReadyThreshold = 1.0;
+
 
 /* KeMAN_k_GripperReleaseConeFast: Sets Gripper fast release for cone.  Must be between -1 and 1. */
 const double KeMAN_k_GripperReleaseConeFast = 0.95;
