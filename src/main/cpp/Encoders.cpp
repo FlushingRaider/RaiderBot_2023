@@ -72,8 +72,7 @@ void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
 void EncodersInitComp(rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                       rev::SparkMaxRelativeEncoder m_WristEncoder,
                       rev::SparkMaxRelativeEncoder m_GripperEncoder,
-                      rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
-                      rev::SparkMaxRelativeEncoder m_LinearSlideEncoder)
+                      rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder)
   {
     // m_ArmPivotEncoder.SetPosition(0);
     // m_WristEncoder.SetPosition(0);
@@ -247,9 +246,8 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
                        rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                        rev::SparkMaxRelativeEncoder m_GripperEncoder,
                        rev::SparkMaxRelativeEncoder m_WristEncoder,
-                       rev::SparkMaxRelativeEncoder m_LinearSlideEncoder,
+                       double                       LeENC_Deg_LinearSlide,
                        T_MotorControlType           LeENC_e_IntakeCmnd,
-                       bool                         LeENC_b_WristForwardLimit,
                        bool                         LeENC_b_WristReverseLimit)
   {
   bool LeENC_b_IntakeExtended = false;
@@ -263,7 +261,7 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
 
   VsMAN_s_Sensors.Deg_Wrist = m_WristEncoder.GetPosition() * KeENC_Deg_Wrist;
 
-  VsMAN_s_Sensors.In_LinearSlide = m_LinearSlideEncoder.GetPosition() * KeENC_k_LinearSlideEncoderScaler;
+  VsMAN_s_Sensors.In_LinearSlide = LeENC_Deg_LinearSlide * KeENC_k_LinearSlideEncoderScaler;
 
   if (LeENC_e_IntakeCmnd == E_MotorExtend)
     {
@@ -273,8 +271,7 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   VsMAN_s_Sensors.b_IntakeArmExtended = LeENC_b_IntakeExtended;
 
   /* Switches are wired to the wrist motor controller.  Switches are intended to detect object in the gripper... */
-  if ((LeENC_b_WristForwardLimit == false) ||
-      (LeENC_b_WristReverseLimit == false))
+  if (LeENC_b_WristReverseLimit == false)
     {
       LeENC_b_ObjectDetected = true;
     }

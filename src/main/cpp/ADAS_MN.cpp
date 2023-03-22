@@ -96,7 +96,31 @@ void ADAS_MN_Reset(void)
     {
       VeADAS_e_MAN_SchedState = E_MAN_Driving;
     }
-  else if (VsCONT_s_DriverInput.b_InitState == true)
+  else if (VsCONT_s_DriverInput.b_FrontHighCube == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_HighCubeDrop;
+    }
+  else if (VsCONT_s_DriverInput.b_FrontLowCube == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_LowCubeDrop;
+    }
+      else if (VsCONT_s_DriverInput.b_FrontLowCone == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_LowConeDrop;
+    }
+      else if (VsCONT_s_DriverInput.b_FrontHighCone == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_HighConeDrop;
+    }
+      else if (VsCONT_s_DriverInput.b_MidIntakeOut == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_MidConeIntake;
+    }
+      else if (VsCONT_s_DriverInput.b_FloorConeIntake == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_FloorConeIntake;
+    }
+      else if (VsCONT_s_DriverInput.b_InitState == true)
     {
       VeADAS_e_MAN_SchedState = E_MAN_Init;
     }

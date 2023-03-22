@@ -130,7 +130,7 @@ const double KeROBO_t_MotorTimeoutMs = 30;
 const double KeENC_k_LinearSlideEncoderScaler = 0.001218;
 
 /* KeENC_k_ArmPivot: Scalar multiplied against the encoder. */
-const double KeENC_k_ArmPivot = 3.44;
+const double KeENC_k_ArmPivot = 2.903; // 3.44
 
 /* KeENC_RPM_IntakeROllers: Finds the speed of the intake rollers. */
 const double KeENC_RPM_IntakeRollers = 1.0;
@@ -142,6 +142,9 @@ const double KeENC_RPM_Gripper = 1.0;
 const double KeENC_Deg_Wrist = -1.16883;
 
 // Manipulator related cals
+/* KeMAN_A_ManipulatorNeoCurrentLimHigh: Max allowed current going to each Neo 550 used in the manipulator. [amps] */
+const double KeMAN_A_ManipulatorNeoCurrentLimHigh = 40;
+
 /* KeMAN_A_ManipulatorNeoCurrentLim: Max allowed current going to each Neo 550 used in the manipulator. [amps] */
 const double KeMAN_A_ManipulatorNeoCurrentLim = 20;
 
@@ -220,15 +223,15 @@ const double KaMAN_k_LinearSlidePID_Gx[E_PID_CalSz] = { 0.7,       // P Gx 45
 
 /* KaMAN_Deg_ArmPivotAngle: sets Arm Pivot final positons for each state */
 const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {0.0,  // Sched - Init
-                                                        0.0,  // Sched - Driving
-                                                        0.0,  // Sched - Main Intake
-                                                        0.0,  // Sched - Floor Cone Intake
-                                                        0.0,  // Sched - Mid Cube Intake
-                                                        0.0,  // Sched - Mid Cone Intake
-                                                        0.0,  // Sched - High Cube Drop
-                                                        0.0,  // Sched - Low Cube Drop
-                                                        0.0,  // Sched - High Cone Drop
-                                                        0.0}; // Sched - Low Cone Drop
+                                                       -0.55,  // Sched - Driving
+                                                        39.4,  // Sched - Main Intake
+                                                        32.8,  // Sched - Floor Cone Intake
+                                                        105,  // Sched - Mid Cube Intake
+                                                        122.68,  // Sched - Mid Cone Intake
+                                                        105.5,  // Sched - High Cube Drop
+                                                        40.00,  // Sched - Low Cube Drop
+                                                        118,  // Sched - High Cone Drop
+                                                        99}; // Sched - Low Cone Drop
 
 /* KeMAN_DegS_ArmPivotFastRate: Sets Arm Pivot transition rate. */
 const double KeMAN_DegS_ArmPivotFastRate = 0.28; // 0.15
@@ -250,15 +253,15 @@ const double KaMAN_Deg_ArmPivotDb[E_MAN_State_Sz] = {4.0,  // Sched - Init
 
 /* KaMAN_In_LinearSlidePosition: sets LInear Slide final positons for each state */
 const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,     // Sched - Init
-                                                             -14.0,     // Sched - Driving
-                                                              2.7,      // Sched - Main Intake
-                                                              0.0,      // Sched - Floor Cone Intake
-                                                             -2.0,      // Sched - Mid Cube Intake
-                                                             -2.0,      // Sched - Mid Cone Intake
-                                                             13.513,    // Sched - High Cube Drop
-                                                              9.93,     // Sched - Low Cube Drop
-                                                              13.513,   // Sched - High Cone Drop
-                                                              9.93};    // Sched - Low Cone Drop
+                                                              -21.65,     // Sched - Driving
+                                                               0.968,      // Sched - Main Intake
+                                                               4.66,      // Sched - Floor Cone Intake
+                                                               5.3,      // Sched - Mid Cube Intake
+                                                               -3.66,      // Sched - Mid Cone Intake
+                                                               6.25,    // Sched - High Cube Drop
+                                                            -21.65,     // Sched - Low Cube Drop 5.3
+                                                               6.14,   // Sched - High Cone Drop
+                                                               6.14};    // Sched - Low Cone Drop
 
 /* KeMAN_t_StateTimeOUt: Sets transition time out. */
 const double KeMAN_t_StateTimeOut = 1.5; // Drop-off
@@ -267,7 +270,7 @@ const double KeMAN_t_StateTimeOut = 1.5; // Drop-off
 const double KeMAN_InS_LinearSlideRate = 9.0; // Drop-off
 
 /* KeMAN_InS_LinearSlideIntakeRate: Sets Linear Slide transition rate. */
-const double KeMAN_InS_LinearSlideIntakeRate = 0.6; // Drop-off
+const double KeMAN_InS_LinearSlideIntakeRate = 0.22; // Drop-off
 
 /* KaMAN_In_LinearSlideDb: Sets LInear Slide dead band. */
 const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.5,  // Sched - Init
@@ -283,15 +286,15 @@ const double KaMAN_In_LinearSlideDb[E_MAN_State_Sz] = {0.5,  // Sched - Init
 
 /* KaMAN_Deg_WristAngle: sets Wrist final angle for each state */
 const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {  0.00,   // Sched - Init
-                                                      90.00,  // Sched - Driving
-                                                      18.11,  // Sched - Main Intake
-                                                       0.0,    // Sched - Floor Cone Intake
-                                                     -10.30, // Sched - Mid Cube Intake
-                                                     -10.30, // Sched - Mid Cone Intake
-                                                     -10.0,  // Sched - High Cube Drop
-                                                      -0.6,   // Sched - Low Cube Drop
-                                                     -10.0,  // Sched - High Cone Drop
-                                                      -0.6};  // Sched - Low Cone Drop
+                                                       83.35,  // Sched - Driving
+                                                       4.95,  // Sched - Main Intake
+                                                       80.7,    // Sched - Floor Cone Intake
+                                                      -34.87, // Sched - Mid Cube Intake
+                                                      13.3, // Sched - Mid Cone Intake
+                                                       1.92,  // Sched - High Cube Drop
+                                                      75.00,   // Sched - Low Cube Drop -2.254
+                                                       53.9,  // Sched - High Cone Drop
+                                                       27.245};  // Sched - Low Cone Drop
 
 /* KeMAN_DegS_WristRate: Sets Wrist transition rate. */
 const double KeMAN_DegS_WristRate = 0.45;
@@ -312,28 +315,28 @@ const double KaMAN_Deg_WristDb[E_MAN_State_Sz] = {1.0,  // Sched - Init
 const double C_GripperRPMThreshold = 1.0;
 
 /* KeMAN_k_GripperReleaseConeFast: Sets Gripper fast release for cone.  Must be between -1 and 1. */
-const double KeMAN_k_GripperReleaseConeFast = 0.95;
+const double KeMAN_k_GripperReleaseConeFast = -0.25;
 
 /* KeMAN_k_GripperReleaseCubeFast: Sets Gripper fast release for cube.  Must be between -1 and 1. Cube is reverse of cone direction. */
-const double KeMAN_k_GripperReleaseCubeFast = -0.95;
+const double KeMAN_k_GripperReleaseCubeFast = 0.4;
 
 /* KeMAN_k_GripperReleaseConeSlow: Sets Gripper slow release for cone.  Must be between -1 and 1. */
-const double KeMAN_k_GripperReleaseConeSlow = 0.15;
+const double KeMAN_k_GripperReleaseConeSlow = -0.15;
 
 /* KeMAN_k_GripperReleaseCubeSlow: Sets Gripper slow release for cube.  Must be between -1 and 1. Cube is reverse of cone direction. */
-const double KeMAN_k_GripperReleaseCubeSlow = -0.15;
+const double KeMAN_k_GripperReleaseCubeSlow = 0.15;
 
 /* KeMAN_k_GripperIntakeCone: Sets Gripper cone intake power */
-const double KeMAN_k_GripperIntakeCone = -0.3;
+const double KeMAN_k_GripperIntakeCone = 0.4;
 
 /* KeMAN_k_GripperIntakeCube: Sets Gripper cube intake power */
-const double KeMAN_k_GripperIntakeCube = 0.3;
+const double KeMAN_k_GripperIntakeCube = -0.45;
 
 /* KeMAN_k_GripperIntakeholdCone: Sets Gripper intake hold */
-const double KeMAN_k_GripperIntakeholdCone = -0.05;
+const double KeMAN_k_GripperIntakeholdCone = 0.15;
 
 /* KeMAN_k_GripperIntakeholdCube: Sets Gripper intake hold */
-const double KeMAN_k_GripperIntakeholdCube = 0.05;
+const double KeMAN_k_GripperIntakeholdCube = -0.1;
 
 /* KeMAN_t_GripperOnTm: Amount of time gripper will remain on after it is initially commanded on. */
 const double KeMAN_t_GripperOnTm = 0.5;
