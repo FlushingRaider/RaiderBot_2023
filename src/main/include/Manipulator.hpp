@@ -17,10 +17,6 @@ extern TeMAN_MotorControl      VsMAN_s_MotorsTest;
 extern TeMAN_MotorControl      VsMAN_s_MotorsTemp;
 extern double VaMAN_In_LinearSlideError;
 
-extern bool VeMAN_b_ReadyToGrab;
-extern bool VeMAN_b_HasObject;
-
-
 void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
                                 rev::SparkMaxPIDController m_WristPID,
                                 rev::SparkMaxPIDController m_GripperPID,
