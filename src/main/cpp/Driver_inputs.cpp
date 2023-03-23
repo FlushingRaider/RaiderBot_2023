@@ -40,7 +40,7 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
   VsCONT_s_DriverInput.pct_SwerveForwardBack           = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftAxisY);  // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.pct_SwerveStrafe                = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftAxisX);        // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.deg_SwerveRotate                = ScaleJoystickAxis(LeCONT_Cmd_Driver1RightAxisX);      // Scale the axis, also used for debouncing
-  VsCONT_s_DriverInput.v_SwerveSpeed                   = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftTriggerAxis);  // Scale the axis, also used for debouncing
+  VsCONT_s_DriverInput.v_SwerveSpeed                   = ScaleAccelAxis(LeCONT_Cmd_Driver1LeftTriggerAxis);  // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.b_AutoBalance                   = LeCONT_b_Driver1ButtonA;
   //VsCONT_s_DriverInput.b_MidIntakeOut                  = LeCONT_b_Driver1ButtonX;
   VsCONT_s_DriverInput.b_SwerveRotateTo180             = LeCONT_b_Driver1ButtonY;   // Auto align to 180 degrees
@@ -156,7 +156,7 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
     LeCONT_b_FloorConeIntake = true;
     }
     
-  VsCONT_s_DriverInput.b_FloorConeIntake = LeCONT_b_FloorConeIntake;
+  // VsCONT_s_DriverInput.b_FloorConeIntake = LeCONT_b_FloorConeIntake;
   VsCONT_s_DriverInput.Pct_ArmPivotTest = LeCONT_Pct_ArmPivotTest;
   VsCONT_s_DriverInput.Pct_LinearSlideTest = LeCONT_Pct_LinearSlideTest;
   VsCONT_s_DriverInput.b_FrontHighCone = LeCONT_b_FrontHighCone;

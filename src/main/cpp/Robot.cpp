@@ -149,9 +149,9 @@ void Robot::RobotInit()
   m_Wrist.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_Wrist.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLim);
   m_Gripper.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_Gripper.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLimHigh);
+  // m_Gripper.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLimHigh);
   m_IntakeRollers.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-  m_IntakeRollers.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLim);
+  // m_IntakeRollers.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLim);
 
   // m_WristforwardLimit.EnableLimitSwitch(false);
   m_WristreverseLimit.EnableLimitSwitch(false);
@@ -276,6 +276,7 @@ void Robot::RobotPeriodic()
   VeADAS_e_ActiveFeature = ADAS_ControlMain(&VeADAS_Pct_SD_FwdRev,
                                             &VeADAS_Pct_SD_Strafe,
                                             &VeADAS_Pct_SD_Rotate,
+                                            &VeADAS_Deg_SD_DesiredPose,
                                             &VeADAS_b_SD_RobotOriented,
                                             &VeADAS_b_X_Mode,
                                             VsCONT_s_DriverInput.b_JoystickActive,
@@ -310,6 +311,7 @@ void Robot::RobotPeriodic()
                    VeADAS_Pct_SD_FwdRev,
                    VeADAS_Pct_SD_Strafe,
                    VeADAS_Pct_SD_Rotate,
+                   VeADAS_Deg_SD_DesiredPose,
                    VeADAS_b_SD_RobotOriented,
                    VeGRY_Deg_GyroYawAngleDegrees,
                    VeGRY_Rad_GyroYawAngleRad,

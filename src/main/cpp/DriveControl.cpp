@@ -302,6 +302,7 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
                       double               L_ADAS_Pct_SD_FwdRev,
                       double               L_ADAS_Pct_SD_Strafe,
                       double               L_ADAS_Pct_SD_Rotate,
+                      double               LeADAS_Deg_SD_DesiredPose,
                       bool                 L_ADAS_SD_RobotOriented, 
                       double               L_Deg_GyroAngle,
                       double               L_Rad_GyroAngle,
@@ -369,6 +370,11 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
       (fabs(L_RCW) >= K_SD_RotateDeadBand))
     {
     VeDRC_Deg_AutoCorrectDesired = L_Deg_GyroAngle;
+    }
+  else if (LeDRC_e_ADAS_ActiveFeature > E_ADAS_Disabled)
+    {
+    /* ADAS is active and not trying to command rotation, take the desired pose value. */
+    VeDRC_Deg_AutoCorrectDesired = LeADAS_Deg_SD_DesiredPose;
     }
   else if (LeDRC_b_RotateTo0 == true)
     {

@@ -107,6 +107,16 @@ typedef enum TeADAS_AutonManipulatorStates
 } TeADAS_AutonManipulatorStates;
 
 
+/* TeADAS_MAN_Auton1CubePickup: States of the manipulator for the 2023 game. */
+typedef enum TeADAS_MAN_Auton1CubePickup
+{
+ E_ADAS_MAN_Auton1Driving,
+ E_ADAS_MAN_Auton1MainIntakeOut,
+ E_ADAS_MAN_Auton1MainIntakeIn,
+ E_ADAS_MAN_Auton1Sz
+} TeADAS_MAN_Auton1CubePickup;
+
+
 typedef enum T_RobotState
 {
   E_Init,

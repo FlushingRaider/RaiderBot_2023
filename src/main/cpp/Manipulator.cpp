@@ -122,7 +122,7 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
     {
     VaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3] = KaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3];
     }
-
+  // frc::SmartDashboard::PutNumber("Grip Power", 0);
   #ifdef Manipulator_Test
   T_PID_SparkMaxCal LeMAN_i_Index2 = E_kP;
 
@@ -476,9 +476,10 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
    bool   LeMAN_b_ConeState = false;
    bool   LeMAN_b_CubeState = false;
 
-  frc::SmartDashboard::PutBoolean("Gripper Has Object", VeMAN_b_HasObject);
-  frc::SmartDashboard::PutBoolean("Gripper ready to grab", VeMAN_b_ReadyToGrab);
-  frc::SmartDashboard::PutNumber("Gripper RPM", VsMAN_s_Sensors.RPM_Gripper);
+  // frc::SmartDashboard::PutBoolean("Gripper Has Object", VeMAN_b_HasObject);
+  // frc::SmartDashboard::PutBoolean("Gripper ready to grab", VeMAN_b_ReadyToGrab);
+  // frc::SmartDashboard::PutNumber("Gripper RPM", VsMAN_s_Sensors.RPM_Gripper);
+  
 
   if (fabs(VsMAN_s_Sensors.RPM_Gripper) > C_GripperRPMReadyThreshold)
   {
@@ -566,6 +567,10 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
        {
         VeMAN_t_GripperHoldTime += C_ExeTime;
        }
+       else
+       {
+        VeMAN_t_GripperHoldTime = 0;
+       }
      }
    else if ((VeMAN_t_GripperHoldTime < KeMAN_t_GripperPullInTm) &&
              (((LeMAN_e_AttndState == E_MAN_MidConeIntake)   && (LeMAN_e_CmndState  == E_MAN_MidConeIntake)) ||
@@ -576,9 +581,12 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
        {
         VeMAN_t_GripperHoldTime += C_ExeTime;
        }
+      else
+       {
+        VeMAN_t_GripperHoldTime = 0;
+       }
      }
-   else if ((VsMAN_s_Sensors.b_GripperObjDetected == true) || 
-            (VeMAN_t_GripperHoldTime >= KeMAN_t_GripperPullInTm))
+   else if ((VsMAN_s_Sensors.b_GripperObjDetected == true) || (VeMAN_t_GripperHoldTime >= KeMAN_t_GripperPullInTm))
      {
       if (VeMAN_b_ConeHold == true)
        {
@@ -589,7 +597,12 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
         LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeholdCube;
        }
      }
+  // double L_iz_Gripper  = frc::SmartDashboard::GetNumber("Grip Power", 0);
+  frc::SmartDashboard::PutBoolean("GripSense", VsMAN_s_Sensors.b_GripperObjDetected);
+  frc::SmartDashboard::PutNumber("GripTime", VeMAN_t_GripperHoldTime);
+  // VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = L_iz_Gripper;
 
+  // frc::SmartDashboard::PutNumber("GripCommandedPower", VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper]);
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = LeMAN_k_TempCmnd;
   }
 

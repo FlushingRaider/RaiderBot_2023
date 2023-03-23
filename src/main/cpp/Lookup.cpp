@@ -10,6 +10,7 @@
 #include "Const.hpp"
 #include "Pathloader.hpp"
 #include <math.h>
+#include "MotionProfiles/BlueP1.hpp"
 
 AutonPath path;
 
@@ -459,34 +460,34 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
     }
     break;
   case 4:
-    LeLU_Int_X_AxisSize = (int)(sizeof(TestPath1_T) / sizeof(TestPath1_X[0]));
-    LeLU_Int_X_CalArraySize = (int)(sizeof(TestPath1_X) / sizeof(TestPath1_X[0]));
+    LeLU_Int_X_AxisSize = (int)(sizeof(BlueP1_T) / sizeof(BlueP1_X[0]));
+    LeLU_Int_X_CalArraySize = (int)(sizeof(BlueP1_X) / sizeof(BlueP1_X[0]));
 
-    LeLU_Int_Y_AxisSize = (int)(sizeof(TestPath1_T) / sizeof(TestPath1_Y[0]));
-    LeLU_Inr_Y_CalArraySize = (int)(sizeof(TestPath1_Y) / sizeof(TestPath1_Y[0]));
+    LeLU_Int_Y_AxisSize = (int)(sizeof(BlueP1_T) / sizeof(BlueP1_Y[0]));
+    LeLU_Inr_Y_CalArraySize = (int)(sizeof(BlueP1_Y) / sizeof(BlueP1_Y[0]));
     
-    LeLU_Int_Ang_AxisSize = (int)(sizeof(TestPath1_T) / sizeof(TestPath1_ROT[0]));
-    LeLU_Int_Ang_CalArraySize = (int)(sizeof(TestPath1_ROT) / sizeof(TestPath1_ROT[0]));
+    LeLU_Int_Ang_AxisSize = (int)(sizeof(BlueP1_ROT_T) / sizeof(BlueP1_ROT[0]));
+    LeLU_Int_Ang_CalArraySize = (int)(sizeof(BlueP1_ROT) / sizeof(BlueP1_ROT[0]));
 
-    LeLU_Int_L_X_Loc = LookUp1D_Table(&TestPath1_T[0],
-                                      &TestPath1_X[0],
+    LeLU_Int_L_X_Loc = LookUp1D_Table(&BlueP1_T[0],
+                                      &BlueP1_X[0],
                                       LeLU_Int_X_AxisSize,
                                       LeLU_Int_X_CalArraySize,
                                       LeLU_s_AutonTime);
 
-    LeLU_Cmd_L_Y_Loc = LookUp1D_Table(&TestPath1_T[0],
-                                      &TestPath1_Y[0],
+    LeLU_Cmd_L_Y_Loc = LookUp1D_Table(&BlueP1_T[0],
+                                      &BlueP1_Y[0],
                                       LeLU_Int_Y_AxisSize,
                                       LeLU_Inr_Y_CalArraySize,
                                       LeLU_s_AutonTime);
 
-    LeLU_Deg_Ang = LookUp1D_Table(&TestPath1_T[0],
-                                  &TestPath1_ROT[0],
+    LeLU_Deg_Ang = LookUp1D_Table(&BlueP1_ROT_T[0],
+                                  &BlueP1_ROT[0],
                                   LeLU_Int_Ang_AxisSize,
                                   LeLU_Int_Ang_CalArraySize,
                                   LeLU_s_AutonTime);
 
-    if (LeLU_s_AutonTime >= TestPath1_T[LeLU_Int_X_AxisSize - 1])
+    if (LeLU_s_AutonTime >= BlueP1_T[LeLU_Int_X_AxisSize - 1])
     {
       LeLU_b_timeTableDONE = true;
     }
@@ -554,6 +555,27 @@ double ScaleJoystickAxis(double LeLU_Cmd_JoystickAxis)
                                               LeLU_Cmd_JoystickAxis);
 
   return LeLU_RPM_DesiredDriveSpeed;
+}
+
+/******************************************************************************
+ * Function:     ScaleAccelAxis
+ *
+ * Description:  Function to scale the joystick input.
+ *               Primarily used for smooth debouncing.
+ ******************************************************************************/
+double ScaleAccelAxis(double LeLU_Cmd_JoystickAxis)
+{
+  double LeLU_K_AccelScaler = 0.0;
+  int LeLU_i_AxisSize = (int)(sizeof(KnLU_k_SD_DesiredAccelAxis) / sizeof(KtLU_k_SD_DesiredAccel[0]));
+  int LeLU_i_CalArraySize = (int)(sizeof(KtLU_k_SD_DesiredAccel) / sizeof(KtLU_k_SD_DesiredAccel[0]));
+
+  LeLU_K_AccelScaler = LookUp1D_Table(&KnLU_k_SD_DesiredAccelAxis[0],
+                                      &KtLU_k_SD_DesiredAccel[0],
+                                       LeLU_i_AxisSize,
+                                       LeLU_i_CalArraySize,
+                                       LeLU_Cmd_JoystickAxis);
+
+  return LeLU_K_AccelScaler;
 }
 
 /******************************************************************************

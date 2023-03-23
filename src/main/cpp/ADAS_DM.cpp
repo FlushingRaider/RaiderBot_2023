@@ -583,6 +583,7 @@ bool ADAS_DM_Stop(double *L_Pct_FwdRev,
 bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
                           double *L_Pct_Strafe,
                           double *L_Pct_Rotate,
+                          double *LeADAS_Deg_DesiredPose,
                           bool *L_SD_RobotOriented,
                           double L_L_X_FieldPos,
                           double L_L_Y_FieldPos,
@@ -635,10 +636,15 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
 
   L_L_X_Error = fabs(L_L_TargetPositionX - L_L_RelativePosX);
   L_L_Y_Error = fabs(L_L_TargetPositionY - L_L_RelativePosY);
+  
+   L_Deg_RotateError = (L_Rad_TargetAngle - V_ADAS_DM_StartAngle - V_ADAS_DM_InitAngle) - L_Deg_GyroAngleDeg;
+   
+   L_Deg_RotateTarget = L_Rad_TargetAngle;
 
-  L_Deg_RotateError = (L_Rad_TargetAngle - V_ADAS_DM_StartAngle - V_ADAS_DM_InitAngle) * C_RadtoDeg - L_Deg_GyroAngleDeg;
+   *LeADAS_Deg_DesiredPose = L_Rad_TargetAngle;
+  // L_Deg_RotateError = (L_Rad_TargetAngle - V_ADAS_DM_StartAngle - V_ADAS_DM_InitAngle) * C_RadtoDeg - L_Deg_GyroAngleDeg;
 
-  L_Deg_RotateTarget = (L_Rad_TargetAngle * C_RadtoDeg);
+  // L_Deg_RotateTarget = (L_Rad_TargetAngle * C_RadtoDeg);
 
   V_ADAS_DM_StateTimer += C_ExeTime;
 
@@ -650,6 +656,7 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
       L_timeEND == true)
   {
     V_ADAS_DM_DebounceTime += C_ExeTime;
+    L_Deg_RotateError = 0.0;
   }
   else if (fabs(L_Deg_RotateError) > K_ADAS_DM_RotateDeadbandAngle ||
            L_L_X_Error > K_ADAS_DM_XY_Deadband ||
@@ -699,7 +706,7 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
                                  K_k_AutonY_PID_Gx[E_Max_Ul],
                                  K_k_AutonY_PID_Gx[E_Max_Ll]);
 
-    //*L_Pct_Rotate = DesiredRotateSpeed(L_Deg_RotateError);
+    *L_Pct_Rotate = DesiredRotateSpeed(L_Deg_RotateError);
 
     // ADAS_DM_FieldOrientRotate(L_Pct_FwdRev,
     //                           L_Pct_Strafe,

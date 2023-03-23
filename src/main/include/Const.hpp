@@ -232,10 +232,10 @@ const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {  0.00,  // Sched - Init
                                                          32.80,  // Sched - Floor Cone Intake
                                                         105.00,  // Sched - Mid Cube Intake
                                                         122.68,  // Sched - Mid Cone Intake
-                                                        105.50,  // Sched - High Cube Drop
+                                                         90.00,  // Sched - High Cube Drop  105.5
                                                          40.00,  // Sched - Low Cube Drop
                                                         118.00,  // Sched - High Cone Drop
-                                                         99.00}; // Sched - Low Cone Drop
+                                                        104.00}; // Sched - Low Cone Drop
 
 /* KaMAN_In_LinearSlidePosition: sets LInear Slide final positons for each state */
 const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,   // Sched - Init
@@ -244,7 +244,7 @@ const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,   // Sched -
                                                                4.66,  // Sched - Floor Cone Intake
                                                                5.3,   // Sched - Mid Cube Intake
                                                               -3.66,  // Sched - Mid Cone Intake
-                                                               6.25,  // Sched - High Cube Drop
+                                                              -3.00,  // Sched - High Cube Drop  6.25
                                                              -21.65,  // Sched - Low Cube Drop
                                                                6.14,  // Sched - High Cone Drop
                                                                6.14}; // Sched - Low Cone Drop
@@ -256,16 +256,16 @@ const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {  0.00,  // Sched - Init
                                                       80.70,  // Sched - Floor Cone Intake
                                                      -34.87,  // Sched - Mid Cube Intake
                                                       13.30,  // Sched - Mid Cone Intake
-                                                       1.92,  // Sched - High Cube Drop
+                                                      45.00,  // Sched - High Cube Drop 1.92
                                                       75.00,  // Sched - Low Cube Drop
                                                       53.90,  // Sched - High Cone Drop
                                                       27.25}; // Sched - Low Cone Drop
 
 /* KeMAN_k_GripperReleaseConeFast: Sets Gripper fast release for cone.  Must be between -1 and 1. */
-const double KeMAN_k_GripperReleaseConeFast = -0.25;
+const double KeMAN_k_GripperReleaseConeFast = -0.35;
 
 /* KeMAN_k_GripperReleaseCubeFast: Sets Gripper fast release for cube.  Must be between -1 and 1. Cube is reverse of cone direction. */
-const double KeMAN_k_GripperReleaseCubeFast = 0.4;
+const double KeMAN_k_GripperReleaseCubeFast = 0.8;
 
 /* KeMAN_k_GripperReleaseConeSlow: Sets Gripper slow release for cone.  Must be between -1 and 1. */
 const double KeMAN_k_GripperReleaseConeSlow = -0.15;
@@ -274,22 +274,22 @@ const double KeMAN_k_GripperReleaseConeSlow = -0.15;
 const double KeMAN_k_GripperReleaseCubeSlow = 0.15;
 
 /* KeMAN_k_GripperIntakeCone: Sets Gripper cone intake power */
-const double KeMAN_k_GripperIntakeCone = 0.4;
+const double KeMAN_k_GripperIntakeCone = 0.4;  // 0.4
 
 /* KeMAN_k_GripperIntakeCube: Sets Gripper cube intake power */
-const double KeMAN_k_GripperIntakeCube = -0.45;
+const double KeMAN_k_GripperIntakeCube = -0.35;  //-0.45
 
 /* KeMAN_k_GripperIntakeholdCone: Sets Gripper intake hold */
-const double KeMAN_k_GripperIntakeholdCone = 0.15;
+const double KeMAN_k_GripperIntakeholdCone = 0.05; 
 
 /* KeMAN_k_GripperIntakeholdCube: Sets Gripper intake hold */
-const double KeMAN_k_GripperIntakeholdCube = -0.1;
+const double KeMAN_k_GripperIntakeholdCube = -0.05;
 
 /* KeMAN_t_GripperOnTm: Amount of time gripper will remain on after it is initially commanded on. */
 const double KeMAN_t_GripperOnTm = 0.5;
 
 /* KeMAN_t_GripperPullInTm: Amount of time gripper will continue pulling in after object is detected. */
-const double KeMAN_t_GripperPullInTm = 1.0;
+const double KeMAN_t_GripperPullInTm = 0.15;
 
 /* KaMAN_RPM_IntakePower: sets Intake power for each state */
 const double KaMAN_RPM_IntakePower[E_MAN_State_Sz] = {  0.0,   // Sched - Init
@@ -540,24 +540,68 @@ const double K_SD_DesiredDriveSpeedAxis[20] = {-0.95,
                                                 0.95};
 
 /* K_SD_DesiredDriveSpeed: Joystick scaled output for swerve drive control.  Used as debouncing and to help limit speeds at lower joystick inputs values.  */
-const double K_SD_DesiredDriveSpeed[20] = {-1.00,  //-0.95
-                                           -0.88,  //-0.85
-                                           -0.77,  //-0.75
-                                           -0.66,  //-0.65
-                                           -0.55,  //-0.55
-                                           -0.44,  //-0.45
-                                           -0.33,  //-0.35
-                                           -0.22,  //-0.25
-                                           -0.11,  //-0.15
-                                            0.00,  //-0.10
-                                            0.00,  // 0.10
-                                            0.11,  // 0.15
-                                            0.22,  // 0.25
-                                            0.33,  // 0.35
-                                            0.44,  // 0.45
-                                            0.55,  // 0.55
-                                            0.66,  // 0.65
-                                            0.77,  // 0.75
+const double K_SD_DesiredDriveSpeed[20] = {-1.00,  //-1
+                                           -0.88,  //-0.88
+                                           -0.50,  //-0.6
+                                           -0.35,  //-0.4
+                                           -0.20,  //-0.25
+                                           -0.15,  //-0.2
+                                           -0.10,  //-0.15
+                                           -0.06,  //-0.1
+                                           -0.02,  //-0.05
+                                            0.00,  //-0.0
+                                            0.00,  // 0.0
+                                            0.02,  // 0.15
+                                            0.06,  // 0.25
+                                            0.10,  // 0.35
+                                            0.15,  // 0.45
+                                            0.20,  // 0.55
+                                            0.35,  // 0.65
+                                            0.50,  // 0.75
+                                            0.88,  // 0.85
+                                            1.00}; // 0.95
+
+/* KnLU_k_SD_DesiredAccelAxis: Joystick scale axis for KtLU_k_SD_DesiredAccel.  */
+const double KnLU_k_SD_DesiredAccelAxis[20] = {-0.95,
+                                               -0.85,
+                                               -0.75,
+                                               -0.65,
+                                               -0.55,
+                                               -0.45,
+                                               -0.35,
+                                               -0.25,
+                                               -0.15,
+                                               -0.10,
+                                                0.10,
+                                                0.15,
+                                                0.25,
+                                                0.35,
+                                                0.45,
+                                                0.55,
+                                                0.65,
+                                                0.75,
+                                                0.85,
+                                                0.95};
+
+/* KtLU_k_SD_DesiredAccel: Joystick scaled output for swerve drive control.  Used as debouncing and to help limit speeds at lower joystick inputs values.  */
+const double KtLU_k_SD_DesiredAccel[20] = {-1.00,  //-1
+                                           -0.88,  //-0.88
+                                           -0.50,  //-0.6
+                                           -0.35,  //-0.4
+                                           -0.20,  //-0.25
+                                           -0.15,  //-0.2
+                                           -0.10,  //-0.15
+                                           -0.06,  //-0.1
+                                           -0.02,  //-0.05
+                                            0.00,  //-0.0
+                                            0.00,  // 0.0
+                                            0.02,  // 0.15
+                                            0.06,  // 0.25
+                                            0.10,  // 0.35
+                                            0.15,  // 0.45
+                                            0.20,  // 0.55
+                                            0.35,  // 0.65
+                                            0.50,  // 0.75
                                             0.88,  // 0.85
                                             1.00}; // 0.95
 
