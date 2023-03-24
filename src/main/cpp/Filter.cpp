@@ -20,4 +20,5 @@ double Filter_FirstOrderLag(double L_RawValue,
                             double L_FilterConst)
   {
     L_FilteredValue = L_FilterConst * L_RawValue + (1 - L_FilterConst) * L_FilteredValue;
+    return(L_FilteredValue);
   }

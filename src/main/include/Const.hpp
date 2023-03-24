@@ -6,7 +6,7 @@
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
 #define COMP
 // Define the bot type: CompBot, PracticeBot
-#define CompBot
+#define PracticeBot
 
 #define NewVision // NewVision or OldVision
 
@@ -51,6 +51,10 @@ static const int C_MagEncoderFL_ID = 2, C_MagEncoderFR_ID = 1, C_MagEncoderRL_ID
 static const int C_VanityLight_ID = 0;
 
 // Vision Cals:
+
+const double K_TagCordFilter = 0.01;
+const double K_TagYawFilter = 0.08;
+
 #ifdef PracticeBot
 const double C_VisOffsetY = 1.0;
 const double C_VisOffsetX = 2.0;
@@ -78,13 +82,6 @@ const double K_MoveToTagMovementDeadbandY = 0.05; // inches
 
 // const double K_MoveToTagRotationDeadband = 2.0; // degrees
 
-/* K_VisionYawLagFilter: First order lag filter coefficents for yaw calculation. */
-const double K_VisionYawLagFilter[E_CamLocSz] = {0.05,  // -> top
-                                                 0.08}; // -> bottom
-
-/* K_VisionTargetDistLagFilter: First order lag filter coefficents for distance calculation. */
-const double K_VisionTargetDistLagFilter[E_CamLocSz] = {0.5,  // -> top
-                                                        0.5}; // -> bottom
 
 // Cals / constants for Light Control
 /* KeLC_t_CameraLightDelay: Delay time between enabling the camera light and allowing the data feed to be used. [seconds] */
