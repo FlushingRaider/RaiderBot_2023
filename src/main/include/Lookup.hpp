@@ -28,6 +28,8 @@ extern void DesiredRollerSpeed(double  LeLU_In_Distance,
 
 extern double DesiredRotateSpeed(double LeLU_Cmd_Error);
 
+extern double ScaleAccelAxis(double LeLU_Cmd_JoystickAxis);
+
 extern double DesiredAutoRotateSpeed(double LeLU_Cmd_Error);
 
 extern double DesiredLowerBeamSpeed(double LeLU_Cmd_TargetDistance);

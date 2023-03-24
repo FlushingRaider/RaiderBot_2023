@@ -40,7 +40,7 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
   VsCONT_s_DriverInput.pct_SwerveForwardBack           = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftAxisY);  // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.pct_SwerveStrafe                = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftAxisX);        // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.deg_SwerveRotate                = ScaleJoystickAxis(LeCONT_Cmd_Driver1RightAxisX);      // Scale the axis, also used for debouncing
-  VsCONT_s_DriverInput.v_SwerveSpeed                   = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftTriggerAxis);  // Scale the axis, also used for debouncing
+  VsCONT_s_DriverInput.v_SwerveSpeed                   = ScaleAccelAxis(LeCONT_Cmd_Driver1LeftTriggerAxis);  // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.b_AutoBalance                   = LeCONT_b_Driver1ButtonA;
   //VsCONT_s_DriverInput.b_MidIntakeOut                  = LeCONT_b_Driver1ButtonX;
   VsCONT_s_DriverInput.b_SwerveRotateTo180             = LeCONT_b_Driver1ButtonY;   // Auto align to 180 degrees
@@ -99,6 +99,7 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   bool LeCONT_b_FrontLowCone = false;
   bool LeCONT_b_DropGamePieceFast = false;
   bool LeCONT_b_InitState = false;
+  bool LeCONT_b_FloorConeIntake = false;
 
   VsCONT_s_DriverInput.b_MainIntakeOut                  = LeCONT_b_Driver2ButtonA;      //Controller 2, A button Will be used to bring intake out COMPETION BUTTON
   VsCONT_s_DriverInput.b_DrivingPosition                = LeCONT_b_Driver2ButtonB;     //Controller 2, B button Will be used to bring Everything into their position for when the robot is moving COMPETION BUTTON
@@ -110,7 +111,7 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
   VsCONT_s_DriverInput.b_DropGamePieceFast              = LeCONT_b_Driver2ButtonStart;
   VsCONT_s_DriverInput.Pct_WristTest                    = LeCONT_Pct_Driver2RightAxisX;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
-  VsCONT_s_DriverInput.b_InitState                      = LeCont_Pct_Driver2AxisRB;   
+  // VsCONT_s_DriverInput.b_InitState                      = LeCont_Pct_Driver2AxisRB;   
   VsCONT_s_DriverInput.b_MidIntakeOut                   = LeCONT_b_Driver2ButtonRB;   // This will bring the arm down to pickup game pieces behind the robot
   VsCONT_s_DriverInput.b_DropGamePieceSlow              = LeCONT_b_Driver2ButtonBack;
 
@@ -152,8 +153,10 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   else if (LeCONT_Deg_Driver2POV == 90)
     {
     LeCONT_Pct_LinearSlideTest = -1.0;
+    LeCONT_b_FloorConeIntake = true;
     }
-
+    
+  // VsCONT_s_DriverInput.b_FloorConeIntake = LeCONT_b_FloorConeIntake;
   VsCONT_s_DriverInput.Pct_ArmPivotTest = LeCONT_Pct_ArmPivotTest;
   VsCONT_s_DriverInput.Pct_LinearSlideTest = LeCONT_Pct_LinearSlideTest;
   VsCONT_s_DriverInput.b_FrontHighCone = LeCONT_b_FrontHighCone;

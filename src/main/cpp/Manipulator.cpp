@@ -24,18 +24,18 @@
  double C_GripperRPMHoldingThreshold = 0.0;
  double C_GripperRPMReadyThreshold = 1.0;
 
-TeMAN_ManipulatorStates VeMAN_e_CmndState = E_MAN_Init;  // What is our next/current step?
+TeMAN_ManipulatorStates VeMAN_e_CmndState  = E_MAN_Init; // What is our next/current step?
 TeMAN_ManipulatorStates VeMAN_e_AttndState = E_MAN_Init; // What is our desired end state?
 
-TeMAN_MotorControl VsMAN_s_Motors;          // All of the motor commands for the manipulator/intake motors
-TeMAN_MotorControl VsMAN_s_MotorsTemp;      // Temporary commands for the motors, not the final output
-TeMAN_MotorControl VsMAN_s_MotorsTest;      // Temporary commands for the motors, not the final output
-TsMAN_Sensor VsMAN_s_Sensors;               // All of the sensor values for the manipulator/intake motors
-double VaMAN_k_PositionToEncoder[E_MAN_Sz]; // Conversion value to go from desired manipulator position to equivalent encoder position
+TeMAN_MotorControl VsMAN_s_Motors; // All of the motor commands for the manipulator/intake motors
+TeMAN_MotorControl VsMAN_s_MotorsTemp; // Temporary commands for the motors, not the final output
+TeMAN_MotorControl VsMAN_s_MotorsTest; // Temporary commands for the motors, not the final output
+TsMAN_Sensor       VsMAN_s_Sensors; // All of the sensor values for the manipulator/intake motors
 
-double VeMAM_t_TransitionTime = 0;
-double VaMAN_In_LinearSlideError;
-double VaMAN_k_LinearSlideIntegral;
+double             VeMAN_t_TransitionTime = 0;
+double             VeMAN_t_GripperHoldTime = 0; // Amount of time after object is detected, to continue pulling in
+double             VaMAN_In_LinearSlideError;
+double             VaMAN_k_LinearSlideIntegral;
 
 double VaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz];
 double VaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz];
@@ -43,15 +43,14 @@ double VaMAN_k_GripperPID_Gx[E_PID_SparkMaxCalSz];
 double VaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz];
 double VaMAN_k_LinearSlidePID_Gx[E_PID_CalSz];
 
-bool VeMAN_b_CriteriaMet = false;
-bool VeMAN_b_Paused = false;   // Checks to see if paused (for testing)
-bool VeMAN_b_ConeHold = false; // Used for the holding power.  If cone, use cone cal, otherwise use cube.
+bool   VeMAN_b_CriteriaMet = false;
+bool   VeMAN_b_ConeHold = false;  // Used for the holding power.  If cone, use cone cal, otherwise use cube.
 
 bool VeMAN_b_ReadyToGrab;
 bool VeMAN_b_HasObject;
 
 #ifdef Manipulator_Test
-bool VeMAN_b_TestState = true; // temporary, we don't want to use the manual overrides
+bool   VeMAN_b_TestState = true; // temporary, we don't want to use the manual overrides
 #else
 bool VeMAN_b_TestState = false;
 #endif
@@ -64,9 +63,8 @@ bool VeMAN_b_TestState = false;
 void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
                                  rev::SparkMaxPIDController m_WristPID,
                                  rev::SparkMaxPIDController m_GripperPID,
-                                 rev::SparkMaxPIDController m_IntakeRollersPID,
-                                 rev::SparkMaxPIDController m_LinearSlidePID)
-{
+                                 rev::SparkMaxPIDController m_IntakeRollersPID)
+  {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
   T_PID_Cal LeMAN_i_Index3 = E_P_Gx;
 
@@ -99,36 +97,21 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   m_IntakeRollersPID.SetFF(KaMAN_k_IntakeRollersPID_Gx[E_kFF]);
   m_IntakeRollersPID.SetOutputRange(KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput], KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
 
-  m_LinearSlidePID.SetP(KaMAN_k_LinearSlidePID_Gx[E_kP]);
-  m_LinearSlidePID.SetI(KaMAN_k_LinearSlidePID_Gx[E_kI]);
-  m_LinearSlidePID.SetD(KaMAN_k_LinearSlidePID_Gx[E_kD]);
-  m_LinearSlidePID.SetIZone(KaMAN_k_LinearSlidePID_Gx[E_kIz]);
-  m_LinearSlidePID.SetFF(KaMAN_k_LinearSlidePID_Gx[E_kFF]);
-  m_LinearSlidePID.SetOutputRange(KaMAN_k_LinearSlidePID_Gx[E_kMinOutput], KaMAN_k_LinearSlidePID_Gx[E_kMaxOutput]);
-
   for (LeMAN_i_Index = E_MAN_ArmPivot;
        LeMAN_i_Index < E_MAN_Sz;
        LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
-  {
-    VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = 0.0;
-    VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = 0.0;
-    VsMAN_s_MotorsTest.k_MotorCmnd[LeMAN_i_Index] = 0.0;
-  }
+    {
+      VsMAN_s_Motors.k_MotorCmnd[LeMAN_i_Index] = 0.0;
+      VsMAN_s_MotorsTemp.k_MotorCmnd[LeMAN_i_Index] = 0.0;
+      VsMAN_s_MotorsTest.k_MotorCmnd[LeMAN_i_Index] = 0.0;
+    }
 
-  VaMAN_k_PositionToEncoder[E_MAN_ArmPivot] = KeENC_k_ArmPivot;
-  VaMAN_k_PositionToEncoder[E_MAN_LinearSlide] = KeENC_k_LinearSlideEncoderScaler;
-  VaMAN_k_PositionToEncoder[E_MAN_Wrist] = KeENC_Deg_Wrist;
-  VaMAN_k_PositionToEncoder[E_MAN_Gripper] = KeENC_RPM_Gripper;
-  VaMAN_k_PositionToEncoder[E_MAN_IntakeRollers] = KeENC_RPM_IntakeRollers;
-  VaMAN_k_PositionToEncoder[E_MAN_IntakeArm] = 1.0;
 
-  VsMAN_s_Motors.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotSlowRate;
-  VsMAN_s_Motors.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
-  VsMAN_s_Motors.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
 
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = KeMAN_DegS_ArmPivotSlowRate;
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = KeMAN_InS_LinearSlideRate;
-  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = KeMAN_DegS_WristRate;
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = KaMAN_DegS_ArmPivotRate[E_MAN_Init][E_MAN_Init];
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = KaMAN_InS_LinearSlideRate[E_MAN_Init][E_MAN_Init];
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = KaMAN_DegS_WristRate[E_MAN_Init][E_MAN_Init];
+  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Gripper] = 1.0;
 
   VaMAN_In_LinearSlideError = 0.0;
   VaMAN_k_LinearSlideIntegral = 0.0;
@@ -136,29 +119,29 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   for (LeMAN_i_Index3 = E_P_Gx;
        LeMAN_i_Index3 < E_PID_CalSz;
        LeMAN_i_Index3 = T_PID_Cal(int(LeMAN_i_Index3) + 1))
-  {
+    {
     VaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3] = KaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3];
-  }
-
-#ifdef Manipulator_Test
+    }
+  // frc::SmartDashboard::PutNumber("Grip Power", 0);
+  #ifdef Manipulator_Test
   T_PID_SparkMaxCal LeMAN_i_Index2 = E_kP;
 
   for (LeMAN_i_Index2 = E_kP;
        LeMAN_i_Index2 < E_PID_SparkMaxCalSz;
        LeMAN_i_Index2 = T_PID_SparkMaxCal(int(LeMAN_i_Index2) + 1))
-  {
+    {
     VaMAN_k_ArmPivotPID_Gx[LeMAN_i_Index2] = KaMAN_k_ArmPivotPID_Gx[LeMAN_i_Index2];
     VaMAN_k_WristPID_Gx[LeMAN_i_Index2] = KaMAN_k_WristPID_Gx[LeMAN_i_Index2];
     VaMAN_k_GripperPID_Gx[LeMAN_i_Index2] = KaMAN_k_GripperPID_Gx[LeMAN_i_Index2];
     VaMAN_k_IntakeRollersPID_Gx[LeMAN_i_Index2] = KaMAN_k_IntakeRollersPID_Gx[LeMAN_i_Index2];
-  }
+    }
 
   for (LeMAN_i_Index3 = E_P_Gx;
        LeMAN_i_Index3 < E_PID_CalSz;
        LeMAN_i_Index3 = T_PID_Cal(int(LeMAN_i_Index3) + 1))
-  {
+    {
     VaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3] = KaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3];
-  }
+    }
 
   // display PID coefficients on SmartDashboard
   // frc::SmartDashboard::PutNumber("P Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kP]);
@@ -198,9 +181,9 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   // frc::SmartDashboard::PutNumber("Min Output - Linear", KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
 
   // display secondary coefficients
-  frc::SmartDashboard::PutNumber("KeMAN_DegS_ArmPivotSlowRate", KeMAN_DegS_ArmPivotSlowRate);
-  frc::SmartDashboard::PutNumber("KeMAN_InS_LinearSlideRate", KeMAN_InS_LinearSlideRate);
-  frc::SmartDashboard::PutNumber("KeMAN_DegS_WristRate", KeMAN_DegS_WristRate);
+  frc::SmartDashboard::PutNumber("KaMAN_DegS_ArmPivotRate", KaMAN_DegS_ArmPivotRate[E_MAN_Init][E_MAN_Init]);
+  frc::SmartDashboard::PutNumber("KaMAN_InS_LinearSlideRate", KaMAN_InS_LinearSlideRate[E_MAN_Init][E_MAN_Init]);
+  frc::SmartDashboard::PutNumber("KaMAN_DegS_WristRate", [E_MAN_Init][E_MAN_Init]);
 
   // display target positions/speeds
   frc::SmartDashboard::PutNumber("Set Position Gripper", 0);
@@ -208,25 +191,26 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   frc::SmartDashboard::PutNumber("Set Position Linear Slide", 0);
   frc::SmartDashboard::PutNumber("Set Position Arm Pivot", 0);
   frc::SmartDashboard::PutNumber("Set Speed Intake Rollers ", 0);
+  frc::SmartDashboard::PutNumber("Set Gripper Power", 0);
   frc::SmartDashboard::PutBoolean("Set Position Intake", false);
-#endif
-}
+  #endif
+  }
+
 
 /******************************************************************************
  * Function:     ManipulatorMotorConfigsCal
  *
- * Description:  Contains the motor configurations for the manipulator motors.  This
+ * Description:  Contains the motor configurations for the manipulator motors.  This 
  *               allows for rapid calibration, but must not be used for comp.
  ******************************************************************************/
 void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
                                 rev::SparkMaxPIDController m_WristPID,
                                 rev::SparkMaxPIDController m_GripperPID,
-                                rev::SparkMaxPIDController m_IntakeRollersPID,
-                                rev::SparkMaxPIDController m_LinearSlidePID)
-{
-// read PID coefficients from SmartDashboard
-#ifdef Manipulator_Test
-  bool LeMAN_b_IntakePosition = false; // false is retracted, true extended
+                                rev::SparkMaxPIDController m_IntakeRollersPID)
+  {
+  // read PID coefficients from SmartDashboard
+  #ifdef Manipulator_Test
+  bool LeMAN_b_IntakePosition = false;  // false is retracted, true extended
   // double L_p_Pivot   = frc::SmartDashboard::GetNumber("P Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kP]);
   // double L_i_Pivot   = frc::SmartDashboard::GetNumber("I Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kI]);
   // double L_d_Pivot   = frc::SmartDashboard::GetNumber("D Gain - Pivot", KaMAN_k_ArmPivotPID_Gx[E_kD]);
@@ -268,16 +252,18 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("Set Position Linear Slide", 0);
   VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("Set Position Arm Pivot", 0);
   VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_IntakeRollers] = frc::SmartDashboard::GetNumber("Set Speed Intake Rollers ", 0);
+  VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Gripper] = frc::SmartDashboard::GetNumber("Set Gripper Power", 0);
+
   LeMAN_b_IntakePosition = frc::SmartDashboard::GetBoolean("Set Position Intake", false);
   if (LeMAN_b_IntakePosition == true)
-  {
-    VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm] = E_MotorExtend;
-  }
+   {
+   VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm] = E_MotorExtend;
+   }
   else
-  {
-    VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm] = E_MotorRetract;
-  }
-
+   {
+   VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm] = E_MotorRetract;
+   }
+  
   // if(L_p_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kP])   { m_ArmPivotPID.SetP(L_p_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kP] = L_p_Pivot; }
   // if(L_i_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kI])   { m_ArmPivotPID.SetI(L_i_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kI] = L_i_Pivot; }
   // if(L_d_Pivot != VaMAN_k_ArmPivotPID_Gx[E_kD])   { m_ArmPivotPID.SetD(L_d_Pivot); VaMAN_k_ArmPivotPID_Gx[E_kD] = L_d_Pivot; }
@@ -309,66 +295,66 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   // if(L_il_Linear != VaMAN_k_LinearSlidePID_Gx[E_I_Ll]) { VaMAN_k_LinearSlidePID_Gx[E_I_Ll] = L_il_Linear; }
   // if((L_max_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ul]) || (L_min_Linear != VaMAN_k_LinearSlidePID_Gx[E_Max_Ll])) { VaMAN_k_LinearSlidePID_Gx[E_Max_Ll] = L_min_Linear; VaMAN_k_LinearSlidePID_Gx[E_Max_Ul] = L_max_Linear; }
 
-  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("KeMAN_DegS_ArmPivotSlowRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
-  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("KeMAN_InS_LinearSlideRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
-  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("KeMAN_DegS_WristRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
-#endif
+  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot] = frc::SmartDashboard::GetNumber("KaMAN_DegS_ArmPivotRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
+  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide] = frc::SmartDashboard::GetNumber("KaMAN_InS_LinearSlideRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
+  // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("KaMAN_DegS_WristRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
+   #endif
  
   C_GripperRPMHoldingThreshold = frc::SmartDashboard::GetNumber("Holding RPM Threshold", 0.0);
   C_GripperRPMHoldingThreshold = frc::SmartDashboard::GetNumber("Intake Ready RPM Threshold", 1.0);
+  }
 
-
-}
 /******************************************************************************
  * Function:     ManipulatorControlInit
  *
  * Description:  Initialization function for the Manipulator controls.
  ******************************************************************************/
 void ManipulatorControlInit()
-{
-  VeMAN_e_CmndState = E_MAN_Init;
+  {
+  VeMAN_e_CmndState  = E_MAN_Init;
   VeMAN_e_AttndState = E_MAN_Init;
 
   VaMAN_In_LinearSlideError = 0.0;
   VaMAN_k_LinearSlideIntegral = 0.0;
 
   VeMAN_b_CriteriaMet = false;
-  VeMAN_b_Paused = false;
-  VeMAM_t_TransitionTime = 0.0;
+  VeMAN_t_TransitionTime = 0.0;
   VeMAN_b_ConeHold = false;
-}
+  }
+
 
 /******************************************************************************
  * Function:     ManipulatorControlManualOverride
  *
- * Description:  Manual override control used during the FRC test section. Use incase of Y2K -J
+ * Description:  Manual override control used during the FRC test section. Use incase of Y2K -J 
  ******************************************************************************/
 void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
-{
+  {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
 
   for (LeMAN_i_Index = E_MAN_ArmPivot;
        LeMAN_i_Index < E_MAN_Sz;
        LeMAN_i_Index = TeMAN_e_ManipulatorActuator(int(LeMAN_i_Index) + 1))
-  {
-    VsMAN_s_Motors.k_MotorTestPower[LeMAN_i_Index] = 0.0;
-  }
+    {
+      VsMAN_s_Motors.k_MotorTestPower[LeMAN_i_Index] = 0.0;
+    }
   VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = E_MotorControlDisabled;
 
   if (LsCONT_s_DriverInput->b_IntakeArmIn == true)
-  {
+    {
     VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = E_MotorRetract;
-  }
+    }
 
   if (LsCONT_s_DriverInput->b_IntakeArmOutTest == true)
-  {
+    {
     VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = E_MotorExtend;
-  }
+    }
 
   if (LsCONT_s_DriverInput->b_IntakeRollersTest == true)
-  {
+    {
     VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeRollers] = KaMAN_k_ManipulatorTestPower[E_MAN_IntakeRollers];
-  }
+    }
+
 
   VsMAN_s_Motors.k_MotorTestPower[E_MAN_Wrist] = LsCONT_s_DriverInput->Pct_WristTest * KaMAN_k_ManipulatorTestPower[E_MAN_Wrist];
 
@@ -377,34 +363,34 @@ void ManipulatorControlManualOverride(RobotUserInput *LsCONT_s_DriverInput)
   VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide] = LsCONT_s_DriverInput->Pct_LinearSlideTest * KaMAN_k_ManipulatorTestPower[E_MAN_LinearSlide];
 
   VsMAN_s_Motors.k_MotorTestPower[E_MAN_Gripper] = LsCONT_s_DriverInput->pct_IntakeRollerTest * KaMAN_k_ManipulatorTestPower[E_MAN_Gripper];
-}
+  }
 
 /******************************************************************************
  * Function:     Update_Command_Attained_State
  *
  * Description:  Updates the commanded and attained states for the manipulator
  ******************************************************************************/
-bool Update_Command_Atained_State(bool LeMAN_b_CriteriaMet,
+bool Update_Command_Atained_State(bool                    LeMAN_b_CriteriaMet,
                                   TeMAN_ManipulatorStates LeMAN_e_SchedState)
-{
+  {
   TeMAN_ManipulatorStates LeMAN_e_CmndState = VeMAN_e_CmndState;
 
-  if (LeMAN_b_CriteriaMet == true)
-  {
+  if(LeMAN_b_CriteriaMet == true)
+    {
     VeMAN_e_AttndState = LeMAN_e_CmndState;
     LeMAN_b_CriteriaMet = false;
-  }
+    }
 
-  if ((LeMAN_e_SchedState != VeMAN_e_AttndState) &&
-      (VeMAN_e_CmndState == VeMAN_e_AttndState))
-  {
+  if((LeMAN_e_SchedState != VeMAN_e_AttndState) &&
+     (VeMAN_e_CmndState  == VeMAN_e_AttndState))
+    {
     LeMAN_e_CmndState = KaMAN_e_ControllingTable[LeMAN_e_SchedState][VeMAN_e_AttndState];
-  }
+    }
 
   VeMAN_e_CmndState = LeMAN_e_CmndState;
 
-  return (LeMAN_b_CriteriaMet);
-}
+  return(LeMAN_b_CriteriaMet);
+  }
 
 /******************************************************************************
  * Function:     CmndStateReached
@@ -412,86 +398,68 @@ bool Update_Command_Atained_State(bool LeMAN_b_CriteriaMet,
  * Description:  Checks to see if we have reached the desired commanded state
  ******************************************************************************/
 bool CmndStateReached(TeMAN_ManipulatorStates LeMAN_e_CmndState)
-{
+  {
   bool LeMAN_b_CriteriaMet = false;
 
-  VeMAM_t_TransitionTime += C_ExeTime;
+  VeMAN_t_TransitionTime += C_ExeTime;
 
-  if ((VeMAM_t_TransitionTime >= KeMAN_t_StateTimeOut) ||
+  if((VeMAN_t_TransitionTime >= KeMAN_t_StateTimeOut) ||
 
-      ((VsMAN_s_Sensors.Deg_ArmPivot <= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] + KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
-       (VsMAN_s_Sensors.Deg_ArmPivot >= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] - KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
+     ((VsMAN_s_Sensors.Deg_ArmPivot <= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] + KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.Deg_ArmPivot >= (KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] - KaMAN_Deg_ArmPivotDb[LeMAN_e_CmndState])) &&
 
-       (VsMAN_s_Sensors.In_LinearSlide <= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] + KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
-       (VsMAN_s_Sensors.In_LinearSlide >= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] - KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.In_LinearSlide <= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] + KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.In_LinearSlide >= (KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] - KaMAN_In_LinearSlideDb[LeMAN_e_CmndState])) &&
 
-       (VsMAN_s_Sensors.Deg_Wrist <= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] + KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
-       (VsMAN_s_Sensors.Deg_Wrist >= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] - KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.Deg_Wrist <= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] + KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
+      (VsMAN_s_Sensors.Deg_Wrist >= (KaMAN_Deg_WristAngle[LeMAN_e_CmndState] - KaMAN_Deg_WristDb[LeMAN_e_CmndState])) &&
 
-       ((VsMAN_s_Sensors.b_IntakeArmExtended == true && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorExtend) ||
-        (VsMAN_s_Sensors.b_IntakeArmExtended == false && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorRetract))))
-  {
-    LeMAN_b_CriteriaMet = true;
-    VeMAM_t_TransitionTime = 0.0;
+      ((VsMAN_s_Sensors.b_IntakeArmExtended == true && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorExtend) ||
+       (VsMAN_s_Sensors.b_IntakeArmExtended == false && KaMAN_e_IntakePneumatics[LeMAN_e_CmndState] == E_MotorRetract))))
+      {
+      LeMAN_b_CriteriaMet = true;
+      VeMAN_t_TransitionTime = 0.0;
+      }
+
+  return(LeMAN_b_CriteriaMet);
   }
-
-  return (LeMAN_b_CriteriaMet);
-}
 
 /******************************************************************************
  * Function:     UpdateManipulatorActuators
  *
- * Description:  Updates the intermediate state of the actuartors for the
+ * Description:  Updates the intermediate state of the actuartors for the 
  *               manipulator
  ******************************************************************************/
 void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState,
                                 TeMAN_ManipulatorStates LeMAN_e_AttndState)
-{
-  double LeMAN_InS_LinearSlideRate = 0.0;
-  T_PID_Cal LeMAN_i_Index = E_P_Gx;
-  double LeMAN_k_ArmPivotRate = 0;
-
-  if (LeMAN_e_AttndState == E_MAN_MidCubeIntake ||
-      LeMAN_e_AttndState == E_MAN_MidConeIntake ||
-      LeMAN_e_AttndState == E_MAN_HighCubeDrop ||
-      LeMAN_e_AttndState == E_MAN_LowCubeDrop ||
-      LeMAN_e_AttndState == E_MAN_HighConeDrop ||
-      LeMAN_e_AttndState == E_MAN_LowConeDrop)
   {
-    /* We want to use the slower rate when moving the arm pivot down as we may cause it to slam into the intake or make the robot unstable*/
-    LeMAN_k_ArmPivotRate = KeMAN_DegS_ArmPivotSlowRate;
+   double    LeMAN_InS_LinearSlideRate = 0.0;
+   double    LeMAN_k_ArmPivotRate = 0.0;
+   double    LeMAN_DegS_WristRate = 0.0;
+   T_PID_Cal LeMAN_i_Index = E_P_Gx;
+
+   LeMAN_k_ArmPivotRate = KaMAN_DegS_ArmPivotRate[LeMAN_e_CmndState][LeMAN_e_AttndState];
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] / KeENC_k_ArmPivot, 
+                                                           VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
+                                                           LeMAN_k_ArmPivotRate);
+
+   LeMAN_InS_LinearSlideRate = KaMAN_InS_LinearSlideRate[LeMAN_e_CmndState][LeMAN_e_AttndState];
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState],  // / KeENC_k_LinearSlideEncoderScaler
+                                                              VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
+                                                              LeMAN_InS_LinearSlideRate);
+
+   LeMAN_DegS_WristRate = KaMAN_DegS_WristRate[LeMAN_e_CmndState][LeMAN_e_AttndState];
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist] = RampTo(KaMAN_Deg_WristAngle[LeMAN_e_CmndState] / KeENC_Deg_Wrist, 
+                                                        VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist],
+                                                        LeMAN_DegS_WristRate);
+
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers] = KaMAN_RPM_IntakePower[LeMAN_e_CmndState]; // Change to power based.  Don't think we need speed control here...
+
+   VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm] = KaMAN_e_IntakePneumatics[LeMAN_e_CmndState];
   }
-  else
-  {
-    LeMAN_k_ArmPivotRate = KeMAN_DegS_ArmPivotFastRate;
-  }
-
-  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(KaMAN_Deg_ArmPivotAngle[LeMAN_e_CmndState] / KeENC_k_ArmPivot,
-                                                          VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
-                                                          LeMAN_k_ArmPivotRate);
-
-  if (LeMAN_e_CmndState == E_MAN_MainIntake)
-  {
-    /* Let's use a slower rate when transitioning to the main intake as we want to give the pnuematics time to push the intake out.*/
-    LeMAN_InS_LinearSlideRate = KeMAN_InS_LinearSlideIntakeRate;
-  }
-  else
-  {
-    LeMAN_InS_LinearSlideRate = KeMAN_InS_LinearSlideRate;
-  }
-
-  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(KaMAN_In_LinearSlidePosition[LeMAN_e_CmndState] / KeENC_k_LinearSlideEncoderScaler, // / KeENC_k_LinearSlideEncoderScaler
-                                                             VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
-                                                             LeMAN_InS_LinearSlideRate);
-
-  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist] = RampTo(KaMAN_Deg_WristAngle[LeMAN_e_CmndState] / KeENC_Deg_Wrist,
-                                                       VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist],
-                                                       KeMAN_DegS_WristRate);
-
-  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers] = KaMAN_RPM_IntakePower[LeMAN_e_CmndState]; // Change to power based.  Don't think we need speed control here...
-
-  VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm] = KaMAN_e_IntakePneumatics[LeMAN_e_CmndState];
-}
 
 /******************************************************************************
  * Function:     UpdateGripperActuator
@@ -500,17 +468,18 @@ void UpdateManipulatorActuators(TeMAN_ManipulatorStates LeMAN_e_CmndState,
  ******************************************************************************/
 void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
                            TeMAN_ManipulatorStates LeMAN_e_AttndState,
-                           bool LeMAN_b_DropObjectSlow,
-                           bool LeMAN_b_DropObjectFast)
-{
-  double LeMAN_k_TempCmnd = 0.0;
-  bool LeMAN_b_AllowedReleaseState = false;
-  bool LeMAN_b_ConeState = false;
-  bool LeMAN_b_CubeState = false;
+                           bool                    LeMAN_b_DropObjectSlow,
+                           bool                    LeMAN_b_DropObjectFast)
+  {
+   double LeMAN_k_TempCmnd = 0.0;
+   bool   LeMAN_b_AllowedReleaseState = false;
+   bool   LeMAN_b_ConeState = false;
+   bool   LeMAN_b_CubeState = false;
 
-  frc::SmartDashboard::PutBoolean("Gripper Has Object", VeMAN_b_HasObject);
-  frc::SmartDashboard::PutBoolean("Gripper ready to grab", VeMAN_b_ReadyToGrab);
-  frc::SmartDashboard::PutNumber("Gripper RPM", VsMAN_s_Sensors.RPM_Gripper);
+  // frc::SmartDashboard::PutBoolean("Gripper Has Object", VeMAN_b_HasObject);
+  // frc::SmartDashboard::PutBoolean("Gripper ready to grab", VeMAN_b_ReadyToGrab);
+  // frc::SmartDashboard::PutNumber("Gripper RPM", VsMAN_s_Sensors.RPM_Gripper);
+  
 
   if (fabs(VsMAN_s_Sensors.RPM_Gripper) > C_GripperRPMReadyThreshold)
   {
@@ -534,83 +503,108 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
     VeMAN_b_HasObject = false;
   }
 
-  /* Determine if we are attempting to drop a cube or cone: */
-  if ((LeMAN_e_AttndState == E_MAN_HighCubeDrop) ||
-      (LeMAN_e_AttndState == E_MAN_LowCubeDrop) ||
-      (LeMAN_e_AttndState == E_MAN_MidCubeIntake) ||
-      (LeMAN_e_AttndState == E_MAN_MainIntake))
-  {
-    LeMAN_b_CubeState = true;
-    VeMAN_b_ConeHold = false;
-  }
+   /* Determine if we are attempting to drop a cube or cone: */
+   if ((LeMAN_e_AttndState == E_MAN_HighCubeDrop) ||
+       (LeMAN_e_AttndState == E_MAN_LowCubeDrop)  ||
+       (LeMAN_e_AttndState == E_MAN_MidCubeIntake) ||
+       (LeMAN_e_AttndState == E_MAN_MainIntake))
+     {
+      LeMAN_b_CubeState = true;
+      VeMAN_b_ConeHold = false;
+     }
 
-  if ((LeMAN_e_AttndState == E_MAN_HighConeDrop) ||
-      (LeMAN_e_AttndState == E_MAN_LowConeDrop) ||
-      (LeMAN_e_AttndState == E_MAN_MidConeIntake))
-  {
-    LeMAN_b_ConeState = true;
-    VeMAN_b_ConeHold = true;
-  }
+   if ((LeMAN_e_AttndState == E_MAN_HighConeDrop) ||
+       (LeMAN_e_AttndState == E_MAN_LowConeDrop)  ||
+       (LeMAN_e_AttndState == E_MAN_MidConeIntake))
+     {
+      LeMAN_b_ConeState = true;
+      VeMAN_b_ConeHold = true;
+     }
 
-  /* Determine if we are in an allowed state to drop: */
-  if ((LeMAN_e_AttndState == LeMAN_e_CmndState) &&
+   /* Determine if we are in an allowed state to drop: */
+   if ((LeMAN_e_AttndState == LeMAN_e_CmndState) &&
 
-      ((LeMAN_b_CubeState == true) ||
-       (LeMAN_b_ConeState == true) ||
-       (LeMAN_e_AttndState == E_MAN_MainIntake)))
-  {
-    LeMAN_b_AllowedReleaseState = true;
-  }
+       ((LeMAN_b_CubeState == true) ||
+        (LeMAN_b_ConeState == true)  ||
+        (LeMAN_e_AttndState == E_MAN_MainIntake)))
+     {
+      LeMAN_b_AllowedReleaseState = true;
+     }
 
-  if ((LeMAN_b_DropObjectSlow == true) && (LeMAN_b_AllowedReleaseState == true))
-  {
-    if (LeMAN_b_CubeState == true)
-    {
-      LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseCubeSlow;
-    }
-    else
-    {
-      /* We are eitehr in cone mode or main intake*/
-      LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseConeSlow;
-    }
-  }
-  else if ((LeMAN_b_DropObjectFast == true) && (LeMAN_b_AllowedReleaseState == true))
-  {
-    if (LeMAN_b_CubeState == true)
-    {
-      LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseCubeFast;
-    }
-    else
-    {
-      /* We are eitehr in cone mode or main intake*/
-      LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseConeFast;
-    }
-  }
-  else if ((VeMAN_b_HasObject == false) &&
-           (((LeMAN_e_AttndState == E_MAN_MainIntake) && (LeMAN_e_CmndState == E_MAN_MainIntake)) ||
-            ((LeMAN_e_AttndState == E_MAN_MidCubeIntake) && (LeMAN_e_CmndState == E_MAN_MidCubeIntake))))
-  {
-    LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeCube;
-  }
-  else if ((VeMAN_b_HasObject == false) &&
-           ((LeMAN_e_AttndState == E_MAN_MidConeIntake) && (LeMAN_e_CmndState == E_MAN_MidConeIntake)))
-  {
-    LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeCone;
-  }
-  else if (VeMAN_b_HasObject == true)
-  {
-    if (VeMAN_b_ConeHold == true)
-    {
-      LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeholdCone;
-    }
-    else
-    {
-      LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeholdCube;
-    }
-  }
 
-  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = LeMAN_k_TempCmnd;
-}
+   if ((LeMAN_b_DropObjectSlow == true) && (LeMAN_b_AllowedReleaseState == true))
+     {
+      VeMAN_t_GripperHoldTime = 0;
+      if (LeMAN_b_CubeState == true)
+       {
+        LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseCubeSlow;
+       }
+      else
+       {
+        /* We are eitehr in cone mode or main intake*/
+        LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseConeSlow;
+       }
+     }
+   else if ((LeMAN_b_DropObjectFast == true) && (LeMAN_b_AllowedReleaseState == true))
+     {
+      VeMAN_t_GripperHoldTime = 0;
+      if (LeMAN_b_CubeState == true)
+       {
+        LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseCubeFast;
+       }
+      else
+       {
+        /* We are eitehr in cone mode or main intake*/
+        LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseConeFast;
+       }
+     }
+   else if ((VeMAN_t_GripperHoldTime < KeMAN_t_GripperPullInTm) &&
+            (((LeMAN_e_AttndState == E_MAN_MainIntake)    && (LeMAN_e_CmndState  == E_MAN_MainIntake)) ||
+             ((LeMAN_e_AttndState == E_MAN_MidCubeIntake) && (LeMAN_e_CmndState  == E_MAN_MidCubeIntake))))
+     {
+     LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeCube;
+     if (VsMAN_s_Sensors.b_GripperObjDetected == true)
+       {
+        VeMAN_t_GripperHoldTime += C_ExeTime;
+       }
+       else
+       {
+        VeMAN_t_GripperHoldTime = 0;
+       }
+     }
+   else if ((VeMAN_t_GripperHoldTime < KeMAN_t_GripperPullInTm) &&
+             (((LeMAN_e_AttndState == E_MAN_MidConeIntake)   && (LeMAN_e_CmndState  == E_MAN_MidConeIntake)) ||
+              ((LeMAN_e_AttndState == E_MAN_FloorConeIntake) && (LeMAN_e_CmndState  == E_MAN_FloorConeIntake))))
+     {
+     LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeCone;
+      if (VsMAN_s_Sensors.b_GripperObjDetected == true)
+       {
+        VeMAN_t_GripperHoldTime += C_ExeTime;
+       }
+      else
+       {
+        VeMAN_t_GripperHoldTime = 0;
+       }
+     }
+   else if ((VsMAN_s_Sensors.b_GripperObjDetected == true) || (VeMAN_t_GripperHoldTime >= KeMAN_t_GripperPullInTm))
+     {
+      if (VeMAN_b_ConeHold == true)
+       {
+        LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeholdCone;
+       }
+      else
+       {
+        LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeholdCube;
+       }
+     }
+  // double L_iz_Gripper  = frc::SmartDashboard::GetNumber("Grip Power", 0);
+  frc::SmartDashboard::PutBoolean("GripSense", VsMAN_s_Sensors.b_GripperObjDetected);
+  frc::SmartDashboard::PutNumber("GripTime", VeMAN_t_GripperHoldTime);
+  // VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = L_iz_Gripper;
+
+  // frc::SmartDashboard::PutNumber("GripCommandedPower", VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper]);
+   VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = LeMAN_k_TempCmnd;
+  }
 
 /******************************************************************************
  * Function:     ManipulatorControlMain
@@ -618,42 +612,45 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
  * Description:  Main calling function for manipulator control.
  ******************************************************************************/
 void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
-                            bool LeMAN_b_TestPowerOverride,
-                            bool LeMAN_b_DropObjectSlow,
-                            bool LeMAN_b_DropObjectFast)
-{
+                            bool                    LeMAN_b_TestPowerOverride,
+                            bool                    LeMAN_b_DropObjectSlow,
+                            bool                    LeMAN_b_DropObjectFast)
+  {
+  TeMAN_e_ManipulatorActuator LeMAN_i_Index;
+  double LeMAN_Deg_Error = 0.0;
+  double LeMAN_k_P_Gain = 0.0;
 
   if (LeMAN_b_TestPowerOverride == true)
-  {
+    {
     // Do nothing.  Robot is in test state using power commands for all the acutators
-  }
+    }
   else if (VeMAN_b_TestState == true)
-  {
+    {
     /* Only used for testing/calibration. */
-    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_ArmPivot] / VaMAN_k_PositionToEncoder[E_MAN_ArmPivot],
-                                                            VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
-                                                            VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_ArmPivot] / KeENC_k_ArmPivot, 
+                                                             VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot],
+                                                             VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_ArmPivot]);
 
-    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_LinearSlide] / VaMAN_k_PositionToEncoder[E_MAN_LinearSlide],
-                                                               VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
-                                                               VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_LinearSlide], 
+                                                                VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
+                                                                VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_LinearSlide]);
 
-    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Wrist] / VaMAN_k_PositionToEncoder[E_MAN_Wrist],
-                                                         VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist],
-                                                         VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Wrist] / KeENC_Deg_Wrist, 
+                                                          VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist],
+                                                          VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
 
-    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Gripper] / VaMAN_k_PositionToEncoder[E_MAN_Gripper],
-                                                           VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper],
-                                                           VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Gripper] / VaMAN_k_PositionToEncoder[E_MAN_Gripper]);
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_Gripper], 
+                                                          VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper],
+                                                          1.0);
 
-    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_IntakeRollers] / VaMAN_k_PositionToEncoder[E_MAN_IntakeRollers],
-                                                                 VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers],
-                                                                 VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers]);
+     VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers] = RampTo(VsMAN_s_MotorsTest.k_MotorCmnd[E_MAN_IntakeRollers] / KeENC_RPM_IntakeRollers, 
+                                                                  VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers],
+                                                                  VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_IntakeRollers]);
 
-    VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm];
-  }
+     VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTest.e_MotorControlType[E_MAN_IntakeArm];
+    }
   else
-  {
+    {
     /* This is the actual manipulator control */
     VeMAN_b_CriteriaMet = Update_Command_Atained_State(VeMAN_b_CriteriaMet,
                                                        LeMAN_e_SchedState);
@@ -663,27 +660,41 @@ void ManipulatorControlMain(TeMAN_ManipulatorStates LeMAN_e_SchedState,
     UpdateGripperActuator(VeMAN_e_CmndState,
                           VeMAN_e_AttndState,
                           LeMAN_b_DropObjectSlow,
-                          LeMAN_b_DropObjectFast); // Need to come up with object detected
+                          LeMAN_b_DropObjectFast);  // Need to come up with object detected
 
     if ((LeMAN_e_SchedState != VeMAN_e_CmndState) ||
         (LeMAN_e_SchedState != VeMAN_e_AttndState))
-    {
-      UpdateManipulatorActuators(VeMAN_e_CmndState, VeMAN_e_AttndState);
+      {
+        UpdateManipulatorActuators(VeMAN_e_CmndState, VeMAN_e_AttndState);
 
-      VeMAN_b_CriteriaMet = CmndStateReached(VeMAN_e_CmndState);
+        VeMAN_b_CriteriaMet = CmndStateReached(VeMAN_e_CmndState);
+      }
     }
+
+    /* Final output to the motor command that will be sent to the motor controller: */
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot];
+
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide] =  -Control_PID( VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide],
+                                                                  VsMAN_s_Sensors.In_LinearSlide,
+                                                                 &VaMAN_In_LinearSlideError,
+                                                                 &VaMAN_k_LinearSlideIntegral,
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_P_Gx],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_I_Gx],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_D_Gx],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_P_Ul],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_P_Ll],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_I_Ul],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_I_Ll],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_D_Ul],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_D_Ll],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_Max_Ul],
+                                                                  KaMAN_k_LinearSlidePID_Gx[E_Max_Ll]);
+
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist];
+
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper];
+
+    VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers];
+
+    VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm];
   }
-
-  /* Final output to the motor command that will be sent to the motor controller: */
-  VsMAN_s_Motors.k_MotorCmnd[E_MAN_ArmPivot] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_ArmPivot];
-
-  VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_LinearSlide];
-
-  VsMAN_s_Motors.k_MotorCmnd[E_MAN_Wrist] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Wrist];
-
-  VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper];
-
-  VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers] = VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_IntakeRollers];
-
-  VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] = VsMAN_s_MotorsTemp.e_MotorControlType[E_MAN_IntakeArm];
-}

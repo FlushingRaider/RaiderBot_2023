@@ -38,6 +38,7 @@ void DriveControlMain(double              L_JoyStick1Axis1Y,   // swerve control
                       double               L_ADAS_Pct_SD_FwdRev,
                       double               L_ADAS_Pct_SD_Strafe,
                       double               L_ADAS_Pct_SD_Rotate,
+                      double               LeADAS_Deg_SD_DesiredPose,
                       bool                 L_ADAS_SD_RobotOriented,
                       double              L_Deg_GyroAngle,
                       double              L_Rad_GyroAngle,

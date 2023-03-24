@@ -15,6 +15,7 @@ extern T_ADAS_ActiveFeature VeADAS_e_ActiveFeature;
 extern double VeADAS_Pct_SD_FwdRev;
 extern double VeADAS_Pct_SD_Strafe;
 extern double VeADAS_Pct_SD_Rotate;
+extern double VeADAS_Deg_SD_DesiredPose;
 
 extern bool VeADAS_b_SD_RobotOriented;
 extern bool VeADAS_b_X_Mode;
@@ -38,6 +39,7 @@ void ADAS_DetermineMode(void);
 T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Strafe,
                                       double *L_Pct_Rotate,
+                                      double *LeADAS_Deg_DesiredPose,
                                       bool *L_SD_RobotOriented,
                                       bool *LeADAS_b_X_Mode,
                                       bool LeADAS_b_Driver1_JoystickActive,

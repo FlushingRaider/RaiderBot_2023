@@ -96,7 +96,31 @@ void ADAS_MN_Reset(void)
     {
       VeADAS_e_MAN_SchedState = E_MAN_Driving;
     }
-  else if (VsCONT_s_DriverInput.b_InitState == true)
+  else if (VsCONT_s_DriverInput.b_FrontHighCube == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_HighCubeDrop;
+    }
+  else if (VsCONT_s_DriverInput.b_FrontLowCube == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_LowCubeDrop;
+    }
+      else if (VsCONT_s_DriverInput.b_FrontLowCone == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_LowConeDrop;
+    }
+      else if (VsCONT_s_DriverInput.b_FrontHighCone == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_HighConeDrop;
+    }
+      else if (VsCONT_s_DriverInput.b_MidIntakeOut == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_MidConeIntake;
+    }
+      else if (VsCONT_s_DriverInput.b_FloorConeIntake == true)
+    {
+      VeADAS_e_MAN_SchedState = E_MAN_FloorConeIntake;
+    }
+      else if (VsCONT_s_DriverInput.b_InitState == true)
     {
       VeADAS_e_MAN_SchedState = E_MAN_Init;
     }
@@ -169,11 +193,11 @@ void ADAS_MN_Reset(void)
  ******************************************************************************/
  bool ManipulatorScheduelerAutonAction(TeADAS_AutonManipulatorStates LeADAS_e_MAN_StateReq)
   {
-    bool LeADAS_b_MAN_StateComplete = false;
-    TeMAN_ManipulatorStates LeADAS_e_MAN_State = E_MAN_Driving;
-    bool LeADAS_b_MAN_DropSlow = false;
-    bool LeADAS_b_MAN_DropFast = false;
-    bool LeADAS_b_MAN_DropCmplt = false;
+    bool                    LeADAS_b_MAN_StateComplete = false;
+    TeMAN_ManipulatorStates LeADAS_e_MAN_State         = E_MAN_Driving;
+    bool                    LeADAS_b_MAN_DropSlow      = false;
+    bool                    LeADAS_b_MAN_DropFast      = false;
+    bool                    LeADAS_b_MAN_DropCmplt     = false;
 
     if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_Driving)
       {
@@ -194,6 +218,7 @@ void ADAS_MN_Reset(void)
         if (VeADAS_t_MAN_DropObjectTm >= KeMAN_t_GripperOnTm)
           {
             LeADAS_b_MAN_DropCmplt = true;
+            LeADAS_b_MAN_DropFast = false;
           }
       }
     else
@@ -231,6 +256,7 @@ bool ADAS_MN_Main(T_RobotState         L_RobotState,
   case E_ADAS_Disabled:
     LeADAS_b_MN_Complete = ManipulatorScheduelerTeleop();
   break;
+  
   case E_ADAS_DM_DriveRevDeployArm:
   case E_ADAS_DM_StopDeployCube:
     LeADAS_b_MN_Complete = ManipulatorScheduelerAutonAction(LeADAS_e_MAN_ReqAction);

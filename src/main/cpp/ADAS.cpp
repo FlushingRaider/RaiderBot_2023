@@ -48,6 +48,7 @@ std::string VeADAS_Str_AutoPathName;
 double VeADAS_Pct_SD_FwdRev = 0;
 double VeADAS_Pct_SD_Strafe = 0;
 double VeADAS_Pct_SD_Rotate = 0;
+double VeADAS_Deg_SD_DesiredPose = 0;
 bool VeADAS_b_SD_RobotOriented = false;
 bool VeADAS_b_X_Mode = false;
 
@@ -131,6 +132,7 @@ void ADAS_Main_Reset(void)
 T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                       double *L_Pct_Strafe,
                                       double *L_Pct_Rotate,
+                                      double *LeADAS_Deg_DesiredPose,
                                       bool *L_SD_RobotOriented,
                                       bool *LeADAS_b_X_Mode,
                                       bool LeADAS_b_Driver1_JoystickActive,
@@ -510,6 +512,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     {
       VeADAS_b_CompletePrev = true;
     }
+
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
 
     if (VeADAS_b_StateComplete == true)
@@ -525,6 +528,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     VeADAS_b_StateComplete = ADAS_DM_PathFollower(L_Pct_FwdRev,
                                                   L_Pct_Strafe,
                                                   L_Pct_Rotate,
+                                                  LeADAS_Deg_DesiredPose,
                                                   L_SD_RobotOriented,
                                                   L_L_X_FieldPos,
                                                   L_L_Y_FieldPos,
