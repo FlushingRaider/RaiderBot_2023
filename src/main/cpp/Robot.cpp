@@ -78,11 +78,6 @@ void Robot::RobotMotorCommands()
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
   //m_LinearSlide.Set(ControlMode::PercentOutput, 0.0);
 
-  frc::SmartDashboard::PutNumber("Gripper Final Cmnd", VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]);
-  frc::SmartDashboard::PutNumber("VeMAN_e_AttndState", (double)VeMAN_e_AttndState);
-  frc::SmartDashboard::PutNumber("VeMAN_e_CmndState", (double)VeMAN_e_CmndState);
-  frc::SmartDashboard::PutNumber("VeADAS_e_MAN_SchedState", (double)VeADAS_e_MAN_SchedState);
-
   if (VsMAN_s_Motors.e_MotorControlType[E_MAN_IntakeArm] == E_MotorExtend)
   {
     LeROBO_b_IntakeArmExtend = true;
@@ -103,9 +98,6 @@ void Robot::RobotInit()
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_t_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
   VeROBO_b_TestState = false;
-
-  // frc::SmartDashboard::PutNumber("Goal Global X", VeADAS_in_GlobalRequestX);
-  // frc::SmartDashboard::PutNumber("Goal Global Y", VeADAS_in_GlobalRequestY);
 
   // frc::CameraServer::StartAutomaticCapture();  // For connecting a single USB camera directly to RIO
 
@@ -268,9 +260,6 @@ void Robot::RobotPeriodic()
                 VeVIS_b_TagHasTarget,
                 V_TagCentered);
 
-  frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
-  frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
-
   ADAS_DetermineMode();
 
   VeADAS_e_ActiveFeature = ADAS_ControlMain(&VeADAS_Pct_SD_FwdRev,
@@ -315,6 +304,8 @@ void Robot::RobotPeriodic()
                    VeADAS_b_SD_RobotOriented,
                    VeGRY_Deg_GyroYawAngleDegrees,
                    VeGRY_Rad_GyroYawAngleRad,
+                   VeMAN_e_CmndState,
+                   VeMAN_e_AttndState,
                    &VaENC_Deg_WheelAngleFwd[0],
                    &VaENC_Deg_WheelAngleRev[0],
                    &VaDRC_RPM_WheelSpeedCmnd[0],
@@ -330,6 +321,8 @@ void Robot::RobotPeriodic()
                    &VeLC_Cmd_VanityLightCmnd);
 
 #ifdef NewVision
+  frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
+  frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
   // frc::SmartDashboard::PutBoolean("Vision Button Cube", VsCONT_s_DriverInput.b_CubeAlign);
 
   VeADAS_in_GlobalRequestX = 530.0;
@@ -380,11 +373,9 @@ void Robot::RobotPeriodic()
 #endif
 
   /* Output all of the content to the dashboard here: */
-  // frc::SmartDashboard::PutNumber("RobotDisplacementY", VeODO_In_RobotDisplacementY);
-  // frc::SmartDashboard::PutNumber("RobotDisplacementX", VeODO_In_RobotDisplacementX);
-
-  // frc::SmartDashboard::PutNumber("Gyro Pitch", VeGRY_Deg_GyroPitchAngleDegrees);
-  // frc::SmartDashboard::PutNumber("Gyro Roll", VeGRY_Deg_GyroRollAngleDegrees);
+  frc::SmartDashboard::PutNumber("VeMAN_e_AttndState", (double)VeMAN_e_AttndState);
+  frc::SmartDashboard::PutNumber("VeMAN_e_CmndState", (double)VeMAN_e_CmndState);
+  frc::SmartDashboard::PutNumber("VeADAS_e_MAN_SchedState", (double)VeADAS_e_MAN_SchedState);
 }
 
 /******************************************************************************

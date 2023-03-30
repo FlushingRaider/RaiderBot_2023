@@ -116,9 +116,9 @@ void ADAS_MN_Reset(void)
     {
       VeADAS_e_MAN_SchedState = E_MAN_MidConeIntake;
     }
-      else if (VsCONT_s_DriverInput.b_FloorConeIntake == true)
+      else if (VsCONT_s_DriverInput.b_FloorConeDrop == true)
     {
-      VeADAS_e_MAN_SchedState = E_MAN_FloorConeIntake;
+      VeADAS_e_MAN_SchedState = E_MAN_FloorConeDrop;
     }
       else if (VsCONT_s_DriverInput.b_InitState == true)
     {

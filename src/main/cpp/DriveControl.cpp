@@ -23,8 +23,6 @@
 double VeDRC_Deg_AutoCorrectDesired;        // Saved robot orientation angle used for auto correct
 double VeDRC_Deg_AutoCorrectionError;       // Error value for auto correction PID control.
 double VeDRC_k_AutoCorrectionIntegral;      // Integral value for auto correction PID control.
-bool   VeDRC_b_AutoCenterLatch = false;     // Latching mechanism for auto center
-bool   VeDRC_b_AutoCenterLatchPrev = false; // Previous loop value of VeDRC_b_AutoCenterLatch
 
 double VaDRC_Deg_WheelAngleError[E_RobotCornerSz];  // Error value for PID control.
 double VaDRC_k_WheelAngleIntegral[E_RobotCornerSz]; // Integral value for PID control.
@@ -242,9 +240,6 @@ void DriveControlInit()
 
   VeDRC_Deg_AutoCorrectionError = 0;
   VeDRC_k_AutoCorrectionIntegral = 0;
-
-  VeDRC_b_AutoCenterLatch = true;    // Init to true in order to start out with auto correct enabled
-  VeDRC_b_AutoCenterLatchPrev = true;
   }
 
 
@@ -306,6 +301,8 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
                       bool                 L_ADAS_SD_RobotOriented, 
                       double               L_Deg_GyroAngle,
                       double               L_Rad_GyroAngle,
+                      TeMAN_ManipulatorStates LeMAN_e_CmndState,
+                      TeMAN_ManipulatorStates LeMAN_e_AttndState,
                       double              *L_Deg_WheelAngleFwd,
                       double              *L_Deg_WheelAngleRev,
                       double              *Le_RPM_SD_WheelSpeedCmnd,
@@ -336,8 +333,14 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
   bool          Le_b_SD_Active = false;
   double        Le_k_SD_RotateCorrectionGx = 0;
   bool          LeDRC_b_X_ModeReqActive = false;
+  bool          LeDRC_b_AutoCenterEnabled = true; // force autocorrect to always be enabled when driver is running or ADAS is NOT in robot oriented control
+  double        LeDRC_k_ArmExtendScaler = 1.0;
 
-  VeDRC_b_AutoCenterLatch = true;  // force autocorrect to always be enabled when driver is running or ADAS is NOT in robot oriented control
+  if ((LeMAN_e_CmndState == E_MAN_MidConeIntake)  || (LeMAN_e_CmndState == E_MAN_HighCubeDrop)  || (LeMAN_e_CmndState == E_MAN_LowConeDrop) ||
+      (LeMAN_e_AttndState == E_MAN_MidConeIntake) || (LeMAN_e_AttndState == E_MAN_HighCubeDrop) || (LeMAN_e_AttndState == E_MAN_LowConeDrop))
+      {
+        LeDRC_k_ArmExtendScaler = KeDRC_k_SD_ArmExtendedGx;
+      }
 
   /* Scale the joysticks based on a calibratable lookup when in teleop: */
   if (LeDRC_e_ADAS_ActiveFeature > E_ADAS_Disabled)
@@ -352,15 +355,15 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
       {
       L_Deg_GyroAngle = 0.0;
       L_Rad_GyroAngle = 0.0;
-      VeDRC_b_AutoCenterLatch = false;
+      LeDRC_b_AutoCenterEnabled = false;
       }
     }
   else
     {
     /* ADAS is disabled, use the driver joysticks */
-    L_FWD = -L_JoyStick1Axis1Y;
-    L_STR = L_JoyStick1Axis1X;
-    L_RCW = L_JoyStick1Axis2X;
+    L_FWD = -L_JoyStick1Axis1Y * LeDRC_k_ArmExtendScaler;
+    L_STR = L_JoyStick1Axis1X * LeDRC_k_ArmExtendScaler;
+    L_RCW = L_JoyStick1Axis2X * LeDRC_k_ArmExtendScaler;
     LeDRC_b_X_ModeReqActive = LeDRC_b_X_ModeReqTeleop;
     } 
 
@@ -533,7 +536,7 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
         L_RPM_SD_WS[L_Index] *= (-1); // Need to flip sign of drive wheel to account for reverse direction
       }
 
-    if (VeDRC_b_AutoCenterLatch == true && Le_b_SD_Active == true)
+    if (LeDRC_b_AutoCenterEnabled == true && Le_b_SD_Active == true)
       {
       Le_n_SD_Offset = (sin((-L_Deg_WheelAngleFwd[L_Index]) * (C_PI / 180)) * Ke_k_SD_SignX[L_Index] + cos((-L_Deg_WheelAngleFwd[L_Index]) * (C_PI / 180)) * Ke_k_SD_SignY[L_Index]) * Le_k_SD_RotateCorrectionGx;
 
@@ -567,10 +570,7 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
         }
     }
 
-  // VeDRC_b_DriveWheelsInPID = Le_b_SD_DriveWheelsPowered;
-
-  if ((Le_b_SD_DriveWheelsPowered == true) ||
-       (LeDRC_b_X_ModeReqActive == true))
+  if ((Le_b_SD_DriveWheelsPowered == true) || (LeDRC_b_X_ModeReqActive == true))
        {
         VeDRC_b_DriveWheelsInPID = true;
        }

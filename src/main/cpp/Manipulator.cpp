@@ -21,38 +21,37 @@
 #include "ADAS_MN.hpp"
 
 // the rpm where under it we consider the gripper holding something
- double C_GripperRPMHoldingThreshold = 0.0;
- double C_GripperRPMReadyThreshold = 1.0;
+double                  C_GripperRPMHoldingThreshold = 0.0;
+double                  C_GripperRPMReadyThreshold = 1.0;
+bool                    VeMAN_b_ReadyToGrab;
+bool                    VeMAN_b_HasObject;
 
 TeMAN_ManipulatorStates VeMAN_e_CmndState  = E_MAN_Init; // What is our next/current step?
 TeMAN_ManipulatorStates VeMAN_e_AttndState = E_MAN_Init; // What is our desired end state?
 
-TeMAN_MotorControl VsMAN_s_Motors; // All of the motor commands for the manipulator/intake motors
-TeMAN_MotorControl VsMAN_s_MotorsTemp; // Temporary commands for the motors, not the final output
-TeMAN_MotorControl VsMAN_s_MotorsTest; // Temporary commands for the motors, not the final output
-TsMAN_Sensor       VsMAN_s_Sensors; // All of the sensor values for the manipulator/intake motors
+TeMAN_MotorControl      VsMAN_s_Motors; // All of the motor commands for the manipulator/intake motors
+TeMAN_MotorControl      VsMAN_s_MotorsTemp; // Temporary commands for the motors, not the final output
+TeMAN_MotorControl      VsMAN_s_MotorsTest; // Temporary commands for the motors, not the final output
+TsMAN_Sensor            VsMAN_s_Sensors; // All of the sensor values for the manipulator/intake motors
 
-double             VeMAN_t_TransitionTime = 0;
-double             VeMAN_t_GripperHoldTime = 0; // Amount of time after object is detected, to continue pulling in
-double             VaMAN_In_LinearSlideError;
-double             VaMAN_k_LinearSlideIntegral;
+double                  VeMAN_t_TransitionTime = 0;
+double                  VeMAN_t_GripperHoldTime = 0; // Amount of time after object is detected, to continue pulling in
+double                  VaMAN_In_LinearSlideError;
+double                  VaMAN_k_LinearSlideIntegral;
 
-double VaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz];
-double VaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz];
-double VaMAN_k_GripperPID_Gx[E_PID_SparkMaxCalSz];
-double VaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz];
-double VaMAN_k_LinearSlidePID_Gx[E_PID_CalSz];
+double                  VaMAN_k_ArmPivotPID_Gx[E_PID_SparkMaxCalSz];
+double                  VaMAN_k_WristPID_Gx[E_PID_SparkMaxCalSz];
+double                  VaMAN_k_GripperPID_Gx[E_PID_SparkMaxCalSz];
+double                  VaMAN_k_IntakeRollersPID_Gx[E_PID_SparkMaxCalSz];
+double                  VaMAN_k_LinearSlidePID_Gx[E_PID_CalSz];
 
-bool   VeMAN_b_CriteriaMet = false;
-bool   VeMAN_b_ConeHold = false;  // Used for the holding power.  If cone, use cone cal, otherwise use cube.
-
-bool VeMAN_b_ReadyToGrab;
-bool VeMAN_b_HasObject;
+bool                    VeMAN_b_CriteriaMet = false;
+bool                    VeMAN_b_ConeHold = false;  // Used for the holding power.  If cone, use cone cal, otherwise use cube.
 
 #ifdef Manipulator_Test
-bool   VeMAN_b_TestState = true; // temporary, we don't want to use the manual overrides
+bool                    VeMAN_b_TestState = true; // temporary, we don't want to use the manual overrides
 #else
-bool VeMAN_b_TestState = false;
+bool                    VeMAN_b_TestState = false;
 #endif
 
 /******************************************************************************
@@ -122,7 +121,7 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
     {
     VaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3] = KaMAN_k_LinearSlidePID_Gx[LeMAN_i_Index3];
     }
-  // frc::SmartDashboard::PutNumber("Grip Power", 0);
+
   #ifdef Manipulator_Test
   T_PID_SparkMaxCal LeMAN_i_Index2 = E_kP;
 
@@ -300,8 +299,8 @@ void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
   // VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist] = frc::SmartDashboard::GetNumber("KaMAN_DegS_WristRate", VsMAN_s_MotorsTest.k_MotorRampRate[E_MAN_Wrist]);
    #endif
  
-  C_GripperRPMHoldingThreshold = frc::SmartDashboard::GetNumber("Holding RPM Threshold", 0.0);
-  C_GripperRPMHoldingThreshold = frc::SmartDashboard::GetNumber("Intake Ready RPM Threshold", 1.0);
+  // C_GripperRPMHoldingThreshold = frc::SmartDashboard::GetNumber("Holding RPM Threshold", 0.0);
+  // C_GripperRPMHoldingThreshold = frc::SmartDashboard::GetNumber("Intake Ready RPM Threshold", 1.0);
   }
 
 /******************************************************************************
@@ -478,30 +477,28 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
 
   // frc::SmartDashboard::PutBoolean("Gripper Has Object", VeMAN_b_HasObject);
   // frc::SmartDashboard::PutBoolean("Gripper ready to grab", VeMAN_b_ReadyToGrab);
-  // frc::SmartDashboard::PutNumber("Gripper RPM", VsMAN_s_Sensors.RPM_Gripper);
-  
 
-  if (fabs(VsMAN_s_Sensors.RPM_Gripper) > C_GripperRPMReadyThreshold)
-  {
-    VeMAN_b_ReadyToGrab = true;
-  }
-  else if ((fabs(VsMAN_s_Sensors.RPM_Gripper) <= C_GripperRPMReadyThreshold) && (VeMAN_b_HasObject == false))
-  {
-    VeMAN_b_ReadyToGrab = false;
-  }
+  // if (fabs(VsMAN_s_Sensors.RPM_Gripper) > C_GripperRPMReadyThreshold)
+  // {
+  //   VeMAN_b_ReadyToGrab = true;
+  // }
+  // else if ((fabs(VsMAN_s_Sensors.RPM_Gripper) <= C_GripperRPMReadyThreshold) && (VeMAN_b_HasObject == false))
+  // {
+  //   VeMAN_b_ReadyToGrab = false;
+  // }
 
-  if ((fabs(VsMAN_s_Sensors.RPM_Gripper) <= C_GripperRPMHoldingThreshold) && (VeMAN_b_ReadyToGrab) &&
-      (LeMAN_e_CmndState == E_MAN_MidCubeIntake ||
-       LeMAN_e_CmndState == E_MAN_MidConeIntake ||
-       LeMAN_e_CmndState == E_MAN_FloorConeIntake ||
-       LeMAN_e_CmndState == E_MAN_MainIntake))
-  {
-    VeMAN_b_HasObject = true;
-  }
-  else if (fabs(VsMAN_s_Sensors.RPM_Gripper) > C_GripperRPMHoldingThreshold)
-  {
-    VeMAN_b_HasObject = false;
-  }
+  // if ((fabs(VsMAN_s_Sensors.RPM_Gripper) <= C_GripperRPMHoldingThreshold) && (VeMAN_b_ReadyToGrab) &&
+  //     (LeMAN_e_CmndState == E_MAN_MidCubeIntake ||
+  //      LeMAN_e_CmndState == E_MAN_MidConeIntake ||
+  //      LeMAN_e_CmndState == E_MAN_FloorConeDrop ||
+  //      LeMAN_e_CmndState == E_MAN_MainIntake))
+  // {
+  //   VeMAN_b_HasObject = true;
+  // }
+  // else if (fabs(VsMAN_s_Sensors.RPM_Gripper) > C_GripperRPMHoldingThreshold)
+  // {
+  //   VeMAN_b_HasObject = false;
+  // }
 
    /* Determine if we are attempting to drop a cube or cone: */
    if ((LeMAN_e_AttndState == E_MAN_HighCubeDrop) ||
@@ -515,7 +512,8 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
 
    if ((LeMAN_e_AttndState == E_MAN_HighConeDrop) ||
        (LeMAN_e_AttndState == E_MAN_LowConeDrop)  ||
-       (LeMAN_e_AttndState == E_MAN_MidConeIntake))
+       (LeMAN_e_AttndState == E_MAN_MidConeIntake) ||
+       (LeMAN_e_AttndState == E_MAN_FloorConeDrop))
      {
       LeMAN_b_ConeState = true;
       VeMAN_b_ConeHold = true;
@@ -526,6 +524,7 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
 
        ((LeMAN_b_CubeState == true) ||
         (LeMAN_b_ConeState == true)  ||
+        ((LeMAN_e_AttndState == E_MAN_Driving) && (VeMAN_b_ConeHold == false)) ||  // Do not allow a cone to be shot out in driving
         (LeMAN_e_AttndState == E_MAN_MainIntake)))
      {
       LeMAN_b_AllowedReleaseState = true;
@@ -535,7 +534,7 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
    if ((LeMAN_b_DropObjectSlow == true) && (LeMAN_b_AllowedReleaseState == true))
      {
       VeMAN_t_GripperHoldTime = 0;
-      if (LeMAN_b_CubeState == true)
+      if (VeMAN_b_ConeHold == false)
        {
         LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseCubeSlow;
        }
@@ -548,7 +547,7 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
    else if ((LeMAN_b_DropObjectFast == true) && (LeMAN_b_AllowedReleaseState == true))
      {
       VeMAN_t_GripperHoldTime = 0;
-      if (LeMAN_b_CubeState == true)
+      if (VeMAN_b_ConeHold == false)
        {
         LeMAN_k_TempCmnd = KeMAN_k_GripperReleaseCubeFast;
        }
@@ -573,8 +572,7 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
        }
      }
    else if ((VeMAN_t_GripperHoldTime < KeMAN_t_GripperPullInTm) &&
-             (((LeMAN_e_AttndState == E_MAN_MidConeIntake)   && (LeMAN_e_CmndState  == E_MAN_MidConeIntake)) ||
-              ((LeMAN_e_AttndState == E_MAN_FloorConeIntake) && (LeMAN_e_CmndState  == E_MAN_FloorConeIntake))))
+             (((LeMAN_e_AttndState == E_MAN_MidConeIntake)   && (LeMAN_e_CmndState  == E_MAN_MidConeIntake))))
      {
      LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeCone;
       if (VsMAN_s_Sensors.b_GripperObjDetected == true)
@@ -597,12 +595,7 @@ void UpdateGripperActuator(TeMAN_ManipulatorStates LeMAN_e_CmndState,
         LeMAN_k_TempCmnd = KeMAN_k_GripperIntakeholdCube;
        }
      }
-  // double L_iz_Gripper  = frc::SmartDashboard::GetNumber("Grip Power", 0);
-  frc::SmartDashboard::PutBoolean("GripSense", VsMAN_s_Sensors.b_GripperObjDetected);
-  frc::SmartDashboard::PutNumber("GripTime", VeMAN_t_GripperHoldTime);
-  // VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = L_iz_Gripper;
 
-  // frc::SmartDashboard::PutNumber("GripCommandedPower", VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper]);
    VsMAN_s_MotorsTemp.k_MotorCmnd[E_MAN_Gripper] = LeMAN_k_TempCmnd;
   }
 

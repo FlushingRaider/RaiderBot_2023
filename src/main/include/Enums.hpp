@@ -69,7 +69,7 @@ typedef enum TeMAN_ManipulatorStates
  E_MAN_Init,
  E_MAN_Driving,
  E_MAN_MainIntake,
- E_MAN_FloorConeIntake,
+ E_MAN_FloorConeDrop,
  E_MAN_MidCubeIntake,
  E_MAN_MidConeIntake,
  E_MAN_HighCubeDrop,
@@ -252,7 +252,7 @@ struct RobotUserInput
   double                pct_IntakeRollerTest;
   bool                  b_MainIntakeOut;
   bool                  b_MidIntakeOut;
-  bool                  b_FloorConeIntake;
+  bool                  b_FloorConeDrop;
   bool                  b_InitState;
   bool                  b_DrivingPosition;
   bool                  b_FrontHighCube;

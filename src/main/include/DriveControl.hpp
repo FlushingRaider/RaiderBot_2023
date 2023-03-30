@@ -42,6 +42,8 @@ void DriveControlMain(double              L_JoyStick1Axis1Y,   // swerve control
                       bool                 L_ADAS_SD_RobotOriented,
                       double              L_Deg_GyroAngle,
                       double              L_Rad_GyroAngle,
+                      TeMAN_ManipulatorStates LeMAN_e_CmndState,
+                      TeMAN_ManipulatorStates LeMAN_e_AttndState,
                       double             *L_Deg_WheelAngleFwd,
                       double             *L_Deg_WheelAngleRev,
                       double             *Le_RPM_SD_WheelSpeedCmnd,

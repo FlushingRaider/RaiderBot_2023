@@ -45,8 +45,8 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
   //VsCONT_s_DriverInput.b_MidIntakeOut                  = LeCONT_b_Driver1ButtonX;
   VsCONT_s_DriverInput.b_SwerveRotateTo180             = LeCONT_b_Driver1ButtonY;   // Auto align to 180 degrees
   VsCONT_s_DriverInput.b_SwerveRotateTo0               = LeCONT_b_Driver1ButtonB;   // Auto align to 0 degrees
-  VsCONT_s_DriverInput.b_CubeAlign                     = LeCONT_b_Driver1ButtonRB;    //Aligns the robot to score a cube
-  VsCONT_s_DriverInput.b_ConeAlign                     = LeCONT_b_Driver1ButtonLB;   //Aligns the robot to score a cone
+  // VsCONT_s_DriverInput.b_CubeAlign                     = LeCONT_b_Driver1ButtonRB;    //Aligns the robot to score a cube
+  // VsCONT_s_DriverInput.b_ConeAlign                     = LeCONT_b_Driver1ButtonLB;   //Aligns the robot to score a cone
    
   LeCONT_Pct_AxisTotal = (fabs(VsCONT_s_DriverInput.pct_SwerveStrafe) + fabs(VsCONT_s_DriverInput.deg_SwerveRotate) + fabs(VsCONT_s_DriverInput.v_SwerveSpeed));
   
@@ -99,7 +99,7 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   bool LeCONT_b_FrontLowCone = false;
   bool LeCONT_b_DropGamePieceFast = false;
   bool LeCONT_b_InitState = false;
-  bool LeCONT_b_FloorConeIntake = false;
+  bool LeCONT_b_FloorConeDrop = false;
 
   VsCONT_s_DriverInput.b_MainIntakeOut                  = LeCONT_b_Driver2ButtonA;      //Controller 2, A button Will be used to bring intake out COMPETION BUTTON
   VsCONT_s_DriverInput.b_DrivingPosition                = LeCONT_b_Driver2ButtonB;     //Controller 2, B button Will be used to bring Everything into their position for when the robot is moving COMPETION BUTTON
@@ -139,12 +139,13 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   if (LeCONT_Deg_Driver2POV == 0)
     {
     LeCONT_Pct_ArmPivotTest = 1.0;
-    LeCONT_b_FrontHighCone = true;
+    LeCONT_b_FrontLowCone = true;
+    // LeCONT_b_FrontHighCone = true; // Disabled
     }
   else if (LeCONT_Deg_Driver2POV == 180)
     {
     LeCONT_Pct_ArmPivotTest = -1.0;
-    LeCONT_b_FrontLowCone = true;
+    LeCONT_b_FloorConeDrop = true;
     }
   else if (LeCONT_Deg_Driver2POV == 270)
     {
@@ -153,10 +154,9 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   else if (LeCONT_Deg_Driver2POV == 90)
     {
     LeCONT_Pct_LinearSlideTest = -1.0;
-    LeCONT_b_FloorConeIntake = true;
     }
     
-  // VsCONT_s_DriverInput.b_FloorConeIntake = LeCONT_b_FloorConeIntake;
+  VsCONT_s_DriverInput.b_FloorConeDrop = LeCONT_b_FloorConeDrop;
   VsCONT_s_DriverInput.Pct_ArmPivotTest = LeCONT_Pct_ArmPivotTest;
   VsCONT_s_DriverInput.Pct_LinearSlideTest = LeCONT_Pct_LinearSlideTest;
   VsCONT_s_DriverInput.b_FrontHighCone = LeCONT_b_FrontHighCone;
