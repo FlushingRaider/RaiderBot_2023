@@ -251,6 +251,8 @@ void Robot::RobotPeriodic()
 
   ReadGyro2(VsCONT_s_DriverInput.b_ZeroGyro);
 
+  VisionRun();
+
   DtrmnSwerveBotLocation(VeGRY_Rad_GyroYawAngleRad,
                          &VaENC_Rad_WheelAngleFwd[0],
                          &VaENC_In_WheelDeltaDistance[0],
@@ -335,8 +337,8 @@ void Robot::RobotPeriodic()
   // frc::SmartDashboard::PutNumber("GoalOffsetY", VeADAS_in_OffsetRequestY);
 
   frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
-  // frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
-  // frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
+  frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
+  frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
 
   // frc::SmartDashboard::PutBoolean("Want to stop X", wantToStopX);
   // frc::SmartDashboard::PutBoolean("Want to stop Y", wantToStopY);
@@ -345,7 +347,7 @@ void Robot::RobotPeriodic()
   // frc::SmartDashboard::PutNumber("TagID ", V_TagID);
   // frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
   // frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
-  // frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
+  frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
   // frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
   // frc::SmartDashboard::PutBoolean("Vision Centered", V_TagCentered);
 
@@ -404,7 +406,6 @@ void Robot::AutonomousInit()
  ******************************************************************************/
 void Robot::AutonomousPeriodic()
 {
-  VisionRun(false, true);
   RobotMotorCommands();
 }
 
@@ -459,7 +460,6 @@ void Robot::TeleopPeriodic()
     VeADAS_b_ConeAlignButtonRequest = false;
   }
 
-  VisionRun(VsCONT_s_DriverInput.b_ConeAlign, VsCONT_s_DriverInput.b_CubeAlign);
   RobotMotorCommands();
 }
 

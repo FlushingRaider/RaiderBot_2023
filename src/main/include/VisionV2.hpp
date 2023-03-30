@@ -43,5 +43,5 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 #endif
 void VisionInit(frc::DriverStation::Alliance LeLC_e_AllianceColor);
 #ifdef NewVision
-void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube);
+void VisionRun();
 #endif

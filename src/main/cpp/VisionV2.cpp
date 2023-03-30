@@ -1,50 +1,50 @@
-/*
-  VisionV2.cpp
+  /*
+    VisionV2.cpp
 
-  Created on: Feb 2022
-  Author: Carson
+    Created on: Feb 2022
+    Author: Carson
 
-  Changes:
+    Changes:
 
- */
+  */
 
-#include <frc/smartdashboard/SmartDashboard.h>
-#include <frc/DriverStation.h>
-#include <photonlib/PhotonCamera.h>
-#include <photonlib/PhotonUtils.h>
-#include "Const.hpp"
-#include "Filter.hpp"
-#include <frc/apriltag/AprilTagFieldLayout.h>
+  #include <frc/smartdashboard/SmartDashboard.h>
+  #include <frc/DriverStation.h>
+  #include <photonlib/PhotonCamera.h>
+  #include <photonlib/PhotonUtils.h>
+  #include "Const.hpp"
+  #include "Filter.hpp"
+  #include <frc/apriltag/AprilTagFieldLayout.h>
 
-#include <photonlib/PhotonPoseEstimator.h>
-#include <VisionV2.hpp>
+  #include <photonlib/PhotonPoseEstimator.h>
+  #include <VisionV2.hpp>
 
-#include <frc/Filesystem.h>
-#include <wpi/fs.h>
-#include <wpinet/PortForwarder.h>
-#include "Odometry.hpp"
+  #include <frc/Filesystem.h>
+  #include <wpi/fs.h>
+  #include <wpinet/PortForwarder.h>
+  #include "Odometry.hpp"
 
-#ifdef OldVision
-// all our favorite variables
-double V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
-int VnVIS_int_VisionCameraIndex[E_CamSz];
-T_CameraNumber VnVIS_e_VisionCamNumber[E_CamLocSz];
+  #ifdef OldVision
+  // all our favorite variables
+  double V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
+  int VnVIS_int_VisionCameraIndex[E_CamSz];
+  T_CameraNumber VnVIS_e_VisionCamNumber[E_CamLocSz];
 
-bool VeVIS_b_VisionTargetAquired[E_CamLocSz];
-double VeVIS_Deg_VisionYaw[E_CamLocSz];
-double VeVIS_m_VisionTargetDistance[E_CamLocSz];
+  bool VeVIS_b_VisionTargetAquired[E_CamLocSz];
+  double VeVIS_Deg_VisionYaw[E_CamLocSz];
+  double VeVIS_m_VisionTargetDistance[E_CamLocSz];
 
-bool VeVIS_b_VisionDriverRequestedModeCmnd;        // Requested driver mode override
-bool VeVIS_b_VisionDriverRequestedModeCmndLatched; // Latched state of the driver requested mode
-bool VeVIS_b_VisionDriverRequestedModeCmndPrev;    // Requested driver mode override previous
+  bool VeVIS_b_VisionDriverRequestedModeCmnd;        // Requested driver mode override
+  bool VeVIS_b_VisionDriverRequestedModeCmndLatched; // Latched state of the driver requested mode
+  bool VeVIS_b_VisionDriverRequestedModeCmndPrev;    // Requested driver mode override previous
 
-bool VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
-#endif
-#ifdef NewVision
-bool VeVIS_b_TagHasTarget;
-double V_Tagx;
-double V_Tagy;
-double V_Tagz;
+  bool VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
+  #endif
+  #ifdef NewVision
+  bool VeVIS_b_TagHasTarget;
+  double V_Tagx;
+  double V_Tagy;
+  double V_Tagz;
 double V_TagRoll;
 double V_TagPitch;
 double V_TagYaw;
@@ -244,7 +244,7 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 #endif
 
 #ifdef NewVision
-void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
+void VisionRun()
 {
 
   // code for apriltag vision
@@ -261,29 +261,20 @@ void VisionRun(bool L_ButtonCmdCone, bool L_ButtonCmdCube)
       TagPose = CurrentEstimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
     };
     V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
-
+    // V_Tagx = Filter_FirstOrderLag(TagPose.X().value(), V_Tagx, K_TagCordFilter);
     V_Tagx = TagPose.X().value();
-    V_Tagy = TagPose.Y().value();
+    V_Tagy = Filter_FirstOrderLag(TagPose.Y().value(), V_Tagy, K_TagCordFilter);
+    // V_Tagy = TagPose.Y().value();
     V_Tagz = TagPose.Z().value();
-    V_TagRoll = TagPose.Rotation().X().value();
-    V_TagPitch = TagPose.Rotation().Y().value();
-    V_TagYaw = TagPose.Rotation().Z().value();
+    // V_TagRoll = TagPose.Rotation().X().value();
+    // V_TagPitch = TagPose.Rotation().Y().value();
+    V_TagYaw = Filter_FirstOrderLag(TagPose.Rotation().Z().value(), V_TagYaw, K_TagYawFilter);
 
     V_Tagx = V_Tagx * C_MeterToIn;
     V_Tagy = V_Tagy * C_MeterToIn;
 
-    // if (L_ButtonCmdCone || L_ButtonCmdCube)
-    // {
-    // if (V_TagCentered != true)
-
-    if ((VeODO_In_RobotDisplacementX > V_Tagx + 0.1 || VeODO_In_RobotDisplacementX < V_Tagx - 0.1) &&
-        (VeODO_In_RobotDisplacementY > V_Tagy + 0.1 || VeODO_In_RobotDisplacementY < V_Tagy - 0.1))
-    {
 
       OdometryInitToArgs(V_Tagy, V_Tagx); // flipped for odom for some reason
-      // V_TagCentered = true;
-    }
-    // }
   }
   else
   {
