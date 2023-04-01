@@ -337,8 +337,8 @@ void Robot::RobotPeriodic()
   // frc::SmartDashboard::PutNumber("GoalOffsetY", VeADAS_in_OffsetRequestY);
 
   frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
-  frc::SmartDashboard::PutNumber("cam1 x", V_Tagx);
-  frc::SmartDashboard::PutNumber("cam1 y", V_Tagy);
+  frc::SmartDashboard::PutNumber("cam1 x", V_VIS_m_TagX);
+  frc::SmartDashboard::PutNumber("cam1 y", V_VIS_m_TagY);
 
   // frc::SmartDashboard::PutBoolean("Want to stop X", wantToStopX);
   // frc::SmartDashboard::PutBoolean("Want to stop Y", wantToStopY);
