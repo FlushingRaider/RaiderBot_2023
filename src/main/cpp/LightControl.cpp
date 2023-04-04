@@ -110,19 +110,11 @@ bool CameraLightControl(bool                 LeLC_b_Driver_CameraLight,
  ******************************************************************************/
 double VanityLightControl(double                       LeLC_Sec_MatchTimeRemaining,
                           frc::DriverStation::Alliance LeLC_e_AllianceColor,
-                          T_ADAS_ActiveFeature         LeLC_e_ADASActiveFeature,
-                          bool                         LeLC_b_ADASCameraLowerLightCmndOn,
-                          bool                         LeLC_b_Driver_CameraLight)
+                          T_ADAS_ActiveFeature         LeLC_e_ADASActiveFeature)
   {
     double LeLC_Cmd_LEDCommand = 0;
 
-    if (((LeLC_e_ADASActiveFeature > E_ADAS_Disabled) &&
-         (LeLC_b_ADASCameraLowerLightCmndOn == true)) ||
-         (LeLC_b_Driver_CameraLight == true))
-      {
-      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_SolidWhite;
-      }
-    else if ((LeLC_Sec_MatchTimeRemaining <= C_End_game_time) &&
+    if ((LeLC_Sec_MatchTimeRemaining <= C_End_game_time) &&
              (LeLC_Sec_MatchTimeRemaining > 0))
       {
       LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_RainbowWithGlitter;
@@ -164,7 +156,5 @@ void LightControlMain(double                       LeLC_Sec_MatchTimeRemaining,
 
   *LeLC_Cmd_VanityLightCmnd = VanityLightControl(LeLC_Sec_MatchTimeRemaining,
                                           LeLC_e_AllianceColor,
-                                          LeLC_e_ADASActiveFeature,
-                                          LeLC_b_ADASCameraLowerLightCmndOn,
-                                          LeLC_b_Driver_CameraLight);
+                                          LeLC_e_ADASActiveFeature);
   }

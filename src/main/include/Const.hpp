@@ -48,7 +48,7 @@ static const int C_MagEncoderFL_ID = 2, C_MagEncoderFR_ID = 1, C_MagEncoderRL_ID
 
 
 // PWM IDs:
-static const int C_VanityLight_ID = 0;
+static const int C_VanityLight_ID = 3;
 
 // Vision Cals:
 
