@@ -17,8 +17,10 @@ extern bool VeVIS_b_VisionDriverRequestedModeCmnd;
 
 extern bool VeVIS_b_TagHasTarget;
 extern double V_CamYaw;
-extern double V_Tagx;
-extern double V_Tagy;
+extern double V_VIS_m_TagX;
+extern double V_VIS_m_TagY;
+extern double V_VIS_in_TagX;
+extern double V_VIS_in_TagY;
 extern double V_Tagz;
 extern int V_TagID;
 extern double V_TagRoll;

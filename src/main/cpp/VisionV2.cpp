@@ -42,9 +42,11 @@
   #endif
   #ifdef NewVision
   bool VeVIS_b_TagHasTarget;
-  double V_Tagx;
-  double V_Tagy;
-  double V_TagyRawFilt;
+  double V_VIS_m_TagX;
+  double V_VIS_m_TagY;
+  double V_VIS_in_TagX;
+  double V_VIS_in_TagY;
+
   double V_Tagz;
 double V_TagRoll;
 double V_TagPitch;
@@ -262,20 +264,20 @@ void VisionRun()
       TagPose = CurrentEstimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
     };
     V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
-    // V_Tagx = Filter_FirstOrderLag(TagPose.X().value(), V_Tagx, K_TagCordFilter);
-    V_Tagx = TagPose.X().value();
-    V_TagyRawFilt = Filter_FirstOrderLag(TagPose.Y().value(), V_TagyRawFilt, K_TagCordFilter);
-    // V_Tagy = TagPose.Y().value();
+    // V_VIS_m_TagX = Filter_FirstOrderLag(TagPose.X().value(), V_VIS_m_TagX, K_TagCordFilter);
+    V_VIS_m_TagX = TagPose.X().value();
+    V_VIS_m_TagY = Filter_FirstOrderLag(TagPose.Y().value(), V_VIS_m_TagY, K_TagCordFilter);
+    // V_VIS_m_TagY = TagPose.Y().value();
     V_Tagz = TagPose.Z().value();
     // V_TagRoll = TagPose.Rotation().X().value();
     // V_TagPitch = TagPose.Rotation().Y().value();
     V_TagYaw = Filter_FirstOrderLag(TagPose.Rotation().Z().value(), V_TagYaw, K_TagYawFilter);
 
-    V_Tagx = V_Tagx * C_MeterToIn;
-    V_Tagy = V_TagyRawFilt * C_MeterToIn;
+    V_VIS_in_TagX = V_VIS_m_TagX * C_MeterToIn;
+    V_VIS_in_TagY = V_VIS_m_TagY * C_MeterToIn;
 
 
-      OdometryInitToArgs(V_Tagy, V_Tagx); // flipped for odom for some reason
+      OdometryInitToArgs(V_VIS_in_TagY, V_VIS_in_TagX); // flipped for odom for some reason
   }
   else
   {
@@ -283,8 +285,8 @@ void VisionRun()
     // zero values when no target
     V_TagID = 0;
 
-    V_Tagx = 0.0;
-    V_TagyRawFilt = 0.0;
+    V_VIS_m_TagX = 0.0;
+    V_VIS_m_TagY = 0.0;
     V_Tagz = 0.0;
     V_TagRoll = 0.0;
     V_TagPitch = 0.0;
