@@ -39,7 +39,7 @@ void Joystick1_robot_mapping(bool    LeCONT_b_Driver1ButtonBack,
   VsCONT_s_DriverInput.b_ZeroGyro                      = (LeCONT_b_Driver1ButtonBack || LeCONT_b_Driver1ButtonStart);     //Controller 1, Back button (7), (robot.cpp, gyro.cpp) zeroes out the gyro  
   VsCONT_s_DriverInput.pct_SwerveForwardBack           = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftAxisY);  // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.pct_SwerveStrafe                = ScaleJoystickAxis(LeCONT_Cmd_Driver1LeftAxisX);        // Scale the axis, also used for debouncing
-  VsCONT_s_DriverInput.deg_SwerveRotate                = ScaleJoystickAxis(LeCONT_Cmd_Driver1RightAxisX);      // Scale the axis, also used for debouncing
+  VsCONT_s_DriverInput.deg_SwerveRotate                = ScaleJoystickRotateAxis(LeCONT_Cmd_Driver1RightAxisX);      // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.v_SwerveSpeed                   = ScaleAccelAxis(LeCONT_Cmd_Driver1LeftTriggerAxis);  // Scale the axis, also used for debouncing
   VsCONT_s_DriverInput.b_AutoBalance                   = LeCONT_b_Driver1ButtonA;
   //VsCONT_s_DriverInput.b_MidIntakeOut                  = LeCONT_b_Driver1ButtonX;

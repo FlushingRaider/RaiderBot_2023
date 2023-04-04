@@ -245,8 +245,8 @@ void ADAS_MN_Reset(void)
  *
  * Description:  Manages and controls the manipulator controls.
  ******************************************************************************/
-bool ADAS_MN_Main(T_RobotState         L_RobotState,
-                  T_ADAS_ActiveFeature LeADAS_e_ActiveFeature,
+bool ADAS_MN_Main(T_RobotState                  L_RobotState,
+                  T_ADAS_ActiveFeature          LeADAS_e_ActiveFeature,
                   TeADAS_AutonManipulatorStates LeADAS_e_MAN_ReqAction)
 {
   bool LeADAS_b_MN_Complete = false;

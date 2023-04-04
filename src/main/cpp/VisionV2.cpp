@@ -44,6 +44,7 @@
   bool VeVIS_b_TagHasTarget;
   double V_Tagx;
   double V_Tagy;
+  double V_TagyRawFilt;
   double V_Tagz;
 double V_TagRoll;
 double V_TagPitch;
@@ -263,7 +264,7 @@ void VisionRun()
     V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
     // V_Tagx = Filter_FirstOrderLag(TagPose.X().value(), V_Tagx, K_TagCordFilter);
     V_Tagx = TagPose.X().value();
-    V_Tagy = Filter_FirstOrderLag(TagPose.Y().value(), V_Tagy, K_TagCordFilter);
+    V_TagyRawFilt = Filter_FirstOrderLag(TagPose.Y().value(), V_TagyRawFilt, K_TagCordFilter);
     // V_Tagy = TagPose.Y().value();
     V_Tagz = TagPose.Z().value();
     // V_TagRoll = TagPose.Rotation().X().value();
@@ -271,7 +272,7 @@ void VisionRun()
     V_TagYaw = Filter_FirstOrderLag(TagPose.Rotation().Z().value(), V_TagYaw, K_TagYawFilter);
 
     V_Tagx = V_Tagx * C_MeterToIn;
-    V_Tagy = V_Tagy * C_MeterToIn;
+    V_Tagy = V_TagyRawFilt * C_MeterToIn;
 
 
       OdometryInitToArgs(V_Tagy, V_Tagx); // flipped for odom for some reason
@@ -283,7 +284,7 @@ void VisionRun()
     V_TagID = 0;
 
     V_Tagx = 0.0;
-    V_Tagy = 0.0;
+    V_TagyRawFilt = 0.0;
     V_Tagz = 0.0;
     V_TagRoll = 0.0;
     V_TagPitch = 0.0;

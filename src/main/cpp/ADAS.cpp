@@ -42,7 +42,6 @@ bool VeADAS_b_StateComplete = false;
 bool VeADAS_b_AutonOncePerTrigger = false;
 
 int VeADAS_i_PathNum;
-std::string VeADAS_Str_AutoPathName;
 
 /* ADAS output control variables */
 double VeADAS_Pct_SD_FwdRev = 0;
@@ -129,30 +128,30 @@ void ADAS_Main_Reset(void)
  *               system)control when robot is active. This will call and manage
  *               the various ADAS features.
  ******************************************************************************/
-T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
-                                      double *L_Pct_Strafe,
-                                      double *L_Pct_Rotate,
-                                      double *LeADAS_Deg_DesiredPose,
-                                      bool *L_SD_RobotOriented,
-                                      bool *LeADAS_b_X_Mode,
-                                      bool LeADAS_b_Driver1_JoystickActive,
-                                      bool L_Driver_SwerveGoalAutoCenter,
-                                      double L_Deg_GyroAngleDeg,
-                                      double L_L_X_FieldPos,
-                                      double L_L_Y_FieldPos,
-                                      bool L_VisionTopTargetAquired,
-                                      T_RobotState LeADAS_e_RobotState,
-                                      T_ADAS_ActiveFeature LeADAS_e_ActiveFeature,
-                                      int L_TagID,
-                                      bool L_OdomCentered,
-                                      double L_TagYawDegrees,
+T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
+                                      double                      *L_Pct_Strafe,
+                                      double                      *L_Pct_Rotate,
+                                      double                      *LeADAS_Deg_DesiredPose,
+                                      bool                        *LeADAS_b_SD_RobotOriented,
+                                      bool                        *LeADAS_b_X_Mode,
+                                      bool                         LeADAS_b_Driver1_JoystickActive,
+                                      bool                         L_Driver_SwerveGoalAutoCenter,
+                                      double                       L_Deg_GyroAngleDeg,
+                                      double                       L_L_X_FieldPos,
+                                      double                       L_L_Y_FieldPos,
+                                      bool                         L_VisionTopTargetAquired,
+                                      T_RobotState                 LeADAS_e_RobotState,
+                                      T_ADAS_ActiveFeature         LeADAS_e_ActiveFeature,
+                                      int                          L_TagID,
+                                      bool                         L_OdomCentered,
+                                      double                       L_TagYawDegrees,
                                       frc::DriverStation::Alliance LeLC_e_AllianceColor,
-                                      double L_OdomOffsetX,
-                                      double L_OdomOffsetY,
-                                      double L_OdomGlobalRequestX,
-                                      double L_OdomGlobalRequestY,
-                                      double L_OdomOffsetRequestX,
-                                      double L_OdomOffsetRequestY)
+                                      double                       L_OdomOffsetX,
+                                      double                       L_OdomOffsetY,
+                                      double                       L_OdomGlobalRequestX,
+                                      double                       L_OdomGlobalRequestY,
+                                      double                       L_OdomOffsetRequestX,
+                                      double                       L_OdomOffsetRequestY)
 {
   bool LeADAS_b_State1Complete = false;
   bool LeADAS_b_State2Complete = false;
@@ -297,38 +296,23 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
         VeADAS_b_AutonOncePerTrigger = true;
       }
     }
-    else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDeployCone) // Auton code for deplying Cones
-    {
-      // Step 1 - Place Cone
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_AutonDeployCone;
-      }
-      // Step 2
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_AutonDeployCone) && (VeADAS_b_StateComplete == true))
-      {
-        // LeADAS_e_ActiveFeature = AUTONCOMMAND;
-      }
-    }
-    else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDeployCube) // Auton code for deplying Cubes
-    {
-      // Step 1 - Place Cube
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_AutonDeployCube;
-      }
-      // Step 2
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_AutonDeployCube) && (VeADAS_b_StateComplete == true))
-      {
-        // LeADAS_e_ActiveFeature = AUTONCOMMAND;
-      }
-    }
     else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDrivePath1) // Test Path
     {
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false))
+      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
       {
         LeADAS_e_ActiveFeature = E_ADAS_DM_PathFollower;
-        VeADAS_i_PathNum = 4;
+        VeADAS_i_PathNum = 1;
+      }
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_PathFollower) && (VeADAS_i_PathNum == 1) && (VeADAS_b_StateComplete == true))
+      {
+        LeADAS_e_ActiveFeature = E_ADAS_DM_PathFollower;
+        VeADAS_i_PathNum = 2;
+      }
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_PathFollower) && (VeADAS_i_PathNum == 2) && (VeADAS_b_StateComplete == true))
+      {
+        LeADAS_e_ActiveFeature = E_ADAS_Disabled;
+        VeADAS_b_StateComplete = true;
+        VeADAS_b_AutonOncePerTrigger = true;
       }
     }
     #ifdef unused
@@ -426,7 +410,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_DriveStraight(L_Pct_FwdRev,
                                                     L_Pct_Strafe,
                                                     L_Pct_Rotate,
-                                                    L_SD_RobotOriented);
+                                                    LeADAS_b_SD_RobotOriented);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
     break;
@@ -438,7 +422,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_DriveStraightFar(L_Pct_FwdRev,
                                                        L_Pct_Strafe,
                                                        L_Pct_Rotate,
-                                                       L_SD_RobotOriented);
+                                                       LeADAS_b_SD_RobotOriented);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
     break;
@@ -450,7 +434,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_DriveRevStraight(L_Pct_FwdRev,
                                                        L_Pct_Strafe,
                                                        L_Pct_Rotate,
-                                                       L_SD_RobotOriented,
+                                                       LeADAS_b_SD_RobotOriented,
                                                        VeADAS_b_CompletePrev);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
@@ -463,7 +447,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_Stop(L_Pct_FwdRev,
                                            L_Pct_Strafe,
                                            L_Pct_Rotate,
-                                           L_SD_RobotOriented,
+                                           LeADAS_b_SD_RobotOriented,
                                            KeADAS_t_DM_StopTm);
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
@@ -476,7 +460,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_DriveOntoStation(L_Pct_FwdRev,
                                                        L_Pct_Strafe,
                                                        L_Pct_Rotate,
-                                                       L_SD_RobotOriented,
+                                                       LeADAS_b_SD_RobotOriented,
                                                        LeADAS_b_X_Mode,
                                                        VeGRY_Deg_GyroRollAngleDegrees);
 
@@ -490,7 +474,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_MountStation(L_Pct_FwdRev,
                                                    L_Pct_Strafe,
                                                    L_Pct_Rotate,
-                                                   L_SD_RobotOriented,
+                                                   LeADAS_b_SD_RobotOriented,
                                                    LeADAS_b_X_Mode,
                                                    VeGRY_Deg_GyroRollAngleDegrees);
 
@@ -505,7 +489,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_DriveRevStraight(L_Pct_FwdRev,
                                                        L_Pct_Strafe,
                                                        L_Pct_Rotate,
-                                                       L_SD_RobotOriented,
+                                                       LeADAS_b_SD_RobotOriented,
                                                        VeADAS_b_CompletePrev);
 
     if (LeADAS_b_State2Complete == true)
@@ -529,14 +513,13 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
                                                   L_Pct_Strafe,
                                                   L_Pct_Rotate,
                                                   LeADAS_Deg_DesiredPose,
-                                                  L_SD_RobotOriented,
+                                                  LeADAS_b_SD_RobotOriented,
                                                   L_L_X_FieldPos,
                                                   L_L_Y_FieldPos,
                                                   L_Deg_GyroAngleDeg,
-                                                  VeADAS_i_PathNum,
-                                                  VeADAS_Str_AutoPathName);
+                                                  VeADAS_i_PathNum);
 
-    VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
+    // VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
     break;
   case E_ADAS_DM_AutoBalance:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
@@ -546,7 +529,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double *L_Pct_FwdRev,
     LeADAS_b_State2Complete = ADAS_DM_AutoBalance(L_Pct_FwdRev,
                                                   L_Pct_Strafe,
                                                   L_Pct_Rotate,
-                                                  L_SD_RobotOriented,
+                                                  LeADAS_b_SD_RobotOriented,
                                                   LeADAS_b_X_Mode,
                                                   VeGRY_Deg_GyroRollAngleDegrees);
 

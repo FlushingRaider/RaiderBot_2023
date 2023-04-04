@@ -51,10 +51,10 @@ void OdometryInit()
  * Description:  Tracks the location of the robot as it traverses the field.
  *
  ******************************************************************************/
-void DtrmnSwerveBotLocation(double LeODO_Rad_Gyro,
+void DtrmnSwerveBotLocation(double  LeODO_Rad_Gyro,
                             double *LeODO_Rad_WheelAngleArb,
                             double *LeODO_In_DeltaWheelDistance,
-                            bool LeODO_b_ResetButton)
+                            bool    LeODO_b_ResetButton)
 {
   T_RobotCorner LnODO_Cnt_Index;
   double LeODO_Rad_RelativeAngle[E_RobotCornerSz];
@@ -88,6 +88,12 @@ void DtrmnSwerveBotLocation(double LeODO_Rad_Gyro,
   VeODO_In_RobotDisplacementY += LeODO_In_TotalDeltaY;
 }
 
+/******************************************************************************
+ * Function:     DtrmTagOffset
+ *
+ * Description:  TBD.
+ *
+ ******************************************************************************/
 void DtrmTagOffset(int L_TagID,
                    bool L_HasTarget,
                    bool L_VisionCentered)

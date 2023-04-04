@@ -21,25 +21,27 @@
 #include "Lookup.hpp"
 #include "Const.hpp"
 
-double V_ADAS_DM_DebounceTime = 0;
-bool V_ADAS_DM_StateInit = false;
+double VeADAS_t_DM_Debounce = 0;
+bool VeADAS_b_DM_StateInit = false;
 double V_ADAS_DM_Rotate180TargetAngle = 0;
 double V_ADAS_DM_InitGyroAngle = 0;
-double V_ADAS_DM_StateTimer = 0;
+double VeADAS_t_DM_StateTimer = 0;
 double V_ADAS_DM_X_ErrorPrev = 0;
 double V_ADAS_DM_Y_ErrorPrev = 0;
+double VeADAS_Deg_DM_AngleErrorPrev = 0;
 double V_ADAS_DM_X_Integral = 0;
 double V_ADAS_DM_Y_Integral = 0;
-double V_ADAS_DM_X_StartPosition = 0;
-double V_ADAS_DM_Y_StartPosition = 0;
-double V_ADAS_DM_X_TargetStartPosition = 0;
-double V_ADAS_DM_Y_TargetStartPosition = 0;
+double VeADAS_Deg_DM_AngleIntegral = 0;
+double VeADAS_l_DM_X_StartPosition = 0;
+double VeADAS_l_DM_Y_StartPosition = 0;
+double VeADAS_Deg_DM_StartAng = 0;
+double VeADAS_Deg_DM_TargetStartAng = 0;
+double VeADAS_l_DM_X_TargetStartPosition = 0;
+double VeADAS_l_DM_Y_TargetStartPosition = 0;
 double V_ADAS_DM_TargetAngle;
 double V_ADAS_DM_GyroPrevious;
 bool V_ADAS_DM_GyroFlipNeg;
 bool V_ADAS_DM_GyroFlipPos;
-double V_ADAS_DM_InitAngle;
-double V_ADAS_DM_StartAngle;
 
 bool VeADAS_b_DM_AutoBalanceInit = false;
 bool VeADAS_b_DM_AutoBalancePositive = false;
@@ -99,20 +101,23 @@ void ADAS_DM_ConfigsCal()
  ******************************************************************************/
 void ADAS_DM_Reset(void)
 {
-  V_ADAS_DM_DebounceTime = 0;
-  V_ADAS_DM_StateInit = false;
+  VeADAS_t_DM_Debounce = 0;
+  VeADAS_b_DM_StateInit = false;
   V_ADAS_DM_Rotate180TargetAngle = 0;
   V_ADAS_DM_InitGyroAngle = 0;
-  V_ADAS_DM_StateTimer = 0;
+  VeADAS_t_DM_StateTimer = 0;
   V_ADAS_DM_X_ErrorPrev = 0;
   V_ADAS_DM_Y_ErrorPrev = 0;
+  VeADAS_Deg_DM_AngleErrorPrev = 0;
   V_ADAS_DM_X_Integral = 0;
   V_ADAS_DM_Y_Integral = 0;
-  V_ADAS_DM_X_StartPosition = 0;
-  V_ADAS_DM_Y_StartPosition = 0;
-  V_ADAS_DM_X_TargetStartPosition = 0;
-  V_ADAS_DM_Y_TargetStartPosition = 0;
-  V_ADAS_DM_InitAngle = 0;
+  VeADAS_Deg_DM_AngleIntegral = 0;
+  VeADAS_l_DM_X_StartPosition = 0;
+  VeADAS_l_DM_Y_StartPosition = 0;
+  VeADAS_Deg_DM_StartAng = 0;
+  VeADAS_Deg_DM_TargetStartAng = 0;
+  VeADAS_l_DM_X_TargetStartPosition = 0;
+  VeADAS_l_DM_Y_TargetStartPosition = 0;
   VeADAS_b_DM_AutoBalanceInit = false;
   VeADAS_b_DM_AutoBalancePositive = false;
   VeADAS_b_DM_AutoBalanceFastSearch = false;
@@ -129,31 +134,31 @@ void ADAS_DM_Reset(void)
  *
  * Description:  Rotate 180 degrees control.
  ******************************************************************************/
-bool ADAS_DM_Rotate180(double *L_Pct_FwdRev,
-                       double *L_Pct_Strafe,
-                       double *L_Pct_Rotate,
+bool ADAS_DM_Rotate180(double *LeADAS_Pct_FwdRev,
+                       double *LeADAS_Pct_Strafe,
+                       double *LeADAS_Pct_Rotate,
                        double *L_RPM_Launcher,
                        double *L_Pct_Intake,
                        double *L_Pct_Elevator,
                        bool *L_CameraUpperLightCmndOn,
                        bool *L_CameraLowerLightCmndOn,
-                       bool *L_SD_RobotOriented,
+                       bool *LeADAS_b_SD_RobotOriented,
                        double L_Deg_GyroAngleDeg)
 {
   bool L_ADAS_DM_StateComplete = false;
   double L_RotateError = 0;
 
-  *L_SD_RobotOriented = false;
+  *LeADAS_b_SD_RobotOriented = false;
   /* Next, let's set all the other items we aren't trying to control to off: */
   *L_CameraUpperLightCmndOn = false;
   *L_CameraLowerLightCmndOn = false;
-  *L_Pct_FwdRev = 0;
-  *L_Pct_Strafe = 0;
+  *LeADAS_Pct_FwdRev = 0;
+  *LeADAS_Pct_Strafe = 0;
   *L_RPM_Launcher = 0;
   *L_Pct_Intake = 0;
   *L_Pct_Elevator = 0;
 
-  if (V_ADAS_DM_StateInit == false)
+  if (VeADAS_b_DM_StateInit == false)
   {
     /* Need to find the target angle.  The gyro in use will only report values of -180 to 180. Need to account for this:*/
     V_ADAS_DM_Rotate180TargetAngle = L_Deg_GyroAngleDeg - 180;
@@ -169,39 +174,39 @@ bool ADAS_DM_Rotate180(double *L_Pct_FwdRev,
       V_ADAS_DM_Rotate180TargetAngle += 360;
     }
 
-    V_ADAS_DM_StateInit = true;
+    VeADAS_b_DM_StateInit = true;
   }
 
   L_RotateError = V_ADAS_DM_Rotate180TargetAngle - L_Deg_GyroAngleDeg;
 
-  if (fabs(L_RotateError) <= K_ADAS_DM_RotateDeadbandAngle && V_ADAS_DM_DebounceTime < K_ADAS_DM_RotateDebounceTime)
+  if (fabs(L_RotateError) <= K_ADAS_DM_RotateDeadbandAngle && VeADAS_t_DM_Debounce < K_ADAS_DM_RotateDebounceTime)
   {
-    V_ADAS_DM_DebounceTime += C_ExeTime;
+    VeADAS_t_DM_Debounce += C_ExeTime;
   }
   else if (fabs(L_RotateError) > K_ADAS_DM_RotateDeadbandAngle)
   {
     /* Reset the timer, we have gone out of bounds */
-    V_ADAS_DM_DebounceTime = 0;
+    VeADAS_t_DM_Debounce = 0;
   }
-  else if (V_ADAS_DM_DebounceTime >= K_ADAS_DM_RotateDebounceTime)
+  else if (VeADAS_t_DM_Debounce >= K_ADAS_DM_RotateDebounceTime)
   {
     /* Reset the time, proceed to next state. */
     L_ADAS_DM_StateComplete = true;
-    V_ADAS_DM_DebounceTime = 0;
+    VeADAS_t_DM_Debounce = 0;
   }
 
   if (L_ADAS_DM_StateComplete == false)
   {
-    *L_Pct_Rotate = DesiredRotateSpeed(L_RotateError);
+    *LeADAS_Pct_Rotate = DesiredRotateSpeed(L_RotateError);
   }
   else
   {
     /* We have been at the correct location for the set amount of time.
        We have previously set the state to the next one, now set the rotate command to off. */
-    *L_Pct_Rotate = 0;
-    V_ADAS_DM_DebounceTime = 0;
+    *LeADAS_Pct_Rotate = 0;
+    VeADAS_t_DM_Debounce = 0;
     L_ADAS_DM_StateComplete = true;
-    V_ADAS_DM_StateInit = false;
+    VeADAS_b_DM_StateInit = false;
   }
 
   return (L_ADAS_DM_StateComplete);
@@ -211,15 +216,15 @@ bool ADAS_DM_Rotate180(double *L_Pct_FwdRev,
  *
  * Description:  Rotate to a given position (L_Deg_GyroAngleTarget)
  ******************************************************************************/
-bool ADAS_DM_RotateTo(double *L_Pct_FwdRev,
-                      double *L_Pct_Strafe,
-                      double *L_Pct_Rotate,
+bool ADAS_DM_RotateTo(double *LeADAS_Pct_FwdRev,
+                      double *LeADAS_Pct_Strafe,
+                      double *LeADAS_Pct_Rotate,
                       double *L_RPM_Launcher,
                       double *L_Pct_Intake,
                       double *L_Pct_Elevator,
                       bool *L_CameraUpperLightCmndOn,
                       bool *L_CameraLowerLightCmndOn,
-                      bool *L_SD_RobotOriented,
+                      bool *LeADAS_b_SD_RobotOriented,
                       double L_Deg_GyroAngleDeg,
                       double L_Deg_GyroAngleTarget)
 {
@@ -228,17 +233,17 @@ bool ADAS_DM_RotateTo(double *L_Pct_FwdRev,
   double L_ClockwiseError = 0;
   double L_CounterClockwiseError = 0;
 
-  *L_SD_RobotOriented = false;
+  *LeADAS_b_SD_RobotOriented = false;
   /* Next, let's set all the other items we aren't trying to control to off: */
   *L_CameraUpperLightCmndOn = false;
   *L_CameraLowerLightCmndOn = false;
-  *L_Pct_FwdRev = 0;
-  *L_Pct_Strafe = 0;
+  *LeADAS_Pct_FwdRev = 0;
+  *LeADAS_Pct_Strafe = 0;
   *L_RPM_Launcher = 0;
   *L_Pct_Intake = 0;
   *L_Pct_Elevator = 0;
 
-  if (V_ADAS_DM_StateInit == false)
+  if (VeADAS_b_DM_StateInit == false)
   {
     /* Need to find the target angle.  The gyro in use will only report values of -180 to 180. Need to account for this:*/
     // V_ADAS_DM_Rotate180TargetAngle = L_InitGyroAngle - 180;
@@ -287,39 +292,39 @@ bool ADAS_DM_RotateTo(double *L_Pct_FwdRev,
       V_ADAS_DM_Rotate180TargetAngle = 178;
     }
 
-    V_ADAS_DM_StateInit = true;
+    VeADAS_b_DM_StateInit = true;
   }
 
   L_RotateError = V_ADAS_DM_Rotate180TargetAngle - L_Deg_GyroAngleDeg;
 
-  if (fabs(L_RotateError) <= K_ADAS_DM_RotateDeadbandAngle && V_ADAS_DM_DebounceTime < K_ADAS_DM_RotateDebounceTime)
+  if (fabs(L_RotateError) <= K_ADAS_DM_RotateDeadbandAngle && VeADAS_t_DM_Debounce < K_ADAS_DM_RotateDebounceTime)
   {
-    V_ADAS_DM_DebounceTime += C_ExeTime;
+    VeADAS_t_DM_Debounce += C_ExeTime;
   }
   else if (fabs(L_RotateError) > K_ADAS_DM_RotateDeadbandAngle)
   {
     /* Reset the timer, we have gone out of bounds */
-    V_ADAS_DM_DebounceTime = 0;
+    VeADAS_t_DM_Debounce = 0;
   }
-  else if (V_ADAS_DM_DebounceTime >= K_ADAS_DM_RotateDebounceTime)
+  else if (VeADAS_t_DM_Debounce >= K_ADAS_DM_RotateDebounceTime)
   {
     /* Reset the time, proceed to next state. */
     L_ADAS_DM_StateComplete = true;
-    V_ADAS_DM_DebounceTime = 0;
+    VeADAS_t_DM_Debounce = 0;
   }
 
   if (L_ADAS_DM_StateComplete == false)
   {
-    *L_Pct_Rotate = DesiredRotateSpeed(L_RotateError);
+    *LeADAS_Pct_Rotate = DesiredRotateSpeed(L_RotateError);
   }
   else
   {
     /* We have been at the correct location for the set amount of time.
        We have previously set the state to the next one, now set the rotate command to off. */
-    *L_Pct_Rotate = 0;
-    V_ADAS_DM_DebounceTime = 0;
+    *LeADAS_Pct_Rotate = 0;
+    VeADAS_t_DM_Debounce = 0;
     L_ADAS_DM_StateComplete = true;
-    V_ADAS_DM_StateInit = false;
+    VeADAS_b_DM_StateInit = false;
   }
 
   return (L_ADAS_DM_StateComplete);
@@ -330,11 +335,11 @@ bool ADAS_DM_RotateTo(double *L_Pct_FwdRev,
  *
  * Description:  Rotate to the zeroed position
  ******************************************************************************/
-bool ADAS_DM_FieldOrientRotate(double *L_Pct_FwdRev,
-                               double *L_Pct_Strafe,
-                               double *L_Pct_Rotate,
+bool ADAS_DM_FieldOrientRotate(double *LeADAS_Pct_FwdRev,
+                               double *LeADAS_Pct_Strafe,
+                               double *LeADAS_Pct_Rotate,
                                double *L_Pct_Intake,
-                               bool *L_SD_RobotOriented,
+                               bool *LeADAS_b_SD_RobotOriented,
                                double L_Deg_GyroAngleDeg,
                                double L_Deg_GyroAngleTarget)
 {
@@ -343,13 +348,13 @@ bool ADAS_DM_FieldOrientRotate(double *L_Pct_FwdRev,
   double L_Deg_TargetErrorActual = 0;
   double L_Deg_GyroRolloverProtected = 0;
 
-  *L_SD_RobotOriented = true;
+  *LeADAS_b_SD_RobotOriented = true;
   /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_Pct_FwdRev = 0;
-  *L_Pct_Strafe = 0;
+  *LeADAS_Pct_FwdRev = 0;
+  *LeADAS_Pct_Strafe = 0;
   *L_Pct_Intake = 0;
 
-  if (V_ADAS_DM_StateInit == false)
+  if (VeADAS_b_DM_StateInit == false)
   {
     /* Need to find the target angle.  The gyro in use will only report values of -180 to 180. Need to account for this:*/
     // V_ADAS_DM_Rotate180TargetAngle = L_InitGyroAngle - 180;
@@ -370,7 +375,7 @@ bool ADAS_DM_FieldOrientRotate(double *L_Pct_FwdRev,
     }
 
     V_ADAS_DM_TargetAngle = L_RotateError;
-    V_ADAS_DM_StateInit = true;
+    VeADAS_b_DM_StateInit = true;
   }
 
   L_RotateError = V_TargetAngle - L_Deg_GyroAngleDeg;
@@ -400,34 +405,34 @@ bool ADAS_DM_FieldOrientRotate(double *L_Pct_FwdRev,
   L_Deg_TargetErrorActual = V_TargetAngle - L_Deg_GyroRolloverProtected;
   V_ADAS_DM_GyroPrevious = L_Deg_GyroAngleDeg;
 
-  if (fabs(L_Deg_TargetErrorActual) <= K_ADAS_DM_RotateDeadbandAngle && V_ADAS_DM_DebounceTime < K_ADAS_DM_RotateDebounceTime)
+  if (fabs(L_Deg_TargetErrorActual) <= K_ADAS_DM_RotateDeadbandAngle && VeADAS_t_DM_Debounce < K_ADAS_DM_RotateDebounceTime)
   {
-    V_ADAS_DM_DebounceTime += C_ExeTime;
+    VeADAS_t_DM_Debounce += C_ExeTime;
   }
   else if (fabs(L_Deg_TargetErrorActual) > K_ADAS_DM_RotateDeadbandAngle)
   {
     /* Reset the timer, we have gone out of bounds */
-    V_ADAS_DM_DebounceTime = 0;
+    VeADAS_t_DM_Debounce = 0;
   }
-  else if (V_ADAS_DM_DebounceTime >= K_ADAS_DM_RotateDebounceTime)
+  else if (VeADAS_t_DM_Debounce >= K_ADAS_DM_RotateDebounceTime)
   {
     /* Reset the time, proceed to next state. */
     L_ADAS_DM_StateComplete = true;
-    V_ADAS_DM_DebounceTime = 0;
+    VeADAS_t_DM_Debounce = 0;
   }
 
   if (L_ADAS_DM_StateComplete == false)
   {
-    *L_Pct_Rotate = DesiredRotateSpeed(L_Deg_TargetErrorActual);
+    *LeADAS_Pct_Rotate = DesiredRotateSpeed(L_Deg_TargetErrorActual);
   }
   else
   {
     /* We have been at the correct location for the set amount of time.
        We have previously set the state to the next one, now set the rotate command to off. */
-    *L_Pct_Rotate = 0;
-    V_ADAS_DM_DebounceTime = 0;
+    *LeADAS_Pct_Rotate = 0;
+    VeADAS_t_DM_Debounce = 0;
     L_ADAS_DM_StateComplete = true;
-    V_ADAS_DM_StateInit = false;
+    VeADAS_b_DM_StateInit = false;
     V_ADAS_DM_GyroPrevious = 0;
     V_ADAS_DM_GyroFlipPos = false;
     V_ADAS_DM_GyroFlipNeg = false;
@@ -441,29 +446,29 @@ bool ADAS_DM_FieldOrientRotate(double *L_Pct_FwdRev,
  *
  * Description:  Drive straight control.
  ******************************************************************************/
-bool ADAS_DM_DriveStraight(double *L_Pct_FwdRev,
-                           double *L_Pct_Strafe,
-                           double *L_Pct_Rotate,
-                           bool   *L_SD_RobotOriented)
+bool ADAS_DM_DriveStraight(double *LeADAS_Pct_FwdRev,
+                           double *LeADAS_Pct_Strafe,
+                           double *LeADAS_Pct_Rotate,
+                           bool   *LeADAS_b_SD_RobotOriented)
 {
   bool L_ADAS_DM_StateComplete = false;
 
-  *L_SD_RobotOriented = true;
+  *LeADAS_b_SD_RobotOriented = true;
   /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_Pct_Strafe = 0;
-  *L_Pct_Rotate = 0;
+  *LeADAS_Pct_Strafe = 0;
+  *LeADAS_Pct_Rotate = 0;
 
-  V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
+  VeADAS_t_DM_Debounce += C_ExeTime; // update our timekeeping
 
-  if (V_ADAS_DM_DebounceTime <= K_ADAS_DM_DriveTimeLong) // check that we are still in the time we have given ourselves
+  if (VeADAS_t_DM_Debounce <= K_ADAS_DM_DriveTimeLong) // check that we are still in the time we have given ourselves
   {
-    *L_Pct_FwdRev = K_ADAS_DM_DriveFWD_Pct; // set our strafe percent to this constant
+    *LeADAS_Pct_FwdRev = K_ADAS_DM_DriveFWD_Pct; // set our strafe percent to this constant
   }
   else
   {
-    *L_Pct_FwdRev = 0; // reset all the variables a driver state
-    *L_SD_RobotOriented = false;
-    V_ADAS_DM_DebounceTime = 0;
+    *LeADAS_Pct_FwdRev = 0; // reset all the variables a driver state
+    *LeADAS_b_SD_RobotOriented = false;
+    VeADAS_t_DM_Debounce = 0;
     L_ADAS_DM_StateComplete = true;
   }
   return (L_ADAS_DM_StateComplete);
@@ -474,29 +479,29 @@ bool ADAS_DM_DriveStraight(double *L_Pct_FwdRev,
  *
  * Description:  Drive straight control, driving past the line.
  ******************************************************************************/
-bool ADAS_DM_DriveStraightFar(double *L_Pct_FwdRev,
-                              double *L_Pct_Strafe,
-                              double *L_Pct_Rotate,
-                              bool   *L_SD_RobotOriented)
+bool ADAS_DM_DriveStraightFar(double *LeADAS_Pct_FwdRev,
+                              double *LeADAS_Pct_Strafe,
+                              double *LeADAS_Pct_Rotate,
+                              bool   *LeADAS_b_SD_RobotOriented)
 {
   bool L_ADAS_DM_StateComplete = false;
 
-  *L_SD_RobotOriented = false;
+  *LeADAS_b_SD_RobotOriented = false;
   /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_Pct_Strafe = 0;
-  *L_Pct_Rotate = 0;
+  *LeADAS_Pct_Strafe = 0;
+  *LeADAS_Pct_Rotate = 0;
 
-  V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
+  VeADAS_t_DM_Debounce += C_ExeTime; // update our timekeeping
 
-  if (V_ADAS_DM_DebounceTime <= KeADAS_t_DM_DriveTimeFar) // check that we are still in the time we have given ourselves
+  if (VeADAS_t_DM_Debounce <= KeADAS_t_DM_DriveTimeFar) // check that we are still in the time we have given ourselves
   {
-    *L_Pct_FwdRev = KeADAS_Pct_DM_DriveFWD_Far; // set our drive percent to this constant
+    *LeADAS_Pct_FwdRev = KeADAS_Pct_DM_DriveFWD_Far; // set our drive percent to this constant
   }
   else
   {
-    *L_Pct_FwdRev = 0; // reset all the variables a driver state
-    *L_SD_RobotOriented = false;
-    V_ADAS_DM_DebounceTime = 0;
+    *LeADAS_Pct_FwdRev = 0; // reset all the variables a driver state
+    *LeADAS_b_SD_RobotOriented = false;
+    VeADAS_t_DM_Debounce = 0;
     L_ADAS_DM_StateComplete = true;
   }
   return (L_ADAS_DM_StateComplete);
@@ -507,34 +512,34 @@ bool ADAS_DM_DriveStraightFar(double *L_Pct_FwdRev,
  *
  * Description:  Like drive straight control, but in reverse!
  ******************************************************************************/
-bool ADAS_DM_DriveRevStraight(double *L_Pct_FwdRev,
-                              double *L_Pct_Strafe,
-                              double *L_Pct_Rotate,
-                              bool   *L_SD_RobotOriented,
+bool ADAS_DM_DriveRevStraight(double *LeADAS_Pct_FwdRev,
+                              double *LeADAS_Pct_Strafe,
+                              double *LeADAS_Pct_Rotate,
+                              bool   *LeADAS_b_SD_RobotOriented,
                               bool    LeADAS_b_CompletePrev)
 {
   bool L_ADAS_DM_StateComplete = false;
 
-  *L_SD_RobotOriented = false;
+  *LeADAS_b_SD_RobotOriented = false;
   /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_Pct_Strafe = 0;
-  *L_Pct_Rotate = 0;
+  *LeADAS_Pct_Strafe = 0;
+  *LeADAS_Pct_Rotate = 0;
   
   if (LeADAS_b_CompletePrev == false)
   {
-    V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
+    VeADAS_t_DM_Debounce += C_ExeTime; // update our timekeeping
   }
   
 
-  if ((V_ADAS_DM_DebounceTime <= KeADAS_t_DM_RevDriveTime) && (LeADAS_b_CompletePrev == false)) // check that we are still in the time we have given ourselves
+  if ((VeADAS_t_DM_Debounce <= KeADAS_t_DM_RevDriveTime) && (LeADAS_b_CompletePrev == false)) // check that we are still in the time we have given ourselves
   {
-    *L_Pct_FwdRev = KeADAS_Pct_DM_RevDrive; // set our strafe percent to this constant
+    *LeADAS_Pct_FwdRev = KeADAS_Pct_DM_RevDrive; // set our strafe percent to this constant
   }
   else
   {
-    *L_Pct_FwdRev = 0; // reset all the variables a driver state
-    *L_SD_RobotOriented = false;
-    V_ADAS_DM_DebounceTime = 0;
+    *LeADAS_Pct_FwdRev = 0; // reset all the variables a driver state
+    *LeADAS_b_SD_RobotOriented = false;
+    VeADAS_t_DM_Debounce = 0;
     L_ADAS_DM_StateComplete = true;
   }
   return (L_ADAS_DM_StateComplete);
@@ -545,26 +550,26 @@ bool ADAS_DM_DriveRevStraight(double *L_Pct_FwdRev,
  *
  * Description:  Like drive straight control, but in reverse!
  ******************************************************************************/
-bool ADAS_DM_Stop(double *L_Pct_FwdRev,
-                  double *L_Pct_Strafe,
-                  double *L_Pct_Rotate,
-                  bool   *L_SD_RobotOriented,
+bool ADAS_DM_Stop(double *LeADAS_Pct_FwdRev,
+                  double *LeADAS_Pct_Strafe,
+                  double *LeADAS_Pct_Rotate,
+                  bool   *LeADAS_b_SD_RobotOriented,
                   double  LeADAS_t_StopTime)
 {
   bool L_ADAS_DM_StateComplete = false;
 
-  *L_SD_RobotOriented = false;
-  *L_Pct_Strafe = 0;
-  *L_Pct_FwdRev = 0;
-  *L_Pct_Rotate = 0;
+  *LeADAS_b_SD_RobotOriented = false;
+  *LeADAS_Pct_Strafe = 0;
+  *LeADAS_Pct_FwdRev = 0;
+  *LeADAS_Pct_Rotate = 0;
   
 
-  V_ADAS_DM_DebounceTime += C_ExeTime; // update our timekeeping
+  VeADAS_t_DM_Debounce += C_ExeTime; // update our timekeeping
 
-  if (V_ADAS_DM_DebounceTime >= LeADAS_t_StopTime)
+  if (VeADAS_t_DM_Debounce >= LeADAS_t_StopTime)
   {
     L_ADAS_DM_StateComplete = true;
-    V_ADAS_DM_DebounceTime = 0;
+    VeADAS_t_DM_Debounce = 0;
   }
 
   return (L_ADAS_DM_StateComplete);
@@ -580,157 +585,202 @@ bool ADAS_DM_Stop(double *L_Pct_FwdRev,
  *               robot to move foward/backward or to strafe to try and
  *               reach the desired position
  ******************************************************************************/
-bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
-                          double *L_Pct_Strafe,
-                          double *L_Pct_Rotate,
+bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
+                          double *LeADAS_Pct_Strafe,
+                          double *LeADAS_Pct_Rotate,
                           double *LeADAS_Deg_DesiredPose,
-                          bool *L_SD_RobotOriented,
-                          double L_L_X_FieldPos,
-                          double L_L_Y_FieldPos,
-                          double L_Deg_GyroAngleDeg,
-                          int L_i_PathNum,
-                          std::string VeADAS_Str_AutoPathName)
+                          bool   *LeADAS_b_SD_RobotOriented,
+                          double  LeADAS_l_X_FieldPos,
+                          double  LeADAS_l_Y_FieldPos,
+                          double  LeADAS_Deg_GyroAngle,
+                          int     LeADAS_i_PathNum)
 {
-  bool L_ADAS_DM_StateComplete = false;
-  double L_L_TargetPositionX = 0.0;
-  double L_L_TargetPositionY = 0.0;
-  double L_Rad_TargetAngle = 0.0;
-  double L_L_RelativePosX = 0.0;
-  double L_L_RelativePosY = 0.0;
-  double L_L_X_Error = 0.0;
-  double L_L_Y_Error = 0.0;
-  double L_Deg_RotateError = 0.0;
-  double L_Deg_RotateTarget = 0.0;
-  bool L_timeEND = false;
+  bool   LeADAS_b_DM_StateComplete = false;
+  double LeADAS_l_TargetPositionX = 0.0;
+  double LeADAS_l_TargetPositionY = 0.0;
+  double LeADAS_Deg_TargetAngle = 0.0;
+  double LeADAS_l_RelativePosX = 0.0;
+  double LeADAS_l_RelativePosY = 0.0;
+  double LeADAS_Deg_RelativeAng = 0.0;
+  double LeADAS_l_X_Error = 0.0;
+  double LeADAS_l_Y_Error = 0.0;
+  double LeADAS_Deg_RotateError = 0.0;
+  double LeADAS_Deg_RotateErrorRaw = 0.0;
+  double LeADAS_t_TimeReaining = 0.0;
+  bool   LeADAS_b_TimeEndReached = false;
+  double LeADAS_k_SlowSearch = 1.0;
 
   /* Set the things we are not using to off: */
-  *L_SD_RobotOriented = false;
+  *LeADAS_b_SD_RobotOriented = false;
 
   /* Look up the desired target location point: */
-  L_timeEND = DesiredAutonLocation2(V_ADAS_DM_StateTimer,
-                                    L_i_PathNum,
-                                    VeADAS_Str_AutoPathName,
-                                    &L_L_TargetPositionX,
-                                    &L_L_TargetPositionY,
-                                    &L_Rad_TargetAngle);
+  LeADAS_b_TimeEndReached = DesiredAutonLocation2( VeADAS_t_DM_StateTimer,
+                                                   LeADAS_i_PathNum,
+                                                  &LeADAS_l_TargetPositionX,
+                                                  &LeADAS_l_TargetPositionY,
+                                                  &LeADAS_Deg_TargetAngle,
+                                                  &LeADAS_t_TimeReaining);
 
   /* Capture some of the things we need to save for this state control: */
-  if (V_ADAS_DM_StateInit == false)
+  if (VeADAS_b_DM_StateInit == false)
   {
-    V_ADAS_DM_X_StartPosition = L_L_X_FieldPos;
-    V_ADAS_DM_Y_StartPosition = L_L_Y_FieldPos;
-    V_ADAS_DM_X_TargetStartPosition = L_L_TargetPositionX;
-    V_ADAS_DM_Y_TargetStartPosition = L_L_TargetPositionY;
-    V_ADAS_DM_InitAngle = L_Deg_GyroAngleDeg;
-    V_ADAS_DM_StartAngle = L_Rad_TargetAngle;
-    V_ADAS_DM_StateInit = true;
+    VeADAS_l_DM_X_StartPosition = LeADAS_l_X_FieldPos;
+    VeADAS_l_DM_Y_StartPosition = LeADAS_l_Y_FieldPos;
+    VeADAS_l_DM_X_TargetStartPosition = LeADAS_l_TargetPositionX;
+    VeADAS_l_DM_Y_TargetStartPosition = LeADAS_l_TargetPositionY;
+    VeADAS_Deg_DM_StartAng = LeADAS_Deg_GyroAngle;
+    VeADAS_Deg_DM_TargetStartAng = LeADAS_Deg_TargetAngle;
+    VeADAS_b_DM_StateInit = true;
   }
 
   /* We need to offset the position by the start position since the odometry will
      start at zero, but the lookup table will not */
-  L_L_TargetPositionX -= V_ADAS_DM_X_TargetStartPosition;
-  L_L_TargetPositionY -= V_ADAS_DM_Y_TargetStartPosition;
+  LeADAS_l_TargetPositionX -= VeADAS_l_DM_X_TargetStartPosition;
+  LeADAS_l_TargetPositionY -= VeADAS_l_DM_Y_TargetStartPosition;
+  LeADAS_Deg_TargetAngle   -= VeADAS_Deg_DM_TargetStartAng;
 
-  L_L_RelativePosX = L_L_X_FieldPos - V_ADAS_DM_X_StartPosition;
-  L_L_RelativePosY = L_L_Y_FieldPos - V_ADAS_DM_Y_StartPosition;
+  LeADAS_l_RelativePosX = LeADAS_l_X_FieldPos - VeADAS_l_DM_X_StartPosition;
+  LeADAS_l_RelativePosY = LeADAS_l_Y_FieldPos - VeADAS_l_DM_Y_StartPosition;
+  LeADAS_Deg_RelativeAng = LeADAS_Deg_GyroAngle - VeADAS_Deg_DM_StartAng;
 
-  L_L_X_Error = fabs(L_L_TargetPositionX - L_L_RelativePosX);
-  L_L_Y_Error = fabs(L_L_TargetPositionY - L_L_RelativePosY);
+  LeADAS_l_X_Error       = fabs(LeADAS_l_TargetPositionX - LeADAS_l_RelativePosX);
+  LeADAS_l_Y_Error       = fabs(LeADAS_l_TargetPositionY - LeADAS_l_RelativePosY);
+  // LeADAS_Deg_RotateError = fabs(LeADAS_Deg_TargetAngle - LeADAS_Deg_RelativeAng);
   
-   L_Deg_RotateError = (L_Rad_TargetAngle - V_ADAS_DM_StartAngle - V_ADAS_DM_InitAngle) - L_Deg_GyroAngleDeg;
-   
-   L_Deg_RotateTarget = L_Rad_TargetAngle;
+  VeADAS_t_DM_StateTimer += C_ExeTime;
 
-   *LeADAS_Deg_DesiredPose = L_Rad_TargetAngle;
-  // L_Deg_RotateError = (L_Rad_TargetAngle - V_ADAS_DM_StartAngle - V_ADAS_DM_InitAngle) * C_RadtoDeg - L_Deg_GyroAngleDeg;
+  LeADAS_Deg_RotateErrorRaw = LeADAS_Deg_TargetAngle - LeADAS_Deg_RelativeAng;
 
-  // L_Deg_RotateTarget = (L_Rad_TargetAngle * C_RadtoDeg);
-
-  V_ADAS_DM_StateTimer += C_ExeTime;
+  if (LeADAS_Deg_RotateErrorRaw < -180)
+    {
+    LeADAS_Deg_TargetAngle += 360;
+    LeADAS_Deg_RotateError = LeADAS_Deg_RotateErrorRaw + 360;
+    }
+  else if (LeADAS_Deg_RotateErrorRaw > 180)
+    {
+    LeADAS_Deg_TargetAngle -= 360;
+    LeADAS_Deg_RotateError = LeADAS_Deg_RotateErrorRaw - 360;
+    }
+  else
+    {
+    LeADAS_Deg_RotateError = LeADAS_Deg_RotateErrorRaw;
+    }
 
   /* Exit criteria: */
-  if (fabs(L_Deg_RotateError) <= K_ADAS_DM_RotateDeadbandAngle &&
-      L_L_X_Error <= K_ADAS_DM_XY_Deadband &&
-      L_L_Y_Error <= K_ADAS_DM_XY_Deadband &&
-      V_ADAS_DM_DebounceTime < K_ADAS_DM_RotateDebounceTime &&
-      L_timeEND == true)
+  if (fabs(LeADAS_Deg_RotateError) <= K_ADAS_DM_RotateDeadbandAngle &&
+      LeADAS_l_X_Error <= K_ADAS_DM_XY_Deadband &&
+      LeADAS_l_Y_Error <= K_ADAS_DM_XY_Deadband &&
+      VeADAS_t_DM_Debounce < KeADAS_t_DM_PathFollowDebounceTime &&
+      LeADAS_b_TimeEndReached == true)
   {
-    V_ADAS_DM_DebounceTime += C_ExeTime;
-    L_Deg_RotateError = 0.0;
+    VeADAS_t_DM_Debounce += C_ExeTime;
+    // LeADAS_Deg_RotateError = 0.0;
   }
-  else if (fabs(L_Deg_RotateError) > K_ADAS_DM_RotateDeadbandAngle ||
-           L_L_X_Error > K_ADAS_DM_XY_Deadband ||
-           L_L_Y_Error > K_ADAS_DM_XY_Deadband)
-  {
-    /* Reset the timer, we have gone out of bounds */
-    V_ADAS_DM_DebounceTime = 0;
-  }
-  else if (V_ADAS_DM_DebounceTime >= K_ADAS_DM_RotateDebounceTime)
+  else if (VeADAS_t_DM_Debounce >= KeADAS_t_DM_PathFollowDebounceTime)
   {
     /* Reset the time, proceed to next state. */
-    L_ADAS_DM_StateComplete = true;
-    V_ADAS_DM_DebounceTime = 0;
+    LeADAS_b_DM_StateComplete = true;
+    VeADAS_t_DM_Debounce = 0;
   }
-
-  if (L_ADAS_DM_StateComplete == false)
+  else if (fabs(LeADAS_Deg_RotateError) > K_ADAS_DM_RotateDeadbandAngle ||
+           LeADAS_l_X_Error > K_ADAS_DM_XY_Deadband ||
+           LeADAS_l_Y_Error > K_ADAS_DM_XY_Deadband)
   {
-    *L_Pct_Strafe = -Control_PID(L_L_TargetPositionX,
-                                 L_L_RelativePosX,
-                                 &V_ADAS_DM_X_ErrorPrev,
-                                 &V_ADAS_DM_X_Integral,
-                                 K_k_AutonX_PID_Gx[E_P_Gx],
-                                 K_k_AutonX_PID_Gx[E_I_Gx],
-                                 K_k_AutonX_PID_Gx[E_D_Gx],
-                                 K_k_AutonX_PID_Gx[E_P_Ul],
-                                 K_k_AutonX_PID_Gx[E_P_Ll],
-                                 K_k_AutonX_PID_Gx[E_I_Ul],
-                                 K_k_AutonX_PID_Gx[E_I_Ll],
-                                 K_k_AutonX_PID_Gx[E_D_Ul],
-                                 K_k_AutonX_PID_Gx[E_D_Ll],
-                                 K_k_AutonX_PID_Gx[E_Max_Ul],
-                                 K_k_AutonX_PID_Gx[E_Max_Ll]);
+    /* Reset the timer, we have gone out of bounds */
+    VeADAS_t_DM_Debounce = 0;
+  }
+  
+  if (LeADAS_t_TimeReaining < 0.05)
+  {
+    // LeADAS_k_SlowSearch = 0.7;
+  }
+  
+  if (LeADAS_b_DM_StateComplete == false)
+  {
+    *LeADAS_Pct_Strafe = -Control_PID(LeADAS_l_TargetPositionX,
+                                      LeADAS_l_RelativePosX,
+                                      &V_ADAS_DM_X_ErrorPrev,
+                                      &V_ADAS_DM_X_Integral,
+                                      K_k_AutonX_PID_Gx[E_P_Gx] * LeADAS_k_SlowSearch,
+                                      K_k_AutonX_PID_Gx[E_I_Gx] * LeADAS_k_SlowSearch,
+                                      K_k_AutonX_PID_Gx[E_D_Gx] * LeADAS_k_SlowSearch,
+                                      K_k_AutonX_PID_Gx[E_P_Ul],
+                                      K_k_AutonX_PID_Gx[E_P_Ll],
+                                      K_k_AutonX_PID_Gx[E_I_Ul],
+                                      K_k_AutonX_PID_Gx[E_I_Ll],
+                                      K_k_AutonX_PID_Gx[E_D_Ul],
+                                      K_k_AutonX_PID_Gx[E_D_Ll],
+                                      K_k_AutonX_PID_Gx[E_Max_Ul],
+                                      K_k_AutonX_PID_Gx[E_Max_Ll]);
 
-    *L_Pct_FwdRev = -Control_PID(L_L_TargetPositionY,
-                                 L_L_RelativePosY,
-                                 &V_ADAS_DM_Y_ErrorPrev,
-                                 &V_ADAS_DM_Y_Integral,
-                                 K_k_AutonY_PID_Gx[E_P_Gx],
-                                 K_k_AutonY_PID_Gx[E_I_Gx],
-                                 K_k_AutonY_PID_Gx[E_D_Gx],
-                                 K_k_AutonY_PID_Gx[E_P_Ul],
-                                 K_k_AutonY_PID_Gx[E_P_Ll],
-                                 K_k_AutonY_PID_Gx[E_I_Ul],
-                                 K_k_AutonY_PID_Gx[E_I_Ll],
-                                 K_k_AutonY_PID_Gx[E_D_Ul],
-                                 K_k_AutonY_PID_Gx[E_D_Ll],
-                                 K_k_AutonY_PID_Gx[E_Max_Ul],
-                                 K_k_AutonY_PID_Gx[E_Max_Ll]);
+    *LeADAS_Pct_FwdRev = -Control_PID(LeADAS_l_TargetPositionY,
+                                      LeADAS_l_RelativePosY,
+                                      &V_ADAS_DM_Y_ErrorPrev,
+                                      &V_ADAS_DM_Y_Integral,
+                                      K_k_AutonY_PID_Gx[E_P_Gx] * LeADAS_k_SlowSearch,
+                                      K_k_AutonY_PID_Gx[E_I_Gx] * LeADAS_k_SlowSearch,
+                                      K_k_AutonY_PID_Gx[E_D_Gx] * LeADAS_k_SlowSearch,
+                                      K_k_AutonY_PID_Gx[E_P_Ul],
+                                      K_k_AutonY_PID_Gx[E_P_Ll],
+                                      K_k_AutonY_PID_Gx[E_I_Ul],
+                                      K_k_AutonY_PID_Gx[E_I_Ll],
+                                      K_k_AutonY_PID_Gx[E_D_Ul],
+                                      K_k_AutonY_PID_Gx[E_D_Ll],
+                                      K_k_AutonY_PID_Gx[E_Max_Ul],
+                                      K_k_AutonY_PID_Gx[E_Max_Ll]);
 
-    *L_Pct_Rotate = DesiredRotateSpeed(L_Deg_RotateError);
+    *LeADAS_Pct_Rotate =  Control_PID(LeADAS_Deg_TargetAngle,
+                                      LeADAS_Deg_RelativeAng,
+                                      &VeADAS_Deg_DM_AngleErrorPrev,
+                                      &VeADAS_Deg_DM_AngleIntegral,
+                                      KeADAS_k_AutonRotatePID_Gx[E_P_Gx] * LeADAS_k_SlowSearch,
+                                      KeADAS_k_AutonRotatePID_Gx[E_I_Gx] * LeADAS_k_SlowSearch,
+                                      KeADAS_k_AutonRotatePID_Gx[E_D_Gx] * LeADAS_k_SlowSearch,
+                                      KeADAS_k_AutonRotatePID_Gx[E_P_Ul],
+                                      KeADAS_k_AutonRotatePID_Gx[E_P_Ll],
+                                      KeADAS_k_AutonRotatePID_Gx[E_I_Ul],
+                                      KeADAS_k_AutonRotatePID_Gx[E_I_Ll],
+                                      KeADAS_k_AutonRotatePID_Gx[E_D_Ul],
+                                      KeADAS_k_AutonRotatePID_Gx[E_D_Ll],
+                                      KeADAS_k_AutonRotatePID_Gx[E_Max_Ul],
+                                      KeADAS_k_AutonRotatePID_Gx[E_Max_Ll]);
 
-    // ADAS_DM_FieldOrientRotate(L_Pct_FwdRev,
-    //                           L_Pct_Strafe,
-    //                           L_Pct_Rotate,
-    //                           L_SD_RobotOriented,
-    //                           L_Deg_GyroAngleDeg,
-    //                           L_Deg_RotateTarget);
+    *LeADAS_Deg_DesiredPose = LeADAS_Deg_TargetAngle;
   }
   else
   {
     /* We have been at the correct location for the set amount of time. */
-    *L_Pct_FwdRev = 0;
-    *L_Pct_Strafe = 0;
-    *L_Pct_Rotate = 0;
-    V_ADAS_DM_DebounceTime = 0;
-    L_ADAS_DM_StateComplete = true;
-    V_ADAS_DM_StateInit = false;
-    V_ADAS_DM_X_StartPosition = 0;
-    V_ADAS_DM_Y_StartPosition = 0;
-    V_ADAS_DM_X_TargetStartPosition = 0;
-    V_ADAS_DM_Y_TargetStartPosition = 0;
+    *LeADAS_Pct_FwdRev = 0;
+    *LeADAS_Pct_Strafe = 0;
+    *LeADAS_Pct_Rotate = 0;
+    VeADAS_t_DM_Debounce = 0;
+    VeADAS_t_DM_StateTimer = 0;
+    LeADAS_b_DM_StateComplete = true;
+    VeADAS_b_DM_StateInit = false;
+    VeADAS_l_DM_X_StartPosition = 0;
+    VeADAS_l_DM_Y_StartPosition = 0;
+    VeADAS_l_DM_X_TargetStartPosition = 0;
+    VeADAS_l_DM_Y_TargetStartPosition = 0;
+    V_ADAS_DM_X_ErrorPrev = 0;
+    V_ADAS_DM_X_Integral = 0;
+    V_ADAS_DM_Y_ErrorPrev = 0;
+    V_ADAS_DM_Y_Integral = 0;
+    VeADAS_Deg_DM_AngleErrorPrev = 0;
+    VeADAS_Deg_DM_AngleIntegral = 0;
   }
 
-  return (L_ADAS_DM_StateComplete);
+  frc::SmartDashboard::PutNumber("DM Timer", VeADAS_t_DM_StateTimer);
+  frc::SmartDashboard::PutNumber("X Cmnd",   LeADAS_l_TargetPositionX);
+  frc::SmartDashboard::PutNumber("X Act",    LeADAS_l_RelativePosX);
+  frc::SmartDashboard::PutNumber("X Err",    LeADAS_l_X_Error);
+  frc::SmartDashboard::PutNumber("Y Cmnd",   LeADAS_l_TargetPositionY);
+  frc::SmartDashboard::PutNumber("Y Act",    LeADAS_l_RelativePosY);
+  frc::SmartDashboard::PutNumber("Y Err",    LeADAS_l_Y_Error);
+  frc::SmartDashboard::PutNumber("Rot Cmnd", LeADAS_Deg_TargetAngle);
+  frc::SmartDashboard::PutNumber("Rot Act",  LeADAS_Deg_RelativeAng);
+  frc::SmartDashboard::PutNumber("Rot Err",  LeADAS_Deg_RotateError);
+
+  return (LeADAS_b_DM_StateComplete);
 }
 
 /******************************************************************************
@@ -738,10 +788,10 @@ bool ADAS_DM_PathFollower(double *L_Pct_FwdRev,
  *
  * Description:  Balance on the charge station
  ******************************************************************************/
-bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
-                         double *L_Pct_Strafe,
-                         double *L_Pct_Rotate,
-                         bool *L_SD_RobotOriented,
+bool ADAS_DM_AutoBalance(double *LeADAS_Pct_FwdRev,
+                         double *LeADAS_Pct_Strafe,
+                         double *LeADAS_Pct_Rotate,
+                         bool *LeADAS_b_SD_RobotOriented,
                          bool *LeADAS_b_X_Mode,
                          double LeADAS_Deg_GyroRoll)
 {
@@ -825,7 +875,7 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
 
   if ((LeADAS_b_Searching == true))
   {
-    *L_Pct_FwdRev = Control_PID(0.0,
+    *LeADAS_Pct_FwdRev = Control_PID(0.0,
                                 LeADAS_Deg_GyroRoll,
                                 &VeADAS_Deg_DM_AutoBalanceErrorPrev,
                                 &VeADAS_Deg_DM_AutoBalanceIntegral,
@@ -841,17 +891,17 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
                                 LeADAS_k_DM_AutoBalancePID[E_Max_Ul],
                                 LeADAS_k_DM_AutoBalancePID[E_Max_Ll]);
 
-    *L_Pct_Strafe = 0;
-    *L_Pct_Rotate = 0;
-    *L_SD_RobotOriented = true;
+    *LeADAS_Pct_Strafe = 0;
+    *LeADAS_Pct_Rotate = 0;
+    *LeADAS_b_SD_RobotOriented = true;
     *LeADAS_b_X_Mode = false;
   }
   else if ((VeADAS_t_DM_AutoBalanceHoldTm <= KeADAS_t_DM_AutoBalanceHold))
   {
-    *L_Pct_FwdRev = 0;
-    *L_Pct_Strafe = 0;
-    *L_Pct_Rotate = 0;
-    *L_SD_RobotOriented = false;
+    *LeADAS_Pct_FwdRev = 0;
+    *LeADAS_Pct_Strafe = 0;
+    *LeADAS_Pct_Rotate = 0;
+    *LeADAS_b_SD_RobotOriented = false;
     *LeADAS_b_X_Mode = true;
     VeADAS_t_DM_AutoBalanceHoldTm += C_ExeTime;
     VeADAS_t_DM_AutoBalanceDbTm = 0;
@@ -861,10 +911,10 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
   else
   {
     /* We have been at the correct location for the set amount of time. */
-    *L_Pct_FwdRev = 0;
-    *L_Pct_Strafe = 0;
-    *L_Pct_Rotate = 0;
-    *L_SD_RobotOriented = false;
+    *LeADAS_Pct_FwdRev = 0;
+    *LeADAS_Pct_Strafe = 0;
+    *LeADAS_Pct_Rotate = 0;
+    *LeADAS_b_SD_RobotOriented = false;
     *LeADAS_b_X_Mode = true;
     VeADAS_t_DM_AutoBalanceDbTm = 0;
     VeADAS_t_DM_AutoBalanceHoldTm = 0.0;
@@ -881,10 +931,10 @@ bool ADAS_DM_AutoBalance(double *L_Pct_FwdRev,
  *
  * Description:  Drive over the charge station, reverse and mount
  ******************************************************************************/
-bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
-                              double *L_Pct_Strafe,
-                              double *L_Pct_Rotate,
-                              bool   *L_SD_RobotOriented,
+bool ADAS_DM_DriveOntoStation(double *LeADAS_Pct_FwdRev,
+                              double *LeADAS_Pct_Strafe,
+                              double *LeADAS_Pct_Rotate,
+                              bool   *LeADAS_b_SD_RobotOriented,
                               bool   *LeADAS_b_X_Mode,
                               double  LeADAS_Deg_GyroRoll)
 {
@@ -956,19 +1006,19 @@ bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
   /* Exit criteria: */
   if (LeADAS_b_DM_StateComplete == false)
   {
-    *L_Pct_FwdRev = LeADAS_Pct_Drive;
-    *L_Pct_Strafe = 0;
-    *L_Pct_Rotate = 0;
-    *L_SD_RobotOriented = false;
+    *LeADAS_Pct_FwdRev = LeADAS_Pct_Drive;
+    *LeADAS_Pct_Strafe = 0;
+    *LeADAS_Pct_Rotate = 0;
+    *LeADAS_b_SD_RobotOriented = false;
     *LeADAS_b_X_Mode = false;
   }
   else
   {
     /* We have been at the correct location for the set amount of time. */
-    *L_Pct_FwdRev = 0;
-    *L_Pct_Strafe = 0;
-    *L_Pct_Rotate = 0;
-    *L_SD_RobotOriented = false;
+    *LeADAS_Pct_FwdRev = 0;
+    *LeADAS_Pct_Strafe = 0;
+    *LeADAS_Pct_Rotate = 0;
+    *LeADAS_b_SD_RobotOriented = false;
     *LeADAS_b_X_Mode = false;
     VeADAS_t_DM_AutoMountDbTime = 0;
   }
@@ -981,10 +1031,10 @@ bool ADAS_DM_DriveOntoStation(double *L_Pct_FwdRev,
  *
  * Description:  Drive onto the the charge station
  ******************************************************************************/
-bool ADAS_DM_MountStation(double *L_Pct_FwdRev,
-                          double *L_Pct_Strafe,
-                          double *L_Pct_Rotate,
-                          bool   *L_SD_RobotOriented,
+bool ADAS_DM_MountStation(double *LeADAS_Pct_FwdRev,
+                          double *LeADAS_Pct_Strafe,
+                          double *LeADAS_Pct_Rotate,
+                          bool   *LeADAS_b_SD_RobotOriented,
                           bool   *LeADAS_b_X_Mode,
                           double  LeADAS_Deg_GyroRoll)
 {
@@ -1014,19 +1064,19 @@ bool ADAS_DM_MountStation(double *L_Pct_FwdRev,
   /* Exit criteria: */
   if (LeADAS_b_DM_StateComplete == false)
   {
-    *L_Pct_FwdRev = LeADAS_Pct_Drive;
-    *L_Pct_Strafe = 0;
-    *L_Pct_Rotate = 0;
-    *L_SD_RobotOriented = false;
+    *LeADAS_Pct_FwdRev = LeADAS_Pct_Drive;
+    *LeADAS_Pct_Strafe = 0;
+    *LeADAS_Pct_Rotate = 0;
+    *LeADAS_b_SD_RobotOriented = false;
     *LeADAS_b_X_Mode = false;
   }
   else
   {
     /* We have been at the correct location for the set amount of time. */
-    *L_Pct_FwdRev = 0;
-    *L_Pct_Strafe = 0;
-    *L_Pct_Rotate = 0;
-    *L_SD_RobotOriented = false;
+    *LeADAS_Pct_FwdRev = 0;
+    *LeADAS_Pct_Strafe = 0;
+    *LeADAS_Pct_Rotate = 0;
+    *LeADAS_b_SD_RobotOriented = false;
     *LeADAS_b_X_Mode = false;
     VeADAS_t_DM_AutoMountDbTime = 0;
   }
@@ -1040,9 +1090,9 @@ bool ADAS_DM_MountStation(double *L_Pct_FwdRev,
  *
  * Description:  TBD
  ******************************************************************************/
-bool MoveWithOffsetTag(double *L_Pct_FwdRev,
-                       double *L_Pct_Strafe,
-                       double *L_Pct_Rotate,
+bool MoveWithOffsetTag(double *LeADAS_Pct_FwdRev,
+                       double *LeADAS_Pct_Strafe,
+                       double *LeADAS_Pct_Rotate,
                        bool L_OdomCentered,
                        double L_TagYawDegrees,
                        double L_OdomOffsetX,
@@ -1060,37 +1110,37 @@ bool MoveWithOffsetTag(double *L_Pct_FwdRev,
 
     if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
     {
-      *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
+      *LeADAS_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
     }
 
     if (L_OdomOffsetX > L_RequestedOffsetX + K_MoveToTagMovementDeadbandX || L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadbandX)
     {
-      *L_Pct_FwdRev = -C_TagAlignBasePower * (L_OdomOffsetX - L_RequestedOffsetX);
+      *LeADAS_Pct_FwdRev = -C_TagAlignBasePower * (L_OdomOffsetX - L_RequestedOffsetX);
     }
     // else if (L_OdomOffsetX < L_RequestedOffsetX - K_MoveToTagMovementDeadband)
     // {
-    //   *L_Pct_FwdRev = 0.2 * (L_OdomOffsetX - L_RequestedOffsetX);
+    //   *LeADAS_Pct_FwdRev = 0.2 * (L_OdomOffsetX - L_RequestedOffsetX);
     // }
 
     if (L_OdomOffsetY > L_RequestedOffsetY + K_MoveToTagMovementDeadbandY || L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadbandY)
     {
-      *L_Pct_Strafe = -C_TagAlignBasePower * (L_OdomOffsetY - L_RequestedOffsetY);
+      *LeADAS_Pct_Strafe = -C_TagAlignBasePower * (L_OdomOffsetY - L_RequestedOffsetY);
     }
     // else if (L_OdomOffsetY < L_RequestedOffsetY - K_MoveToTagMovementDeadband)
     // {
-    //   *L_Pct_Strafe = -0.2 * (L_OdomOffsetY - L_RequestedOffsetY);
+    //   *LeADAS_Pct_Strafe = -0.2 * (L_OdomOffsetY - L_RequestedOffsetY);
     // }
 
     if (L_OdomOffsetX <= L_RequestedOffsetX + K_MoveToTagMovementDeadbandX && L_OdomOffsetX >= L_RequestedOffsetX - K_MoveToTagMovementDeadbandX)
     {
-      *L_Pct_FwdRev = 0.0;
+      *LeADAS_Pct_FwdRev = 0.0;
     }
     if (L_OdomOffsetY <= L_RequestedOffsetY + K_MoveToTagMovementDeadbandY && L_OdomOffsetY >= L_RequestedOffsetY - K_MoveToTagMovementDeadbandY)
     {
-      *L_Pct_Strafe = 0.0;
+      *LeADAS_Pct_Strafe = 0.0;
     }
 
-    if (*L_Pct_Strafe == 0.0 && *L_Pct_FwdRev == 0.0)
+    if (*LeADAS_Pct_Strafe == 0.0 && *LeADAS_Pct_FwdRev == 0.0)
     {
       LeADAS_b_DM_StateComplete = true;
     }
@@ -1098,9 +1148,14 @@ bool MoveWithOffsetTag(double *L_Pct_FwdRev,
   return (LeADAS_b_DM_StateComplete);
 }
 
-bool MoveWithGlobalCoords(double *L_Pct_FwdRev,
-                          double *L_Pct_Strafe,
-                          double *L_Pct_Rotate,
+/******************************************************************************
+ * Function:     MoveWithGlobalCoords
+ *
+ * Description:  TBD
+ ******************************************************************************/
+bool MoveWithGlobalCoords(double *LeADAS_Pct_FwdRev,
+                          double *LeADAS_Pct_Strafe,
+                          double *LeADAS_Pct_Rotate,
                           bool L_OdomCentered,
                           double L_TagYawDegrees,
                           double L_CurrentOdomX,
@@ -1118,31 +1173,31 @@ bool MoveWithGlobalCoords(double *L_Pct_FwdRev,
 
     if (L_ErrorCalcYaw > 0 || L_ErrorCalcYaw < 0)
     {
-      *L_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
+      *LeADAS_Pct_Rotate = DesiredAutoRotateSpeed(L_ErrorCalcYaw);
     }
 
     if (L_CurrentOdomX > L_RequestedCoordX || L_CurrentOdomX < L_RequestedCoordX)
     {
-      *L_Pct_FwdRev = -C_TagAlignBasePower * (L_CurrentOdomX - L_RequestedCoordX);
+      *LeADAS_Pct_FwdRev = -C_TagAlignBasePower * (L_CurrentOdomX - L_RequestedCoordX);
     }
 
 
     if (L_CurrentOdomY > L_RequestedCoordY + K_MoveToTagMovementDeadbandY || L_CurrentOdomY < L_RequestedCoordY - K_MoveToTagMovementDeadbandY)
     {
-      *L_Pct_Strafe = -C_TagAlignBasePower * (L_CurrentOdomY - L_RequestedCoordY);
+      *LeADAS_Pct_Strafe = -C_TagAlignBasePower * (L_CurrentOdomY - L_RequestedCoordY);
     }
 
 
     if (L_CurrentOdomX <= L_RequestedCoordX + K_MoveToTagMovementDeadbandX && L_CurrentOdomX >= L_RequestedCoordX - K_MoveToTagMovementDeadbandX)
     {
-      *L_Pct_FwdRev = 0.0;
+      *LeADAS_Pct_FwdRev = 0.0;
     }
     if (L_CurrentOdomY <= L_RequestedCoordY + K_MoveToTagMovementDeadbandY && L_CurrentOdomY >= L_RequestedCoordY - K_MoveToTagMovementDeadbandY)
     {
-      *L_Pct_Strafe = 0.0;
+      *LeADAS_Pct_Strafe = 0.0;
     }
 
-    if (*L_Pct_Strafe == 0.0 && *L_Pct_FwdRev == 0.0)
+    if (*LeADAS_Pct_Strafe == 0.0 && *LeADAS_Pct_FwdRev == 0.0)
     {
       LeADAS_b_DM_StateComplete = true;
     }

@@ -284,29 +284,29 @@ double DtrmnEncoderRelativeToCmnd(double          L_JoystickCmnd,
  *               Swerve srive calculations obtained from the following link:
  *               https://www.chiefdelphi.com/uploads/default/original/3X/e/f/ef10db45f7d65f6d4da874cd26db294c7ad469bb.pdf
  ************************************************************************************************************************/
-void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control forward/back
-                      double               L_JoyStick1Axis1X,  // swerve control strafe
-                      double               L_JoyStick1Axis2X,  // rotate the robot joystick
-                      double               L_JoyStick1Axis3,   // extra speed trigger
-                      bool                 LeDRC_b_RotateTo0, // auto rotate to 0 degrees
-                      bool                 LeDRC_b_RotateTo180, // auto rotate to 180 degrees
-                      bool                 L_JoyStick1_ResetDesiredAngle, // auto correct reset angle
-                      bool                 LeDRC_b_X_ModeReq,  // When requested, move all wheels into an X configuration, meant to hold robot still
-                      bool                 LeDRC_b_X_ModeReqTeleop,
-                      T_ADAS_ActiveFeature LeDRC_e_ADAS_ActiveFeature,
-                      double               L_ADAS_Pct_SD_FwdRev,
-                      double               L_ADAS_Pct_SD_Strafe,
-                      double               L_ADAS_Pct_SD_Rotate,
-                      double               LeADAS_Deg_SD_DesiredPose,
-                      bool                 L_ADAS_SD_RobotOriented, 
-                      double               L_Deg_GyroAngle,
-                      double               L_Rad_GyroAngle,
-                      TeMAN_ManipulatorStates LeMAN_e_CmndState,
-                      TeMAN_ManipulatorStates LeMAN_e_AttndState,
-                      double              *L_Deg_WheelAngleFwd,
-                      double              *L_Deg_WheelAngleRev,
-                      double              *Le_RPM_SD_WheelSpeedCmnd,
-                      double              *L_k_SD_WheelAngleCmnd)
+void DriveControlMain(double                   L_JoyStick1Axis1Y,  // swerve control forward/back
+                      double                   L_JoyStick1Axis1X,  // swerve control strafe
+                      double                   L_JoyStick1Axis2X,  // rotate the robot joystick
+                      double                   L_JoyStick1Axis3,   // extra speed trigger
+                      bool                     LeDRC_b_RotateTo0, // auto rotate to 0 degrees
+                      bool                     LeDRC_b_RotateTo180, // auto rotate to 180 degrees
+                      bool                     L_JoyStick1_ResetDesiredAngle, // auto correct reset angle
+                      bool                     LeDRC_b_X_ModeReq,  // When requested, move all wheels into an X configuration, meant to hold robot still
+                      bool                     LeDRC_b_X_ModeReqTeleop,
+                      T_ADAS_ActiveFeature     LeDRC_e_ADAS_ActiveFeature,
+                      double                   L_ADAS_Pct_SD_FwdRev,
+                      double                   L_ADAS_Pct_SD_Strafe,
+                      double                   L_ADAS_Pct_SD_Rotate,
+                      double                   LeADAS_Deg_SD_DesiredPose,
+                      bool                     L_ADAS_SD_RobotOriented, 
+                      double                   L_Deg_GyroAngle,
+                      double                   L_Rad_GyroAngle,
+                      TeMAN_ManipulatorStates  LeMAN_e_CmndState,
+                      TeMAN_ManipulatorStates  LeMAN_e_AttndState,
+                      double                  *L_Deg_WheelAngleFwd,
+                      double                  *L_Deg_WheelAngleRev,
+                      double                  *Le_RPM_SD_WheelSpeedCmnd,
+                      double                  *L_k_SD_WheelAngleCmnd)
   {
   double        L_FWD = 0;
   double        L_STR = 0;
@@ -335,12 +335,7 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
   bool          LeDRC_b_X_ModeReqActive = false;
   bool          LeDRC_b_AutoCenterEnabled = true; // force autocorrect to always be enabled when driver is running or ADAS is NOT in robot oriented control
   double        LeDRC_k_ArmExtendScaler = 1.0;
-
-  if ((LeMAN_e_CmndState == E_MAN_MidConeIntake)  || (LeMAN_e_CmndState == E_MAN_HighCubeDrop)  || (LeMAN_e_CmndState == E_MAN_LowConeDrop) ||
-      (LeMAN_e_AttndState == E_MAN_MidConeIntake) || (LeMAN_e_AttndState == E_MAN_HighCubeDrop) || (LeMAN_e_AttndState == E_MAN_LowConeDrop))
-      {
-        LeDRC_k_ArmExtendScaler = KeDRC_k_SD_ArmExtendedGx;
-      }
+  double        LeDRC_k_SpeedGain = 0.0;
 
   /* Scale the joysticks based on a calibratable lookup when in teleop: */
   if (LeDRC_e_ADAS_ActiveFeature > E_ADAS_Disabled)
@@ -357,6 +352,7 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
       L_Rad_GyroAngle = 0.0;
       LeDRC_b_AutoCenterEnabled = false;
       }
+    LeDRC_k_SpeedGain = 0.9;
     }
   else
     {
@@ -365,7 +361,14 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
     L_STR = L_JoyStick1Axis1X * LeDRC_k_ArmExtendScaler;
     L_RCW = L_JoyStick1Axis2X * LeDRC_k_ArmExtendScaler;
     LeDRC_b_X_ModeReqActive = LeDRC_b_X_ModeReqTeleop;
-    } 
+    LeDRC_k_SpeedGain = L_JoyStick1Axis3;
+
+    if ((LeMAN_e_CmndState == LeMAN_e_AttndState) &&
+        ((LeMAN_e_CmndState == E_MAN_MidConeIntake)  || (LeMAN_e_CmndState == E_MAN_HighCubeDrop)  || (LeMAN_e_CmndState == E_MAN_LowConeDrop)))
+      {
+        LeDRC_k_ArmExtendScaler = KeDRC_k_SD_ArmExtendedGx;
+      }
+    }
 
   /* Here, we are attempting to determine if the drive/ADAS is attempting to turn the robot.  If we are 
      attempting to rotate the robot, allow the "desired" angle to update to the current measured angle.  */
@@ -494,10 +497,10 @@ void DriveControlMain(double               L_JoyStick1Axis1Y,  // swerve control
   /* Ok, now lets apply gains to the normalized wheel speeds to obtain the desired motor speed */
   L_k_SD_Gain = K_SD_MinGain;
     
-  if (L_JoyStick1Axis3 > L_k_SD_Gain)
+  if (LeDRC_k_SpeedGain > L_k_SD_Gain)
     {
     /* Additional speed trigger from driver: */
-    L_k_SD_Gain = L_JoyStick1Axis3;
+    L_k_SD_Gain = LeDRC_k_SpeedGain;
     }
 
   if (L_k_SD_Gain >= K_SD_MaxGain)

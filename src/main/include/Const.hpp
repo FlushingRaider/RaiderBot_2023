@@ -488,7 +488,7 @@ const double K_SD_WheelSpeedPID_V2_Gx[E_PID_SparkMaxCalSz] = { 0.000350, // kP
                                                               -1.0,      // kMinOutput
                                                                0.0,      // kMaxVel
                                                                0.0,      // kMinVel
-                                                              135.0,     // kMaxAcc 150
+                                                              150.0,     // kMaxAcc 150
                                                                0.0};     // kAllErr
 
 /* K_SD_WheelAnglePID_Gx: PID gains for the angle of the swerve drive wheels.  PID control is within the RoboRio.  */
@@ -560,6 +560,50 @@ const double K_SD_DesiredDriveSpeed[20] = {-1.00,  //-1
                                             0.50,  // 0.75
                                             0.88,  // 0.85
                                             1.00}; // 0.95
+
+/* K_SD_DesiredRotateAxis: Joystick scale axis for K_SD_DesiredDriveSpeed.  */
+const double K_SD_DesiredRotateAxis[20] = {-0.95,
+                                           -0.85,
+                                           -0.75,
+                                           -0.65,
+                                           -0.55,
+                                           -0.45,
+                                           -0.35,
+                                           -0.25,
+                                           -0.15,
+                                           -0.05,
+                                            0.05,
+                                            0.15,
+                                            0.25,
+                                            0.35,
+                                            0.45,
+                                            0.55,
+                                            0.65,
+                                            0.75,
+                                            0.85,
+                                            0.95};
+
+/* K_SD_DesiredRotate: Joystick scaled output for swerve drive control.  Used as debouncing and to help limit speeds at lower joystick inputs values.  */
+const double K_SD_DesiredRotate[20] = {-1.00,  //-1
+                                       -0.50,  //-0.88
+                                       -0.20,  //-0.6
+                                       -0.11,  //-0.4
+                                       -0.09,  //-0.25
+                                       -0.07,  //-0.2
+                                       -0.05,  //-0.15
+                                       -0.03,  //-0.1
+                                       -0.01,  //-0.05
+                                        0.00,  //-0.0
+                                        0.00,  // 0.0
+                                        0.01,  // 0.15
+                                        0.03,  // 0.25
+                                        0.05,  // 0.35
+                                        0.07,  // 0.45
+                                        0.09,  // 0.55
+                                        0.11,  // 0.65
+                                        0.20,  // 0.75
+                                        0.50,  // 0.85
+                                        1.00}; // 0.95
 
 /* KnLU_k_SD_DesiredAccelAxis: Joystick scale axis for KtLU_k_SD_DesiredAccel.  */
 const double KnLU_k_SD_DesiredAccelAxis[20] = {-0.95,
@@ -644,12 +688,15 @@ const double KeADAS_Pct_DM_RevDrive = 0.5;
 
 /* K_ADAS_DM_RotateDebounceTime: This is the debounce time for the DM rotate state. [seconds] */
 const double K_ADAS_DM_RotateDebounceTime = 0.02;
+ 
+/* KeADAS_t_DM_PathFollowDebounceTime: This is the debounce time for the DM pathfollow state. [seconds] */
+const double KeADAS_t_DM_PathFollowDebounceTime = 0.045;
 
 /* K_ADAS_DM_RotateDeadbandAngle: This is the deband angle for the DM rotate state. [degrees] */
-const double K_ADAS_DM_RotateDeadbandAngle = 1.8;
+const double K_ADAS_DM_RotateDeadbandAngle = 2.0;
 
 /* K_ADAS_DM_XY_Deadband: This is the deband position for the DM XY drive state. [meters] */
-const double K_ADAS_DM_XY_Deadband = 0.1;
+const double K_ADAS_DM_XY_Deadband = 3.0;
 
 /* KeADAS_Deg_DM_AutoBalanceDb: This is the deband angle for the DM auto balance state. [degrees] */
 const double KeADAS_Deg_DM_AutoBalanceDb = 10.0;
@@ -706,29 +753,6 @@ const double KeADAS_Pct_DM_AutoMountPwr = -0.99;
 
 /* KeADAS_t_DM_StopTm: Amount of time to have the robot stopped. [sec] */
 const double KeADAS_t_DM_StopTm = 0.1;
-
-/* Motion profiles for DM: */
-#include "MotionProfiles/Red1Ang.hpp"
-#include "MotionProfiles/Red1T.hpp"
-#include "MotionProfiles/Red1X.hpp"
-#include "MotionProfiles/Red1Y.hpp"
-
-#include "MotionProfiles/Red2Ang.hpp"
-#include "MotionProfiles/Red2T.hpp"
-#include "MotionProfiles/Red2X.hpp"
-#include "MotionProfiles/Red2Y.hpp"
-
-#include "MotionProfiles/Red3Ang.hpp"
-#include "MotionProfiles/Red3T.hpp"
-#include "MotionProfiles/Red3X.hpp"
-#include "MotionProfiles/Red3Y.hpp"
-
-#include "MotionProfiles/StartToGameP1.hpp"
-#include "MotionProfiles/StartToGameP2.hpp"
-#include "MotionProfiles/StartToGameP3.hpp"
-#include "MotionProfiles/StartToGameP4.hpp"
-
-#include "MotionProfiles/TestPath1.hpp"
 
 /*  Rotation calibrations */
 /* K_DesiredRotateSpeedAxis - This is the effective command axis, function of error calculation, in degrees */
@@ -841,59 +865,40 @@ const double K_BallLauncherLowerSpeed[K_BallLauncherDistanceSz][K_BallLauncherAn
   };
 
 /* Auton specific cals */
-const double K_k_AutonX_PID_Gx[E_PID_CalSz] = { 0.18,       // P Gx
-                                                0.000001,    // I Gx
+const double K_k_AutonX_PID_Gx[E_PID_CalSz] = { 0.065,       // P Gx
+                                                0.00065,    // I Gx 0.000001
                                                 0.00012,      // D Gx
                                                 0.8,       // P UL
                                                -0.8,       // P LL
-                                                0.05,      // I UL
-                                               -0.05,      // I LL
+                                                0.3,      // I UL
+                                               -0.3,      // I LL
                                                 0.5,       // D UL
                                                -0.5,       // D LL
                                                 1.0,       // Max upper
                                                -1.0};      // Max lower
 
-const double K_k_AutonY_PID_Gx[E_PID_CalSz] = { 0.18,       // P Gx
-                                                0.000001,    // I Gx
+const double K_k_AutonY_PID_Gx[E_PID_CalSz] = { 0.065,       // P Gx  .18
+                                                0.00065,    // I Gx
                                                 0.00012,      // D Gx
                                                 0.8,       // P UL
                                                -0.8,       // P LL
-                                                0.05,      // I UL
-                                               -0.05,      // I LL
+                                                0.3,      // I UL
+                                               -0.3,      // I LL
                                                 0.5,       // D UL
                                                -0.5,       // D LL
                                                 1.0,       // Max upper
                                                -1.0};      // Max lower
+ 
+const double KeADAS_k_AutonRotatePID_Gx[E_PID_CalSz] = { 0.0056,     // P Gx
+                                                         0.00065, // I Gx
+                                                         0.00007,  // D Gx
+                                                         0.30,      // P UL
+                                                        -0.30,      // P LL
+                                                         0.175,     // I UL
+                                                        -0.175,     // I LL
+                                                         0.16,      // D UL
+                                                        -0.16,      // D LL
+                                                         0.4,      // Max upper
+                                                        -0.4};     // Max lower
 
-// #include "MotionProfiles/K_BarrelRacing_V55A25_T.hpp"
-// #include "MotionProfiles/K_BarrelRacing_V55A25_X.hpp"
-// #include "MotionProfiles/K_BarrelRacing_V55A25_Y.hpp"
-// #include "MotionProfiles/K_BarrelRacing_V75A30_T.hpp"
-// #include "MotionProfiles/K_BarrelRacing_V75A30_X.hpp"
-// #include "MotionProfiles/K_BarrelRacing_V75A30_Y.hpp"
-// #include "MotionProfiles/K_BarrelRacing_V95A35_T.hpp"
-// #include "MotionProfiles/K_BarrelRacing_V95A35_X.hpp"
-// #include "MotionProfiles/K_BarrelRacing_V95A35_Y.hpp"
 
-// #include "MotionProfiles/K_Bounce_V55A25_T.hpp"
-// #include "MotionProfiles/K_Bounce_V55A25_X.hpp"
-// #include "MotionProfiles/K_Bounce_V55A25_Y.hpp"
-// #include "MotionProfiles/K_Bounce_V75A30_T.hpp"
-// #include "MotionProfiles/K_Bounce_V75A30_X.hpp"
-// #include "MotionProfiles/K_Bounce_V75A30_Y.hpp"
-// #include "MotionProfiles/K_Bounce_V95A35_T.hpp"
-// #include "MotionProfiles/K_Bounce_V95A35_X.hpp"
-// #include "MotionProfiles/K_Bounce_V95A35_Y.hpp"
-
-// #include "MotionProfiles/K_Slalom_V55A25_T.hpp"
-// #include "MotionProfiles/K_Slalom_V55A25_X.hpp"
-// #include "MotionProfiles/K_Slalom_V55A25_Y.hpp"
-// #include "MotionProfiles/K_Slalom_V75A30_T.hpp"
-// #include "MotionProfiles/K_Slalom_V75A30_X.hpp"
-// #include "MotionProfiles/K_Slalom_V75A30_Y.hpp"
-// #include "MotionProfiles/K_Slalom_V95A35_T.hpp"
-// #include "MotionProfiles/K_Slalom_V95A35_X.hpp"
-// #include "MotionProfiles/K_Slalom_V95A35_Y.hpp"
-// #include "MotionProfiles/K_Slalom_V125A50_T.hpp"
-// #include "MotionProfiles/K_Slalom_V125A50_X.hpp"
-// #include "MotionProfiles/K_Slalom_V125A50_Y.hpp"
