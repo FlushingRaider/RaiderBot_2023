@@ -30,7 +30,7 @@ extern double ScaleAccelAxis(double LeLU_Cmd_JoystickAxis);
 extern double DesiredAutoRotateSpeed(double LeLU_Cmd_Error);
 
 bool DesiredAutonLocation2(double  LeLU_s_AutonTime,
-                           int     LeLU_Int_AutonSelection,
+                           T_ADAS_ActiveFeature LeADAS_e_ActiveFeature,
                            double *LeLU_Cmd_L_X_Location,
                            double *LeLU_Cmd_L_Y_Location,
                            double *LeLU_Cmd_Deg_Angle,

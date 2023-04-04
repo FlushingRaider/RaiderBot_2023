@@ -73,7 +73,7 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
                           double  LeADAS_l_X_FieldPos,
                           double  LeADAS_l_Y_FieldPos,
                           double  LeADAS_Deg_GyroAngle,
-                          int     LeADAS_i_PathNum);
+                          T_ADAS_ActiveFeature LeADAS_e_ActiveFeature);
 
 bool ADAS_DM_FieldOrientRotate(double *LeADAS_Pct_FwdRev,
                                double *LeADAS_Pct_Strafe,

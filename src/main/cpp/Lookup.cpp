@@ -309,7 +309,7 @@ double LookUp2D_Table(double const *LKeLU_Cmd_XAxis,
  * Description:  Determine the desired X/Y location based on the current time.
  ******************************************************************************/
 bool DesiredAutonLocation2(double LeLU_s_AutonTime,
-                           int    LeLU_Int_AutonSelection,
+                           T_ADAS_ActiveFeature LeADAS_e_ActiveFeature,
                            double *LeLU_Cmd_L_X_Location,
                            double *LeLU_Cmd_L_Y_Location,
                            double *LeLU_Cmd_Deg_Angle,
@@ -329,9 +329,9 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
   int    LeLU_Int_t_CalArraySize = 0;
   bool   LeLU_b_timeTableDONE = false;
 
-  switch (LeLU_Int_AutonSelection)
+  switch (LeADAS_e_ActiveFeature)
   {
-  case 1:
+  case E_ADAS_DM_PathFollower1:
     LeLU_Int_X_AxisSize = (int)(sizeof(KnADAS_t_BlueP1) / sizeof(KaADAS_l_BlueP1_X[0]));
     LeLU_Int_X_CalArraySize = (int)(sizeof(KaADAS_l_BlueP1_X) / sizeof(KaADAS_l_BlueP1_X[0]));
 
@@ -373,7 +373,7 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
       LeLU_b_timeTableDONE = true;
     }
   break;
-  case 2:
+  case E_ADAS_DM_PathFollower2:
     LeLU_Int_X_AxisSize = (int)(sizeof(KnADAS_t_BlueP2) / sizeof(KaADAS_l_BlueP2_X[0]));
     LeLU_Int_X_CalArraySize = (int)(sizeof(KaADAS_l_BlueP2_X) / sizeof(KaADAS_l_BlueP2_X[0]));
 
@@ -415,7 +415,7 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
       LeLU_b_timeTableDONE = true;
     }
   break;
-  case 3:
+  case E_ADAS_DM_PathFollower3:
     LeLU_Int_X_AxisSize = (int)(sizeof(KnADAS_t_BlueP3) / sizeof(KaADAS_l_BlueP3_X[0]));
     LeLU_Int_X_CalArraySize = (int)(sizeof(KaADAS_l_BlueP3_X) / sizeof(KaADAS_l_BlueP3_X[0]));
 
@@ -457,7 +457,7 @@ bool DesiredAutonLocation2(double LeLU_s_AutonTime,
       LeLU_b_timeTableDONE = true;
     }
   break;
-  case 4:
+  case E_ADAS_DM_PathFollower4:
     LeLU_Int_X_AxisSize = (int)(sizeof(KnADAS_t_BlueP4) / sizeof(KaADAS_l_BlueP4_X[0]));
     LeLU_Int_X_CalArraySize = (int)(sizeof(KaADAS_l_BlueP4_X) / sizeof(KaADAS_l_BlueP4_X[0]));
 

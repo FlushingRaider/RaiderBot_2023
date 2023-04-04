@@ -67,7 +67,7 @@ typedef enum T_CameraLightStatus
 typedef enum TeMAN_ManipulatorStates
 {
  E_MAN_Init,
- E_MAN_Driving,
+ E_MAN_Driving,  // We also use this as a floor cube drop...
  E_MAN_MainIntake,
  E_MAN_FloorConeDrop,
  E_MAN_MidCubeIntake,
@@ -101,8 +101,10 @@ typedef enum TeMAN_ManipulatorStates
 typedef enum TeADAS_AutonManipulatorStates
 {
  E_ADAS_MAN_Driving,
- E_ADAS_MAN_MidDropPosition,
- E_ADAS_MAN_MidDropOff,
+ E_ADAS_MAN_MainIntake,
+ E_ADAS_MAN_HighCubeDropPosition,
+ E_ADAS_MAN_MidCubeDropPosition,
+ E_ADAS_MAN_LowCubeDropPosition,
  E_ADAS_MAN_State_Sz
 } TeADAS_AutonManipulatorStates;
 
@@ -164,7 +166,14 @@ typedef enum T_ADAS_ActiveFeature // These are the sub features in ADAS.  These 
   E_ADAS_DM_DriveStraight,
   E_ADAS_DM_DriveStraightFar,
   E_ADAS_DM_DriveRevStraight,
-  E_ADAS_DM_PathFollower,
+  E_ADAS_DM_PathFollower1,
+  E_ADAS_DM_PathFollower2,
+  E_ADAS_DM_PathFollower3,
+  E_ADAS_DM_PathFollower4,
+
+  E_ADAS_MN_DeployHighCube,
+  E_ADAS_MN_DeployMidCube,
+  E_ADAS_MN_DeployLowCube,
   
   E_ADAS_MoveOffsetTag,
   E_ADAS_MoveGlobalTag,

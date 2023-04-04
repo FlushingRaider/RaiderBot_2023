@@ -18,8 +18,9 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/DriverStation.h>
 #include "control_pid.hpp"
-#include "Lookup.hpp"
 #include "Const.hpp"
+#include "Lookup.hpp"
+
 
 double VeADAS_t_DM_Debounce = 0;
 bool VeADAS_b_DM_StateInit = false;
@@ -593,7 +594,7 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
                           double  LeADAS_l_X_FieldPos,
                           double  LeADAS_l_Y_FieldPos,
                           double  LeADAS_Deg_GyroAngle,
-                          int     LeADAS_i_PathNum)
+                          T_ADAS_ActiveFeature LeADAS_e_ActiveFeature)
 {
   bool   LeADAS_b_DM_StateComplete = false;
   double LeADAS_l_TargetPositionX = 0.0;
@@ -615,7 +616,7 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
 
   /* Look up the desired target location point: */
   LeADAS_b_TimeEndReached = DesiredAutonLocation2( VeADAS_t_DM_StateTimer,
-                                                   LeADAS_i_PathNum,
+                                                   LeADAS_e_ActiveFeature,
                                                   &LeADAS_l_TargetPositionX,
                                                   &LeADAS_l_TargetPositionY,
                                                   &LeADAS_Deg_TargetAngle,

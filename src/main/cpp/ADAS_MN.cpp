@@ -16,8 +16,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "control_pid.hpp"
 #include "rev/CANSparkMax.h"
-#include "Lookup.hpp"
 #include "Const.hpp"
+#include "Lookup.hpp"
 #include <frc/DriverStation.h>
 #include "DriveControl.hpp"
 #include "Manipulator.hpp"
@@ -204,16 +204,47 @@ void ADAS_MN_Reset(void)
         LeADAS_e_MAN_State = E_MAN_Driving;
         LeADAS_b_MAN_DropCmplt = true;
       }
-    else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MidDropPosition)
+    else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_HighCubeDropPosition)
       {
-        LeADAS_e_MAN_State = E_MAN_LowCubeDrop;
-        LeADAS_b_MAN_DropCmplt = true;
+        LeADAS_e_MAN_State = E_MAN_HighCubeDrop;
+        LeADAS_b_MAN_DropFast = true;
+        
+        if (VeMAN_e_AttndState == LeADAS_e_MAN_State)
+          {
+            VeADAS_t_MAN_DropObjectTm += C_ExeTime;
+          }
+
+        if (VeADAS_t_MAN_DropObjectTm >= KeMAN_t_GripperOnTm)
+          {
+            LeADAS_b_MAN_DropCmplt = true;
+            LeADAS_b_MAN_DropFast = false;
+          }
       }
-    else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MidDropOff)
+    else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MidCubeDropPosition)
       {
         LeADAS_e_MAN_State = E_MAN_LowCubeDrop;
         LeADAS_b_MAN_DropFast = true;
-        VeADAS_t_MAN_DropObjectTm += C_ExeTime;
+        
+        if (VeMAN_e_AttndState == LeADAS_e_MAN_State)
+          {
+            VeADAS_t_MAN_DropObjectTm += C_ExeTime;
+          }
+
+        if (VeADAS_t_MAN_DropObjectTm >= KeMAN_t_GripperOnTm)
+          {
+            LeADAS_b_MAN_DropCmplt = true;
+            LeADAS_b_MAN_DropFast = false;
+          }
+      }
+    else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_LowCubeDropPosition)
+      {
+        LeADAS_e_MAN_State = E_MAN_Driving;
+        LeADAS_b_MAN_DropFast = true;
+        
+        if (VeMAN_e_AttndState == LeADAS_e_MAN_State)
+          {
+            VeADAS_t_MAN_DropObjectTm += C_ExeTime;
+          }
 
         if (VeADAS_t_MAN_DropObjectTm >= KeMAN_t_GripperOnTm)
           {
@@ -253,12 +284,37 @@ bool ADAS_MN_Main(T_RobotState                  L_RobotState,
 
   switch (LeADAS_e_ActiveFeature)
   {
+  case E_ADAS_DM_PathFollower1:
+      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MainIntake;
+  break;
+  case E_ADAS_DM_PathFollower2:
+      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MidCubeDropPosition;
+  break;
+  case E_ADAS_DM_PathFollower3:
+      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MainIntake;
+  break;
+  case E_ADAS_DM_PathFollower4:
+      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_LowCubeDropPosition;
+  break;
+  default:
+  break;
+  }
+
+  switch (LeADAS_e_ActiveFeature)
+  {
   case E_ADAS_Disabled:
     LeADAS_b_MN_Complete = ManipulatorScheduelerTeleop();
   break;
   
   case E_ADAS_DM_DriveRevDeployArm:
   case E_ADAS_DM_StopDeployCube:
+  case E_ADAS_MN_DeployHighCube:
+  case E_ADAS_MN_DeployMidCube:
+  case E_ADAS_MN_DeployLowCube:
+  case E_ADAS_DM_PathFollower1:
+  case E_ADAS_DM_PathFollower2:
+  case E_ADAS_DM_PathFollower3:
+  case E_ADAS_DM_PathFollower4:
     LeADAS_b_MN_Complete = ManipulatorScheduelerAutonAction(LeADAS_e_MAN_ReqAction);
   break;
 
