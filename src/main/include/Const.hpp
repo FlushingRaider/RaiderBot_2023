@@ -52,7 +52,7 @@ static const int C_VanityLight_ID = 0;
 
 // Vision Cals:
 
-const double K_TagCordFilter = 0.01;
+const double K_TagCordFilter = 0.08;
 const double K_TagYawFilter = 0.08;
 
 #ifdef PracticeBot
