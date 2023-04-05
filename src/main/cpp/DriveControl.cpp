@@ -357,17 +357,16 @@ void DriveControlMain(double                   L_JoyStick1Axis1Y,  // swerve con
   else
     {
     /* ADAS is disabled, use the driver joysticks */
-    L_FWD = -L_JoyStick1Axis1Y * LeDRC_k_ArmExtendScaler;
-    L_STR = L_JoyStick1Axis1X * LeDRC_k_ArmExtendScaler;
-    L_RCW = L_JoyStick1Axis2X * LeDRC_k_ArmExtendScaler;
-    LeDRC_b_X_ModeReqActive = LeDRC_b_X_ModeReqTeleop;
-    LeDRC_k_SpeedGain = L_JoyStick1Axis3;
-
     if ((LeMAN_e_CmndState == LeMAN_e_AttndState) &&
         ((LeMAN_e_CmndState == E_MAN_MidConeIntake)  || (LeMAN_e_CmndState == E_MAN_HighCubeDrop)  || (LeMAN_e_CmndState == E_MAN_LowConeDrop)))
       {
         LeDRC_k_ArmExtendScaler = KeDRC_k_SD_ArmExtendedGx;
       }
+    L_FWD = -L_JoyStick1Axis1Y * LeDRC_k_ArmExtendScaler;
+    L_STR = L_JoyStick1Axis1X * LeDRC_k_ArmExtendScaler;
+    L_RCW = L_JoyStick1Axis2X * LeDRC_k_ArmExtendScaler;
+    LeDRC_b_X_ModeReqActive = LeDRC_b_X_ModeReqTeleop;
+    LeDRC_k_SpeedGain = L_JoyStick1Axis3;
     }
 
   /* Here, we are attempting to determine if the drive/ADAS is attempting to turn the robot.  If we are 

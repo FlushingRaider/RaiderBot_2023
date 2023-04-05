@@ -6,7 +6,7 @@
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
 #define COMP
 // Define the bot type: CompBot, PracticeBot
-#define PracticeBot
+#define CompBot
 
 #define NewVision // NewVision or OldVision
 
@@ -252,7 +252,7 @@ const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {  0.00,  // Sched - Init
                                                        4.95,  // Sched - Main Intake
                                                       80.00,  // Sched - Floor Cone Drop
                                                      -34.87,  // Sched - Mid Cube Intake
-                                                      13.30,  // Sched - Mid Cone Intake
+                                                      11.00,  // Sched - Mid Cone Intake
                                                       45.00,  // Sched - High Cube Drop 1.92
                                                       75.00,  // Sched - Low Cube Drop
                                                       53.90,  // Sched - High Cone Drop
@@ -277,10 +277,10 @@ const double KeMAN_k_GripperIntakeCone = 0.4;  // 0.4
 const double KeMAN_k_GripperIntakeCube = -0.35;  //-0.45
 
 /* KeMAN_k_GripperIntakeholdCone: Sets Gripper intake hold */
-const double KeMAN_k_GripperIntakeholdCone = 0.00; 
+const double KeMAN_k_GripperIntakeholdCone = 0.05; 
 
 /* KeMAN_k_GripperIntakeholdCube: Sets Gripper intake hold */
-const double KeMAN_k_GripperIntakeholdCube = -0.00;
+const double KeMAN_k_GripperIntakeholdCube = -0.10;
 
 /* KeMAN_t_GripperOnTm: Amount of time gripper will remain on after it is initially commanded on. */
 const double KeMAN_t_GripperOnTm = 0.5;
@@ -333,7 +333,7 @@ const double KaMAN_InS_LinearSlideRate[E_MAN_State_Sz][E_MAN_State_Sz] =  // [Cm
   {
     {9.00,  0.12,    9.00,        9.00,              9.00,            9.00,            9.00,           9.00,          9.00,           9.00}, // Cmnd - Init
     {9.00,  9.00,    9.00,        9.00,              9.00,            9.00,            9.00,           9.00,          9.00,           9.00}, // Cmnd - Driving
-    {0.22,  0.50,    0.22,        0.22,              0.22,            0.22,            0.22,           0.22,          0.22,           0.22}, // Cmnd - Main Intake
+    {0.22,  1.25,    0.22,        0.22,              0.22,            0.22,            0.22,           0.22,          0.22,           0.22}, // Cmnd - Main Intake
     {9.00,  9.00,    9.00,        9.00,              9.00,            9.00,            9.00,           9.00,          9.00,           9.00}, // Cmnd - Floor Cone Drop
     {9.00,  9.00,    9.00,        9.00,              9.00,            9.00,            9.00,           9.00,          9.00,           9.00}, // Cmnd - Mid Cube Intake
     {9.00,  9.00,    9.00,        9.00,              9.00,            9.00,            9.00,           9.00,          9.00,           9.00}, // Cmnd - Mid Cone Intake
@@ -865,11 +865,11 @@ const double K_BallLauncherLowerSpeed[K_BallLauncherDistanceSz][K_BallLauncherAn
   };
 
 /* Auton specific cals */
-const double K_k_AutonX_PID_Gx[E_PID_CalSz] = { 0.065,       // P Gx
-                                                0.00065,    // I Gx 0.000001
-                                                0.00012,      // D Gx
-                                                0.8,       // P UL
-                                               -0.8,       // P LL
+const double K_k_AutonX_PID_Gx[E_PID_CalSz] = { 0.050,       // P Gx
+                                                0.00060,    // I Gx 0.000001
+                                                0.00007,      // D Gx
+                                                0.60,       // P UL
+                                               -0.60,       // P LL
                                                 0.3,      // I UL
                                                -0.3,      // I LL
                                                 0.5,       // D UL
@@ -877,11 +877,11 @@ const double K_k_AutonX_PID_Gx[E_PID_CalSz] = { 0.065,       // P Gx
                                                 1.0,       // Max upper
                                                -1.0};      // Max lower
 
-const double K_k_AutonY_PID_Gx[E_PID_CalSz] = { 0.065,       // P Gx  .18
-                                                0.00065,    // I Gx
-                                                0.00012,      // D Gx
-                                                0.8,       // P UL
-                                               -0.8,       // P LL
+const double K_k_AutonY_PID_Gx[E_PID_CalSz] = { 0.050,       // P Gx  .18
+                                                0.00060,    // I Gx
+                                                0.00007,      // D Gx
+                                                0.60,       // P UL
+                                               -0.60,       // P LL
                                                 0.3,      // I UL
                                                -0.3,      // I LL
                                                 0.5,       // D UL
@@ -889,11 +889,11 @@ const double K_k_AutonY_PID_Gx[E_PID_CalSz] = { 0.065,       // P Gx  .18
                                                 1.0,       // Max upper
                                                -1.0};      // Max lower
  
-const double KeADAS_k_AutonRotatePID_Gx[E_PID_CalSz] = { 0.0056,     // P Gx
-                                                         0.00065, // I Gx
+const double KeADAS_k_AutonRotatePID_Gx[E_PID_CalSz] = { 0.0050,     // P Gx
+                                                         0.00050, // I Gx
                                                          0.00007,  // D Gx
-                                                         0.30,      // P UL
-                                                        -0.30,      // P LL
+                                                         0.29,      // P UL
+                                                        -0.29,      // P LL
                                                          0.175,     // I UL
                                                         -0.175,     // I LL
                                                          0.16,      // D UL

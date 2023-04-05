@@ -506,18 +506,24 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
   case E_ADAS_MN_DeployHighCube:
   case E_ADAS_MN_DeployMidCube:
   case E_ADAS_MN_DeployLowCube:
-
-    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
+    if (VeADAS_b_State1Complete == false)
+    {
+    VeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            LeADAS_e_ActiveFeature,
                                            E_ADAS_MAN_HighCubeDropPosition);
+    }
 
-    LeADAS_b_State2Complete = ADAS_DM_Stop(L_Pct_FwdRev,
+    if (VeADAS_b_State2Complete == false)
+    {
+    VeADAS_b_State2Complete = ADAS_DM_Stop(L_Pct_FwdRev,
                                            L_Pct_Strafe,
                                            L_Pct_Rotate,
                                            LeADAS_b_SD_RobotOriented,
                                            KeADAS_t_DM_StopTm);
+    }
 
-    VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
+    VeADAS_b_StateComplete = (VeADAS_b_State1Complete == true && VeADAS_b_State2Complete == true);
+    if (VeADAS_b_StateComplete == true) {VeADAS_b_State1Complete = false; VeADAS_b_State2Complete = false;}
   break;
   case E_ADAS_DM_DriveRevDeployArm:
 

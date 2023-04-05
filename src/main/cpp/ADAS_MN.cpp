@@ -252,6 +252,22 @@ void ADAS_MN_Reset(void)
             LeADAS_b_MAN_DropFast = false;
           }
       }
+    else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MainIntake)
+      {
+        LeADAS_e_MAN_State = E_MAN_MainIntake;
+        LeADAS_b_MAN_DropFast = false;
+        
+        if (VeMAN_e_AttndState == LeADAS_e_MAN_State)
+          {
+            VeADAS_t_MAN_DropObjectTm += C_ExeTime;
+          }
+
+        if (VeADAS_t_MAN_DropObjectTm >= KeMAN_t_GripperOnTm)
+          {
+            LeADAS_b_MAN_DropCmplt = true;
+            LeADAS_b_MAN_DropFast = false;
+          }
+      }
     else
       {
         LeADAS_b_MAN_DropCmplt = true;
