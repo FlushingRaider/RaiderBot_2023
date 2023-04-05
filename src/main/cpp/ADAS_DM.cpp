@@ -24,7 +24,6 @@
 
 double VeADAS_t_DM_Debounce = 0;
 bool VeADAS_b_DM_StateInit = false;
-double V_ADAS_DM_Rotate180TargetAngle = 0;
 double V_ADAS_DM_InitGyroAngle = 0;
 double VeADAS_t_DM_StateTimer = 0;
 double V_ADAS_DM_X_ErrorPrev = 0;
@@ -55,6 +54,10 @@ double VeADAS_Deg_DM_AutoBalanceIntegral = 0;
 double VeADAS_t_DM_AutoMountDbTime = 0;
 TeADAS_DM_DriveOverStation VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_FwdFlat1;
 
+// For calibration:
+double VaADAS_k_AutonXY_PID_Gx[E_PID_CalSz];
+double VaADAS_k_AutonRotatePID_Gx[E_PID_CalSz];
+
 double VeADAS_t_DM_DebounceTime = 0;
 
 double V_TargetAngle;
@@ -77,8 +80,22 @@ bool wantToStopY;
  ******************************************************************************/
 void ADAS_DM_ConfigsInit()
 {
-
+  VaADAS_k_AutonXY_PID_Gx[E_P_Gx] = KaADAS_k_AutonXY_PID_Gx[E_P_Gx];
+  VaADAS_k_AutonXY_PID_Gx[E_I_Gx] = KaADAS_k_AutonXY_PID_Gx[E_I_Gx];
+  VaADAS_k_AutonXY_PID_Gx[E_D_Gx] = KaADAS_k_AutonXY_PID_Gx[E_D_Gx];
+  VaADAS_k_AutonRotatePID_Gx[E_P_Gx] = KaADAS_k_AutonRotatePID_Gx[E_P_Gx];
+  VaADAS_k_AutonRotatePID_Gx[E_I_Gx] = KaADAS_k_AutonRotatePID_Gx[E_I_Gx];
+  VaADAS_k_AutonRotatePID_Gx[E_D_Gx] = KaADAS_k_AutonRotatePID_Gx[E_D_Gx];
+  #ifdef ADAS_DM_Test
+  // display PID coefficients on SmartDashboard
+   frc::SmartDashboard::PutNumber("P Gain - XY PathFollower", KaADAS_k_AutonXY_PID_Gx[E_P_Gx]);
+   frc::SmartDashboard::PutNumber("I Gain - XY PathFollower", KaADAS_k_AutonXY_PID_Gx[E_I_Gx]);
+   frc::SmartDashboard::PutNumber("D Gain - XY PathFollower", KaADAS_k_AutonXY_PID_Gx[E_D_Gx]);
+   frc::SmartDashboard::PutNumber("P Gain - Rotate PathFollower", KaADAS_k_AutonRotatePID_Gx[E_P_Gx]);
+   frc::SmartDashboard::PutNumber("I Gain - Rotate PathFollower", KaADAS_k_AutonRotatePID_Gx[E_I_Gx]);
+   frc::SmartDashboard::PutNumber("D Gain - Rotate PathFollower", KaADAS_k_AutonRotatePID_Gx[E_D_Gx]);
   // set coefficients
+  #endif
 }
 
 /******************************************************************************
@@ -91,7 +108,12 @@ void ADAS_DM_ConfigsCal()
 {
 // read coefficients from SmartDashboard
 #ifdef ADAS_DM_Test
-
+VaADAS_k_AutonXY_PID_Gx[E_P_Gx] = frc::SmartDashboard::GetNumber("P Gain - XY PathFollower", KaADAS_k_AutonXY_PID_Gx[E_P_Gx]);
+VaADAS_k_AutonXY_PID_Gx[E_I_Gx] = frc::SmartDashboard::GetNumber("I Gain - XY PathFollower", KaADAS_k_AutonXY_PID_Gx[E_I_Gx]);
+VaADAS_k_AutonXY_PID_Gx[E_D_Gx] = frc::SmartDashboard::GetNumber("D Gain - XY PathFollower", KaADAS_k_AutonXY_PID_Gx[E_D_Gx]);
+VaADAS_k_AutonRotatePID_Gx[E_P_Gx] = frc::SmartDashboard::GetNumber("P Gain - Rotate PathFollower", KaADAS_k_AutonRotatePID_Gx[E_P_Gx]);
+VaADAS_k_AutonRotatePID_Gx[E_I_Gx] = frc::SmartDashboard::GetNumber("I Gain - Rotate PathFollower", KaADAS_k_AutonRotatePID_Gx[E_I_Gx]);
+VaADAS_k_AutonRotatePID_Gx[E_D_Gx] = frc::SmartDashboard::GetNumber("D Gain - Rotate PathFollower", KaADAS_k_AutonRotatePID_Gx[E_D_Gx]);
 #endif
 }
 
@@ -104,7 +126,6 @@ void ADAS_DM_Reset(void)
 {
   VeADAS_t_DM_Debounce = 0;
   VeADAS_b_DM_StateInit = false;
-  V_ADAS_DM_Rotate180TargetAngle = 0;
   V_ADAS_DM_InitGyroAngle = 0;
   VeADAS_t_DM_StateTimer = 0;
   V_ADAS_DM_X_ErrorPrev = 0;
@@ -128,318 +149,6 @@ void ADAS_DM_Reset(void)
   VeADAS_Deg_DM_AutoBalanceIntegral = 0;
   VeADAS_t_DM_AutoMountDbTime = 0.0;
   VeADAS_e_DM_AutoMountState = E_ADAS_DM_DriveOS_FwdFlat1;
-}
-
-/******************************************************************************
- * Function:     ADAS_DM_Rotate180
- *
- * Description:  Rotate 180 degrees control.
- ******************************************************************************/
-bool ADAS_DM_Rotate180(double *LeADAS_Pct_FwdRev,
-                       double *LeADAS_Pct_Strafe,
-                       double *LeADAS_Pct_Rotate,
-                       double *L_RPM_Launcher,
-                       double *L_Pct_Intake,
-                       double *L_Pct_Elevator,
-                       bool *L_CameraUpperLightCmndOn,
-                       bool *L_CameraLowerLightCmndOn,
-                       bool *LeADAS_b_SD_RobotOriented,
-                       double L_Deg_GyroAngleDeg)
-{
-  bool L_ADAS_DM_StateComplete = false;
-  double L_RotateError = 0;
-
-  *LeADAS_b_SD_RobotOriented = false;
-  /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_CameraUpperLightCmndOn = false;
-  *L_CameraLowerLightCmndOn = false;
-  *LeADAS_Pct_FwdRev = 0;
-  *LeADAS_Pct_Strafe = 0;
-  *L_RPM_Launcher = 0;
-  *L_Pct_Intake = 0;
-  *L_Pct_Elevator = 0;
-
-  if (VeADAS_b_DM_StateInit == false)
-  {
-    /* Need to find the target angle.  The gyro in use will only report values of -180 to 180. Need to account for this:*/
-    V_ADAS_DM_Rotate180TargetAngle = L_Deg_GyroAngleDeg - 180;
-
-    // V_ADAS_DM_Rotate180TargetAngle = std::fmod((V_ADAS_DM_Rotate180TargetAngle), 180);
-
-    if (V_ADAS_DM_Rotate180TargetAngle >= 180)
-    {
-      V_ADAS_DM_Rotate180TargetAngle -= 360;
-    }
-    else if (V_ADAS_DM_Rotate180TargetAngle <= -180)
-    {
-      V_ADAS_DM_Rotate180TargetAngle += 360;
-    }
-
-    VeADAS_b_DM_StateInit = true;
-  }
-
-  L_RotateError = V_ADAS_DM_Rotate180TargetAngle - L_Deg_GyroAngleDeg;
-
-  if (fabs(L_RotateError) <= K_ADAS_DM_RotateDeadbandAngle && VeADAS_t_DM_Debounce < K_ADAS_DM_RotateDebounceTime)
-  {
-    VeADAS_t_DM_Debounce += C_ExeTime;
-  }
-  else if (fabs(L_RotateError) > K_ADAS_DM_RotateDeadbandAngle)
-  {
-    /* Reset the timer, we have gone out of bounds */
-    VeADAS_t_DM_Debounce = 0;
-  }
-  else if (VeADAS_t_DM_Debounce >= K_ADAS_DM_RotateDebounceTime)
-  {
-    /* Reset the time, proceed to next state. */
-    L_ADAS_DM_StateComplete = true;
-    VeADAS_t_DM_Debounce = 0;
-  }
-
-  if (L_ADAS_DM_StateComplete == false)
-  {
-    *LeADAS_Pct_Rotate = DesiredRotateSpeed(L_RotateError);
-  }
-  else
-  {
-    /* We have been at the correct location for the set amount of time.
-       We have previously set the state to the next one, now set the rotate command to off. */
-    *LeADAS_Pct_Rotate = 0;
-    VeADAS_t_DM_Debounce = 0;
-    L_ADAS_DM_StateComplete = true;
-    VeADAS_b_DM_StateInit = false;
-  }
-
-  return (L_ADAS_DM_StateComplete);
-}
-/******************************************************************************
- * Function:     ADAS_DM_RotateTo
- *
- * Description:  Rotate to a given position (L_Deg_GyroAngleTarget)
- ******************************************************************************/
-bool ADAS_DM_RotateTo(double *LeADAS_Pct_FwdRev,
-                      double *LeADAS_Pct_Strafe,
-                      double *LeADAS_Pct_Rotate,
-                      double *L_RPM_Launcher,
-                      double *L_Pct_Intake,
-                      double *L_Pct_Elevator,
-                      bool *L_CameraUpperLightCmndOn,
-                      bool *L_CameraLowerLightCmndOn,
-                      bool *LeADAS_b_SD_RobotOriented,
-                      double L_Deg_GyroAngleDeg,
-                      double L_Deg_GyroAngleTarget)
-{
-  bool L_ADAS_DM_StateComplete = false;
-  double L_RotateError = 0;
-  double L_ClockwiseError = 0;
-  double L_CounterClockwiseError = 0;
-
-  *LeADAS_b_SD_RobotOriented = false;
-  /* Next, let's set all the other items we aren't trying to control to off: */
-  *L_CameraUpperLightCmndOn = false;
-  *L_CameraLowerLightCmndOn = false;
-  *LeADAS_Pct_FwdRev = 0;
-  *LeADAS_Pct_Strafe = 0;
-  *L_RPM_Launcher = 0;
-  *L_Pct_Intake = 0;
-  *L_Pct_Elevator = 0;
-
-  if (VeADAS_b_DM_StateInit == false)
-  {
-    /* Need to find the target angle.  The gyro in use will only report values of -180 to 180. Need to account for this:*/
-    // V_ADAS_DM_Rotate180TargetAngle = L_InitGyroAngle - 180;
-
-    // V_ADAS_DM_Rotate180TargetAngle = std::fmod((V_ADAS_DM_Rotate180TargetAngle), 180);
-
-    L_ClockwiseError = fabs(L_Deg_GyroAngleTarget - L_Deg_GyroAngleDeg);
-
-    L_CounterClockwiseError = fabs((L_Deg_GyroAngleTarget - 360) - L_Deg_GyroAngleDeg);
-
-    if (L_CounterClockwiseError < L_ClockwiseError)
-    {
-      V_TargetAngle = L_CounterClockwiseError - 360;
-      V_GyroPrevious = L_Deg_GyroAngleDeg;
-    }
-
-    if ((V_GyroPrevious <= -170 && L_Deg_GyroAngleDeg >= 170) ||
-        (V_GyroFlipNeg && L_Deg_GyroAngleDeg < 0))
-    {
-      V_OffsettedGyro = L_Deg_GyroAngleDeg - 360;
-      V_GyroFlipNeg = true;
-    }
-    else if (V_GyroPrevious >= 170 && L_Deg_GyroAngleDeg <= 170)
-    {
-      V_OffsettedGyro = L_Deg_GyroAngleDeg + 360;
-      V_GyroFlipPos = true;
-    }
-    else
-    {
-      V_OffsettedGyro = L_Deg_GyroAngleDeg;
-    }
-
-    V_GyroPrevious = L_Deg_GyroAngleDeg;
-
-    if (V_ADAS_DM_Rotate180TargetAngle > 180)
-    {
-      V_ADAS_DM_Rotate180TargetAngle -= 360;
-    }
-    else if (V_ADAS_DM_Rotate180TargetAngle < -180)
-    {
-      V_ADAS_DM_Rotate180TargetAngle += 360;
-    }
-
-    if (V_ADAS_DM_Rotate180TargetAngle >= -179 || V_ADAS_DM_Rotate180TargetAngle >= 179)
-    {
-      V_ADAS_DM_Rotate180TargetAngle = 178;
-    }
-
-    VeADAS_b_DM_StateInit = true;
-  }
-
-  L_RotateError = V_ADAS_DM_Rotate180TargetAngle - L_Deg_GyroAngleDeg;
-
-  if (fabs(L_RotateError) <= K_ADAS_DM_RotateDeadbandAngle && VeADAS_t_DM_Debounce < K_ADAS_DM_RotateDebounceTime)
-  {
-    VeADAS_t_DM_Debounce += C_ExeTime;
-  }
-  else if (fabs(L_RotateError) > K_ADAS_DM_RotateDeadbandAngle)
-  {
-    /* Reset the timer, we have gone out of bounds */
-    VeADAS_t_DM_Debounce = 0;
-  }
-  else if (VeADAS_t_DM_Debounce >= K_ADAS_DM_RotateDebounceTime)
-  {
-    /* Reset the time, proceed to next state. */
-    L_ADAS_DM_StateComplete = true;
-    VeADAS_t_DM_Debounce = 0;
-  }
-
-  if (L_ADAS_DM_StateComplete == false)
-  {
-    *LeADAS_Pct_Rotate = DesiredRotateSpeed(L_RotateError);
-  }
-  else
-  {
-    /* We have been at the correct location for the set amount of time.
-       We have previously set the state to the next one, now set the rotate command to off. */
-    *LeADAS_Pct_Rotate = 0;
-    VeADAS_t_DM_Debounce = 0;
-    L_ADAS_DM_StateComplete = true;
-    VeADAS_b_DM_StateInit = false;
-  }
-
-  return (L_ADAS_DM_StateComplete);
-}
-
-/******************************************************************************
- * Function:     ADAS_DM_FieldOrientRotate
- *
- * Description:  Rotate to the zeroed position
- ******************************************************************************/
-bool ADAS_DM_FieldOrientRotate(double *LeADAS_Pct_FwdRev,
-                               double *LeADAS_Pct_Strafe,
-                               double *LeADAS_Pct_Rotate,
-                               double *L_Pct_Intake,
-                               bool *LeADAS_b_SD_RobotOriented,
-                               double L_Deg_GyroAngleDeg,
-                               double L_Deg_GyroAngleTarget)
-{
-  bool L_ADAS_DM_StateComplete = false;
-  double L_RotateError = 0;
-  double L_Deg_TargetErrorActual = 0;
-  double L_Deg_GyroRolloverProtected = 0;
-
-  *LeADAS_b_SD_RobotOriented = true;
-  /* Next, let's set all the other items we aren't trying to control to off: */
-  *LeADAS_Pct_FwdRev = 0;
-  *LeADAS_Pct_Strafe = 0;
-  *L_Pct_Intake = 0;
-
-  if (VeADAS_b_DM_StateInit == false)
-  {
-    /* Need to find the target angle.  The gyro in use will only report values of -180 to 180. Need to account for this:*/
-    // V_ADAS_DM_Rotate180TargetAngle = L_InitGyroAngle - 180;
-
-    // V_ADAS_DM_Rotate180TargetAngle = std::fmod((V_ADAS_DM_Rotate180TargetAngle), 180);
-
-    L_RotateError = L_Deg_GyroAngleTarget - L_Deg_GyroAngleDeg;
-
-    /* A positive error number indicates clockwise rotation */
-    if (L_RotateError > 180)
-    {
-      /* It would be quicker to rotate in a counter clockwise direction to meet the command*/
-      L_RotateError -= 360;
-    }
-    else if (L_RotateError < -180)
-    {
-      L_RotateError += 360;
-    }
-
-    V_ADAS_DM_TargetAngle = L_RotateError;
-    VeADAS_b_DM_StateInit = true;
-  }
-
-  L_RotateError = V_TargetAngle - L_Deg_GyroAngleDeg;
-
-  /* Detect Gyro roll over. */
-  if ((V_ADAS_DM_GyroPrevious <= -170 && L_Deg_GyroAngleDeg >= 170) ||
-      (V_ADAS_DM_GyroFlipNeg == true && L_Deg_GyroAngleDeg > 0))
-  {
-    L_Deg_GyroRolloverProtected = L_Deg_GyroAngleDeg - 360;
-    V_ADAS_DM_GyroFlipNeg = true;
-    V_ADAS_DM_GyroFlipPos = false;
-  }
-  else if ((V_GyroPrevious >= 170 && L_Deg_GyroAngleDeg <= 170) ||
-           (V_GyroFlipPos && L_Deg_GyroAngleDeg < 0))
-  {
-    L_Deg_GyroRolloverProtected = L_Deg_GyroAngleDeg + 360;
-    V_ADAS_DM_GyroFlipPos = true;
-    V_ADAS_DM_GyroFlipNeg = false;
-  }
-  else
-  {
-    L_Deg_GyroRolloverProtected = L_Deg_GyroAngleDeg;
-    V_ADAS_DM_GyroFlipPos = false;
-    V_ADAS_DM_GyroFlipNeg = false;
-  }
-
-  L_Deg_TargetErrorActual = V_TargetAngle - L_Deg_GyroRolloverProtected;
-  V_ADAS_DM_GyroPrevious = L_Deg_GyroAngleDeg;
-
-  if (fabs(L_Deg_TargetErrorActual) <= K_ADAS_DM_RotateDeadbandAngle && VeADAS_t_DM_Debounce < K_ADAS_DM_RotateDebounceTime)
-  {
-    VeADAS_t_DM_Debounce += C_ExeTime;
-  }
-  else if (fabs(L_Deg_TargetErrorActual) > K_ADAS_DM_RotateDeadbandAngle)
-  {
-    /* Reset the timer, we have gone out of bounds */
-    VeADAS_t_DM_Debounce = 0;
-  }
-  else if (VeADAS_t_DM_Debounce >= K_ADAS_DM_RotateDebounceTime)
-  {
-    /* Reset the time, proceed to next state. */
-    L_ADAS_DM_StateComplete = true;
-    VeADAS_t_DM_Debounce = 0;
-  }
-
-  if (L_ADAS_DM_StateComplete == false)
-  {
-    *LeADAS_Pct_Rotate = DesiredRotateSpeed(L_Deg_TargetErrorActual);
-  }
-  else
-  {
-    /* We have been at the correct location for the set amount of time.
-       We have previously set the state to the next one, now set the rotate command to off. */
-    *LeADAS_Pct_Rotate = 0;
-    VeADAS_t_DM_Debounce = 0;
-    L_ADAS_DM_StateComplete = true;
-    VeADAS_b_DM_StateInit = false;
-    V_ADAS_DM_GyroPrevious = 0;
-    V_ADAS_DM_GyroFlipPos = false;
-    V_ADAS_DM_GyroFlipNeg = false;
-  }
-
-  return (L_ADAS_DM_StateComplete);
 }
 
 /******************************************************************************
@@ -594,7 +303,8 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
                           double  LeADAS_l_X_FieldPos,
                           double  LeADAS_l_Y_FieldPos,
                           double  LeADAS_Deg_GyroAngle,
-                          T_ADAS_ActiveFeature LeADAS_e_ActiveFeature)
+                          T_ADAS_ActiveFeature LeADAS_e_ActiveFeature,
+                          frc::DriverStation::Alliance LeLC_e_AllianceColor)
 {
   bool   LeADAS_b_DM_StateComplete = false;
   double LeADAS_l_TargetPositionX = 0.0;
@@ -617,6 +327,7 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
   /* Look up the desired target location point: */
   LeADAS_b_TimeEndReached = DesiredAutonLocation2( VeADAS_t_DM_StateTimer,
                                                    LeADAS_e_ActiveFeature,
+                                                   LeLC_e_AllianceColor,
                                                   &LeADAS_l_TargetPositionX,
                                                   &LeADAS_l_TargetPositionY,
                                                   &LeADAS_Deg_TargetAngle,
@@ -691,60 +402,55 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
     VeADAS_t_DM_Debounce = 0;
   }
   
-  if (LeADAS_t_TimeReaining < 0.05)
-  {
-    // LeADAS_k_SlowSearch = 0.7;
-  }
-  
   if (LeADAS_b_DM_StateComplete == false)
   {
     *LeADAS_Pct_Strafe = -Control_PID(LeADAS_l_TargetPositionX,
                                       LeADAS_l_RelativePosX,
                                       &V_ADAS_DM_X_ErrorPrev,
                                       &V_ADAS_DM_X_Integral,
-                                      K_k_AutonX_PID_Gx[E_P_Gx] * LeADAS_k_SlowSearch,
-                                      K_k_AutonX_PID_Gx[E_I_Gx] * LeADAS_k_SlowSearch,
-                                      K_k_AutonX_PID_Gx[E_D_Gx] * LeADAS_k_SlowSearch,
-                                      K_k_AutonX_PID_Gx[E_P_Ul],
-                                      K_k_AutonX_PID_Gx[E_P_Ll],
-                                      K_k_AutonX_PID_Gx[E_I_Ul],
-                                      K_k_AutonX_PID_Gx[E_I_Ll],
-                                      K_k_AutonX_PID_Gx[E_D_Ul],
-                                      K_k_AutonX_PID_Gx[E_D_Ll],
-                                      K_k_AutonX_PID_Gx[E_Max_Ul],
-                                      K_k_AutonX_PID_Gx[E_Max_Ll]);
+                                      VaADAS_k_AutonXY_PID_Gx[E_P_Gx],
+                                      VaADAS_k_AutonXY_PID_Gx[E_I_Gx],
+                                      VaADAS_k_AutonXY_PID_Gx[E_D_Gx],
+                                      KaADAS_k_AutonXY_PID_Gx[E_P_Ul],
+                                      KaADAS_k_AutonXY_PID_Gx[E_P_Ll],
+                                      KaADAS_k_AutonXY_PID_Gx[E_I_Ul],
+                                      KaADAS_k_AutonXY_PID_Gx[E_I_Ll],
+                                      KaADAS_k_AutonXY_PID_Gx[E_D_Ul],
+                                      KaADAS_k_AutonXY_PID_Gx[E_D_Ll],
+                                      KaADAS_k_AutonXY_PID_Gx[E_Max_Ul],
+                                      KaADAS_k_AutonXY_PID_Gx[E_Max_Ll]);
 
     *LeADAS_Pct_FwdRev = -Control_PID(LeADAS_l_TargetPositionY,
                                       LeADAS_l_RelativePosY,
                                       &V_ADAS_DM_Y_ErrorPrev,
                                       &V_ADAS_DM_Y_Integral,
-                                      K_k_AutonY_PID_Gx[E_P_Gx] * LeADAS_k_SlowSearch,
-                                      K_k_AutonY_PID_Gx[E_I_Gx] * LeADAS_k_SlowSearch,
-                                      K_k_AutonY_PID_Gx[E_D_Gx] * LeADAS_k_SlowSearch,
-                                      K_k_AutonY_PID_Gx[E_P_Ul],
-                                      K_k_AutonY_PID_Gx[E_P_Ll],
-                                      K_k_AutonY_PID_Gx[E_I_Ul],
-                                      K_k_AutonY_PID_Gx[E_I_Ll],
-                                      K_k_AutonY_PID_Gx[E_D_Ul],
-                                      K_k_AutonY_PID_Gx[E_D_Ll],
-                                      K_k_AutonY_PID_Gx[E_Max_Ul],
-                                      K_k_AutonY_PID_Gx[E_Max_Ll]);
+                                      VaADAS_k_AutonXY_PID_Gx[E_P_Gx],
+                                      VaADAS_k_AutonXY_PID_Gx[E_I_Gx],
+                                      VaADAS_k_AutonXY_PID_Gx[E_D_Gx],
+                                      KaADAS_k_AutonXY_PID_Gx[E_P_Ul],
+                                      KaADAS_k_AutonXY_PID_Gx[E_P_Ll],
+                                      KaADAS_k_AutonXY_PID_Gx[E_I_Ul],
+                                      KaADAS_k_AutonXY_PID_Gx[E_I_Ll],
+                                      KaADAS_k_AutonXY_PID_Gx[E_D_Ul],
+                                      KaADAS_k_AutonXY_PID_Gx[E_D_Ll],
+                                      KaADAS_k_AutonXY_PID_Gx[E_Max_Ul],
+                                      KaADAS_k_AutonXY_PID_Gx[E_Max_Ll]);
 
     *LeADAS_Pct_Rotate =  Control_PID(LeADAS_Deg_TargetAngle,
                                       LeADAS_Deg_RelativeAng,
                                       &VeADAS_Deg_DM_AngleErrorPrev,
                                       &VeADAS_Deg_DM_AngleIntegral,
-                                      KeADAS_k_AutonRotatePID_Gx[E_P_Gx] * LeADAS_k_SlowSearch,
-                                      KeADAS_k_AutonRotatePID_Gx[E_I_Gx] * LeADAS_k_SlowSearch,
-                                      KeADAS_k_AutonRotatePID_Gx[E_D_Gx] * LeADAS_k_SlowSearch,
-                                      KeADAS_k_AutonRotatePID_Gx[E_P_Ul],
-                                      KeADAS_k_AutonRotatePID_Gx[E_P_Ll],
-                                      KeADAS_k_AutonRotatePID_Gx[E_I_Ul],
-                                      KeADAS_k_AutonRotatePID_Gx[E_I_Ll],
-                                      KeADAS_k_AutonRotatePID_Gx[E_D_Ul],
-                                      KeADAS_k_AutonRotatePID_Gx[E_D_Ll],
-                                      KeADAS_k_AutonRotatePID_Gx[E_Max_Ul],
-                                      KeADAS_k_AutonRotatePID_Gx[E_Max_Ll]);
+                                      VaADAS_k_AutonRotatePID_Gx[E_P_Gx],
+                                      VaADAS_k_AutonRotatePID_Gx[E_I_Gx],
+                                      VaADAS_k_AutonRotatePID_Gx[E_D_Gx],
+                                      KaADAS_k_AutonRotatePID_Gx[E_P_Ul],
+                                      KaADAS_k_AutonRotatePID_Gx[E_P_Ll],
+                                      KaADAS_k_AutonRotatePID_Gx[E_I_Ul],
+                                      KaADAS_k_AutonRotatePID_Gx[E_I_Ll],
+                                      KaADAS_k_AutonRotatePID_Gx[E_D_Ul],
+                                      KaADAS_k_AutonRotatePID_Gx[E_D_Ll],
+                                      KaADAS_k_AutonRotatePID_Gx[E_Max_Ul],
+                                      KaADAS_k_AutonRotatePID_Gx[E_Max_Ll]);
 
     *LeADAS_Deg_DesiredPose = LeADAS_Deg_TargetAngle;
   }
@@ -801,6 +507,10 @@ bool ADAS_DM_AutoBalance(double *LeADAS_Pct_FwdRev,
   T_PID_Cal L_Index = E_P_Gx;
   double LeADAS_k_DM_AutoBalancePID[E_PID_CalSz];
   bool    LeADAS_b_Searching = false;
+  double LeADAS_k_SD_Gain = 0;
+
+  /* This is a workaround as the AutonGain is fairly new and we don't want to spend time recal'ing the PID... */
+  LeADAS_k_SD_Gain = KeDRC_k_SD_MinGain / KeDRC_k_SD_AutonGain;
 
   /* Look up the desired target location point: */
 
@@ -876,21 +586,21 @@ bool ADAS_DM_AutoBalance(double *LeADAS_Pct_FwdRev,
 
   if ((LeADAS_b_Searching == true))
   {
-    *LeADAS_Pct_FwdRev = Control_PID(0.0,
-                                LeADAS_Deg_GyroRoll,
-                                &VeADAS_Deg_DM_AutoBalanceErrorPrev,
-                                &VeADAS_Deg_DM_AutoBalanceIntegral,
-                                LeADAS_k_DM_AutoBalancePID[E_P_Gx],
-                                LeADAS_k_DM_AutoBalancePID[E_I_Gx],
-                                LeADAS_k_DM_AutoBalancePID[E_D_Gx],
-                                LeADAS_k_DM_AutoBalancePID[E_P_Ul],
-                                LeADAS_k_DM_AutoBalancePID[E_P_Ll],
-                                LeADAS_k_DM_AutoBalancePID[E_I_Ul],
-                                LeADAS_k_DM_AutoBalancePID[E_I_Ll],
-                                LeADAS_k_DM_AutoBalancePID[E_D_Ul],
-                                LeADAS_k_DM_AutoBalancePID[E_D_Ll],
-                                LeADAS_k_DM_AutoBalancePID[E_Max_Ul],
-                                LeADAS_k_DM_AutoBalancePID[E_Max_Ll]);
+    *LeADAS_Pct_FwdRev = LeADAS_k_SD_Gain * Control_PID(0.0,
+                                                        LeADAS_Deg_GyroRoll,
+                                                        &VeADAS_Deg_DM_AutoBalanceErrorPrev,
+                                                        &VeADAS_Deg_DM_AutoBalanceIntegral,
+                                                        LeADAS_k_DM_AutoBalancePID[E_P_Gx],
+                                                        LeADAS_k_DM_AutoBalancePID[E_I_Gx],
+                                                        LeADAS_k_DM_AutoBalancePID[E_D_Gx],
+                                                        LeADAS_k_DM_AutoBalancePID[E_P_Ul],
+                                                        LeADAS_k_DM_AutoBalancePID[E_P_Ll],
+                                                        LeADAS_k_DM_AutoBalancePID[E_I_Ul],
+                                                        LeADAS_k_DM_AutoBalancePID[E_I_Ll],
+                                                        LeADAS_k_DM_AutoBalancePID[E_D_Ul],
+                                                        LeADAS_k_DM_AutoBalancePID[E_D_Ll],
+                                                        LeADAS_k_DM_AutoBalancePID[E_Max_Ul],
+                                                        LeADAS_k_DM_AutoBalancePID[E_Max_Ll]);
 
     *LeADAS_Pct_Strafe = 0;
     *LeADAS_Pct_Rotate = 0;

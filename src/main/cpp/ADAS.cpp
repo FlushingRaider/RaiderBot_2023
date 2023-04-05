@@ -77,15 +77,15 @@ void ADAS_Main_Init(void)
 {
   std::string_view LeADAS_Str_AutonSelectorName = "Auton";
   VeADAS_e_AutonChooser.AddOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
-  VeADAS_e_AutonChooser.AddOption("Drive Straight", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveStraight);
   VeADAS_e_AutonChooser.AddOption("Drop Cube Drive FWD", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDropCubeDriveFwd);
-  VeADAS_e_AutonChooser.AddOption("Charge Station Auto Bal Goal", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveOverRampAutoBalV2);
   VeADAS_e_AutonChooser.AddOption("Deliver Cube Drive On Charge Station Auto Bal", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDeliverCubeDriveOnRampAutoBal);
-  VeADAS_e_AutonChooser.AddOption("Test Path", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
-  VeADAS_e_AutonChooser.AddOption("Test Vision Auto", T_ADAS_ActiveAutonFeature::E_ADAS_TestVisionAuton);
+  VeADAS_e_AutonChooser.AddOption("3 Cube Path Follower", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDrivePath1);
   VeADAS_e_AutonChooser.SetDefaultOption("Disabled", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDisabled);
   frc::SmartDashboard::PutData(LeADAS_Str_AutonSelectorName, &VeADAS_e_AutonChooser);
 
+  // VeADAS_e_AutonChooser.AddOption("Drive Straight", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveStraight);
+  // VeADAS_e_AutonChooser.AddOption("Charge Station Auto Bal Goal", T_ADAS_ActiveAutonFeature::E_ADAS_AutonDriveOverRampAutoBalV2);
+  // VeADAS_e_AutonChooser.AddOption("Test Vision Auto", T_ADAS_ActiveAutonFeature::E_ADAS_TestVisionAuton);
   // frc::SmartDashboard::PutBoolean("movetotag", toggle);
 }
 
@@ -159,8 +159,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
   bool LeADAS_b_State1Complete = false;
   bool LeADAS_b_State2Complete = false;
 
-
-
   /* First, let's determine what we are going to do: */
   if (LeADAS_e_RobotState == E_Teleop)
   {
@@ -229,51 +227,17 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
   }
   else if (LeADAS_e_RobotState == E_Auton)
   {
-    if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDriveStraight)
+    if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDropCubeDriveFwd)
     {
       if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
       {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_DriveStraight;
+        LeADAS_e_ActiveFeature = E_ADAS_MN_DeployHighCube;
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveStraight) && (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_MN_DeployHighCube) && (VeADAS_b_StateComplete == true))
       {
-        LeADAS_e_ActiveFeature = E_ADAS_Disabled;
-        VeADAS_b_StateComplete = true;
-        VeADAS_b_AutonOncePerTrigger = true;
+        LeADAS_e_ActiveFeature = E_ADAS_DM_PathFollowerFWD;
       }
-    }
-    else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDropCubeDriveFwd)
-    {
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_DriveRevStraight;
-      }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevStraight) && (VeADAS_b_StateComplete == true))
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_DriveStraightFar;
-      }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveStraightFar) && (VeADAS_b_StateComplete == true))
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_Disabled;
-        VeADAS_b_StateComplete = true;
-        VeADAS_b_AutonOncePerTrigger = true;
-      }
-    }
-    else if (VeADAS_e_DriverRequestedAutonFeature == E_ADAS_AutonDriveOverRampAutoBalV2)
-    {
-      if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_DriveRevStraight; // Backup to push cube into goal
-      }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevStraight) && (VeADAS_b_StateComplete == true))
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_MountDismountRamp; // Drive forward and over ramp
-      }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountDismountRamp) && (VeADAS_b_StateComplete == true))
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance; // With the bot semi mounted, auto balance
-      }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_AutoBalance) && (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_PathFollowerFWD) && (VeADAS_b_StateComplete == true))
       {
         LeADAS_e_ActiveFeature = E_ADAS_Disabled;
         VeADAS_b_StateComplete = true;
@@ -284,19 +248,15 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
     {
       if ((LeADAS_e_ActiveFeature == E_ADAS_Disabled) && (VeADAS_b_StateComplete == false) && (VeADAS_b_AutonOncePerTrigger == false))
       {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_DriveRevDeployArm; // Backup and put maniuplator into high cube drop position
+        LeADAS_e_ActiveFeature = E_ADAS_MN_DeployHighCube; // Backup and put maniuplator into high cube drop position
       }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_DriveRevDeployArm) && (VeADAS_b_StateComplete == true))
+      else if ((LeADAS_e_ActiveFeature == E_ADAS_MN_DeployHighCube) && (VeADAS_b_StateComplete == true))
       {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_StopDeployCube; // Stop and deploy cube
-      }
-      else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_StopDeployCube) && (VeADAS_b_StateComplete == true))
-      {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_MountDismountRamp; // Drive forward and over ramp
+        LeADAS_e_ActiveFeature = E_ADAS_DM_MountDismountRamp; // With the bot semi mounted, auto balance
       }
       else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_MountDismountRamp) && (VeADAS_b_StateComplete == true))
       {
-        LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance; // With the bot semi mounted, auto balance
+        LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance; // Drive forward and over ramp
       }
       else if ((LeADAS_e_ActiveFeature == E_ADAS_DM_AutoBalance) && (VeADAS_b_StateComplete == true))
       {
@@ -429,56 +389,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
     // frc::SmartDashboard::PutString("movetotagstep", V_MoveToTagStep);
 
     break;
-  case E_ADAS_DM_DriveStraight:
-    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
-                                           E_ADAS_DM_DriveStraight,
-                                           E_ADAS_MAN_Driving);
-
-    LeADAS_b_State2Complete = ADAS_DM_DriveStraight(L_Pct_FwdRev,
-                                                    L_Pct_Strafe,
-                                                    L_Pct_Rotate,
-                                                    LeADAS_b_SD_RobotOriented);
-
-    VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-    break;
-  case E_ADAS_DM_DriveStraightFar:
-    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
-                                           E_ADAS_DM_DriveStraightFar,
-                                           E_ADAS_MAN_Driving);
-
-    LeADAS_b_State2Complete = ADAS_DM_DriveStraightFar(L_Pct_FwdRev,
-                                                       L_Pct_Strafe,
-                                                       L_Pct_Rotate,
-                                                       LeADAS_b_SD_RobotOriented);
-
-    VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-    break;
-  case E_ADAS_DM_DriveRevStraight:
-    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
-                                           E_ADAS_DM_DriveRevStraight,
-                                           E_ADAS_MAN_Driving);
-
-    LeADAS_b_State2Complete = ADAS_DM_DriveRevStraight(L_Pct_FwdRev,
-                                                       L_Pct_Strafe,
-                                                       L_Pct_Rotate,
-                                                       LeADAS_b_SD_RobotOriented,
-                                                       VeADAS_b_CompletePrev);
-
-    VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-    break;
-  case E_ADAS_DM_StopDeployCube:
-    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
-                                           E_ADAS_DM_StopDeployCube,
-                                           E_ADAS_MAN_HighCubeDropPosition);
-
-    LeADAS_b_State2Complete = ADAS_DM_Stop(L_Pct_FwdRev,
-                                           L_Pct_Strafe,
-                                           L_Pct_Rotate,
-                                           LeADAS_b_SD_RobotOriented,
-                                           KeADAS_t_DM_StopTm);
-
-    VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-    break;
   case E_ADAS_DM_MountDismountRamp:
     LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            E_ADAS_DM_MountDismountRamp,
@@ -493,20 +403,6 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
 
     VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
     break;
-  case E_ADAS_DM_MountRamp:
-    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
-                                           E_ADAS_DM_MountRamp,
-                                           E_ADAS_MAN_Driving);
-
-    LeADAS_b_State2Complete = ADAS_DM_MountStation(L_Pct_FwdRev,
-                                                   L_Pct_Strafe,
-                                                   L_Pct_Rotate,
-                                                   LeADAS_b_SD_RobotOriented,
-                                                   LeADAS_b_X_Mode,
-                                                   VeGRY_Deg_GyroRollAngleDegrees);
-
-    VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-    break;
   case E_ADAS_MN_DeployHighCube:
   case E_ADAS_MN_DeployMidCube:
   case E_ADAS_MN_DeployLowCube:
@@ -514,7 +410,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
     {
     VeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
                                            LeADAS_e_ActiveFeature,
-                                           E_ADAS_MAN_HighCubeDropPosition);
+                                           E_ADAS_MAN_Driving);
     }
 
     if (VeADAS_b_State2Complete == false)
@@ -529,34 +425,11 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
     VeADAS_b_StateComplete = (VeADAS_b_State1Complete == true && VeADAS_b_State2Complete == true);
     if (VeADAS_b_StateComplete == true) {VeADAS_b_State1Complete = false; VeADAS_b_State2Complete = false;}
   break;
-  case E_ADAS_DM_DriveRevDeployArm:
-
-    LeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
-                                           E_ADAS_DM_DriveRevDeployArm,
-                                           E_ADAS_MAN_HighCubeDropPosition);
-
-    LeADAS_b_State2Complete = ADAS_DM_DriveRevStraight(L_Pct_FwdRev,
-                                                       L_Pct_Strafe,
-                                                       L_Pct_Rotate,
-                                                       LeADAS_b_SD_RobotOriented,
-                                                       VeADAS_b_CompletePrev);
-
-    if (LeADAS_b_State2Complete == true)
-    {
-      VeADAS_b_CompletePrev = true;
-    }
-
-    VeADAS_b_StateComplete = (LeADAS_b_State1Complete == true && LeADAS_b_State2Complete == true);
-
-    if (VeADAS_b_StateComplete == true)
-    {
-      VeADAS_b_CompletePrev = false;
-    }
-    break;
   case E_ADAS_DM_PathFollower1:
   case E_ADAS_DM_PathFollower2:
   case E_ADAS_DM_PathFollower3:
   case E_ADAS_DM_PathFollower4:
+  case E_ADAS_DM_PathFollowerFWD:
     if (VeADAS_b_State1Complete == false)
     {
       VeADAS_b_State1Complete = ADAS_MN_Main(LeADAS_e_RobotState,
@@ -574,7 +447,8 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
                                                      L_L_X_FieldPos,
                                                      L_L_Y_FieldPos,
                                                      L_Deg_GyroAngleDeg,
-                                                     LeADAS_e_ActiveFeature);
+                                                     LeADAS_e_ActiveFeature,
+                                                     LeLC_e_AllianceColor);
     }
 
     VeADAS_b_StateComplete = (VeADAS_b_State1Complete == true && VeADAS_b_State2Complete == true);

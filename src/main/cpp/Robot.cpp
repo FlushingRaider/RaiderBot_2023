@@ -360,6 +360,8 @@ void Robot::RobotPeriodic()
                              m_frontRightDrivePID,
                              m_rearLeftDrivePID,
                              m_rearRightDrivePID);
+
+  ADAS_DM_ConfigsCal();
 #ifdef CompBot
   ManipulatorControlMain(VeADAS_e_MAN_SchedState,
                          VeROBO_b_TestState,

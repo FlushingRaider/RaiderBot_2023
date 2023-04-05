@@ -15,6 +15,7 @@
 #include "rev/CANSparkMax.h"
 #include <math.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/DriverStation.h>
 
 #include "Const.hpp"
 #include "control_pid.hpp"
@@ -352,7 +353,7 @@ void DriveControlMain(double                   L_JoyStick1Axis1Y,  // swerve con
       L_Rad_GyroAngle = 0.0;
       LeDRC_b_AutoCenterEnabled = false;
       }
-    LeDRC_k_SpeedGain = 0.9;
+    LeDRC_k_SpeedGain = KeDRC_k_SD_AutonGain;
     }
   else
     {
@@ -494,7 +495,7 @@ void DriveControlMain(double                   L_JoyStick1Axis1Y,  // swerve con
     }
 
   /* Ok, now lets apply gains to the normalized wheel speeds to obtain the desired motor speed */
-  L_k_SD_Gain = K_SD_MinGain;
+  L_k_SD_Gain = KeDRC_k_SD_MinGain;
     
   if (LeDRC_k_SpeedGain > L_k_SD_Gain)
     {

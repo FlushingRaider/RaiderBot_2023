@@ -29,8 +29,10 @@ int V_PrevTagID;
  ******************************************************************************/
 void OdometryInitToArgs(double VeODO_In_ArgX, double VeODO_In_ArgY)
 {
+#ifdef visionTest
   VeODO_In_RobotDisplacementX = VeODO_In_ArgX;  // Disabled to allow for testing of path follower.
   VeODO_In_RobotDisplacementY = VeODO_In_ArgY;
+#endif
 }
 
 /******************************************************************************

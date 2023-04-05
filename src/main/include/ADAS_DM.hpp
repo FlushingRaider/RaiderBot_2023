@@ -4,14 +4,13 @@
   Created on: Feb 25, 2022
   Author: Biggs
 
-  ADAS Upper Targeting
+  ADAS Drive Management
 
   Changes:
   2022-02-25 -> Beta
  */
 
 extern double V_ADAS_DM_InitGyroAngle;
-extern double V_ADAS_DM_Rotate180TargetAngle;
 extern double VeADAS_t_DM_AutoMountDbTime;
 extern TeADAS_DM_DriveOverStation VeADAS_e_DM_AutoMountState;
 
@@ -42,29 +41,6 @@ bool ADAS_DM_DriveRevStraight(double *LeADAS_Pct_FwdRev,
                               bool   *LeADAS_b_SD_RobotOriented,
                               bool    LeADAS_b_CompletePrev);
 
-bool ADAS_DM_Rotate180(double *LeADAS_Pct_FwdRev,
-                       double *LeADAS_Pct_Strafe,
-                       double *LeADAS_Pct_Rotate,
-                       double *L_RPM_Launcher,
-                       double *L_Pct_Intake,
-                       double *L_Pct_Elevator,
-                       bool *L_CameraUpperLightCmndOn,
-                       bool *L_CameraLowerLightCmndOn,
-                       bool *LeADAS_b_SD_RobotOriented,
-                       double L_Deg_GyroAngleDeg);
-
-bool ADAS_DM_RotateTo0(double *LeADAS_Pct_FwdRev,
-                       double *LeADAS_Pct_Strafe,
-                       double *LeADAS_Pct_Rotate,
-                       double *L_RPM_Launcher,
-                       double *L_Pct_Intake,
-                       double *L_Pct_Elevator,
-                       bool *L_CameraUpperLightCmndOn,
-                       bool *L_CameraLowerLightCmndOn,
-                       bool *LeADAS_b_SD_RobotOriented,
-                       double L_Deg_GyroAngleDeg,
-                       double L_InitGyroAngle);
-
 bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
                           double *LeADAS_Pct_Strafe,
                           double *LeADAS_Pct_Rotate,
@@ -73,19 +49,8 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
                           double  LeADAS_l_X_FieldPos,
                           double  LeADAS_l_Y_FieldPos,
                           double  LeADAS_Deg_GyroAngle,
-                          T_ADAS_ActiveFeature LeADAS_e_ActiveFeature);
-
-bool ADAS_DM_FieldOrientRotate(double *LeADAS_Pct_FwdRev,
-                               double *LeADAS_Pct_Strafe,
-                               double *LeADAS_Pct_Rotate,
-                               double *L_RPM_Launcher,
-                               double *L_Pct_Intake,
-                               double *L_Pct_Elevator,
-                               bool *L_CameraUpperLightCmndOn,
-                               bool *L_CameraLowerLightCmndOn,
-                               bool *LeADAS_b_SD_RobotOriented,
-                               double L_Deg_GyroAngleDeg,
-                               double L_Deg_GyroAngleTarget);
+                          T_ADAS_ActiveFeature LeADAS_e_ActiveFeature,
+                          frc::DriverStation::Alliance LeLC_e_AllianceColor);
 
 bool ADAS_DM_MoveToTag(double *LeADAS_Pct_FwdRev,
                        double *LeADAS_Pct_Strafe,

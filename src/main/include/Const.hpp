@@ -445,8 +445,11 @@ const double K_SD_WheelGx[E_RobotCornerSz] = {-1.0,  // E_FrontLeft
                                               -1.0,  // E_RearLeft
                                               -1.0}; // E_RearRight
 
-/* K_SD_MinGain: Min gain applied to the wheel speed for swerve drive. */
-const double K_SD_MinGain = 0.2;
+/* KeDRC_k_SD_MinGain: Min gain applied to the wheel speed for swerve drive. */
+const double KeDRC_k_SD_MinGain = 0.2;
+
+/* KeDRC_k_SD_AutonGain: Gain applied to the auton commands coming in for swerve drive. */
+const double KeDRC_k_SD_AutonGain = 0.9;
 
 /* K_SD_MaxGain: Max gain allowed for swerve drive control. */
 const double K_SD_MaxGain = 0.7;
@@ -678,13 +681,13 @@ const double K_ADAS_DM_DriveFWD_Pct = -0.3;
 const double KeADAS_t_DM_DriveTimeFar = 11.5;
 
 /* KeADAS_Pct_DM_DriveFWD_Far: This is the default drive forward Pct. [Pct] */
-const double KeADAS_Pct_DM_DriveFWD_Far = -0.5;
+const double KeADAS_Pct_DM_DriveFWD_Far = -0.4;
 
 /* KeADAS_t_DM_RevDriveTime: Time to drive in reverse. [Seconds] */
 const double KeADAS_t_DM_RevDriveTime = 1.0;
 
 /* KeADAS_Pct_DM_RevDrive: This is the reverse drive  Pct. [Pct] */
-const double KeADAS_Pct_DM_RevDrive = 0.5;
+const double KeADAS_Pct_DM_RevDrive = 0.4;
 
 /* K_ADAS_DM_RotateDebounceTime: This is the debounce time for the DM rotate state. [seconds] */
 const double K_ADAS_DM_RotateDebounceTime = 0.02;
@@ -865,31 +868,19 @@ const double K_BallLauncherLowerSpeed[K_BallLauncherDistanceSz][K_BallLauncherAn
   };
 
 /* Auton specific cals */
-const double K_k_AutonX_PID_Gx[E_PID_CalSz] = { 0.050,       // P Gx
-                                                0.00060,    // I Gx 0.000001
-                                                0.00007,      // D Gx
-                                                0.60,       // P UL
-                                               -0.60,       // P LL
-                                                0.3,      // I UL
-                                               -0.3,      // I LL
-                                                0.5,       // D UL
-                                               -0.5,       // D LL
-                                                1.0,       // Max upper
-                                               -1.0};      // Max lower
+const double KaADAS_k_AutonXY_PID_Gx[E_PID_CalSz] = { 0.050,       // P Gx
+                                                      0.00060,    // I Gx 0.000001
+                                                      0.00007,      // D Gx
+                                                      0.60,       // P UL
+                                                     -0.60,       // P LL
+                                                      0.3,      // I UL
+                                                     -0.3,      // I LL
+                                                      0.5,       // D UL
+                                                     -0.5,       // D LL
+                                                      1.0,       // Max upper
+                                                     -1.0};      // Max lower
 
-const double K_k_AutonY_PID_Gx[E_PID_CalSz] = { 0.050,       // P Gx  .18
-                                                0.00060,    // I Gx
-                                                0.00007,      // D Gx
-                                                0.60,       // P UL
-                                               -0.60,       // P LL
-                                                0.3,      // I UL
-                                               -0.3,      // I LL
-                                                0.5,       // D UL
-                                               -0.5,       // D LL
-                                                1.0,       // Max upper
-                                               -1.0};      // Max lower
- 
-const double KeADAS_k_AutonRotatePID_Gx[E_PID_CalSz] = { 0.0050,     // P Gx
+const double KaADAS_k_AutonRotatePID_Gx[E_PID_CalSz] = { 0.0050,     // P Gx
                                                          0.00050, // I Gx
                                                          0.00007,  // D Gx
                                                          0.29,      // P UL

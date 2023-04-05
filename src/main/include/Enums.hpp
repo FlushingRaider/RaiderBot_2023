@@ -146,12 +146,12 @@ typedef enum T_CameraLocation
 typedef enum T_ADAS_ActiveAutonFeature  // This is the high level feature, called by the driver station
 {
   E_ADAS_AutonDisabled,
-  E_ADAS_AutonDriveStraight,
+  E_ADAS_AutonDriveStraight, // Disable
   E_ADAS_AutonDropCubeDriveFwd,
-  E_ADAS_AutonDriveOverRampAutoBalV2,
+  E_ADAS_AutonDriveOverRampAutoBalV2,  // Disable
   E_ADAS_AutonDeliverCubeDriveOnRampAutoBal,
   E_ADAS_AutonDrivePath1,
-  E_ADAS_TestVisionAuton
+  E_ADAS_TestVisionAuton // Disable
 } T_ADAS_ActiveAutonFeature;
 
 
@@ -170,6 +170,7 @@ typedef enum T_ADAS_ActiveFeature // These are the sub features in ADAS.  These 
   E_ADAS_DM_PathFollower2,
   E_ADAS_DM_PathFollower3,
   E_ADAS_DM_PathFollower4,
+  E_ADAS_DM_PathFollowerFWD,
 
   E_ADAS_MN_DeployHighCube,
   E_ADAS_MN_DeployMidCube,

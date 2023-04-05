@@ -14,11 +14,11 @@
 
 #include <math.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/DriverStation.h>
 #include "control_pid.hpp"
 #include "rev/CANSparkMax.h"
 #include "Const.hpp"
 #include "Lookup.hpp"
-#include <frc/DriverStation.h>
 #include "DriveControl.hpp"
 #include "Manipulator.hpp"
 #include "Driver_inputs.hpp"
@@ -301,15 +301,20 @@ bool ADAS_MN_Main(T_RobotState                  L_RobotState,
   switch (LeADAS_e_ActiveFeature)
   {
   case E_ADAS_DM_PathFollower1:
-      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MainIntake;
-  break;
-  case E_ADAS_DM_PathFollower2:
-      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MidCubeDropPosition;
-  break;
   case E_ADAS_DM_PathFollower3:
       LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MainIntake;
   break;
+  case E_ADAS_DM_PathFollower2:
   case E_ADAS_DM_PathFollower4:
+      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_Driving;
+  break;
+  case E_ADAS_MN_DeployHighCube:
+      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_HighCubeDropPosition;
+  break;
+  case E_ADAS_MN_DeployMidCube:
+      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MidCubeDropPosition;
+  break;
+  case E_ADAS_MN_DeployLowCube:
       LeADAS_e_MAN_ReqAction = E_ADAS_MAN_LowCubeDropPosition;
   break;
   default:
@@ -322,7 +327,6 @@ bool ADAS_MN_Main(T_RobotState                  L_RobotState,
     LeADAS_b_MN_Complete = ManipulatorScheduelerTeleop();
   break;
   
-  case E_ADAS_DM_DriveRevDeployArm:
   case E_ADAS_DM_StopDeployCube:
   case E_ADAS_MN_DeployHighCube:
   case E_ADAS_MN_DeployMidCube:
@@ -336,9 +340,6 @@ bool ADAS_MN_Main(T_RobotState                  L_RobotState,
 
   case E_ADAS_DM_AutoBalance:
   case E_ADAS_MoveOffsetTag:
-  case E_ADAS_DM_DriveStraight:
-  case E_ADAS_DM_DriveRevStraight:
-  case E_ADAS_DM_DriveStraightFar:
   default:
     LeADAS_b_MN_Complete = ManipulatorScheduelerAutonBasic();
   break;

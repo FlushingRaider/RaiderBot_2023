@@ -8,6 +8,7 @@
   This is where the "CONT" variables are set.  Everything gets mapped to the structure VsCONT_s_DriverInput.
  */
 #include "Enums.hpp"
+#include <frc/DriverStation.h>
 #include "Lookup.hpp"
 #include <math.h>
 
