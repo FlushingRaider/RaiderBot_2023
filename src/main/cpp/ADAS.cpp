@@ -159,6 +159,8 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
   bool LeADAS_b_State1Complete = false;
   bool LeADAS_b_State2Complete = false;
 
+
+
   /* First, let's determine what we are going to do: */
   if (LeADAS_e_RobotState == E_Teleop)
   {
@@ -167,7 +169,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
     {
       LeADAS_e_ActiveFeature = E_ADAS_DM_AutoBalance;
     }
-    else if (VeADAS_b_CubeAlignButtonRequest && V_TagCentered)
+    else if (VeADAS_b_CubeAlignButtonRequest)
     {
 
       if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue)
@@ -183,7 +185,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
 
       LeADAS_e_ActiveFeature = E_ADAS_MoveOffsetTag;
     }
-    else if (VeADAS_b_ConeAlignButtonRequest && V_TagCentered)
+    else if (VeADAS_b_ConeAlignButtonRequest)
     {
 
       if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kBlue)
@@ -217,6 +219,8 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
     if ((LeADAS_b_Driver1_JoystickActive == true) || (VeADAS_b_StateComplete == true))
     {
       /* Abort criteria goes here. */
+
+      VeADAS_b_CubeAlignButtonRequest = false;
       LeADAS_e_ActiveFeature = E_ADAS_Disabled;
       VeADAS_b_StateComplete = false;
       VeADAS_b_State1Complete = false;
@@ -395,7 +399,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
 
     if (VeADAS_b_StateComplete)
     {
-      V_TagCentered = false; // we did what we needed with that tag snapshot, allow ourselves to take another later
+      // V_TagCentered = false; // we did what we needed with that tag snapshot, allow ourselves to take another later
     }
     break;
   case E_ADAS_MoveOffsetTag:
@@ -418,7 +422,7 @@ T_ADAS_ActiveFeature ADAS_ControlMain(double                      *L_Pct_FwdRev,
 
     if (VeADAS_b_StateComplete)
     {
-      V_TagCentered = false; // we did what we needed with that tag snapshot, allow ourselves to take another later
+      // V_TagCentered = false; // we did what we needed with that tag snapshot, allow ourselves to take another later
       VeADAS_b_CubeAlignButtonRequest = false;
       VeADAS_b_ConeAlignButtonRequest = false;
     }

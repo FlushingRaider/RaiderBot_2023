@@ -1,53 +1,53 @@
-  /*
-    VisionV2.cpp
+/*
+  VisionV2.cpp
 
-    Created on: Feb 2022
-    Author: Carson
+  Created on: Feb 2022
+  Author: Carson
 
-    Changes:
+  Changes:
 
-  */
+*/
 
-  #include <frc/smartdashboard/SmartDashboard.h>
-  #include <frc/DriverStation.h>
-  #include <photonlib/PhotonCamera.h>
-  #include <photonlib/PhotonUtils.h>
-  #include "Const.hpp"
-  #include "Filter.hpp"
-  #include <frc/apriltag/AprilTagFieldLayout.h>
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/DriverStation.h>
+#include <photonlib/PhotonCamera.h>
+#include <photonlib/PhotonUtils.h>
+#include "Const.hpp"
+#include "Filter.hpp"
+#include <frc/apriltag/AprilTagFieldLayout.h>
 
-  #include <photonlib/PhotonPoseEstimator.h>
-  #include <VisionV2.hpp>
+#include <photonlib/PhotonPoseEstimator.h>
+#include <VisionV2.hpp>
 
-  #include <frc/Filesystem.h>
-  #include <wpi/fs.h>
-  #include <wpinet/PortForwarder.h>
-  #include "Odometry.hpp"
+#include <frc/Filesystem.h>
+#include <wpi/fs.h>
+#include <wpinet/PortForwarder.h>
+#include "Odometry.hpp"
 
-  #ifdef OldVision
-  // all our favorite variables
-  double V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
-  int VnVIS_int_VisionCameraIndex[E_CamSz];
-  T_CameraNumber VnVIS_e_VisionCamNumber[E_CamLocSz];
+#ifdef OldVision
+// all our favorite variables
+double V_VisionTopCamNumberTemp = 1; // temporary fix for cams flipping, may not be needed
+int VnVIS_int_VisionCameraIndex[E_CamSz];
+T_CameraNumber VnVIS_e_VisionCamNumber[E_CamLocSz];
 
-  bool VeVIS_b_VisionTargetAquired[E_CamLocSz];
-  double VeVIS_Deg_VisionYaw[E_CamLocSz];
-  double VeVIS_m_VisionTargetDistance[E_CamLocSz];
+bool VeVIS_b_VisionTargetAquired[E_CamLocSz];
+double VeVIS_Deg_VisionYaw[E_CamLocSz];
+double VeVIS_m_VisionTargetDistance[E_CamLocSz];
 
-  bool VeVIS_b_VisionDriverRequestedModeCmnd;        // Requested driver mode override
-  bool VeVIS_b_VisionDriverRequestedModeCmndLatched; // Latched state of the driver requested mode
-  bool VeVIS_b_VisionDriverRequestedModeCmndPrev;    // Requested driver mode override previous
+bool VeVIS_b_VisionDriverRequestedModeCmnd;        // Requested driver mode override
+bool VeVIS_b_VisionDriverRequestedModeCmndLatched; // Latched state of the driver requested mode
+bool VeVIS_b_VisionDriverRequestedModeCmndPrev;    // Requested driver mode override previous
 
-  bool VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
-  #endif
-  #ifdef NewVision
-  bool VeVIS_b_TagHasTarget;
-  double V_VIS_m_TagX;
-  double V_VIS_m_TagY;
-  double V_VIS_in_TagX;
-  double V_VIS_in_TagY;
+bool VeVIS_b_VisionDriverModeCmndFinal; // Final command to toggle the camera driver mode
+#endif
+#ifdef NewVision
+bool VeVIS_b_TagHasTarget;
+double V_VIS_m_TagX;
+double V_VIS_m_TagY;
+double V_VIS_in_TagX;
+double V_VIS_in_TagY;
 
-  double V_Tagz;
+double V_Tagz;
 double V_TagRoll;
 double V_TagPitch;
 double V_TagYaw;
@@ -55,6 +55,14 @@ int V_TagID;
 bool V_TagCentered;
 bool V_CubeAlignRequested;
 bool _ConeAlignRequested;
+
+double NewStamp;
+double OldStamp;
+double OldX;
+double OldY;
+
+double XSpeed;
+double YSpeed;
 // vars for apriltag cam
 photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1"); // the string is the name of the cam from photon, the name in photon must match this one to assign properly
 fs::path aprilTagsjsonPath = frc::filesystem::GetDeployDirectory();
@@ -250,10 +258,15 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 void VisionRun()
 {
 
-  // code for apriltag vision
-  TagCamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
+  frc::SmartDashboard::PutNumber("X speed", XSpeed);
+  frc::SmartDashboard::PutNumber("Y speed", YSpeed);
 
+  // code for apriltag vision
+  OldStamp = NewStamp;
+  TagCamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
+  NewStamp = estimator.GetCamera().GetLatestResult().GetTimestamp().value();
   VeVIS_b_TagHasTarget = TagCamResult.HasTargets();
+  double timeBtwn = NewStamp - OldStamp;
 
   if (VeVIS_b_TagHasTarget)
   {
@@ -273,11 +286,23 @@ void VisionRun()
     // V_TagPitch = TagPose.Rotation().Y().value();
     V_TagYaw = Filter_FirstOrderLag(TagPose.Rotation().Z().value(), V_TagYaw, K_TagYawFilter);
 
+    OldX = V_VIS_in_TagX;
+    OldY = V_VIS_in_TagY;
     V_VIS_in_TagX = V_VIS_m_TagX * C_MeterToIn;
     V_VIS_in_TagY = V_VIS_m_TagY * C_MeterToIn;
 
+    XSpeed = (V_VIS_in_TagX - OldX) / timeBtwn;
+    YSpeed = (V_VIS_in_TagY - OldY) / timeBtwn;
 
-      OdometryInitToArgs(V_VIS_in_TagY, V_VIS_in_TagX); // flipped for odom for some reason
+    if (fabs(XSpeed) < 30.0 && fabs(YSpeed) < 10.0)
+    {
+
+      OdometryInitToArgs(V_VIS_in_TagX, V_VIS_in_TagY);
+    }
+    else{
+      V_VIS_in_TagX = OldX;
+      V_VIS_in_TagY = OldY;
+    }
   }
   else
   {

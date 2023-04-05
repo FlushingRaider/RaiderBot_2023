@@ -29,8 +29,8 @@ int V_PrevTagID;
  ******************************************************************************/
 void OdometryInitToArgs(double VeODO_In_ArgX, double VeODO_In_ArgY)
 {
-  // VeODO_In_RobotDisplacementX = VeODO_In_ArgX;  // Disabled to allow for testing of path follower.
-  // VeODO_In_RobotDisplacementY = VeODO_In_ArgY;
+  VeODO_In_RobotDisplacementX = VeODO_In_ArgX;  // Disabled to allow for testing of path follower.
+  VeODO_In_RobotDisplacementY = VeODO_In_ArgY;
 }
 
 /******************************************************************************
@@ -101,6 +101,9 @@ void DtrmTagOffset(int L_TagID,
 
   double L_OffsetX;
   double L_OffsetY;
+
+  
+
   if (L_TagID > 0){
   V_PrevTagID = L_TagID;
   }
@@ -108,22 +111,22 @@ void DtrmTagOffset(int L_TagID,
     L_TagID = V_PrevTagID;
   }
 
-  if ( L_VisionCentered)
-  {
+  // if ( L_VisionCentered)
+  // {
     if (L_TagID == 1 || L_TagID == 2 || L_TagID == 3)
     {
-      L_OffsetX = C_TagXred - VeODO_In_RobotDisplacementY;
+      L_OffsetX = C_TagXred - VeODO_In_RobotDisplacementX;
       if (L_TagID == 1)
       {
-        L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementX;
+        L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementY;
       }
       else if (L_TagID == 2)
       {
-        L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementX;
+        L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementY;
       }
       else if (L_TagID == 3)
       {
-        L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementX;
+        L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementY;
       }
     }
     else
@@ -146,4 +149,4 @@ void DtrmTagOffset(int L_TagID,
     V_OffsetXOut = L_OffsetX;
     V_OffsetYOut = L_OffsetY;
   }
-}
+// }
