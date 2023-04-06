@@ -63,6 +63,9 @@ double OldY;
 
 double XSpeed;
 double YSpeed;
+
+bool VisionAwaitingVals = true;
+
 // vars for apriltag cam
 photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1"); // the string is the name of the cam from photon, the name in photon must match this one to assign properly
 fs::path aprilTagsjsonPath = frc::filesystem::GetDeployDirectory();
@@ -258,16 +261,18 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 void VisionRun()
 {
 
-  frc::SmartDashboard::PutNumber("X speed", XSpeed);
-  frc::SmartDashboard::PutNumber("Y speed", YSpeed);
+  frc::SmartDashboard::PutNumber("Old X", OldX);
+  frc::SmartDashboard::PutNumber("Old Y", OldY);
 
+  frc::SmartDashboard::PutNumber("True Cam X", (V_VIS_m_TagX * C_MeterToIn));
+  frc::SmartDashboard::PutNumber("True Cam Y", (V_VIS_m_TagY * C_MeterToIn));
   // code for apriltag vision
   OldStamp = NewStamp;
   TagCamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
   NewStamp = estimator.GetCamera().GetLatestResult().GetTimestamp().value();
   VeVIS_b_TagHasTarget = TagCamResult.HasTargets();
   double timeBtwn = NewStamp - OldStamp;
-
+  frc::SmartDashboard::PutNumber("Time Since vision cycle", timeBtwn);
   if (VeVIS_b_TagHasTarget)
   {
 
@@ -279,7 +284,7 @@ void VisionRun()
     V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
     // V_VIS_m_TagX = Filter_FirstOrderLag(TagPose.X().value(), V_VIS_m_TagX, K_TagCordFilter);
     V_VIS_m_TagX = TagPose.X().value();
-    V_VIS_m_TagY = Filter_FirstOrderLag(TagPose.Y().value(), V_VIS_m_TagY, K_TagCordFilter);
+    V_VIS_m_TagY = TagPose.Y().value(), V_VIS_m_TagY, K_TagCordFilter;
     // V_VIS_m_TagY = TagPose.Y().value();
     V_Tagz = TagPose.Z().value();
     // V_TagRoll = TagPose.Rotation().X().value();
@@ -291,15 +296,26 @@ void VisionRun()
     V_VIS_in_TagX = V_VIS_m_TagX * C_MeterToIn;
     V_VIS_in_TagY = V_VIS_m_TagY * C_MeterToIn;
 
-    XSpeed = (V_VIS_in_TagX - OldX) / timeBtwn;
-    YSpeed = (V_VIS_in_TagY - OldY) / timeBtwn;
+    if (OldX != 0.0 && OldY != 0.0)
+    {
+      XSpeed = (V_VIS_in_TagX - OldX) / timeBtwn;
+      YSpeed = (V_VIS_in_TagY - OldY) / timeBtwn;
 
-    if (fabs(XSpeed) < 30.0 && fabs(YSpeed) < 10.0)
+      frc::SmartDashboard::PutNumber("X speed", XSpeed);
+      frc::SmartDashboard::PutNumber("Y speed", YSpeed);
+    }
+    else
+    {
+      XSpeed = 0.0;
+      YSpeed = 0.0;
+    }
+    if ((fabs(XSpeed) < 40.0 && fabs(YSpeed) < 40.0))
     {
 
-      OdometryInitToArgs(V_VIS_in_TagX, V_VIS_in_TagY);
+      OdometryInitToArgs(V_VIS_in_TagY, V_VIS_in_TagX);
     }
-    else{
+    else
+    {
       V_VIS_in_TagX = OldX;
       V_VIS_in_TagY = OldY;
     }
