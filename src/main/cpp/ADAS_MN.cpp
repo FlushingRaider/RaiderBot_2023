@@ -301,10 +301,10 @@ bool ADAS_MN_Main(T_RobotState                  L_RobotState,
   switch (LeADAS_e_ActiveFeature)
   {
   case E_ADAS_DM_PathFollower1:
-  case E_ADAS_DM_PathFollower3:
-      LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MainIntake;
+        LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MainIntake;
   break;
   case E_ADAS_DM_PathFollower2:
+  case E_ADAS_DM_PathFollower3:
   case E_ADAS_DM_PathFollower4:
       LeADAS_e_MAN_ReqAction = E_ADAS_MAN_Driving;
   break;

@@ -368,6 +368,10 @@ void DriveControlMain(double                   L_JoyStick1Axis1Y,  // swerve con
     L_RCW = L_JoyStick1Axis2X * LeDRC_k_ArmExtendScaler;
     LeDRC_b_X_ModeReqActive = LeDRC_b_X_ModeReqTeleop;
     LeDRC_k_SpeedGain = L_JoyStick1Axis3;
+    if (fabs(L_STR) >= KeDRC_Pct_SD_StrafeDB)  // Temporary workaround till we can figure out why auto correct doesn't work in strafe
+      {
+      LeDRC_b_AutoCenterEnabled = false;
+      }
     }
 
   /* Here, we are attempting to determine if the drive/ADAS is attempting to turn the robot.  If we are 

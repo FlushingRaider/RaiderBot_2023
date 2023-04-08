@@ -321,14 +321,14 @@ void Robot::RobotPeriodic()
                    false,
                    &VeLC_b_CameraLightCmndOn,
                    &VeLC_Cmd_VanityLightCmnd);
-
+frc::SmartDashboard::PutNumber("GyroPitch", VeGRY_Deg_GyroPitchAngleDegrees);
 #ifdef NewVision
-  frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
-  frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
+  // frc::SmartDashboard::PutNumber("Tag Offset X", V_OffsetXOut);
+  // frc::SmartDashboard::PutNumber("Tag Offset Y", V_OffsetYOut);
 
-  frc::SmartDashboard::PutNumber("Robot X", VeODO_In_RobotDisplacementX);
-  frc::SmartDashboard::PutNumber("Robot Y", VeODO_In_RobotDisplacementY);
-  frc::SmartDashboard::PutBoolean("Vision Button Cube", VeADAS_b_CubeAlignButtonRequest);
+  // frc::SmartDashboard::PutNumber("Robot X", VeODO_In_RobotDisplacementX);
+  // frc::SmartDashboard::PutNumber("Robot Y", VeODO_In_RobotDisplacementY);
+  // frc::SmartDashboard::PutBoolean("Vision Button Cube", VeADAS_b_CubeAlignButtonRequest);
 
   VeADAS_in_GlobalRequestX = 530.0;
   VeADAS_in_GlobalRequestY = 50.0;

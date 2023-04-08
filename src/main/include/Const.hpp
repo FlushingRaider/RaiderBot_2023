@@ -3,7 +3,7 @@
 #include <units/angle.h>
 #include <units/length.h>
 
-// Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_UT_Test, ADAS_BT_Test
+// Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_DM_Test
 #define COMP
 // Define the bot type: CompBot, PracticeBot
 #define CompBot
@@ -229,8 +229,8 @@ const double KaMAN_Deg_ArmPivotAngle[E_MAN_State_Sz] = {  0.00,  // Sched - Init
                                                          45.80,  // Sched - Floor Cone Drop
                                                         105.00,  // Sched - Mid Cube Intake
                                                         122.68,  // Sched - Mid Cone Intake
-                                                         90.00,  // Sched - High Cube Drop  105.5
-                                                         40.00,  // Sched - Low Cube Drop
+                                                         90.00,  // Sched - High Cube Drop
+                                                         40.00,  // Sched - Low Cube Drop   - workaround 54
                                                         118.00,  // Sched - High Cone Drop
                                                         104.00}; // Sched - Low Cone Drop
 
@@ -248,13 +248,13 @@ const double KaMAN_In_LinearSlidePosition[E_MAN_State_Sz] = {  0.0,   // Sched -
 
 /* KaMAN_Deg_WristAngle: sets Wrist final angle for each state */
 const double KaMAN_Deg_WristAngle[E_MAN_State_Sz] = {  0.00,  // Sched - Init
-                                                      83.35,  // Sched - Driving
+                                                      83.35,  // Sched - Driving - 83.35  work around 61
                                                        4.95,  // Sched - Main Intake
                                                       80.00,  // Sched - Floor Cone Drop
                                                      -34.87,  // Sched - Mid Cube Intake
                                                       11.00,  // Sched - Mid Cone Intake
                                                       45.00,  // Sched - High Cube Drop 1.92
-                                                      75.00,  // Sched - Low Cube Drop
+                                                      75.00,  // Sched - Low Cube Drop - 75.00  work around 61
                                                       53.90,  // Sched - High Cone Drop
                                                       27.25}; // Sched - Low Cone Drop
 
@@ -655,6 +655,9 @@ const double KtLU_k_SD_DesiredAccel[20] = {-1.00,  //-1
 /* RotateDeadBand: Check Rotation value approx 0 */
 const double K_SD_RotateDeadBand = 0.05;
 
+/* KeDRC_Pct_SD_StrafeDB: Check Rotation value approx 0 */
+const double KeDRC_Pct_SD_StrafeDB = 0.75;
+
 /* Ke_k_SD_SignX: Determines sign of the calculation for the X component of the swerve drive offset. */
 const double Ke_k_SD_SignX[E_RobotCornerSz] = { 1.0,  // E_FrontLeft
                                                 1.0,  // E_FrontRight 
@@ -740,10 +743,10 @@ const double KeADAS_k_DM_AutoBalanceSlowPID[E_PID_CalSz] = { 0.037,     // P Gx
 const double KeADAS_t_DM_TagCenteringDb = 0.1;
 
 /* KeADAS_Deg_DM_AutoMountDetect: Amount of angle to indicate when bot has mounted onto the charge station. [degrees] */
-const double KeADAS_Deg_DM_AutoMountDetect = 5;
+const double KeADAS_Deg_DM_AutoMountDetect = 3;
 
 /* KeADAS_t_DM_AutoMountDb: Debounce time for auto mount. [sec] */
-const double KeADAS_t_DM_AutoMountDb = 0.5;
+const double KeADAS_t_DM_AutoMountDb = 0.2;
 
 /* KeADAS_t_DM_AutoMountOnlyDb: Debounce time for auto mount only, not used for mount/dismount. [sec] */
 const double KeADAS_t_DM_AutoMountOnlyDb = 1.0;
@@ -752,7 +755,10 @@ const double KeADAS_t_DM_AutoMountOnlyDb = 1.0;
 const double KeADAS_t_DM_AutoMountRevDb = 0.85;
 
 /* KeADAS_Pct_DM_AutoMountPwr: Power command when in auto mount. [pct] */
-const double KeADAS_Pct_DM_AutoMountPwr = -0.99;
+const double KeADAS_Pct_DM_AutoMountPwr = -0.50;
+
+/* KeADAS_Pct_DM_AutoMountPwrSlow: Power command when in auto mount. [pct] */
+const double KeADAS_Pct_DM_AutoMountPwrSlow = -0.38;
 
 /* KeADAS_t_DM_StopTm: Amount of time to have the robot stopped. [sec] */
 const double KeADAS_t_DM_StopTm = 0.1;
@@ -880,8 +886,8 @@ const double KaADAS_k_AutonXY_PID_Gx[E_PID_CalSz] = { 0.050,       // P Gx
                                                       1.0,       // Max upper
                                                      -1.0};      // Max lower
 
-const double KaADAS_k_AutonRotatePID_Gx[E_PID_CalSz] = { 0.0050,     // P Gx
-                                                         0.00050, // I Gx
+const double KaADAS_k_AutonRotatePID_Gx[E_PID_CalSz] = { 0.00020,     // P Gx
+                                                         0.00020, // I Gx
                                                          0.00007,  // D Gx
                                                          0.29,      // P UL
                                                         -0.29,      // P LL

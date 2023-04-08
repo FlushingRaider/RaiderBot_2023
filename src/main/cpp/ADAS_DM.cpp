@@ -358,35 +358,59 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
   LeADAS_l_X_Error       = fabs(LeADAS_l_TargetPositionX - LeADAS_l_RelativePosX);
   LeADAS_l_Y_Error       = fabs(LeADAS_l_TargetPositionY - LeADAS_l_RelativePosY);
   // LeADAS_Deg_RotateError = fabs(LeADAS_Deg_TargetAngle - LeADAS_Deg_RelativeAng);
+  LeADAS_Deg_RotateErrorRaw = LeADAS_Deg_TargetAngle - LeADAS_Deg_RelativeAng;
   
   VeADAS_t_DM_StateTimer += C_ExeTime;
 
-  LeADAS_Deg_RotateErrorRaw = LeADAS_Deg_TargetAngle - LeADAS_Deg_RelativeAng;
+
 
   if (LeADAS_Deg_RotateErrorRaw < -180)
     {
     LeADAS_Deg_TargetAngle += 360;
-    LeADAS_Deg_RotateError = LeADAS_Deg_RotateErrorRaw + 360;
+    LeADAS_Deg_RotateError = fabs(LeADAS_Deg_RotateErrorRaw + 360);
     }
   else if (LeADAS_Deg_RotateErrorRaw > 180)
     {
     LeADAS_Deg_TargetAngle -= 360;
-    LeADAS_Deg_RotateError = LeADAS_Deg_RotateErrorRaw - 360;
+    LeADAS_Deg_RotateError = fabs(LeADAS_Deg_RotateErrorRaw - 360);
     }
   else
     {
-    LeADAS_Deg_RotateError = LeADAS_Deg_RotateErrorRaw;
+    LeADAS_Deg_RotateError = fabs(LeADAS_Deg_RotateErrorRaw);
+    }
+
+  // if (LeADAS_Deg_RotateErrorRaw < -180)
+  //   {
+  //   // LeADAS_Deg_TargetAngle += 360;
+  //   LeADAS_Deg_RotateError = fabs(LeADAS_Deg_RotateErrorRaw + 360);
+  //   }
+  // else if (LeADAS_Deg_RotateErrorRaw > 180)
+  //   {
+  //   // LeADAS_Deg_TargetAngle -= 360;
+  //   LeADAS_Deg_RotateError = fabs(LeADAS_Deg_RotateErrorRaw - 360);
+  //   }
+  // else
+  //   {
+  //   LeADAS_Deg_RotateError = fabs(LeADAS_Deg_RotateErrorRaw);
+  //   }
+
+  if ((LeADAS_Deg_TargetAngle < -90) && (LeADAS_Deg_RelativeAng > 90))
+    {
+      LeADAS_Deg_TargetAngle += 360;
+    }
+  else if ((LeADAS_Deg_TargetAngle > 90) && (LeADAS_Deg_RelativeAng < -90))
+    {
+      LeADAS_Deg_TargetAngle -= 360;
     }
 
   /* Exit criteria: */
-  if (fabs(LeADAS_Deg_RotateError) <= K_ADAS_DM_RotateDeadbandAngle &&
-      LeADAS_l_X_Error <= K_ADAS_DM_XY_Deadband &&
-      LeADAS_l_Y_Error <= K_ADAS_DM_XY_Deadband &&
-      VeADAS_t_DM_Debounce < KeADAS_t_DM_PathFollowDebounceTime &&
+  if (LeADAS_Deg_RotateError <= K_ADAS_DM_RotateDeadbandAngle &&
+      LeADAS_l_X_Error       <= K_ADAS_DM_XY_Deadband &&
+      LeADAS_l_Y_Error       <= K_ADAS_DM_XY_Deadband &&
+      VeADAS_t_DM_Debounce   < KeADAS_t_DM_PathFollowDebounceTime &&
       LeADAS_b_TimeEndReached == true)
   {
     VeADAS_t_DM_Debounce += C_ExeTime;
-    // LeADAS_Deg_RotateError = 0.0;
   }
   else if (VeADAS_t_DM_Debounce >= KeADAS_t_DM_PathFollowDebounceTime)
   {
@@ -394,9 +418,9 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
     LeADAS_b_DM_StateComplete = true;
     VeADAS_t_DM_Debounce = 0;
   }
-  else if (fabs(LeADAS_Deg_RotateError) > K_ADAS_DM_RotateDeadbandAngle ||
-           LeADAS_l_X_Error > K_ADAS_DM_XY_Deadband ||
-           LeADAS_l_Y_Error > K_ADAS_DM_XY_Deadband)
+  else if (LeADAS_Deg_RotateError > K_ADAS_DM_RotateDeadbandAngle ||
+           LeADAS_l_X_Error       > K_ADAS_DM_XY_Deadband ||
+           LeADAS_l_Y_Error       > K_ADAS_DM_XY_Deadband)
   {
     /* Reset the timer, we have gone out of bounds */
     VeADAS_t_DM_Debounce = 0;
@@ -408,9 +432,9 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
                                       LeADAS_l_RelativePosX,
                                       &V_ADAS_DM_X_ErrorPrev,
                                       &V_ADAS_DM_X_Integral,
-                                      VaADAS_k_AutonXY_PID_Gx[E_P_Gx],
-                                      VaADAS_k_AutonXY_PID_Gx[E_I_Gx],
-                                      VaADAS_k_AutonXY_PID_Gx[E_D_Gx],
+                                      KaADAS_k_AutonXY_PID_Gx[E_P_Gx],
+                                      KaADAS_k_AutonXY_PID_Gx[E_I_Gx],
+                                      KaADAS_k_AutonXY_PID_Gx[E_D_Gx],
                                       KaADAS_k_AutonXY_PID_Gx[E_P_Ul],
                                       KaADAS_k_AutonXY_PID_Gx[E_P_Ll],
                                       KaADAS_k_AutonXY_PID_Gx[E_I_Ul],
@@ -424,9 +448,9 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
                                       LeADAS_l_RelativePosY,
                                       &V_ADAS_DM_Y_ErrorPrev,
                                       &V_ADAS_DM_Y_Integral,
-                                      VaADAS_k_AutonXY_PID_Gx[E_P_Gx],
-                                      VaADAS_k_AutonXY_PID_Gx[E_I_Gx],
-                                      VaADAS_k_AutonXY_PID_Gx[E_D_Gx],
+                                      KaADAS_k_AutonXY_PID_Gx[E_P_Gx],
+                                      KaADAS_k_AutonXY_PID_Gx[E_I_Gx],
+                                      KaADAS_k_AutonXY_PID_Gx[E_D_Gx],
                                       KaADAS_k_AutonXY_PID_Gx[E_P_Ul],
                                       KaADAS_k_AutonXY_PID_Gx[E_P_Ll],
                                       KaADAS_k_AutonXY_PID_Gx[E_I_Ul],
@@ -477,14 +501,14 @@ bool ADAS_DM_PathFollower(double *LeADAS_Pct_FwdRev,
   }
 
   frc::SmartDashboard::PutNumber("DM Timer", VeADAS_t_DM_StateTimer);
-  frc::SmartDashboard::PutNumber("X Cmnd",   LeADAS_l_TargetPositionX);
-  frc::SmartDashboard::PutNumber("X Act",    LeADAS_l_RelativePosX);
+  // frc::SmartDashboard::PutNumber("X Cmnd",   LeADAS_l_TargetPositionX);
+  // frc::SmartDashboard::PutNumber("X Act",    LeADAS_l_RelativePosX);
   frc::SmartDashboard::PutNumber("X Err",    LeADAS_l_X_Error);
-  frc::SmartDashboard::PutNumber("Y Cmnd",   LeADAS_l_TargetPositionY);
-  frc::SmartDashboard::PutNumber("Y Act",    LeADAS_l_RelativePosY);
+  // frc::SmartDashboard::PutNumber("Y Cmnd",   LeADAS_l_TargetPositionY);
+  // frc::SmartDashboard::PutNumber("Y Act",    LeADAS_l_RelativePosY);
   frc::SmartDashboard::PutNumber("Y Err",    LeADAS_l_Y_Error);
-  frc::SmartDashboard::PutNumber("Rot Cmnd", LeADAS_Deg_TargetAngle);
-  frc::SmartDashboard::PutNumber("Rot Act",  LeADAS_Deg_RelativeAng);
+  // frc::SmartDashboard::PutNumber("Rot Cmnd", LeADAS_Deg_TargetAngle);
+  // frc::SmartDashboard::PutNumber("Rot Act",  LeADAS_Deg_RelativeAng);
   frc::SmartDashboard::PutNumber("Rot Err",  LeADAS_Deg_RotateError);
 
   return (LeADAS_b_DM_StateComplete);
@@ -686,7 +710,7 @@ bool ADAS_DM_DriveOntoStation(double *LeADAS_Pct_FwdRev,
     }
   else if (VeADAS_e_DM_AutoMountState == E_ADAS_DM_DriveOS_FwdRampDwn)
     {
-      LeADAS_Pct_Drive = KeADAS_Pct_DM_AutoMountPwr;
+      LeADAS_Pct_Drive = KeADAS_Pct_DM_AutoMountPwrSlow;
 
       if ((LeADAS_Deg_GyroRoll > -KeADAS_Deg_DM_AutoMountDetect) && (LeADAS_Deg_GyroRoll < KeADAS_Deg_DM_AutoMountDetect)) // need to verify direction
         {
