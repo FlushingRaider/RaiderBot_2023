@@ -29,10 +29,8 @@ int V_PrevTagID;
  ******************************************************************************/
 void OdometryInitToArgs(double VeODO_In_ArgX, double VeODO_In_ArgY)
 {
-#ifdef visionTest
   VeODO_In_RobotDisplacementX = VeODO_In_ArgX;  // Disabled to allow for testing of path follower.
   VeODO_In_RobotDisplacementY = VeODO_In_ArgY;
-#endif
 }
 
 /******************************************************************************
@@ -103,9 +101,6 @@ void DtrmTagOffset(int L_TagID,
 
   double L_OffsetX;
   double L_OffsetY;
-
-  
-
   if (L_TagID > 0){
   V_PrevTagID = L_TagID;
   }
@@ -117,18 +112,18 @@ void DtrmTagOffset(int L_TagID,
   // {
     if (L_TagID == 1 || L_TagID == 2 || L_TagID == 3)
     {
-      L_OffsetX = C_TagXred - VeODO_In_RobotDisplacementX;
+      L_OffsetX = C_TagXred - VeODO_In_RobotDisplacementY;
       if (L_TagID == 1)
       {
-        L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementY;
+        L_OffsetY = C_Tag1Y - VeODO_In_RobotDisplacementX;
       }
       else if (L_TagID == 2)
       {
-        L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementY;
+        L_OffsetY = C_Tag2Y - VeODO_In_RobotDisplacementX;
       }
       else if (L_TagID == 3)
       {
-        L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementY;
+        L_OffsetY = C_Tag3Y - VeODO_In_RobotDisplacementX;
       }
     }
     else

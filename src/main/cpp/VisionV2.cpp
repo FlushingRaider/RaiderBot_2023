@@ -53,8 +53,8 @@ double V_TagPitch;
 double V_TagYaw;
 int V_TagID;
 bool V_TagCentered;
-bool V_CubeAlignRequested;
-bool _ConeAlignRequested;
+bool V_CubeAlignRequested; 
+bool V_ConeAlignRequested;
 
 double NewStamp;
 double OldStamp;
@@ -63,6 +63,8 @@ double OldY;
 
 double XSpeed;
 double YSpeed;
+
+
 // vars for apriltag cam
 photonlib::PhotonCamera Cam1 = photonlib::PhotonCamera("Cam1"); // the string is the name of the cam from photon, the name in photon must match this one to assign properly
 fs::path aprilTagsjsonPath = frc::filesystem::GetDeployDirectory();
@@ -258,49 +260,61 @@ void VisionRun(photonlib::PhotonPipelineResult LsVIS_Str_TopResult,
 void VisionRun()
 {
 
-  frc::SmartDashboard::PutNumber("X speed", XSpeed);
-  frc::SmartDashboard::PutNumber("Y speed", YSpeed);
+  // frc::SmartDashboard::PutNumber("Old X", OldX);
+  // frc::SmartDashboard::PutNumber("Old Y", OldY);
 
+  // frc::SmartDashboard::PutNumber("True Cam X", (V_VIS_m_TagX * C_MeterToIn)); //The V_VIS_in_Tag values have processesing to them,
+  // frc::SmartDashboard::PutNumber("True Cam Y", (V_VIS_m_TagY * C_MeterToIn));//    these are the same numbers but don't get reverted from error
   // code for apriltag vision
   OldStamp = NewStamp;
   TagCamResult = estimator.GetCamera().GetLatestResult(); // GetCamera() pulls the camresult from the estimator value
   NewStamp = estimator.GetCamera().GetLatestResult().GetTimestamp().value();
   VeVIS_b_TagHasTarget = TagCamResult.HasTargets();
   double timeBtwn = NewStamp - OldStamp;
-
-  if (VeVIS_b_TagHasTarget)
+  frc::SmartDashboard::PutNumber("Time Since vision cycle", timeBtwn);
+  if (VeVIS_b_TagHasTarget) // we only do anything if we have a target, otherwise this makes terrible data
   {
 
     CurrentEstimatedPose = estimator.Update();
-    if (CurrentEstimatedPose.has_value())
+    if (CurrentEstimatedPose.has_value()) //make sure photon is ready before we yoink its data
     {
       TagPose = CurrentEstimatedPose.value().estimatedPose; // "pose" object which holds xyz and roll,pitch,yaw values
     };
     V_TagID = TagCamResult.GetBestTarget().GetFiducialId();
-    // V_VIS_m_TagX = Filter_FirstOrderLag(TagPose.X().value(), V_VIS_m_TagX, K_TagCordFilter);
     V_VIS_m_TagX = TagPose.X().value();
-    V_VIS_m_TagY = Filter_FirstOrderLag(TagPose.Y().value(), V_VIS_m_TagY, K_TagCordFilter);
+    V_VIS_m_TagY = TagPose.Y().value();
     // V_VIS_m_TagY = TagPose.Y().value();
     V_Tagz = TagPose.Z().value();
     // V_TagRoll = TagPose.Rotation().X().value();
     // V_TagPitch = TagPose.Rotation().Y().value();
     V_TagYaw = Filter_FirstOrderLag(TagPose.Rotation().Z().value(), V_TagYaw, K_TagYawFilter);
 
-    OldX = V_VIS_in_TagX;
+    OldX = V_VIS_in_TagX; // save last scans values to the old coords
     OldY = V_VIS_in_TagY;
-    V_VIS_in_TagX = V_VIS_m_TagX * C_MeterToIn;
+    V_VIS_in_TagX = V_VIS_m_TagX * C_MeterToIn; // photon outputs meters, odom wants inches
     V_VIS_in_TagY = V_VIS_m_TagY * C_MeterToIn;
 
-    XSpeed = (V_VIS_in_TagX - OldX) / timeBtwn;
-    YSpeed = (V_VIS_in_TagY - OldY) / timeBtwn;
+    if (OldX != 0.0 && OldY != 0.0)
+    {
+      XSpeed = (V_VIS_in_TagX - OldX) / timeBtwn; // calculate the speed we would've had to go at to travel our two distances within the time between the scans
+      YSpeed = (V_VIS_in_TagY - OldY) / timeBtwn;
 
-    if (fabs(XSpeed) < 30.0 && fabs(YSpeed) < 10.0)
+      frc::SmartDashboard::PutNumber("X speed", XSpeed);
+      frc::SmartDashboard::PutNumber("Y speed", YSpeed);
+    }
+    else
+    {
+      XSpeed = 0.0;
+      YSpeed = 0.0;
+    }
+    if ((fabs(XSpeed) < 40.0 && fabs(YSpeed) < 40.0)) // TBD:  make those 40s into constants, theyre calculated by converting the 12 ft/s of the robot to inches/.25s
     {
 
-      OdometryInitToArgs(V_VIS_in_TagX, V_VIS_in_TagY);
+      OdometryInitToArgs(V_VIS_in_TagY, V_VIS_in_TagX); // if we are within a reasonable speed, update the odom
     }
-    else{
-      V_VIS_in_TagX = OldX;
+    else
+    {
+      V_VIS_in_TagX = OldX; // if the speed isn't reasonable then revert to last scans values
       V_VIS_in_TagY = OldY;
     }
   }
@@ -318,23 +332,8 @@ void VisionRun()
     V_TagYaw = 0.0;
   }
 
-  // code for cone/cube detection:
   Cam2.SetDriverMode(true);
-  // PieceCamResult = Cam2.GetLatestResult();
-  // if (PieceCamResult.HasTargets())
-  // {
-  //   PieceCamTarget = PieceCamResult.GetBestTarget();
-  //   PieceCamPitch = PieceCamTarget.GetPitch();
-  //   PieceCamYaw = PieceCamTarget.GetYaw();
-  //   PieceCamSkew = PieceCamTarget.GetSkew();
-  // }
-  // else
-  // {
 
-  //   PieceCamPitch = 0.0;
-  //   PieceCamYaw = 0.0;
-  //   PieceCamSkew = 0.0;
-  // }
 }
 
 #endif
