@@ -1,11 +1,9 @@
 /*
- * Team 5561 2022 Code
+ * Team 5561 2023 Code
  *
- * This code runs the 2020 robot which is capable of the following:
+ * This code runs the 2023 robot which is capable of the following:
  * - Swerve Drive (beta 02/10/2020)
- * - Shooting balls without vision (beta 02/26/2022)
- * - Climber active (beta 02/26/2022)
- *
+ * - Manipulator (Turret and Grabber) 
  * */
 
 #include "Robot.h"
