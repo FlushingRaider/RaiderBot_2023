@@ -2,10 +2,12 @@
   IO_Sensors.cpp
 
    Created on: Feb 17, 2022
-   Author: Biggs
+   Revised on: Oct 31, 2023
+
+  Author: Biggs
+   Revised by: Chris
 
    Contains the code related to the reading and processing of the IO sensors:
-   - IR ball detection
    - XY limit detection
    - XD limit detection
 
@@ -24,40 +26,9 @@ TsRobotSensor VsRobotSensors;  // Structure of all the processed robot sensor si
  ******************************************************************************/
 void IO_SensorsInit()
   {
-  VsRobotSensors.b_BallDetectedUpper = false;
-  VsRobotSensors.b_BallDetectedLower = false;
   VsRobotSensors.b_XD_LimitDetected = false;
   VsRobotSensors.b_XY_LimitDetected = false;
   }
-
-/******************************************************************************
- * Function:     BallDetectionSensor
- *
- * Description:  IR sensor that detects the presence of a ball in the elevator.
- *
- ******************************************************************************/
-void BallDetectionSensor(bool L_IR_SensorDetect,
-                         bool L_BallSensorLower)
-  {
-    bool L_BallDetected = false;
-    bool L_BallDetectedLower = false;
-
-    if (L_IR_SensorDetect == false)
-      {
-      L_BallDetected = true;
-      }
-
-    if (L_BallSensorLower == false)
-      {
-      L_BallDetectedLower = true;
-      }
-    
-    VsRobotSensors.b_BallDetectedUpper = L_BallDetected;
-
-    VsRobotSensors.b_BallDetectedLower = L_BallDetectedLower;
-  }
-
-
 
 /******************************************************************************
  * Function:     ReadLimitSwitchs
@@ -80,14 +51,9 @@ void ReadLimitSwitchs(bool L_XD_LimitSwitch,
  * Description:  Main calling funciton for the IO sensors.
  *
  ******************************************************************************/
-void Read_IO_Sensors(bool L_IR_SensorDetect,
-                     bool L_BallSensorLower,
-                     bool L_XD_LimitSwitch,
+void Read_IO_Sensors(bool L_XD_LimitSwitch,
                      bool L_XY_LimitSwitch)
   {
-    BallDetectionSensor(L_IR_SensorDetect,
-                        L_BallSensorLower);
-
     ReadLimitSwitchs(L_XD_LimitSwitch,
                      L_XY_LimitSwitch);
   }
