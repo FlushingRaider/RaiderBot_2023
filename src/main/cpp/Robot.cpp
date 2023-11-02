@@ -18,7 +18,6 @@
 #include "DriveControl.hpp"
 #include "Manipulator.hpp"
 #include "LightControl.hpp"
-#include "VisionV2.hpp"
 #include "ADAS.hpp"
 #include "ADAS_DM.hpp"
 #include "ADAS_MN.hpp"
@@ -249,16 +248,12 @@ void Robot::RobotPeriodic()
 
   ReadGyro2(VsCONT_s_DriverInput.b_ZeroGyro);
 
-  VisionRun();
 
   DtrmnSwerveBotLocation(VeGRY_Rad_GyroYawAngleRad,
                          &VaENC_Rad_WheelAngleFwd[0],
                          &VaENC_In_WheelDeltaDistance[0],
                          VsCONT_s_DriverInput.b_ZeroGyro);
 
-  DtrmTagOffset(V_TagID,
-                VeVIS_b_TagHasTarget,
-                V_TagCentered);
 
   ADAS_DetermineMode();
 
@@ -273,12 +268,8 @@ void Robot::RobotPeriodic()
                                             VeGRY_Deg_GyroYawAngleDegrees,
                                             VeODO_In_RobotDisplacementX,
                                             VeODO_In_RobotDisplacementY,
-                                            VeVIS_b_TagHasTarget,
                                             VeROBO_e_RobotState,
                                             VeADAS_e_ActiveFeature,
-                                            V_TagID,
-                                            V_TagCentered, // comes from Vision
-                                            V_TagYaw,
                                             VeROBO_e_AllianceColor,
                                             V_OffsetXOut,
                                             V_OffsetYOut,
@@ -330,26 +321,6 @@ frc::SmartDashboard::PutNumber("GyroPitch", VeGRY_Deg_GyroPitchAngleDegrees);
 
   VeADAS_in_GlobalRequestX = 530.0;
   VeADAS_in_GlobalRequestY = 50.0;
-
-  // VeADAS_in_OffsetRequestX = 36.0;
-  // VeADAS_in_OffsetRequestY = 18.0;
-
-  // frc::SmartDashboard::PutNumber("GoalOffsetX", VeADAS_in_OffsetRequestX);
-  // frc::SmartDashboard::PutNumber("GoalOffsetY", VeADAS_in_OffsetRequestY);
-
-  frc::SmartDashboard::PutBoolean("has target", VeVIS_b_TagHasTarget);
-  frc::SmartDashboard::PutNumber("cam1 x", V_VIS_in_TagX);
-  frc::SmartDashboard::PutNumber("cam1 y", V_VIS_in_TagY);
-
-  // frc::SmartDashboard::PutBoolean("Want to stop X", wantToStopX);
-  // frc::SmartDashboard::PutBoolean("Want to stop Y", wantToStopY);
-
-  // frc::SmartDashboard::PutNumber("cam1 z", V_Tagz);
-  // frc::SmartDashboard::PutNumber("TagID ", V_TagID);
-  // frc::SmartDashboard::PutNumber("TagRoll", V_TagRoll);
-  // frc::SmartDashboard::PutNumber("TagPitch", V_TagPitch);
-  frc::SmartDashboard::PutNumber("TagYaw", V_TagYaw);
-  // frc::SmartDashboard::PutNumber("Cube Yaw", PieceCamYaw);
 
 #endif
 
@@ -423,7 +394,6 @@ void Robot::TeleopInit()
   VeROBO_e_RobotState = E_Teleop;
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_b_TestState = false;
-  V_TagCentered = false;
 
   ADAS_Main_Reset();
   DriveControlInit();
