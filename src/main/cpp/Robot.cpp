@@ -270,6 +270,7 @@ void Robot::RobotPeriodic()
                                             VeODO_In_RobotDisplacementY,
                                             VeROBO_e_RobotState,
                                             VeADAS_e_ActiveFeature,
+                                            V_OdomCentered,
                                             VeROBO_e_AllianceColor,
                                             V_OffsetXOut,
                                             V_OffsetYOut,

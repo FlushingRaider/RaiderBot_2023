@@ -18,6 +18,7 @@ double VeODO_In_RobotDisplacementY = 0; // Displacement in the Y direction, whic
 
 double V_OffsetXOut;
 double V_OffsetYOut;
+bool V_OdomCentered;
 
 int V_PrevTagID;
 
@@ -145,5 +146,6 @@ void DtrmTagOffset(int L_TagID,
 
     V_OffsetXOut = L_OffsetX;
     V_OffsetYOut = L_OffsetY;
+    V_OdomCentered = L_VisionCentered;
   }
 // }
