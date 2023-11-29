@@ -110,11 +110,19 @@ const double CeLC_k_BlinkinLED_RainbowWithGlitter = -0.89;
 const int KeGRY_ms_GyroTimeoutMs = 30; // Waits and reports to DS if fails
 
 // Encoder / speed calculation related cals
-/* KeENC_k_ReductionRatio: Reduction ratio for swerve drive module. */
+/* KeENC_k_ReductionRatio: Reduction ratio for swerve drive module. */ /*New chart says 16.6 as reduction*/
 const double KeENC_k_ReductionRatio = 8.33;
+
+// #ifdef PracticeBot
+// const double KeENC_k_ReductionRatio = 8.33;
+// #endif
 
 /* KeENC_In_WheelCircumfrence: Circumferance of wheel, in inches (4in nominal diameter). */
 const double KeENC_In_WheelCircumfrence = 12.566;
+
+// #ifdef PracticeBot
+// const double KeENC_In_WheelCircumfrence = 12.566;
+// #endif
 
 /* KeENC_k_SD_VoltageToAngle: Gain that converts the measured voltage of the absolute encoder for the swerve drive angle measurement to an equivalent angle in degrees. (practice bot only) */
 static const double KeENC_k_SD_VoltageToAngle = 72.0;
