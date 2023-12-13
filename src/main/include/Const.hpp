@@ -6,7 +6,7 @@
 // Define the desired test state here: COMP (no test), BallHandlerTest, Manipulator_Test, DriveMotorTest, WheelAngleTest, ADAS_DM_Test
 #define COMP
 // Define the bot type: CompBot, PracticeBot
-#define PracticeBot
+#define CompBot
 
 #define NewVision // NewVision or OldVision
 #define visionTest
@@ -104,6 +104,9 @@ const double CeLC_k_BlinkinLED_LightChaseGray = -0.27;
 
 /* CeLC_k_BlinkinLED_RainbowWithGlitter: Constant for the Blinkin to command rainbow with glitter.  */
 const double CeLC_k_BlinkinLED_RainbowWithGlitter = -0.89;
+
+/* CeLC_k_BlinkinLED_GreenAndRed: Constant for the Blinkin to command rainbow with glitter.  */
+const double CeLC_k_BlinkinLED_GreenAndRed = 0.43;
 
 // Gyro cals
 /* KeGRY_ms_GyroTimeoutMs: Set to zero to skip waiting for confirmation, set to nonzero to wait and report to DS if action fails. */

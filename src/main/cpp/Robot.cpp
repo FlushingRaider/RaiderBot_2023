@@ -345,7 +345,7 @@ frc::SmartDashboard::PutNumber("GyroPitch", VeGRY_Deg_GyroPitchAngleDegrees);
 
   /* Set light control outputs here */
   // do_CameraLightControl.Set(VeLC_b_CameraLightCmndOn);
-  m_vanityLightControler.Set(VeLC_Cmd_VanityLightCmnd);
+  m_vanityLightControler.Set(CeLC_k_BlinkinLED_GreenAndRed);
 #endif
 
   /* Output all of the content to the dashboard here: */

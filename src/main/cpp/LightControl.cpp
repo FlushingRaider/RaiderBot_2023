@@ -117,7 +117,7 @@ double VanityLightControl(double                       LeLC_Sec_MatchTimeRemaini
     if ((LeLC_Sec_MatchTimeRemaining <= C_End_game_time) &&
              (LeLC_Sec_MatchTimeRemaining > 0))
       {
-      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_RainbowWithGlitter;
+      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_GreenAndRed;
       }
     else if (LeLC_e_AllianceColor == frc::DriverStation::Alliance::kRed)
       {
@@ -129,7 +129,7 @@ double VanityLightControl(double                       LeLC_Sec_MatchTimeRemaini
       }
     else
       {
-      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_LightChaseGray;
+      LeLC_Cmd_LEDCommand = CeLC_k_BlinkinLED_GreenAndRed;
       }
 
     return(LeLC_Cmd_LEDCommand);
