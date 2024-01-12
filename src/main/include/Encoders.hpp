@@ -44,13 +44,11 @@ void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
 
 void EncodersInitComp(rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                       rev::SparkMaxRelativeEncoder m_WristEncoder,
-                      rev::SparkMaxRelativeEncoder m_GripperEncoder,
-                      rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder);
+                      rev::SparkMaxRelativeEncoder m_GripperEncoder);
 
                       
                       
-void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
-                       rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
+void Encoders_MAN_INT(rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                        rev::SparkMaxRelativeEncoder m_GripperEncoder,
                        rev::SparkMaxRelativeEncoder m_WristEncoder,
                        double                       LeENC_Deg_LinearSlide,

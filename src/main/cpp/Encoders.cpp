@@ -71,13 +71,11 @@ void EncodersInitCommon(rev::SparkMaxRelativeEncoder m_encoderFrontRightSteer,
  ******************************************************************************/
 void EncodersInitComp(rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                       rev::SparkMaxRelativeEncoder m_WristEncoder,
-                      rev::SparkMaxRelativeEncoder m_GripperEncoder,
-                      rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder)
+                      rev::SparkMaxRelativeEncoder m_GripperEncoder)
   {
     // m_ArmPivotEncoder.SetPosition(0);
     // m_WristEncoder.SetPosition(0);
     m_GripperEncoder.SetPosition(0);
-    m_IntakeRollersEncoder.SetPosition(0);
   }
 
 /******************************************************************************
@@ -247,8 +245,7 @@ void Encoders_Drive_PracticeBot(double                       LeENC_Cnt_EncoderWh
  *
  * Description:  Read the encoders from the Manipulator and Intake
  ******************************************************************************/
-void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
-                       rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
+void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_ArmPivotEncoder,
                        rev::SparkMaxRelativeEncoder m_GripperEncoder,
                        rev::SparkMaxRelativeEncoder m_WristEncoder,
                        double                       LeENC_Deg_LinearSlide,
@@ -259,8 +256,6 @@ void Encoders_MAN_INT( rev::SparkMaxRelativeEncoder m_IntakeRollersEncoder,
   bool LeENC_b_ObjectDetected = false;
 
   VsMAN_s_Sensors.Deg_ArmPivot = m_ArmPivotEncoder.GetPosition() * KeENC_k_ArmPivot;
-
-  VsMAN_s_Sensors.RPM_IntakeRollers = m_IntakeRollersEncoder.GetVelocity() * KeENC_RPM_IntakeRollers;
 
   VsMAN_s_Sensors.RPM_Gripper = m_GripperEncoder.GetVelocity() * KeENC_RPM_Gripper;
 

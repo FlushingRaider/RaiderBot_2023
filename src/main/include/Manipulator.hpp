@@ -19,13 +19,11 @@ extern double VaMAN_In_LinearSlideError;
 
 void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
                                 rev::SparkMaxPIDController m_WristPID,
-                                rev::SparkMaxPIDController m_GripperPID,
-                                rev::SparkMaxPIDController m_IntakeRollersPID);
+                                rev::SparkMaxPIDController m_GripperPID);
  
 void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
                                  rev::SparkMaxPIDController m_WristPID,
-                                 rev::SparkMaxPIDController m_GripperPID,
-                                 rev::SparkMaxPIDController m_IntakeRollersPID);
+                                 rev::SparkMaxPIDController m_GripperPID);
 
 void ManipulatorControlInit();
 

@@ -4,8 +4,8 @@
   Created on: Feb 21, 2023
   Author: Jay L
 
-  ADAS (Advanced Driver-Assistance Systems) Upper Targeting
-  Contains the logic and code used for the upper targeting control:
+  ADAS (Advanced Driver-Assistance Systems) Manipulator
+  Contains the logic and code used for the Manipulator control:
     - Schedules states in a non-linear state machine
   Changes:
   2023-02-21 -> Alpha
@@ -84,15 +84,7 @@ void ADAS_MN_Reset(void)
   bool                    LeADAS_b_MAN_DropObjectFast = false;
   bool                    LeADAS_b_MAN_StateComplete = false;
 
-  if (VsCONT_s_DriverInput.b_MainIntakeOut == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_MainIntake;
-    }
-  else if (VsCONT_s_DriverInput.b_DrivingPosition == true)
-    {
-      VeADAS_e_MAN_SchedState = E_MAN_Driving;
-    }
-  else if (VsCONT_s_DriverInput.b_IntakeArmIn == true)
+  if (VsCONT_s_DriverInput.b_DrivingPosition == true)
     {
       VeADAS_e_MAN_SchedState = E_MAN_Driving;
     }
@@ -252,22 +244,6 @@ void ADAS_MN_Reset(void)
             LeADAS_b_MAN_DropFast = false;
           }
       }
-    else if (LeADAS_e_MAN_StateReq == E_ADAS_MAN_MainIntake)
-      {
-        LeADAS_e_MAN_State = E_MAN_MainIntake;
-        LeADAS_b_MAN_DropFast = false;
-        
-        if (VeMAN_e_AttndState == LeADAS_e_MAN_State)
-          {
-            VeADAS_t_MAN_DropObjectTm += C_ExeTime;
-          }
-
-        if (VeADAS_t_MAN_DropObjectTm >= KeMAN_t_GripperOnTm)
-          {
-            LeADAS_b_MAN_DropCmplt = true;
-            LeADAS_b_MAN_DropFast = false;
-          }
-      }
     else
       {
         LeADAS_b_MAN_DropCmplt = true;
@@ -301,7 +277,6 @@ bool ADAS_MN_Main(T_RobotState                  L_RobotState,
   switch (LeADAS_e_ActiveFeature)
   {
   case E_ADAS_DM_PathFollower1:
-        LeADAS_e_MAN_ReqAction = E_ADAS_MAN_MainIntake;
   break;
   case E_ADAS_DM_PathFollower2:
   case E_ADAS_DM_PathFollower3:

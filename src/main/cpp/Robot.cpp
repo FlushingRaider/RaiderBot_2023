@@ -70,7 +70,6 @@ void Robot::RobotMotorCommands()
   // m_GripperPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper], rev::ControlType::kVelocity);
   m_Gripper.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_Gripper]); // This puts the gripper into a power control setup, not speed/postion
   // m_IntakeRollersPID.SetReference(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers], rev::ControlType::kVelocity);
-  m_IntakeRollers.Set(VsMAN_s_Motors.k_MotorCmnd[E_MAN_IntakeRollers]);
   // m_TurretRotate.Set(ControlMode::PercentOutput, 0.0);
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorCmnd[E_MAN_LinearSlide]);
   //m_LinearSlide.Set(ControlMode::PercentOutput, 0.0);
@@ -91,6 +90,7 @@ void Robot::RobotMotorCommands()
  ******************************************************************************/
 void Robot::RobotInit()
 {
+ // ShuffleboardTab& tab = 
   VeROBO_e_RobotState = E_Init;
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_t_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
@@ -109,8 +109,7 @@ void Robot::RobotInit()
 #ifdef CompBot
   EncodersInitComp(m_ArmPivotEncoder,
                    m_WristEncoder,
-                   m_GripperEncoder,
-                   m_IntakeRollersEncoder);
+                   m_GripperEncoder);
 
   bool CompressorEnable = m_pcmCompressor.Enabled();
 #endif
@@ -139,7 +138,6 @@ void Robot::RobotInit()
   m_Wrist.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLim);
   m_Gripper.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   // m_Gripper.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLimHigh);
-  m_IntakeRollers.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   // m_IntakeRollers.SetSmartCurrentLimit(KeMAN_A_ManipulatorNeoCurrentLim);
 
   // m_WristforwardLimit.EnableLimitSwitch(false);
@@ -161,12 +159,12 @@ void Robot::RobotInit()
 
   ManipulatorMotorConfigsInit(m_ArmPivotPID,
                               m_WristPID,
-                              m_GripperPID,
-                              m_IntakeRollersPID);
+                              m_GripperPID);
 
   ADAS_MN_Reset();
   ManipulatorControlInit();
 #endif
+ // ShuffleboardTab& tab = Shuffleboard::GetTab("LF_PID_P");
 
   SwerveDriveMotorConfigsInit(m_frontLeftDrivePID,
                               m_frontRightDrivePID,
@@ -178,6 +176,7 @@ void Robot::RobotInit()
 
   ADAS_DM_ConfigsInit();
   ADAS_MN_ConfigsInit();
+
 }
 
 /******************************************************************************
@@ -228,8 +227,7 @@ void Robot::RobotPeriodic()
                          m_encoderRearLeftDrive,
                          m_encoderRearRightDrive);
 
-  Encoders_MAN_INT(m_IntakeRollersEncoder,
-                   m_ArmPivotEncoder,
+  Encoders_MAN_INT(m_ArmPivotEncoder,
                    m_GripperEncoder,
                    m_WristEncoder,
                    m_LinearSlide.GetSelectedSensorPosition(),
@@ -340,8 +338,7 @@ frc::SmartDashboard::PutNumber("GyroPitch", VeGRY_Deg_GyroPitchAngleDegrees);
 
   ManipulatorMotorConfigsCal(m_ArmPivotPID,
                              m_WristPID,
-                             m_GripperPID,
-                             m_IntakeRollersPID);
+                             m_GripperPID);
 
   /* Set light control outputs here */
   // do_CameraLightControl.Set(VeLC_b_CameraLightCmndOn);
@@ -353,6 +350,14 @@ frc::SmartDashboard::PutNumber("GyroPitch", VeGRY_Deg_GyroPitchAngleDegrees);
   frc::SmartDashboard::PutNumber("VeMAN_e_CmndState", (double)VeMAN_e_CmndState);
   frc::SmartDashboard::PutNumber("VeADAS_e_MAN_SchedState", (double)VeADAS_e_MAN_SchedState);
 
+  //frc::Shuffleboard::GetTab("LF_PID_P")
+    //.Add("Max Speed", 1)
+   // .WithWidget(frc::BuiltInWidgets::kNumberSlider)
+   // .WithProperties({ // specify widget properties here
+   //   {"min", nt::Value::MakeDouble(0)},
+    //  {"max", nt::Value::MakeDouble(1)}
+   // })
+   // .GetEntry();
 }
 
 /******************************************************************************
@@ -466,8 +471,7 @@ void Robot::TestPeriodic()
 #ifdef CompBot
     EncodersInitComp(m_ArmPivotEncoder,
                      m_WristEncoder,
-                     m_GripperEncoder,
-                     m_IntakeRollersEncoder);
+                     m_GripperEncoder);
 #endif
   }
 
@@ -485,7 +489,6 @@ void Robot::TestPeriodic()
   m_ArmPivot.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_ArmPivot]);
   m_Wrist.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_Wrist]);
   m_Gripper.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_Gripper]);
-  m_IntakeRollers.Set(VsMAN_s_Motors.k_MotorTestPower[E_MAN_IntakeRollers]);
   m_LinearSlide.Set(ControlMode::PercentOutput, VsMAN_s_Motors.k_MotorTestPower[E_MAN_LinearSlide]);
 
 
