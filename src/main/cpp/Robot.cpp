@@ -90,6 +90,7 @@ void Robot::RobotMotorCommands()
  ******************************************************************************/
 void Robot::RobotInit()
 {
+    // shuffleboard_init();
   VeROBO_e_RobotState = E_Init;
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_t_MatchTimeRemaining = frc::Timer::GetMatchTime().value();
