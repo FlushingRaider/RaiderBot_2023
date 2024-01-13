@@ -3,8 +3,9 @@
 
 #pragma once
 
+#include "Shuffleboard.hpp"
 #include <string>
-
+#include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/AnalogInput.h>
 #include <frc/DigitalInput.h>
 #include <frc/DigitalOutput.h>
@@ -46,6 +47,11 @@ class Robot : public frc::TimedRobot {
   frc::AnalogInput a_encoderRearLeftSteer{3};
   frc::AnalogInput a_encoderRearRightSteer{0};
   #endif
+
+  frc::ShuffleboardTab& FrontLeft = frc::Shuffleboard::GetTab("Front Left");
+  frc::ShuffleboardTab& FrontRight = frc::Shuffleboard::GetTab("Front Right");
+  frc::ShuffleboardTab& BackLeft = frc::Shuffleboard::GetTab("Back Left");
+  frc::ShuffleboardTab& BackRight = frc::Shuffleboard::GetTab("Back Right");
  
   
   //DIO - Inputs / Outputs
