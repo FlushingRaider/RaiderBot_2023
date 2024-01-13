@@ -61,8 +61,7 @@ bool                    VeMAN_b_TestState = false;
  ******************************************************************************/
 void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
                                  rev::SparkMaxPIDController m_WristPID,
-                                 rev::SparkMaxPIDController m_GripperPID,
-                                 rev::SparkMaxPIDController m_IntakeRollersPID)
+                                 rev::SparkMaxPIDController m_GripperPID)
   {
   TeMAN_e_ManipulatorActuator LeMAN_i_Index;
   T_PID_Cal LeMAN_i_Index3 = E_P_Gx;
@@ -89,12 +88,7 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
   m_GripperPID.SetFF(KaMAN_k_GripperPID_Gx[E_kFF]);
   m_GripperPID.SetOutputRange(KaMAN_k_GripperPID_Gx[E_kMinOutput], KaMAN_k_GripperPID_Gx[E_kMaxOutput]);
 
-  m_IntakeRollersPID.SetP(KaMAN_k_IntakeRollersPID_Gx[E_kP]);
-  m_IntakeRollersPID.SetI(KaMAN_k_IntakeRollersPID_Gx[E_kI]);
-  m_IntakeRollersPID.SetD(KaMAN_k_IntakeRollersPID_Gx[E_kD]);
-  m_IntakeRollersPID.SetIZone(KaMAN_k_IntakeRollersPID_Gx[E_kIz]);
-  m_IntakeRollersPID.SetFF(KaMAN_k_IntakeRollersPID_Gx[E_kFF]);
-  m_IntakeRollersPID.SetOutputRange(KaMAN_k_IntakeRollersPID_Gx[E_kMinOutput], KaMAN_k_IntakeRollersPID_Gx[E_kMaxOutput]);
+
 
   for (LeMAN_i_Index = E_MAN_ArmPivot;
        LeMAN_i_Index < E_MAN_Sz;
@@ -204,8 +198,7 @@ void ManipulatorMotorConfigsInit(rev::SparkMaxPIDController m_ArmPivotPID,
  ******************************************************************************/
 void ManipulatorMotorConfigsCal(rev::SparkMaxPIDController m_ArmPivotPID,
                                 rev::SparkMaxPIDController m_WristPID,
-                                rev::SparkMaxPIDController m_GripperPID,
-                                rev::SparkMaxPIDController m_IntakeRollersPID)
+                                rev::SparkMaxPIDController m_GripperPID)
   {
   // read PID coefficients from SmartDashboard
   #ifdef Manipulator_Test

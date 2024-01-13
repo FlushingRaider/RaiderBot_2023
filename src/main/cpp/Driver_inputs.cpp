@@ -102,7 +102,6 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   bool LeCONT_b_InitState = false;
   bool LeCONT_b_FloorConeDrop = false;
 
-  VsCONT_s_DriverInput.b_MainIntakeOut                  = LeCONT_b_Driver2ButtonA;      //Controller 2, A button Will be used to bring intake out COMPETION BUTTON
   VsCONT_s_DriverInput.b_DrivingPosition                = LeCONT_b_Driver2ButtonB;     //Controller 2, B button Will be used to bring Everything into their position for when the robot is moving COMPETION BUTTON
   VsCONT_s_DriverInput.b_IntakeArmOutTest               = LeCONT_b_Driver2ButtonY;      //Controller 2, Y button (2), (robot.cpp) intake out TEST BUTTON
   VsCONT_s_DriverInput.b_IntakeArmIn                    = LeCONT_b_Driver2ButtonA;      //Controller 2, A button (1), (robot.cpp) intake in TEST BUTTON
@@ -112,7 +111,7 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
   VsCONT_s_DriverInput.b_ResetManipulatorEnocders       = LeCONT_b_Driver2ButtonStart;  //controller 2 start button (8), (robot.cpp) Starts robot shooter speed based on distance
   VsCONT_s_DriverInput.b_DropGamePieceFast              = LeCONT_b_Driver2ButtonStart;
   VsCONT_s_DriverInput.Pct_WristTest                    = LeCONT_Pct_Driver2RightAxisX;  //Controller 2, left axis, uses y axis (1), (robot.cpp) sets desired speed for the shooter moter
-  // VsCONT_s_DriverInput.b_InitState                      = LeCont_Pct_Driver2AxisRB;   
+  VsCONT_s_DriverInput.b_InitState                      = LeCont_Pct_Driver2AxisRB;   
   VsCONT_s_DriverInput.b_MidIntakeOut                   = LeCONT_b_Driver2ButtonRB;   // This will bring the arm down to pickup game pieces behind the robot
   VsCONT_s_DriverInput.b_DropGamePieceSlow              = LeCONT_b_Driver2ButtonBack;
 
@@ -124,18 +123,6 @@ void Joystick2_robot_mapping(bool    LeCONT_b_Driver2ButtonA,
     {
     }
 
-  if (LeCont_Pct_Driver2AxisRB > 0.1) // Deadband
-    {
-    LeCONT_Pct_IntakeRollerTestCmnd += -LeCont_Pct_Driver2AxisRB;
-    }
-
-  if (LeCont_Pct_Driver2AxisLB > 0.1) // Deadband
-    {
-    LeCONT_Pct_IntakeRollerTestCmnd += LeCont_Pct_Driver2AxisLB;
-    LeCONT_b_InitState = true;
-    }
-
-  VsCONT_s_DriverInput.pct_IntakeRollerTest = LeCONT_Pct_IntakeRollerTestCmnd;
 
   if (LeCONT_Deg_Driver2POV == 0)
     {
