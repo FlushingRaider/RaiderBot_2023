@@ -20,6 +20,7 @@
 #include "Const.hpp"
 #include "control_pid.hpp"
 #include "Lookup.hpp"
+#include "Shuffleboard.hpp"
 
 double VeDRC_Deg_AutoCorrectDesired;        // Saved robot orientation angle used for auto correct
 double VeDRC_Deg_AutoCorrectionError;       // Error value for auto correction PID control.
@@ -56,6 +57,8 @@ void SwerveDriveMotorConfigsInit(rev::SparkMaxPIDController m_frontLeftDrivePID,
   T_PID_Cal         L_Index2 = E_P_Gx;
   T_RobotCorner     L_Index3 = E_FrontLeft;
 
+  #ifndef PID_Calibrate
+  //This set of PID assignments are for the hard coded values
   // set PID coefficients
   m_frontLeftDrivePID.SetP(K_SD_WheelSpeedPID_V2_Gx[E_kP]);
   m_frontLeftDrivePID.SetI(K_SD_WheelSpeedPID_V2_Gx[E_kI]);
@@ -84,6 +87,19 @@ void SwerveDriveMotorConfigsInit(rev::SparkMaxPIDController m_frontLeftDrivePID,
   m_rearRightDrivePID.SetIZone(K_SD_WheelSpeedPID_V2_Gx[E_kIz]);
   m_rearRightDrivePID.SetFF(K_SD_WheelSpeedPID_V2_Gx[E_kFF]);
   m_rearRightDrivePID.SetOutputRange(K_SD_WheelSpeedPID_V2_Gx[E_kMinOutput], K_SD_WheelSpeedPID_V2_Gx[E_kMaxOutput]);
+  #endif
+  
+  #ifdef PID_Calibrate
+
+  m_frontLeftDrivePID.SetP(shuffleboard_FrontleftPID.P);
+  m_frontLeftDrivePID.SetI(shuffleboard_FrontleftPID.I);
+  m_frontLeftDrivePID.SetD(shuffleboard_FrontleftPID.D);
+  m_frontLeftDrivePID.SetIZone(shuffleboard_FrontleftPID.Iz);
+  m_frontLeftDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
+  m_frontLeftDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
+
+
+  #endif
 
   KV_SD_WheelSpeedRampRate = K_SD_WheelSpeedPID_V2_Gx[E_kMaxAcc];
 

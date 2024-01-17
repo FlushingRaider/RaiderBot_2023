@@ -33,39 +33,37 @@ double FrontLeft_MaxUpper = frc::Shuffleboard::GetTab("Front Left")
 .Add("Max Upper", 0).GetEntry()->GetDouble(0.0);
 double FrontLeft_MaxLower = frc::Shuffleboard::GetTab("Front Left")
 .Add("Max Lower", 0).GetEntry()->GetDouble(0.0);
+double FrontLeft_IZ = frc::Shuffleboard::GetTab("Front Left")
+.Add("I zone ", 0).GetEntry()->GetDouble(0.0);
+double FrontLeft_FF = frc::Shuffleboard::GetTab("Front Left")
+.Add("Feed Foward", 0).GetEntry()->GetDouble(0.0);
 
 double FrontLeftSteer_P = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerP", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_I = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerI", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_D = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerD", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_P_LL = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerP LL", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_P_UL = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerP UL", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_I_LL = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerI LL", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_I_UL = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerI UL", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_D_LL = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerD LL", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_D_UL = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerD UL", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_MaxUpper = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerMax Upper", 0).GetEntry()->GetDouble(0.0);
-
 double FrontLeftSteer_MaxLower = frc::Shuffleboard::GetTab("Front Left")
 .Add("SteerMax Lower", 0).GetEntry()->GetDouble(0.0);
+double FrontLeftSteer_IZ = frc::Shuffleboard::GetTab("Front Left")
+.Add("I zone steer", 0).GetEntry()->GetDouble(0.0);
+double FrontLeftSteer_FF = frc::Shuffleboard::GetTab("Front Left")
+.Add("Feed Foward Steer", 0).GetEntry()->GetDouble(0.0);
 
 double FrontRight_P = frc::Shuffleboard::GetTab("Front Right")
 .Add("P", 0).GetEntry()->GetDouble(0.0);
@@ -192,8 +190,37 @@ double BackRightSteer_MaxUpper = frc::Shuffleboard::GetTab("Back Right")
 .Add("SteerMax Upper", 0).GetEntry()->GetDouble(0.0);
 double BackRightSteer_MaxLower = frc::Shuffleboard::GetTab("Back Right")
 .Add("SteerMax Lower", 0).GetEntry()->GetDouble(0.0);
-/*
-shuffleboard_FrontleftPID[E_PID_CalSz] = { 
+
+
+shuffleboard_FrontleftPID.P = FrontLeft_P;
+shuffleboard_FrontleftPID.I = FrontLeft_I;
+shuffleboard_FrontleftPID.D = FrontLeft_D;
+shuffleboard_FrontleftPID.P_UL = FrontLeft_P_UL;
+shuffleboard_FrontleftPID.P_LL = FrontLeft_P_LL;
+shuffleboard_FrontleftPID.I_UL = FrontLeft_I_UL;
+shuffleboard_FrontleftPID.I_LL = FrontLeft_I_LL;
+shuffleboard_FrontleftPID.D_UL = FrontLeft_D_UL;
+shuffleboard_FrontleftPID.D_LL = FrontLeft_D_LL;
+shuffleboard_FrontleftPID.UL = FrontLeft_MaxUpper;
+shuffleboard_FrontleftPID.LL = FrontLeft_MaxLower;
+shuffleboard_FrontleftPID.Iz = FrontLeft_IZ;
+shuffleboard_FrontleftPID.FF = FrontLeft_FF;
+
+shuffleboard_SteerFrontleftPID.P = FrontLeftSteer_P;
+shuffleboard_SteerFrontleftPID.I = FrontLeftSteer_I;
+shuffleboard_SteerFrontleftPID.D = FrontLeftSteer_D;
+shuffleboard_SteerFrontleftPID.P_UL = FrontLeftSteer_P_UL;
+shuffleboard_SteerFrontleftPID.P_LL = FrontLeftSteer_P_LL;
+shuffleboard_SteerFrontleftPID.I_UL = FrontLeftSteer_I_UL;
+shuffleboard_SteerFrontleftPID.I_LL = FrontLeftSteer_I_LL;
+shuffleboard_SteerFrontleftPID.D_UL = FrontLeftSteer_D_UL;
+shuffleboard_SteerFrontleftPID.D_LL = FrontLeftSteer_D_LL;
+shuffleboard_SteerFrontleftPID.UL = FrontLeftSteer_MaxUpper;
+shuffleboard_SteerFrontleftPID.LL = FrontLeftSteer_MaxLower;
+shuffleboard_SteerFrontleftPID.Iz = FrontLeftSteer_IZ;
+shuffleboard_SteerFrontleftPID.FF = FrontLeftSteer_FF;
+
+double l_shuffleboard_FrontleftPID[E_PID_CalSz] = { 
                                             FrontLeft_P,
                                             FrontLeft_I,
                                             FrontLeft_D,
@@ -207,7 +234,7 @@ shuffleboard_FrontleftPID[E_PID_CalSz] = {
                                             FrontLeft_MaxLower,
 };
 
-shuffleboard_SteerFrontleftPID[E_PID_CalSz] = {        
+double l_shuffleboard_SteerFrontleftPID[E_PID_CalSz] = {        
                                             FrontLeftSteer_P,
                                             FrontLeftSteer_I,
                                             FrontLeftSteer_D,
@@ -220,6 +247,6 @@ shuffleboard_SteerFrontleftPID[E_PID_CalSz] = {
                                             FrontLeftSteer_MaxUpper,
                                             FrontLeftSteer_MaxLower,
 };                                                          
-*/
+
 
 }

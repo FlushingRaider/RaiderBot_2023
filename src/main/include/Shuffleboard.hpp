@@ -1,7 +1,25 @@
+#ifndef shuffleboard
+#define shuffleboard
+
 #include <frc/shuffleboard/shuffleboard.h>
 #include "Enums.hpp"
 
 void shuffleboard_init();
 
-double* shuffleboard_FrontleftPID[E_PID_CalSz];
-double* shuffleboard_SteerFrontleftPID[E_PID_CalSz];
+typedef struct Shuffleboard_PID {
+    double P;
+    double I;
+    double D;
+    double P_UL, P_LL;
+    double I_UL, I_LL;
+    double D_UL, D_LL;
+    double UL, LL;
+    double Iz, FF;
+}; 
+
+extern Shuffleboard_PID shuffleboard_FrontleftPID;
+extern Shuffleboard_PID shuffleboard_SteerFrontleftPID;
+
+
+
+#endif

@@ -1,9 +1,10 @@
 #ifndef ROBOT
 #define ROBOT
+#define PID_Calibrate
 
 #pragma once
 
-#include "Shuffleboard.hpp"
+
 #include <string>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/AnalogInput.h>
@@ -25,6 +26,7 @@
 // #include <photonlib/PhotonUtils.h>
 // #include <cstdio>
 // #include <cameraserver/CameraServer.h>
+#include "Shuffleboard.hpp"
 
 #include "Const.hpp"
 
