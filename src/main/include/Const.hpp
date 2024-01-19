@@ -113,7 +113,7 @@ const double CeLC_k_BlinkinLED_GreenAndRed = 0.43;
 const int KeGRY_ms_GyroTimeoutMs = 30; // Waits and reports to DS if fails
 
 // Encoder / speed calculation related cals
-/* KeENC_k_ReductionRatio: Reduction ratio for swerve drive module. */ /*New chart says 16.6 as reduction*/
+/* KeENC_k_ReductionRatio: Reduction ratio for swerve drive module. */ /*New chart says 16.6 as reduction*/ 
 const double KeENC_k_ReductionRatio = 8.33;
 
 // #ifdef PracticeBot
@@ -774,7 +774,7 @@ const double KeADAS_Pct_DM_AutoMountPwrSlow = -0.38;
 /* KeADAS_t_DM_StopTm: Amount of time to have the robot stopped. [sec] */
 const double KeADAS_t_DM_StopTm = 0.1;
 
-/*  Rotation calibrations */
+/*  Auto Rotation calibrations */
 /* K_DesiredRotateSpeedAxis - This is the effective command axis, function of error calculation, in degrees */
 const double K_DesiredRotateSpeedAxis[10] = {-20.0,
                                               -4.0,
