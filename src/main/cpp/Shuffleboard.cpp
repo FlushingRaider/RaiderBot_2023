@@ -9,7 +9,6 @@ Writen by - Chris 2024
 #include "Shuffleboard.hpp"
 #include <networktables/NetworkTable.h>
 
-
 void shuffleboard_init(){
 double FrontLeft_P = frc::Shuffleboard::GetTab("Front Left")
 .Add("P", 0).GetEntry()->GetDouble(0.0);
@@ -64,7 +63,7 @@ double FrontLeftSteer_IZ = frc::Shuffleboard::GetTab("Front Left")
 .Add("I zone steer", 0).GetEntry()->GetDouble(0.0);
 double FrontLeftSteer_FF = frc::Shuffleboard::GetTab("Front Left")
 .Add("Feed Foward Steer", 0).GetEntry()->GetDouble(0.0);
-
+/*
 double FrontRight_P = frc::Shuffleboard::GetTab("Front Right")
 .Add("P", 0).GetEntry()->GetDouble(0.0);
 double FrontRight_I = frc::Shuffleboard::GetTab("Front Right")
@@ -190,6 +189,7 @@ double BackRightSteer_MaxUpper = frc::Shuffleboard::GetTab("Back Right")
 .Add("SteerMax Upper", 0).GetEntry()->GetDouble(0.0);
 double BackRightSteer_MaxLower = frc::Shuffleboard::GetTab("Back Right")
 .Add("SteerMax Lower", 0).GetEntry()->GetDouble(0.0);
+*/
 
 
 shuffleboard_FrontleftPID.P = FrontLeft_P;
@@ -219,34 +219,4 @@ shuffleboard_SteerFrontleftPID.UL = FrontLeftSteer_MaxUpper;
 shuffleboard_SteerFrontleftPID.LL = FrontLeftSteer_MaxLower;
 shuffleboard_SteerFrontleftPID.Iz = FrontLeftSteer_IZ;
 shuffleboard_SteerFrontleftPID.FF = FrontLeftSteer_FF;
-
-double l_shuffleboard_FrontleftPID[E_PID_CalSz] = { 
-                                            FrontLeft_P,
-                                            FrontLeft_I,
-                                            FrontLeft_D,
-                                            FrontLeft_P_UL,
-                                            FrontLeft_P_LL,
-                                            FrontLeft_I_UL,
-                                            FrontLeft_I_LL,
-                                            FrontLeft_D_UL,
-                                            FrontLeft_D_LL,
-                                            FrontLeft_MaxUpper,
-                                            FrontLeft_MaxLower,
-};
-
-double l_shuffleboard_SteerFrontleftPID[E_PID_CalSz] = {        
-                                            FrontLeftSteer_P,
-                                            FrontLeftSteer_I,
-                                            FrontLeftSteer_D,
-                                            FrontLeftSteer_P_UL,
-                                            FrontLeftSteer_P_LL,
-                                            FrontLeftSteer_I_UL,
-                                            FrontLeftSteer_I_LL,
-                                            FrontLeftSteer_D_UL,
-                                            FrontLeftSteer_D_LL,
-                                            FrontLeftSteer_MaxUpper,
-                                            FrontLeftSteer_MaxLower,
-};                                                          
-
-
 }

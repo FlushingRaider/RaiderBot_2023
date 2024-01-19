@@ -1,8 +1,9 @@
 #ifndef shuffleboard
 #define shuffleboard
 
-#include <frc/shuffleboard/shuffleboard.h>
+#include <frc/shuffleboard/Shuffleboard.h>
 #include "Enums.hpp"
+
 
 void shuffleboard_init();
 
@@ -15,11 +16,9 @@ typedef struct Shuffleboard_PID {
     double D_UL, D_LL;
     double UL, LL;
     double Iz, FF;
-}; 
+};
 
 extern Shuffleboard_PID shuffleboard_FrontleftPID;
 extern Shuffleboard_PID shuffleboard_SteerFrontleftPID;
-
-
 
 #endif

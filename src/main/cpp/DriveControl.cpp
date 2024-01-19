@@ -16,6 +16,7 @@
 #include <math.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/DriverStation.h>
+#include <frc/shuffleboard/Shuffleboard.h>
 
 #include "Const.hpp"
 #include "control_pid.hpp"
@@ -89,8 +90,8 @@ void SwerveDriveMotorConfigsInit(rev::SparkMaxPIDController m_frontLeftDrivePID,
   m_rearRightDrivePID.SetOutputRange(K_SD_WheelSpeedPID_V2_Gx[E_kMinOutput], K_SD_WheelSpeedPID_V2_Gx[E_kMaxOutput]);
   #endif
   
-  #ifdef PID_Calibrate
-
+  // #ifdef PID_Calibrate
+  
   m_frontLeftDrivePID.SetP(shuffleboard_FrontleftPID.P);
   m_frontLeftDrivePID.SetI(shuffleboard_FrontleftPID.I);
   m_frontLeftDrivePID.SetD(shuffleboard_FrontleftPID.D);
@@ -98,8 +99,28 @@ void SwerveDriveMotorConfigsInit(rev::SparkMaxPIDController m_frontLeftDrivePID,
   m_frontLeftDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
   m_frontLeftDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
 
+  m_frontRightDrivePID.SetP(shuffleboard_FrontleftPID.P);
+  m_frontRightDrivePID.SetI(shuffleboard_FrontleftPID.I);
+  m_frontRightDrivePID.SetD(shuffleboard_FrontleftPID.D);
+  m_frontRightDrivePID.SetIZone(shuffleboard_FrontleftPID.Iz);
+  m_frontRightDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
+  m_frontRightDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
 
-  #endif
+  m_rearLeftDrivePID.SetP(shuffleboard_FrontleftPID.P);
+  m_rearLeftDrivePID.SetI(shuffleboard_FrontleftPID.I);
+  m_rearLeftDrivePID.SetD(shuffleboard_FrontleftPID.D);
+  m_rearLeftDrivePID.SetIZone(shuffleboard_FrontleftPID.Iz);
+  m_rearLeftDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
+  m_rearLeftDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
+
+  m_rearRightDrivePID.SetP(shuffleboard_FrontleftPID.P);
+  m_rearRightDrivePID.SetI(shuffleboard_FrontleftPID.I);
+  m_rearRightDrivePID.SetD(shuffleboard_FrontleftPID.D);
+  m_rearRightDrivePID.SetIZone(shuffleboard_FrontleftPID.Iz);
+  m_rearRightDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
+  m_rearRightDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
+
+  // #endif
 
   KV_SD_WheelSpeedRampRate = K_SD_WheelSpeedPID_V2_Gx[E_kMaxAcc];
 
