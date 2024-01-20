@@ -90,8 +90,12 @@ void SwerveDriveMotorConfigsInit(rev::SparkMaxPIDController m_frontLeftDrivePID,
   m_rearRightDrivePID.SetOutputRange(K_SD_WheelSpeedPID_V2_Gx[E_kMinOutput], K_SD_WheelSpeedPID_V2_Gx[E_kMaxOutput]);
   #endif
   
-  // #ifdef PID_Calibrate
+  #ifdef PID_Calibrate
   
+  frc::SmartDashboard::PutNumber(" Frontleft_P", shuffleboard_FrontleftPID.P);
+  frc::SmartDashboard::PutNumber(" Frontleft_P_LL", shuffleboard_FrontleftPID.P_LL);
+  frc::SmartDashboard::PutNumber(" Frontleft_P_UL", shuffleboard_FrontleftPID.P_UL);
+
   m_frontLeftDrivePID.SetP(shuffleboard_FrontleftPID.P);
   m_frontLeftDrivePID.SetI(shuffleboard_FrontleftPID.I);
   m_frontLeftDrivePID.SetD(shuffleboard_FrontleftPID.D);
@@ -120,7 +124,7 @@ void SwerveDriveMotorConfigsInit(rev::SparkMaxPIDController m_frontLeftDrivePID,
   m_rearRightDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
   m_rearRightDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
 
-  // #endif
+  #endif
 
   KV_SD_WheelSpeedRampRate = K_SD_WheelSpeedPID_V2_Gx[E_kMaxAcc];
 
@@ -631,6 +635,7 @@ void DriveControlMain(double                   L_JoyStick1Axis1Y,  // swerve con
     if (VeDRC_b_DriveWheelsInPID == true)
       {
       /* We do PID control within the Rio for angle control: */
+      #ifndef PID_Calibrate
       L_k_SD_WheelAngleCmnd[L_Index] =  Control_PID( L_Deg_SD_WA[L_Index],
                                                      VaDRC_Deg_WheelAngleArb[L_Index],
                                                     &VaDRC_Deg_WheelAngleError[L_Index],
@@ -646,6 +651,24 @@ void DriveControlMain(double                   L_JoyStick1Axis1Y,  // swerve con
                                                      KV_SD_WheelAnglePID_Gx[E_D_Ll],
                                                      KV_SD_WheelAnglePID_Gx[E_Max_Ul],
                                                      KV_SD_WheelAnglePID_Gx[E_Max_Ll]);
+      #endif
+      #ifdef PID_Calibrate
+            L_k_SD_WheelAngleCmnd[L_Index] =  Control_PID( L_Deg_SD_WA[L_Index],
+                                                     VaDRC_Deg_WheelAngleArb[L_Index],
+                                                    &VaDRC_Deg_WheelAngleError[L_Index],
+                                                    &VaDRC_k_WheelAngleIntegral[L_Index],
+                                                     shuffleboard_SteerFrontleftPID.P,
+                                                     shuffleboard_SteerFrontleftPID.I,
+                                                     shuffleboard_SteerFrontleftPID.D,
+                                                     shuffleboard_SteerFrontleftPID.P_UL,
+                                                     shuffleboard_SteerFrontleftPID.P_LL,
+                                                     shuffleboard_SteerFrontleftPID.I_UL,
+                                                     shuffleboard_SteerFrontleftPID.I_LL,
+                                                     shuffleboard_SteerFrontleftPID.D_UL,
+                                                     shuffleboard_SteerFrontleftPID.D_LL,
+                                                     shuffleboard_SteerFrontleftPID.UL,
+                                                     shuffleboard_SteerFrontleftPID.LL);
+      #endif
       }
     else
       {

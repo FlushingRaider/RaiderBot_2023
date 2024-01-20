@@ -21,6 +21,7 @@
 #include "ADAS.hpp"
 #include "ADAS_DM.hpp"
 #include "ADAS_MN.hpp"
+#include "Shuffleboard.hpp"
 
 T_RobotState VeROBO_e_RobotState = E_Init;
 frc::DriverStation::Alliance VeROBO_e_AllianceColor = frc::DriverStation::Alliance::kInvalid;
@@ -90,7 +91,7 @@ void Robot::RobotMotorCommands()
  ******************************************************************************/
 void Robot::RobotInit()
 {
-    // shuffleboard_init();
+  shuffleboard_init();
   VeROBO_e_RobotState = E_Init;
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_t_MatchTimeRemaining = frc::Timer::GetMatchTime().value();

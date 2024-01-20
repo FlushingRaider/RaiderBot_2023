@@ -1,13 +1,16 @@
 /*
 Team 5561 Shuffleboard PID code
 
-Writen by - Chris 2024
+Writen by - Chris & Wes 2024
 
 */
 
 #include <frc/shuffleboard/Shuffleboard.h>
 #include "Shuffleboard.hpp"
 #include <networktables/NetworkTable.h>
+
+Shuffleboard_PID shuffleboard_FrontleftPID;
+Shuffleboard_PID shuffleboard_SteerFrontleftPID;
 
 void shuffleboard_init(){
 double FrontLeft_P = frc::Shuffleboard::GetTab("Front Left")
@@ -19,11 +22,11 @@ double FrontLeft_D = frc::Shuffleboard::GetTab("Front Left")
 double FrontLeft_P_LL = frc::Shuffleboard::GetTab("Front Left")
 .Add("P LL", 0).GetEntry()->GetDouble(0.0);
 double FrontLeft_P_UL = frc::Shuffleboard::GetTab("Front Left")
-.Add("I UL", 0).GetEntry()->GetDouble(0.0);
+.Add("P UL", 0).GetEntry()->GetDouble(0.0);
 double FrontLeft_I_LL = frc::Shuffleboard::GetTab("Front Left")
 .Add("I LL", 0).GetEntry()->GetDouble(0.0);
 double FrontLeft_I_UL = frc::Shuffleboard::GetTab("Front Left")
-.Add("D UL", 0).GetEntry()->GetDouble(0.0);
+.Add("I UL", 0).GetEntry()->GetDouble(0.0);
 double FrontLeft_D_LL = frc::Shuffleboard::GetTab("Front Left")
 .Add("D LL", 0).GetEntry()->GetDouble(0.0);
 double FrontLeft_D_UL = frc::Shuffleboard::GetTab("Front Left")
