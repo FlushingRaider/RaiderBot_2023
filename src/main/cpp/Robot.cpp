@@ -398,6 +398,8 @@ void Robot::AutonomousPeriodic()
  ******************************************************************************/
 void Robot::TeleopInit()
 {
+  shuffleboard_init();
+
   VeROBO_e_RobotState = E_Teleop;
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();
   VeROBO_b_TestState = false;
