@@ -13,8 +13,12 @@ Shuffleboard_PID shuffleboard_FrontleftPID;
 Shuffleboard_PID shuffleboard_SteerFrontleftPID;
 
 void shuffleboard_init(){
-double FrontLeft_P = frc::Shuffleboard::GetTab("Front Left")
-.Add("P", 0).GetEntry()->GetDouble(0.0);
+frc::ShuffleboardTab& tab = frc::Shuffleboard::GetTab("Front Left");
+nt::GenericEntry* P_entry = tab.Add("P", 0).GetEntry();
+
+
+// double FrontLeft_P = frc::Shuffleboard::GetTab("Front Left")
+// .Add("P", 0).GetEntry()->GetDouble(0.0);
 double FrontLeft_I = frc::Shuffleboard::GetTab("Front Left")
 .Add("I", 0).GetEntry()->GetDouble(0.0);
 double FrontLeft_D = frc::Shuffleboard::GetTab("Front Left")
@@ -195,7 +199,7 @@ double BackRightSteer_MaxLower = frc::Shuffleboard::GetTab("Back Right")
 */
 
 
-shuffleboard_FrontleftPID.P = FrontLeft_P;
+shuffleboard_FrontleftPID.P = P_entry->GetDouble(0);
 shuffleboard_FrontleftPID.I = FrontLeft_I;
 shuffleboard_FrontleftPID.D = FrontLeft_D;
 shuffleboard_FrontleftPID.P_UL = FrontLeft_P_UL;
