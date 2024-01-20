@@ -7,7 +7,7 @@
 
 void shuffleboard_init();
 
-typedef struct Shuffleboard_PID {
+struct Shuffleboard_PID {
     double P;
     double I;
     double D;

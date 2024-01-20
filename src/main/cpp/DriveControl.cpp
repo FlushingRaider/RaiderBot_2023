@@ -92,9 +92,9 @@ void SwerveDriveMotorConfigsInit(rev::SparkMaxPIDController m_frontLeftDrivePID,
   
   #ifdef PID_Calibrate
   
-  frc::SmartDashboard::PutNumber(" Frontleft_P", shuffleboard_FrontleftPID.P);
-  frc::SmartDashboard::PutNumber(" Frontleft_P_LL", shuffleboard_FrontleftPID.P_LL);
-  frc::SmartDashboard::PutNumber(" Frontleft_P_UL", shuffleboard_FrontleftPID.P_UL);
+  frc::SmartDashboard::PutNumber("Frontleft_P", shuffleboard_FrontleftPID.P);
+  frc::SmartDashboard::PutNumber("Frontleft_P_LL", shuffleboard_FrontleftPID.P_LL);
+  frc::SmartDashboard::PutNumber("Frontleft_P_UL", shuffleboard_FrontleftPID.P_UL);
 
   m_frontLeftDrivePID.SetP(shuffleboard_FrontleftPID.P);
   m_frontLeftDrivePID.SetI(shuffleboard_FrontleftPID.I);
@@ -255,6 +255,46 @@ void SwerveDriveMotorConfigsCal(rev::SparkMaxPIDController m_frontLeftDrivePID,
   KV_SD_WheelAnglePID_Gx[E_Max_Ll] = frc::SmartDashboard::GetNumber("Min Output", 0);
   #endif
   }
+
+void SwerveDriveReconfigPID(rev::SparkMaxPIDController m_frontLeftDrivePID,
+                            rev::SparkMaxPIDController m_frontRightDrivePID,
+                            rev::SparkMaxPIDController m_rearLeftDrivePID,
+                            rev::SparkMaxPIDController m_rearRightDrivePID){
+
+  frc::SmartDashboard::PutNumber("Frontleft_P", shuffleboard_FrontleftPID.P);
+  frc::SmartDashboard::PutNumber("Frontleft_P_LL", shuffleboard_FrontleftPID.P_LL);
+  frc::SmartDashboard::PutNumber("Frontleft_P_UL", shuffleboard_FrontleftPID.P_UL);
+
+  m_frontLeftDrivePID.SetP(shuffleboard_FrontleftPID.P);
+  m_frontLeftDrivePID.SetI(shuffleboard_FrontleftPID.I);
+  m_frontLeftDrivePID.SetD(shuffleboard_FrontleftPID.D);
+  m_frontLeftDrivePID.SetIZone(shuffleboard_FrontleftPID.Iz);
+  m_frontLeftDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
+  m_frontLeftDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
+
+  m_frontRightDrivePID.SetP(shuffleboard_FrontleftPID.P);
+  m_frontRightDrivePID.SetI(shuffleboard_FrontleftPID.I);
+  m_frontRightDrivePID.SetD(shuffleboard_FrontleftPID.D);
+  m_frontRightDrivePID.SetIZone(shuffleboard_FrontleftPID.Iz);
+  m_frontRightDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
+  m_frontRightDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
+
+  m_rearLeftDrivePID.SetP(shuffleboard_FrontleftPID.P);
+  m_rearLeftDrivePID.SetI(shuffleboard_FrontleftPID.I);
+  m_rearLeftDrivePID.SetD(shuffleboard_FrontleftPID.D);
+  m_rearLeftDrivePID.SetIZone(shuffleboard_FrontleftPID.Iz);
+  m_rearLeftDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
+  m_rearLeftDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
+
+  m_rearRightDrivePID.SetP(shuffleboard_FrontleftPID.P);
+  m_rearRightDrivePID.SetI(shuffleboard_FrontleftPID.I);
+  m_rearRightDrivePID.SetD(shuffleboard_FrontleftPID.D);
+  m_rearRightDrivePID.SetIZone(shuffleboard_FrontleftPID.Iz);
+  m_rearRightDrivePID.SetFF(shuffleboard_FrontleftPID.FF);
+  m_rearRightDrivePID.SetOutputRange(shuffleboard_FrontleftPID.LL, shuffleboard_FrontleftPID.UL);
+
+
+}
 
 
 /******************************************************************************

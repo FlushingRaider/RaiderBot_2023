@@ -399,6 +399,10 @@ void Robot::AutonomousPeriodic()
 void Robot::TeleopInit()
 {
   shuffleboard_init();
+  SwerveDriveReconfigPID(m_frontLeftDrivePID, 
+                              m_frontRightDrivePID, 
+                              m_rearLeftDrivePID, 
+                              m_rearRightDrivePID);
 
   VeROBO_e_RobotState = E_Teleop;
   VeROBO_e_AllianceColor = frc::DriverStation::GetAlliance();

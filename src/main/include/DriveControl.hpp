@@ -49,3 +49,8 @@ void DriveControlMain(double              L_JoyStick1Axis1Y,   // swerve control
                       double             *Le_RPM_SD_WheelSpeedCmnd,
                       double             *L_k_SD_WheelAngleCmnd);
 
+void SwerveDriveReconfigPID(rev::SparkMaxPIDController m_frontLeftDrivePID,
+                            rev::SparkMaxPIDController m_frontRightDrivePID,
+                            rev::SparkMaxPIDController m_rearLeftDrivePID,
+                            rev::SparkMaxPIDController m_rearRightDrivePID);
+
