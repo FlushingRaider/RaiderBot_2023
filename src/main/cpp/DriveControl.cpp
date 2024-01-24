@@ -34,7 +34,7 @@ double VaDRC_Pct_WheelAngleCmnd[E_RobotCornerSz];   // Command sent to motor con
 
 double VaDRC_RPM_WheelSpeedCmnd[E_RobotCornerSz];     // Command sent to motor controller   Command is either in power or speed request.
 double VaDRC_RPM_WheelSpeedCmndPrev[E_RobotCornerSz]; // Previous wheel speed command.  Used for ramping of control.
-bool   VeDRC_b_DriveWheelsInPID = false;              // Flag indicating that PID control is currently active in the motor controller.
+bool   VeDRC_b_DriveWheelsInPID = true;              // Flag indicating that PID control is currently active in the motor controller.
 
 double KV_SD_WheelAnglePID_Gx[E_PID_CalSz];
 double KV_SD_WheelSpeedPID_V2_Gx[E_PID_SparkMaxCalSz];
