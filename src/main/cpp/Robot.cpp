@@ -302,6 +302,11 @@ void Robot::RobotPeriodic()
                    &VaDRC_RPM_WheelSpeedCmnd[0],
                    &VaDRC_Pct_WheelAngleCmnd[0]);
 
+frc::SmartDashboard::PutNumber("Wheel speed 0", VaDRC_RPM_WheelSpeedCmnd[0]);
+frc::SmartDashboard::PutNumber("Wheel speed 1", VaDRC_RPM_WheelSpeedCmnd[1]);
+frc::SmartDashboard::PutNumber("Wheel speed 2", VaDRC_RPM_WheelSpeedCmnd[2]);
+frc::SmartDashboard::PutNumber("Wheel speed 3", VaDRC_RPM_WheelSpeedCmnd[3]);
+
   LightControlMain(VeROBO_t_MatchTimeRemaining,
                    VeROBO_e_AllianceColor,
                    VsCONT_s_DriverInput.b_CameraLight,

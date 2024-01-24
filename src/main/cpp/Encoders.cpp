@@ -237,6 +237,11 @@ void Encoders_Drive_PracticeBot(double                       LeENC_Cnt_EncoderWh
   VaENC_InS_WheelVelocity[E_FrontRight] = ((m_encoderFrontRightDrive.GetVelocity() / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearRight]  = ((m_encoderRearRightDrive.GetVelocity()  / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
   VaENC_InS_WheelVelocity[E_RearLeft]   = ((m_encoderRearLeftDrive.GetVelocity()   / KeENC_k_ReductionRatio) / 60) * KeENC_In_WheelCircumfrence;
+
+  frc::SmartDashboard::PutNumber("Front Left Velocity", VaENC_InS_WheelVelocity[E_FrontLeft]);
+  frc::SmartDashboard::PutNumber("Front Right Velocity", VaENC_InS_WheelVelocity[E_FrontRight]);
+  frc::SmartDashboard::PutNumber("Rear Left Velocity", VaENC_InS_WheelVelocity[E_RearLeft]);
+  frc::SmartDashboard::PutNumber("Rear Right Velocity", VaENC_InS_WheelVelocity[E_RearRight]);
   }
 
 
